@@ -322,10 +322,6 @@ class Builder(object):
 	def environ(self):
 		env = {
 			"BUILDROOT" : self.buildroot,
-
-			# XXX I want to get rid of these too and invoke a login shell
-			"HOME"      : "/root",
-			"PATH"      : "/sbin:/bin:/usr/sbin:/usr/bin",
 		}
 
 		# Inherit environment from distro
@@ -365,16 +361,11 @@ class Builder(object):
 		return ret
 
 	def make(self, *args, **kwargs):
-		# XXX need to get rid of this
-		env = { "PKGROOT" : "/usr/lib/buildsystem" }
-		try:
-			kwargs["env"].update(env)
-		except KeyError:
-			kwargs["env"] = env
+		command = ["bash", "--login", "-c",]
+		command.append("make -f /build/%s %s" % \
+			(os.path.basename(self.pkg.filename), " ".join(args)))
 
-		return self.do("make -f /build/%s %s" % \
-			(os.path.basename(self.pkg.filename), " ".join(args)),
-			shell=True, **kwargs)
+		return self.do(command,	shell=False, **kwargs)
 
 	@property
 	def make_info(self):
