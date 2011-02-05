@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-01-27 19:55+0100\n"
+"PO-Revision-Date: 2011-01-27 20:25+0100\n"
+"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../pakfire/packages/packager.py:109
+msgid "Extracting:"
+msgstr "Extrahiere:"
+
+#: ../pakfire/packages/base.py:42
+msgid "Name"
+msgstr "Name"
+
+#: ../pakfire/packages/base.py:43
+#: ../pakfire/transaction.py:214
+msgid "Arch"
+msgstr "Arch"
+
+#: ../pakfire/packages/base.py:44
+#: ../pakfire/transaction.py:214
+msgid "Version"
+msgstr "Version"
+
+#: ../pakfire/packages/base.py:45
+msgid "Release"
+msgstr "Release"
+
+#: ../pakfire/packages/base.py:46
+#: ../pakfire/transaction.py:214
+msgid "Size"
+msgstr "Größe"
+
+#. (_("Repo"), self.repo),
+#: ../pakfire/packages/base.py:48
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+#. (_("URL"), self.url),
+#: ../pakfire/packages/base.py:50
+msgid "License"
+msgstr "Lizenz"
+
+#: ../pakfire/packages/base.py:53
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ../pakfire/transaction.py:214
+msgid "Package"
+msgstr "Paket"
+
+#: ../pakfire/transaction.py:214
+msgid "Repository"
+msgstr "Repositorium"
+
+#: ../pakfire/transaction.py:218
+msgid "Installing:"
+msgstr "Installiere:"
+
+#: ../pakfire/transaction.py:224
+msgid "Updating:"
+msgstr "Aktualisiere:"
+
+#: ../pakfire/transaction.py:230
+msgid "Removing:"
+msgstr "Entferne:"
+
+#: ../pakfire/transaction.py:235
+msgid "Transaction Summary"
+msgstr "Zusammenfassung der Transaktion"
+
+#: ../pakfire/transaction.py:241
+msgid "Install"
+msgstr "Installieren"
+
+#: ../pakfire/transaction.py:241
+#: ../pakfire/transaction.py:244
+#: ../pakfire/transaction.py:247
+msgid "Package(s)"
+msgstr "Paket(e)"
+
+#: ../pakfire/transaction.py:244
+msgid "Updates"
+msgstr "Aktualisierungen"
+
+#: ../pakfire/transaction.py:247
+msgid "Remove"
+msgstr "Entfernen"
+
+#: ../pakfire/transaction.py:250
+#, python-format
+msgid "Total download size: %s"
+msgstr "Gesamte Downloadgröße: %s"
+
+#: ../pakfire/__init__.py:88
+msgid "Is this okay?"
+msgstr "Ist dies in Ordnung?"
+
+#: ../pakfire/cli.py:20
+#, python-format
+msgid "%s [y/N]"
+msgstr "%s [y/N]"
+
+#: ../pakfire/cli.py:29
+msgid "Pakfire command line interface."
+msgstr "Pakfire-Kommandozeilen-Interface"
+
+#: ../pakfire/cli.py:33
+#: ../pakfire/cli.py:84
+msgid "Enable verbose output."
+msgstr "Verbose-Modus einschalten."
+
+#: ../pakfire/cli.py:36
+#: ../pakfire/cli.py:87
+msgid "The path where pakfire should operate in."
+msgstr "Der Pfad in welchem Pakfire Änderungen vornimmt."
+
+#: ../pakfire/cli.py:43
+#: ../pakfire/cli.py:94
+msgid "Install one or more packages to the system."
+msgstr "Ein oder mehrere Pakete auf dem System installieren."
+
+#: ../pakfire/cli.py:45
+#: ../pakfire/cli.py:96
+msgid "Give name of at least one package to install."
+msgstr "Mindestens ein Paketname."
+
+#: ../pakfire/cli.py:50
+#: ../pakfire/cli.py:101
+msgid "Update the whole system or one specific package."
+msgstr "Das gesamte System aktualisieren oder ein angegebenes Paket."
+
+#: ../pakfire/cli.py:52
+#: ../pakfire/cli.py:103
+msgid "Give a name of a package to update or leave emtpy for all."
+msgstr "Ein Paket zum Aktualisieren oder leer lassen für alle."
+
+#: ../pakfire/cli.py:57
+#: ../pakfire/cli.py:108
+msgid "Print some information about the given package(s)."
+msgstr "Informationen über das/die angegebenen Paket(e) ausgeben."
+
+#: ../pakfire/cli.py:59
+#: ../pakfire/cli.py:110
+msgid "Give at least the name of one package."
+msgstr "Mindestens ein Paket."
+
+#: ../pakfire/cli.py:64
+#: ../pakfire/cli.py:115
+msgid "Search for a given pattern."
+msgstr "Nach einem Ausdruck suchen."
+
+#: ../pakfire/cli.py:66
+#: ../pakfire/cli.py:117
+msgid "A pattern to search for."
+msgstr "Nach einem Ausdruck suchen."
+
+#: ../pakfire/cli.py:80
+msgid "Pakfire builder command line interface."
+msgstr "Pakfire-builder Kommandozeilen-Interface."
+

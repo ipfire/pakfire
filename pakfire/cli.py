@@ -1,0 +1,277 @@
+#!/usr/bin/python
+
+import argparse
+import sys
+
+import packages
+
+from pakfire import Pakfire
+
+from constants import *
+from i18n import _
+
+def ask_user(question):
+	"""
+		Ask the user the question, he or she can answer with yes or no.
+
+		This function returns True for "yes" and False for "no".
+		
+		If the software is running in a non-inteactive shell, no question
+		is asked at all and the answer is always "yes".
+	"""
+	if not sys.stdin.isatty() or not sys.stdout.isatty() or not sys.stderr.isatty():
+		return True
+
+	print _("%s [y/N]") % question,
+	ret = raw_input()
+
+	return ret in ("y", "Y")
+
+
+class Cli(object):
+	# XXX check if we are running as the root user
+
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		self.parser.add_argument("--instroot", metavar="PATH",
+			default="/tmp/pakfire",
+			help=_("The path where pakfire should operate in."))
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_install()
+		self.parse_command_info()
+		self.parse_command_search()
+		self.parse_command_update()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		# Create instance of the wonderful pakfire :)
+		self.pakfire = Pakfire(
+			self.args.instroot,
+			configs = [self.args.config],
+		)
+
+		self.action2func = {
+			"install" : self.handle_install,
+			"update"  : self.handle_update,
+			"info"    : self.handle_info,
+			"search"  : self.handle_search,
+		}
+
+	def parse_common_arguments(self):
+		self.parser.add_argument("-v", "--verbose", action="store_true",
+			help=_("Enable verbose output."))
+
+		self.parser.add_argument("-c", "--config", nargs="?",
+			help=_("Path to a configuration file to load."))
+
+	def parse_command_install(self):
+		# Implement the "install" command.
+		sub_install = self.sub_commands.add_parser("install",
+			help=_("Install one or more packages to the system."))
+		sub_install.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to install."))
+		sub_install.add_argument("action", action="store_const", const="install")
+
+	def parse_command_update(self):
+		# Implement the "update" command.
+		sub_update = self.sub_commands.add_parser("update",
+			help=_("Update the whole system or one specific package."))
+		sub_update.add_argument("package", nargs="*",
+			help=_("Give a name of a package to update or leave emtpy for all."))
+		sub_update.add_argument("action", action="store_const", const="update")
+
+	def parse_command_info(self):
+		# Implement the "info" command.
+		sub_info = self.sub_commands.add_parser("info",
+			help=_("Print some information about the given package(s)."))
+		sub_info.add_argument("package", nargs="+",
+			help=_("Give at least the name of one package."))
+		sub_info.add_argument("action", action="store_const", const="info")
+
+	def parse_command_search(self):
+		# Implement the "search" command.
+		sub_search = self.sub_commands.add_parser("search",
+			help=_("Search for a given pattern."))
+		sub_search.add_argument("pattern",
+			help=_("A pattern to search for."))
+		sub_search.add_argument("action", action="store_const", const="search")
+
+	def run(self):
+		action = self.args.action
+
+		if not self.action2func.has_key(action):
+			raise
+
+		try:
+			func = self.action2func[action]
+		except KeyError:
+			raise # XXX catch and return better error message
+
+		return func()
+
+	def handle_info(self):
+		for pattern in self.args.package:
+			pkgs = self.pakfire.repos.get_by_glob(pattern)
+
+			pkgs = packages.PackageListing(pkgs)
+
+			for pkg in pkgs:
+				print pkg.dump()
+
+	def handle_search(self):
+		pkgs = self.pakfire.repos.search(self.args.pattern)
+
+		pkgs = packages.PackageListing(pkgs)
+
+		for pkg in pkgs:
+			print pkg.dump(short=True)
+
+	def handle_update(self):
+		pass
+
+
+class CliBuilder(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire builder command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_build()
+		self.parse_command_dist()
+		self.parse_command_info()
+		self.parse_command_search()
+		self.parse_command_shell()
+		self.parse_command_update()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.pakfire = Pakfire(
+			builder = True,
+			configs = [self.args.config],
+		)
+
+		self.action2func = {
+			"build"   : self.handle_build,
+			"dist"    : self.handle_dist,
+			"update"  : self.handle_update,
+			"info"    : self.handle_info,
+			"search"  : self.handle_search,
+			"shell"   : self.handle_shell,
+		}
+
+	def parse_command_update(self):
+		# Implement the "update" command.
+		sub_update = self.sub_commands.add_parser("update",
+			help=_("Update the package indexes."))
+		sub_update.add_argument("action", action="store_const", const="update")
+
+	def parse_command_build(self):
+		# Implement the "build" command.
+		sub_build = self.sub_commands.add_parser("build",
+			help=_("Build one or more packages."))
+		sub_build.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to build."))
+		sub_build.add_argument("action", action="store_const", const="build")
+
+		sub_build.add_argument("-a", "--arch",
+			help=_("Build the package for the given architecture."))
+		sub_build.add_argument("--resultdir", nargs="?",
+			help=_("Path were the output files should be copied to."))
+
+	def parse_command_shell(self):
+		# Implement the "shell" command.
+		sub_shell = self.sub_commands.add_parser("shell",
+			help=_("Go into a shell."))
+		sub_shell.add_argument("package", nargs=1,
+			help=_("Give name of a package."))
+		sub_shell.add_argument("action", action="store_const", const="shell")
+
+		sub_shell.add_argument("-a", "--arch",
+			help=_("Emulated architecture in the shell."))
+
+	def parse_command_dist(self):
+		# Implement the "dist" command.
+		sub_dist = self.sub_commands.add_parser("dist",
+			help=_("Generate a source package."))
+		sub_dist.add_argument("package", nargs=1,
+			help=_("Give name of a package."))
+		sub_dist.add_argument("action", action="store_const", const="dist")
+
+		sub_dist.add_argument("--resultdir", nargs="?",
+			help=_("Path were the output files should be copied to."))
+
+	def handle_build(self):
+		print self.args
+		# Get the package descriptor from the command line options
+		pkg = self.args.package[0]
+
+		# Check, if we got a regular file
+		if os.path.exists(pkg):
+			pkg = os.path.abspath(pkg)
+
+			if pkg.endswith(MAKEFILE_EXTENSION):
+				pkg = packages.Makefile(pkg)
+
+			elif pkg.endswith(PACKAGE_EXTENSION):
+				pkg = packages.SourcePackage(pkg)
+
+		else:
+			# XXX walk through the source tree and find a matching makefile
+			pass
+
+		self.pakfire.build(pkg, arch=self.args.arch, resultdir=self.args.resultdir)
+
+	def handle_shell(self):
+		print self.args
+		# Get the package descriptor from the command line options
+		pkg = self.args.package[0]
+
+		# Check, if we got a regular file
+		if os.path.exists(pkg):
+			pkg = os.path.abspath(pkg)
+
+			if pkg.endswith(MAKEFILE_EXTENSION):
+				pkg = packages.Makefile(pkg)
+
+			elif pkg.endswith(PACKAGE_EXTENSION):
+				pkg = packages.SourcePackage(pkg)
+
+		else:
+			# XXX walk through the source tree and find a matching makefile
+			pass
+
+		self.pakfire.shell(pkg, arch=self.args.arch)
+
+	def handle_dist(self):
+		print self.args
+		# Get the package descriptor from the command line options
+		pkg = self.args.package[0]
+
+		# Check, if we got a regular file
+		if os.path.exists(pkg):
+			pkg = os.path.abspath(pkg)
+
+			if pkg.endswith(MAKEFILE_EXTENSION):
+				pkg = packages.Makefile(pkg)
+
+		else:
+			# XXX walk through the source tree and find a matching makefile
+			pass
+
+		self.pakfire.dist(pkg, self.args.resultdir)
+

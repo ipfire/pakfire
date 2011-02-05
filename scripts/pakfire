@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import logging
+import os
+import sys
+
+from pakfire.cli import Cli, CliBuilder
+
+basename2cls = {
+	"pakfire" : Cli,
+	"pakfire-build" : CliBuilder,
+}
+
+# Get the basename of the program
+basename = os.path.basename(sys.argv[0])
+
+# Check if the program was called with a weird basename.
+# If so, we exit immediately.
+if not basename2cls.has_key(basename):
+	sys.exit(127)
+
+# Creating command line interface
+cli = basename2cls[basename]()
+
+# Return code for the shell.
+ret = 0
+
+try:
+	cli.run()
+
+except KeyboardInterrupt:
+	logging.critical("Recieved keyboard interupt (Ctrl-C). Exiting.")
+	ret = 1
+
+sys.exit(ret)
+

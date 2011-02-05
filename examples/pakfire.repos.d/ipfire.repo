@@ -1,0 +1,15 @@
+;[ipfire]
+;description = IPFire Main Repository
+;
+;url = http://mirror0.ipfire.org/pakfire3/$name/$arch
+;
+;gpgkey = /not/yet/existant
+
+[ipfire-development]
+description = IPFire Development Repository
+
+#url = http://mirror0.ipfire.org/pakfire3/$name/$arch
+url = file:///ipfire-3.x/build/packages/i686
+
+gpgkey = /not/yet/existant
+
