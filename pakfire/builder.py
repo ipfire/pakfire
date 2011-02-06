@@ -443,7 +443,7 @@ class Builder(object):
 			command = "%s=\"%s\" " % (key, val) + command
 
 		# Empty the environment
-		command = "env -i - %s" % command
+		#command = "env -i - %s" % command
 
 		logging.debug("Shell command: %s" % command)
 
