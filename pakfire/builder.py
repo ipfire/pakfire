@@ -23,13 +23,15 @@ class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pakfire, pkg):
+	def __init__(self, pakfire, pkg, **settings):
 		self.pakfire = pakfire
 		self.pkg = pkg
 
 		self.settings = {
 			"enable_loop_devices" : True,
+			"enable_icecream" : False,
 		}
+		self.settings.update(settings)
 
 		self.buildroot = "/buildroot"
 
@@ -123,6 +125,12 @@ class Builder(object):
 		ds = depsolve.DependencySet(self.pakfire)
 		for p in BUILD_PACKAGES + requires:
 			ds.add_requires(p)
+
+		# If we have icecream enabled, we need to extract it
+		# to the build chroot.
+		if self.settings.get("enable_icecream"):
+			ds.add_requires("icecream")
+
 		ds.resolve()
 
 		# Get build dependencies from source package.
@@ -329,6 +337,17 @@ class Builder(object):
 		# Inherit environment from distro
 		env.update(self.pakfire.distro.environ)
 
+		# Icecream environment settings
+		if self.settings.get("enable_icecream", None):
+			# Set the toolchain path
+			if self.settings.get("icecream_toolchain", None):
+				env["ICECC_VERSION"] = self.settings.get("icecream_toolchain")
+
+			# Set preferred host if configured.
+			if self.settings.get("icecream_preferred_host", None):
+				env["ICECC_PREFERRED_HOST"] = \
+					self.settings.get("icecream_preferred_host")
+
 		# XXX what do we need else?
 
 		return env
@@ -346,6 +365,11 @@ class Builder(object):
 			if not personality:
 				personality = self.pakfire.distro.personality
 
+			# Make every shell to a login shell because we set a lot of
+			# environment things there.
+			if shell:
+				command = ["bash", "--login", "-c", command]
+
 			self._mountall()
 
 			if not kwargs.has_key("chrootPath"):
@@ -354,7 +378,7 @@ class Builder(object):
 			ret = util.do(
 				command,
 				personality=personality,
-				shell=shell,
+				shell=False,
 				env=env,
 				logger=self.log,
 				*args,
@@ -367,11 +391,9 @@ class Builder(object):
 		return ret
 
 	def make(self, *args, **kwargs):
-		command = ["bash", "--login", "-c",]
-		command.append("make -f /build/%s %s" % \
-			(os.path.basename(self.pkg.filename), " ".join(args)))
-
-		return self.do(command,	shell=False, **kwargs)
+		return self.do("make -f /build/%s %s" % \
+			(os.path.basename(self.pkg.filename), " ".join(args)),
+			**kwargs)
 
 	@property
 	def make_info(self):
@@ -429,7 +451,20 @@ class Builder(object):
 	def make_sources(self):
 		return self.make_info.get("PKG_FILES", "").split()
 
+	def create_icecream_toolchain(self):
+		if not self.settings.get("enable_icecream", None):
+			return
+
+		out = self.do("icecc --build-native", returnOutput=True)
+
+		for line in out.splitlines():
+			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
+			if m:
+				self.settings["icecream_toolchain"] = "/%s" % m.group(1)
+
 	def build(self):
+		self.create_icecream_toolchain()
+
 		self.make("build")
 
 		for pkg in reversed(self.packages):
