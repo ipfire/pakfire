@@ -326,6 +326,10 @@ class Builder(object):
 			if kwargs.has_key("env"):
 				env.update(kwargs.pop("env"))
 
+			# Update personality it none was set
+			if not personality:
+				personality = self.pakfire.distro.personality
+
 			self._mountall()
 
 			if not kwargs.has_key("chrootPath"):
@@ -427,6 +431,10 @@ class Builder(object):
 
 		for key, val in self.environ.items():
 			command = "%s=\"%s\" " % (key, val) + command
+
+		# Add personality if we require one
+		if self.pakfire.distro.personality:
+			command = "%s %s" % (self.pakfire.disto.personality, command)
 
 		# Empty the environment
 		#command = "env -i - %s" % command

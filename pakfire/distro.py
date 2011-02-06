@@ -131,3 +131,24 @@ class Distribution(object):
 
 		return info
 
+	@property
+	def personality(self):
+		"""
+			Return the personality of the target system.
+
+			If host and target system are of the same architecture, we return
+			None to skip the setting of the personality in the build chroot.
+		"""
+
+		if self.arch == self.host_arch:
+			return None
+
+		arch2personality = {
+			"x86_64" : "linux64",
+			"i686"   : "linux32",
+			"i586"   : "linux32",
+			"i486"   : "linux32",
+		}
+
+		return arch2personality[self.arch]
+
