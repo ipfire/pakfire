@@ -249,26 +249,12 @@ class Builder(object):
 		f.close()
 
 	def _prepare_dns(self):
-		# XXX to be replaced
-		# maybe we can copyin /etc/resolv.conf and /etc/hosts
-		nameservers = []
-		f = open("/etc/resolv.conf")
-		for line in f.readlines():
-			if line.startswith("nameserver"):
-				nameservers.append(line.split(" ")[-1].strip())
-		f.close()
-
-		logging.debug("Using nameservers: %s" % nameservers)
-
-		f = open(self.chrootPath("etc", "resolv.conf"), "w")
-		for nameserver in nameservers:
-			f.write("nameserver %s" % nameserver)
-		f.close()
-
-		logging.debug("Creating record for localhost")
-		f = open(self.chrootPath("etc", "hosts"), "w")
-		f.write("127.0.0.1 localhost\n")
-		f.close()
+		"""
+			Add DNS resolution facility to chroot environment by copying
+			/etc/resolv.conf and /etc/hosts.
+		"""
+		for i in ("/etc/resolv.conf", "/etc/hosts"):
+			self.copyin(i, i)
 
 	def _create_node(self, filename, mode, device):
 		logging.debug("Create node: %s (%s)" % (filename, mode))
