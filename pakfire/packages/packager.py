@@ -150,10 +150,14 @@ class InnerTarFile(tarfile.TarFile):
 		logging.debug("Adding file: %s" % tarinfo.name)
 
 		filename = self.env.chrootPath(self.env.buildroot, tarinfo.name)
-		for attr, value in xattr.get_all(filename):
-			tarinfo.pax_headers[attr] = value
 
-			logging.debug("  xattr: %s=%s" % (attr, value))
+		# xattrs do only exists for regular files. If we don't have one,
+		# simply skip.
+		if os.path.isfile(filename):
+			for attr, value in xattr.get_all(filename):
+				tarinfo.pax_headers[attr] = value
+
+				logging.debug("  xattr: %s=%s" % (attr, value))
 
 		return tarinfo
 
