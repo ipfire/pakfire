@@ -3,6 +3,7 @@
 import fcntl
 import grp
 import logging
+import math
 import os
 import re
 import shutil
@@ -304,10 +305,25 @@ class Builder(object):
 
 		return ret
 
+	@staticmethod
+	def calc_parallelism():
+		"""
+			Calculate how many processes to run
+			at the same time.
+
+			We take the log10(number of processors) * factor
+		"""
+		num = os.sysconf("SC_NPROCESSORS_CONF")
+		if num == 1:
+			return 2
+		else:
+			return int(round(math.log10(num) * 26))
+
 	@property
 	def environ(self):
 		env = {
 			"BUILDROOT" : self.buildroot,
+			"PARALLELISMFLAGS" : "-j%s" % self.calc_parallelism(),
 		}
 
 		# Inherit environment from distro
