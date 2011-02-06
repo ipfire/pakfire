@@ -39,7 +39,15 @@ class Repositories(object):
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
 
-		self.update_indexes()
+	def __len__(self):
+		"""
+			Return the count of enabled repositories.
+		"""
+		i = 0
+		for repo in self.enabled:
+			i += 1
+
+		return i
 
 	def _parse(self, name, args):
 		# XXX need to make variable expansion
@@ -66,6 +74,13 @@ class Repositories(object):
 				continue
 
 			yield repo
+
+	def disable_repo(self, name):
+		for repo in self.enabled:
+			if repo.name == name:
+				logging.debug("Disabled repository '%s'" % repo.name)
+				repo.enabled = False
+				continue
 
 	def update_indexes(self, force=False):
 		logging.debug("Updating all repository indexes (force=%s)" % force)
@@ -111,6 +126,9 @@ class RepositoryFactory(object):
 		self.pakfire = pakfire
 
 		self.name, self.description = name, description
+
+		# All repositories are enabled by default
+		self.enabled = True
 
 		# Add link to distro object
 		self.distro = pakfire.distro #distro.Distribution()
@@ -183,8 +201,6 @@ class RepositoryFactory(object):
 
 
 class LocalRepository(RepositoryFactory):
-	enabled = True
-
 	def __init__(self, pakfire):
 		RepositoryFactory.__init__(self, pakfire, "installed", "Installed packages")
 

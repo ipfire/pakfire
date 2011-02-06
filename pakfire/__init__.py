@@ -17,14 +17,15 @@ import repository
 import transaction
 
 from constants import *
-from errors import BuildError
+from errors import BuildError, PakfireError
 from i18n import _
 
 __version__ = 0.1
 
 
 class Pakfire(object):
-	def __init__(self, path="/tmp/pakfire", builder=False, configs=[]):
+	def __init__(self, path="/tmp/pakfire", builder=False, configs=[],
+			disable_repos=None):
 		# The path where we are operating in
 		self.path = path
 
@@ -59,7 +60,18 @@ class Pakfire(object):
 		# Run plugins that implement an initialization method.
 		self.plugins.run("init")
 
-		# XXX disable repositories if passed on command line
+		# Disable repositories if passed on command line
+		if disable_repos:
+			for repo in disable_repos:
+				self.repos.disable_repo(repo)
+
+		# Check if there is at least one enabled repository.
+		if len(self.repos) < 2:
+			raise PakfireError, "No repositories were configured."
+
+		# Update all indexes of the repositories (not force) so that we will
+		# always work with valid data.
+		self.repos.update_indexes()
 
 	def check_build_mode(self):
 		"""

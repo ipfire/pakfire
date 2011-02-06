@@ -15,3 +15,6 @@ class ConfigError(Error):
 class DownloadError(Error):
 	pass
 
+class PakfireError(Error):
+	pass
+

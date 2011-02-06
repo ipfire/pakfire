@@ -57,6 +57,7 @@ class Cli(object):
 		self.pakfire = Pakfire(
 			self.args.instroot,
 			configs = [self.args.config],
+			disable_repos = self.args.disable_repo,
 		)
 
 		self.action2func = {
@@ -72,6 +73,9 @@ class Cli(object):
 
 		self.parser.add_argument("-c", "--config", nargs="?",
 			help=_("Path to a configuration file to load."))
+
+		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
+			help=_("Disable a repository temporarily."))
 
 	def parse_command_install(self):
 		# Implement the "install" command.
@@ -163,6 +167,7 @@ class CliBuilder(Cli):
 		self.pakfire = Pakfire(
 			builder = True,
 			configs = [self.args.config],
+			disable_repos = self.args.disable_repo,
 		)
 
 		self.action2func = {
