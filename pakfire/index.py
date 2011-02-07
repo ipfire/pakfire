@@ -5,6 +5,8 @@ import os
 
 import packages
 
+from constants import *
+
 class Index(object):
 	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
@@ -64,6 +66,10 @@ class DirectoryIndex(Index):
 
 		for dir, subdirs, files in os.walk(self.path):
 			for file in files:
+				# Skip files that do not have the right extension
+				if not file.endswith(".%s" % PACKAGE_EXTENSION):
+					continue
+
 				file = os.path.join(dir, file)
 
 				package = packages.BinaryPackage(self.pakfire, self.repo, file)
