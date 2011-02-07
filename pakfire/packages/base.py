@@ -44,9 +44,9 @@ class Package(object):
 			(_("Version"), self.version),
 			(_("Release"), self.release),
 			(_("Size"), util.format_size(self.size)),
-#			(_("Repo"), self.repo),
+			(_("Repo"), self.repo.name),
 			(_("Summary"), self.summary),
-#			(_("URL"), self.url),
+			(_("URL"), self.url),
 			(_("License"), self.license),
 		]
 
@@ -114,7 +114,7 @@ class Package(object):
 
 	@property
 	def repo(self):
-		return "XXX"
+		return self._repo
 
 	@property
 	def name(self):
