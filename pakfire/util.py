@@ -82,7 +82,7 @@ def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 			if returnOutput:
 				output += input
 	if tail and logger is not None:
-		logger.debug(tail)
+		logger.info(tail)
 	return output
 
 
