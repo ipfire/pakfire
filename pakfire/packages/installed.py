@@ -13,7 +13,9 @@ from base import Package
 class InstalledPackage(Package):
 	type = "installed"
 
-	def __init__(self, db, data):
+	def __init__(self, pakfire, db, data):
+		Package.__init__(self, pakfire, pakfire.repos.local)
+
 		self.db = db
 
 		self._data = {}

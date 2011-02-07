@@ -9,7 +9,8 @@
 description = IPFire Development Repository
 
 #url = http://mirror0.ipfire.org/pakfire3/$name/$arch
-url = file:///ipfire-3.x/build/packages/i686
+#url = file:///ipfire-3.x/build/packages/i686
+url = file:///tmp/pakfire3
 
 gpgkey = /not/yet/existant
 

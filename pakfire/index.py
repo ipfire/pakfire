@@ -6,8 +6,9 @@ import os
 import packages
 
 class Index(object):
-	def __init__(self, pakfire):
+	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
+		self.repo = repo
 
 		self.arch = self.pakfire.distro.arch # XXX ???
 
@@ -53,10 +54,10 @@ class Index(object):
 
 
 class DirectoryIndex(Index):
-	def __init__(self, pakfire, path):
+	def __init__(self, pakfire, repo, path):
 		self.path = path
 
-		Index.__init__(self, pakfire)
+		Index.__init__(self, pakfire, repo)
 
 	def update(self, force=False):
 		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
@@ -65,7 +66,7 @@ class DirectoryIndex(Index):
 			for file in files:
 				file = os.path.join(dir, file)
 
-				package = packages.BinaryPackage(file)
+				package = packages.BinaryPackage(self.pakfire, self.repo, file)
 
 				if not package.arch in (self.arch, "noarch"):
 					logging.warning("Skipped package with wrong architecture: %s (%s)" \
@@ -76,17 +77,17 @@ class DirectoryIndex(Index):
 
 
 class InstalledIndex(Index):
-	def __init__(self, pakfire, db):
+	def __init__(self, pakfire, repo, db):
 		self.db = db
 
-		Index.__init__(self, pakfire)
+		Index.__init__(self, pakfire, repo)
 
 	def get_all_by_name(self, name):
 		c = self.db.cursor()
 		c.execute("SELECT * FROM packages WHERE name = ?", name)
 
 		for pkg in c:
-			yield package.InstalledPackage(self.db, pkg)
+			yield package.InstalledPackage(self.pakfire, self.db, pkg)
 
 		c.close()
 
@@ -106,20 +107,7 @@ class InstalledIndex(Index):
 		c.execute("SELECT * FROM packages")
 
 		for pkg in c:
-			yield packages.InstalledPackage(self.db, pkg)
+			yield packages.InstalledPackage(self.pakfire, self.db, pkg)
 
 		c.close()
-		
-		
-
-
-if __name__ == "__main__":
-	di = DirectoryIndex("/ipfire-3.x/build/packages/i686", "i686")
-
-	for package in di.packages:
-		print package
-
-	print di.package_names
-	print di.get_latest_by_name("ccache")
-	print [p for p in di.get_all_by_name("ccache")]
 

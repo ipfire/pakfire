@@ -10,11 +10,12 @@ from pakfire.i18n import _
 class Package(object):
 	type = None # either "bin", "src" or "virt"
 
-	def __init__(self, filename):
-		self.filename = filename
+	def __init__(self, pakfire, repo):
+		self.pakfire = pakfire
+		self._repo = repo
 
 	def __repr__(self):
-		return "<%s %s>" % (self.__class__.__name__, self.filename)
+		return "<%s %s>" % (self.__class__.__name__, self.friendly_name)
 
 	def __cmp__(self, other):
 		# if packages differ names return in alphabetical order

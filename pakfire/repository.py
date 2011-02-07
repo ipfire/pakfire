@@ -200,15 +200,34 @@ class RepositoryFactory(object):
 		return self.index.packages
 
 
+class DummyRepository(RepositoryFactory):
+	"""
+		Just a dummy repository that actually does nothing.
+	"""
+	def __init__(self, pakfire):
+		RepositoryFactory.__init__(self, pakfire, "dummy",
+			"This is a dummy repository.")
+
+
+class FileSystemRepository(RepositoryFactory):
+	"""
+		Dummy repository to indicate that a specific package came from the
+		filesystem.
+	"""
+	def __init__(self, pakfire):
+		RepositoryFactory.__init__(self, pakfire, "filesystem",
+			"Filesystem repository")
+
+
 class LocalRepository(RepositoryFactory):
 	def __init__(self, pakfire):
 		RepositoryFactory.__init__(self, pakfire, "installed", "Installed packages")
 
 		self.path = os.path.join(self.pakfire.path, PACKAGES_DB)
 
-		self.db = database.LocalPackageDatabase(self.path)
+		self.db = database.LocalPackageDatabase(self.pakfire, self.path)
 
-		self.index = index.InstalledIndex(self.pakfire, self.db)
+		self.index = index.InstalledIndex(self.pakfire, self, self.db)
 
 	@property
 	def priority(self):
@@ -233,7 +252,7 @@ class RemoteRepository(RepositoryFactory):
 			self.enabled = False
 
 		if self.url.startswith("file://"):
-			self.index = index.DirectoryIndex(self.pakfire, self.url[7:])
+			self.index = index.DirectoryIndex(self.pakfire, self, self.url[7:])
 		
 		else:
 			self.index = None

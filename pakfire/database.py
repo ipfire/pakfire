@@ -7,7 +7,8 @@ import sqlite3
 import packages
 
 class Database(object):
-	def __init__(self, filename):
+	def __init__(self, pakfire, filename):
+		self.pakfire = pakfire
 		self.filename = filename
 		self._db = None
 
@@ -128,7 +129,7 @@ class LocalPackageDatabase(Database):
 
 		ret = None
 		for pkg in c:
-			ret = packages.InstalledPackage(self, pkg)
+			ret = packages.InstalledPackage(self.pakfire, self, pkg)
 			break
 
 		assert ret

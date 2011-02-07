@@ -13,7 +13,8 @@ class FilePackage(Package):
 		This class is a wrapper that reads package data from the (outer)
 		tarball and should never be used solely.
 	"""
-	def __init__(self, filename):
+	def __init__(self, pakfire, repo, filename):
+		Package.__init__(self, pakfire, repo)
 		self.filename = filename
 
 		# Place to keep the tarfile handle and cache the metadata

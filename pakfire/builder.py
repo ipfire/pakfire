@@ -438,9 +438,12 @@ class Builder(object):
 			k, v = m.groups()
 			pkg[k] = v.strip("\"")
 
+		# Create a dummy repository to link the virtual packages to
+		repo = repository.DummyRepository(self.pakfire)
+
 		self._packages = []
 		for pkg in pkgs:
-			pkg = packages.VirtualPackage(pkg)
+			pkg = packages.VirtualPackage(self.pakfire, repo, pkg)
 			self._packages.append(pkg)
 
 		return self._packages

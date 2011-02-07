@@ -230,10 +230,11 @@ class CliBuilder(Cli):
 			pkg = os.path.abspath(pkg)
 
 			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(pkg)
+				pkg = packages.Makefile(self.pakfire, pkg)
 
 			elif pkg.endswith(PACKAGE_EXTENSION):
-				pkg = packages.SourcePackage(pkg)
+				repo = repository.FileSystemRepository(self.pakfire)
+				pkg = packages.SourcePackage(self.pakfire, repo, pkg)
 
 		else:
 			# XXX walk through the source tree and find a matching makefile
@@ -251,10 +252,11 @@ class CliBuilder(Cli):
 			pkg = os.path.abspath(pkg)
 
 			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(pkg)
+				pkg = packages.Makefile(self.pakfire, pkg)
 
 			elif pkg.endswith(PACKAGE_EXTENSION):
-				pkg = packages.SourcePackage(pkg)
+				repo = repository.FileSystemRepository(self.pakfire)
+				pkg = packages.SourcePackage(self.pakfire, repo, pkg)
 
 		else:
 			# XXX walk through the source tree and find a matching makefile
@@ -272,7 +274,7 @@ class CliBuilder(Cli):
 			pkg = os.path.abspath(pkg)
 
 			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(pkg)
+				pkg = packages.Makefile(self.pakfire, pkg)
 
 		else:
 			# XXX walk through the source tree and find a matching makefile
