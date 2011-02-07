@@ -61,17 +61,18 @@ class DirectoryIndex(Index):
 	def update(self, force=False):
 		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
 
-		for file in os.listdir(self.path):
-			file = os.path.join(self.path, file)
+		for dir, subdirs, files in os.walk(self.path):
+			for file in files:
+				file = os.path.join(dir, file)
 
-			package = packages.BinaryPackage(file)
+				package = packages.BinaryPackage(file)
 
-			if not package.arch in (self.arch, "noarch"):
-				logging.warning("Skipped package with wrong architecture: %s (%s)" \
-					% (package.filename, package.arch))
-				continue
+				if not package.arch in (self.arch, "noarch"):
+					logging.warning("Skipped package with wrong architecture: %s (%s)" \
+						% (package.filename, package.arch))
+					continue
 
-			self._packages.append(package)
+				self._packages.append(package)
 
 
 class InstalledIndex(Index):
