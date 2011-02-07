@@ -46,6 +46,7 @@ class Cli(object):
 		self.sub_commands = self.parser.add_subparsers()
 
 		self.parse_command_install()
+		self.parse_command_localinstall()
 		self.parse_command_info()
 		self.parse_command_search()
 		self.parse_command_update()
@@ -61,10 +62,11 @@ class Cli(object):
 		)
 
 		self.action2func = {
-			"install" : self.handle_install,
-			"update"  : self.handle_update,
-			"info"    : self.handle_info,
-			"search"  : self.handle_search,
+			"install"      : self.handle_install,
+			"localinstall" : self.handle_localinstall,
+			"update"       : self.handle_update,
+			"info"         : self.handle_info,
+			"search"       : self.handle_search,
 		}
 
 	def parse_common_arguments(self):
@@ -84,6 +86,14 @@ class Cli(object):
 		sub_install.add_argument("package", nargs="+",
 			help=_("Give name of at least one package to install."))
 		sub_install.add_argument("action", action="store_const", const="install")
+
+	def parse_command_localinstall(self):
+		# Implement the "localinstall" command.
+		sub_install = self.sub_commands.add_parser("localinstall",
+			help=_("Install one or more packages from the filesystem."))
+		sub_install.add_argument("package", nargs="+",
+			help=_("Give filename of at least one package."))
+		sub_install.add_argument("action", action="store_const", const="localinstall")
 
 	def parse_command_update(self):
 		# Implement the "update" command.
@@ -141,6 +151,22 @@ class Cli(object):
 
 	def handle_update(self):
 		pass
+
+	def handle_install(self, local=False):
+		if local:
+			repo = repository.FileSystemRepository(self.pakfire)
+
+		pkgs = []
+		for pkg in self.args.package:
+			if local and os.path.exists(pkg):
+				pkg = packages.BinaryPackage(self.pakfire, repo, pkg)
+
+			pkgs.append(pkg)
+
+		self.pakfire.install(pkgs)
+
+	def handle_localinstall(self):
+		return self.handle_install(local=True)
 
 
 class CliBuilder(Cli):
