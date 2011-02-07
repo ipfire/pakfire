@@ -3,7 +3,6 @@
 import logging
 import re
 
-import _io_ as io
 import util
 
 from pakfire.i18n import _
