@@ -217,7 +217,7 @@ class TransactionSet(object):
 			pkg.name,
 			pkg.arch,
 			pkg.friendly_version,
-			pkg.repo,
+			pkg.repo.name,
 			util.format_size(pkg.size),
 		)
 
