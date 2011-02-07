@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from base import Package
+from file import FilePackage
 
-class SourcePackage(Package):
+class SourcePackage(FilePackage):
 	type = "src"
 
 	@property

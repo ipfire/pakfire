@@ -66,17 +66,6 @@ class Package(object):
 		return "\n".join(s)
 
 	@property
-	def data(self):
-		"""
-			Link to the datafile that only gets established if
-			we need access to it.
-		"""
-		if not hasattr(self, "_data"):
-			self._data = io.CpioArchive(self.filename)
-
-		return self._data
-
-	@property
 	def info(self):
 		info = {
 			"name"        : self.name,
@@ -98,36 +87,17 @@ class Package(object):
 	def size(self):
 		"""
 			Return the size of the package file.
-		"""
-		return self.data.size
 
-	def get_file(self, filename):
+			This should be overloaded by another class and returns 0 for
+			virtual packages.
 		"""
-			Get a file descriptor for the file.
-
-			Raises KeyError if file is not available.
-		"""
-		return self.data.get(filename)
+		return 0
 
 	### META INFORMATION ###
 
 	@property
 	def metadata(self):
-		if not hasattr(self, "_metadata"):
-			info = self.get_file("info")
-			_metadata = {}
-
-			for line in info.read().splitlines():
-				m = re.match(r"^(\w+)=(.*)$", line)
-				if m is None:
-					continue
-
-				key, val = m.groups()
-				_metadata[key] = val.strip("\"")
-
-			self._metadata = _metadata
-
-		return self._metadata
+		raise NotImplementedError
 
 	@property
 	def friendly_name(self):
@@ -201,12 +171,7 @@ class Package(object):
 
 	@property
 	def signature(self):
-		f = self.get_file("signature")
-		f.seek(0)
-		sig = f.read()
-		f.close()
-
-		return sig or None
+		raise NotImplementedError
 
 	@property
 	def build_date(self):

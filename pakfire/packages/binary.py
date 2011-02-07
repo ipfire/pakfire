@@ -4,17 +4,14 @@ import sys
 
 import packager
 
-from base import Package
+from file import FilePackage
 
-class BinaryPackage(Package):
+class BinaryPackage(FilePackage):
 	type = "bin"
 
 	@property
 	def arch(self):
 		return self.metadata.get("PKG_ARCH")
-
-	def extract(self, path):
-		pass
 
 	@property
 	def requires(self):
@@ -30,15 +27,6 @@ class BinaryPackage(Package):
 	@property
 	def provides(self):
 		return self.metadata.get("PKG_PROVIDES").split()
-
-	@property
-	def filelist(self):
-		# XXX this needs to be very fast
-		# and is totally broken ATM
-		f = self.get_file("filelist")
-		f.seek(0)
-
-		return f.read().split()
 
 	def get_extractor(self, pakfire):
 		return packager.Extractor(pakfire, self)
