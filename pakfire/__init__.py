@@ -143,7 +143,7 @@ class Pakfire(object):
 		ds = depsolve.DependencySet(pakfire=self)
 
 		for req in requires:
-			if isinstance(BinaryPackage, req):
+			if isinstance(packages.BinaryPackage, req):
 				ds.add_package(req)
 			else:
 				ds.add_requires(req)
