@@ -5,6 +5,7 @@ import re
 
 import util
 
+import pakfire.depsolve
 from pakfire.i18n import _
 
 class Package(object):
@@ -188,6 +189,9 @@ class Package(object):
 	### methods ###
 
 	def does_provide(self, requires):
+		if not isinstance(requires, pakfire.depsolve.Requires):
+			requires = pakfire.depsolve.Requires(self, requires)
+
 		# If the provides string equals the name of the package, we
 		# return true.
 		if self.name == requires.requires:
