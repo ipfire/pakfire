@@ -142,7 +142,8 @@ class RepositoryFactory(object):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
 
 	def __cmp__(self, other):
-		return cmp(self.priority, other.priority) or cmp(self.name, other.name)
+		return cmp(self.priority * -1, other.priority * -1) or \
+			cmp(self.name, other.name)
 
 	@property
 	def priority(self):

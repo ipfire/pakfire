@@ -33,6 +33,10 @@ class Package(object):
 		#elif ret > 0:
 		#	logging.debug("%s is more recent than %s" % (self, other))
 
+		# If no rank could be created, sort by repository priority
+		if not ret:
+			ret = cmp(self.repo, other.repo)
+
 		return ret
 
 	def dump(self, short=False):
