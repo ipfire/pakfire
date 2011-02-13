@@ -37,7 +37,7 @@ class Repositories(object):
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
-		if self.pakfire.build:
+		if self.pakfire.builder:
 			self.local_build = LocalBuildRepository(self.pakfire)
 			self.add_repo(self.local_build)
 
