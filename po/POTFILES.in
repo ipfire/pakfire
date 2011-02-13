@@ -15,7 +15,6 @@ pakfire/packages/base.py
 pakfire/packages/binary.py
 pakfire/packages/__init__.py
 pakfire/packages/installed.py
-pakfire/packages/_io_.py
 pakfire/packages/listing.py
 pakfire/packages/make.py
 pakfire/packages/packager.py
