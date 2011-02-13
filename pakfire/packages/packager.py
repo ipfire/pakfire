@@ -23,7 +23,10 @@ class Extractor(object):
 		self.archive = None
 		self._tempfile = None
 
-		self._uncompress_data()
+		if pkg.payload_compression == "XXX":
+			self.archive = tarfile.open(fileobj=self.data)
+		else:
+			self._uncompress_data()
 
 	def cleanup(self):
 		# XXX not called by anything
@@ -87,16 +90,16 @@ class Extractor(object):
 		if member.isdir() and os.path.exists(target):
 			return
 
-		if self.pakfire.config.get("debug"):
-			msg = "Creating file (%s:%03d:%03d) " % \
-				(tarfile.filemode(member.mode), member.uid, member.gid)
-			if member.issym():
-				msg += "/%s -> %s" % (member.name, member.linkname)
-			elif member.islnk():
-				msg += "/%s link to /%s" % (member.name, member.linkname)
-			else:
-				msg += "/%s" % member.name
-			logging.debug(msg)
+		#if self.pakfire.config.get("debug"):
+		#	msg = "Creating file (%s:%03d:%03d) " % \
+		#		(tarfile.filemode(member.mode), member.uid, member.gid)
+		#	if member.issym():
+		#		msg += "/%s -> %s" % (member.name, member.linkname)
+		#	elif member.islnk():
+		#		msg += "/%s link to /%s" % (member.name, member.linkname)
+		#	else:
+		#		msg += "/%s" % member.name
+		#	logging.debug(msg)
 
 		# Remove file if it has been existant
 		if not member.isdir() and os.path.exists(target):

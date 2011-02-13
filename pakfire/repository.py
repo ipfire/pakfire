@@ -300,6 +300,9 @@ class RemoteRepository(RepositoryFactory):
 		if self.index:
 			self.index.update(force=force)
 
+	def save_index(self, path=None):
+		self.index.save(path)
+
 	#def get_all(self, requires):
 	#	for pkg in self.index.get_all():
 	#		if pkg.does_provide(requires):

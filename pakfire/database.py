@@ -16,7 +16,7 @@ class Database(object):
 
 	def __del__(self):
 		if self._db:
-			self._db.commit()
+			#self._db.commit()
 			self._db.close()
 
 	def create(self):
@@ -50,7 +50,7 @@ class Database(object):
 		return self._db.cursor()
 
 
-class LocalPackageDatabase(Database):
+class PackageDatabase(Database):
 	def create(self):
 		c = self.cursor()
 
@@ -71,6 +71,7 @@ class LocalPackageDatabase(Database):
 				epoch		INTEGER,
 				version		TEXT,
 				release		TEXT,
+				filename	TEXT,
 				installed	INTEGER,
 				reason		TEXT,
 				repository	TEXT,
@@ -101,6 +102,66 @@ class LocalPackageDatabase(Database):
 
 		c.close()
 
+	def package_exists(self, pkg):
+		return not self.get_id_by_pkg(pkg) is None
+
+	def get_id_by_pkg(self, pkg):
+		c = self.cursor()
+
+		c.execute("SELECT id FROM packages WHERE name = ? AND version = ? AND \
+			release = ? AND epoch = ? LIMIT 1", (pkg.name, pkg.version, pkg.release, pkg.epoch))
+
+		ret = None
+		for i in c:
+			ret = i["id"]
+			break
+		
+		c.close()
+
+		return ret
+
+	def add_package(self, pkg):
+		if self.package_exists(pkg):
+			logging.debug("Skipping package which already exists in database: %s" % pkg.friendly_name)
+			return
+
+		logging.debug("Adding package to database: %s" % pkg.friendly_name)
+
+		c = self.cursor()
+		c.execute("""
+			INSERT INTO packages(
+				name,
+				epoch,
+				version,
+				release,
+				filename,
+				provides,
+				requires
+			) VALUES(?, ?, ?, ?, ?, ?, ?)""",
+			(
+				pkg.name,
+				pkg.epoch,
+				pkg.version,
+				pkg.release,
+				pkg.filename,
+				" ".join(pkg.provides),
+				" ".join(pkg.requires),
+			)
+		)
+		c.close()
+		self.commit()
+
+		pkg_id = self.get_id_by_pkg(pkg)
+
+		c = self.cursor()
+		for file in pkg.filelist:
+			c.execute("INSERT INTO files(name, pkg) VALUES(?, ?)", (file, pkg_id))
+
+		c.close()
+		self.commit()
+
+
+class LocalPackageDatabase(PackageDatabase):
 	def add_package(self, pkg, installed=True):
 		c = self.cursor()
 

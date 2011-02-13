@@ -3,6 +3,7 @@
 import logging
 import os
 
+import database
 import packages
 
 from constants import *
@@ -61,8 +62,19 @@ class DirectoryIndex(Index):
 
 		Index.__init__(self, pakfire, repo)
 
+		# Always update this because it will otherwise contain no data
+		self.update(force=True)
+
 	def update(self, force=False):
 		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
+
+		# Do nothing if the update is not forced but populate the database
+		# if no packages are present.
+		if not force and self._packages:
+			return
+
+		# If we update the cache, we clear it first.
+		self._packages = []
 
 		for dir, subdirs, files in os.walk(self.path):
 			for file in files:
@@ -81,19 +93,38 @@ class DirectoryIndex(Index):
 
 				self._packages.append(package)
 
+	def save(self, path=None):
+		if not path:
+			path = self.path
 
-class InstalledIndex(Index):
+		path = os.path.join(path, "index.db")
+
+		db = database.PackageDatabase(self.pakfire, path)
+
+		for pkg in self.packages:
+			db.add_package(pkg)
+
+		db.close()
+
+
+class DatabaseIndex(Index):
 	def __init__(self, pakfire, repo, db):
 		self.db = db
 
 		Index.__init__(self, pakfire, repo)
+
+	def update(self, force=False):
+		"""
+			Nothing to do here.
+		"""
+		pass
 
 	def get_all_by_name(self, name):
 		c = self.db.cursor()
 		c.execute("SELECT * FROM packages WHERE name = ?", name)
 
 		for pkg in c:
-			yield package.InstalledPackage(self.pakfire, self.db, pkg)
+			yield package.DatabasePackage(self.pakfire, self.db, pkg)
 
 		c.close()
 
@@ -113,7 +144,12 @@ class InstalledIndex(Index):
 		c.execute("SELECT * FROM packages")
 
 		for pkg in c:
-			yield packages.InstalledPackage(self.pakfire, self.db, pkg)
+			yield packages.DatabasePackage(self.pakfire, self.db, pkg)
 
 		c.close()
+
+
+# XXX maybe this can be removed later?
+class InstalledIndex(DatabaseIndex):
+	pass
 

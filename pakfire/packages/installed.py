@@ -7,11 +7,8 @@ import util
 
 from base import Package
 
-
-# XXX maybe this gets renamed to "DatabasePackage" or something similar.
-
-class InstalledPackage(Package):
-	type = "installed"
+class DatabasePackage(Package):
+	type = "db"
 
 	def __init__(self, pakfire, db, data):
 		Package.__init__(self, pakfire, pakfire.repos.local)
@@ -152,4 +149,9 @@ class InstalledPackage(Package):
 			VALUES(?, ?, ?, ?, ?, ?)",
 			(filename, self.id, size, type, hash1, time.time()))
 		c.close()
+
+
+# XXX maybe we can remove this later?
+class InstalledPackage(DatabasePackage):
+	type = "installed"
 

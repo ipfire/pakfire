@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from binary import BinaryPackage
-from installed import InstalledPackage
+from installed import DatabasePackage, InstalledPackage
 from source import SourcePackage
 from virtual import VirtualPackage
 

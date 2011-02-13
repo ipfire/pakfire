@@ -159,3 +159,29 @@ class Pakfire(object):
 
 		ts.run()
 
+	def provides(self, patterns):
+		pkgs = []
+
+		for pattern in patterns:
+			pkgs += self.repos.get_by_provides(pattern)
+
+		pkgs = packages.PackageListing(pkgs)
+		#pkgs.unique()
+
+		return pkgs
+
+	def repo_create(self, path):
+		if not os.path.exists(path) or not os.path.isdir(path):
+			raise PakfireError, "Given path is not existant or not a directory: %s" % path
+
+		repo = repository.RemoteRepository(
+			self,
+			name="new",
+			description="New repository.",
+			url="file://%s" % path,
+			gpgkey="XXX",
+			enabled=True,
+		)
+
+		repo.save_index()
+

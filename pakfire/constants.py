@@ -10,6 +10,7 @@ CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")
 CACHE_DIR = "/var/cache/pakfire"
 
 PACKAGES_DB = "var/lib/pakfire/packages.db"
+REPOSITORY_DB = "index.db"
 
 BUFFER_SIZE = 1024**2
 

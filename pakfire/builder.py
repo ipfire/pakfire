@@ -12,6 +12,7 @@ import time
 
 import depsolve
 import packages
+import repository
 import transaction
 import util
 
@@ -29,7 +30,7 @@ class Builder(object):
 
 		self.settings = {
 			"enable_loop_devices" : True,
-			"enable_icecream" : False,
+			"enable_icecream" : True,
 		}
 		self.settings.update(settings)
 
@@ -452,7 +453,7 @@ class Builder(object):
 
 		self._packages = []
 		for pkg in pkgs:
-			pkg = packages.VirtualPackage(self.pakfire, repo, pkg)
+			pkg = packages.VirtualPackage(self.pakfire, pkg) # XXX had to remove repo here?!
 			self._packages.append(pkg)
 
 		return self._packages

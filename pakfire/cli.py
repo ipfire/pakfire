@@ -4,6 +4,7 @@ import argparse
 import sys
 
 import packages
+import repository
 
 from pakfire import Pakfire
 
@@ -50,6 +51,7 @@ class Cli(object):
 		self.parse_command_info()
 		self.parse_command_search()
 		self.parse_command_update()
+		self.parse_command_provides()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -67,6 +69,7 @@ class Cli(object):
 			"update"       : self.handle_update,
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
+			"provides"     : self.handle_provides,
 		}
 
 	def parse_common_arguments(self):
@@ -119,6 +122,14 @@ class Cli(object):
 			help=_("A pattern to search for."))
 		sub_search.add_argument("action", action="store_const", const="search")
 
+	def parse_command_provides(self):
+		# Implement the "provides" command
+		sub_provides = self.sub_commands.add_parser("provides",
+			help=_("Get a list of packages that provide a given file or feature."))
+		sub_provides.add_argument("pattern", nargs="+",
+			help=_("File or feature to search for."))
+		sub_provides.add_argument("action", action="store_const", const="provides")
+
 	def run(self):
 		action = self.args.action
 
@@ -168,6 +179,12 @@ class Cli(object):
 	def handle_localinstall(self):
 		return self.handle_install(local=True)
 
+	def handle_provides(self):
+		pkgs = self.pakfire.provides(self.args.pattern)
+
+		for pkg in pkgs:
+			print pkg.dump()
+
 
 class CliBuilder(Cli):
 	def __init__(self):
@@ -186,6 +203,7 @@ class CliBuilder(Cli):
 		self.parse_command_search()
 		self.parse_command_shell()
 		self.parse_command_update()
+		self.parse_command_repo()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -197,12 +215,13 @@ class CliBuilder(Cli):
 		)
 
 		self.action2func = {
-			"build"   : self.handle_build,
-			"dist"    : self.handle_dist,
-			"update"  : self.handle_update,
-			"info"    : self.handle_info,
-			"search"  : self.handle_search,
-			"shell"   : self.handle_shell,
+			"build"       : self.handle_build,
+			"dist"        : self.handle_dist,
+			"update"      : self.handle_update,
+			"info"        : self.handle_info,
+			"search"      : self.handle_search,
+			"shell"       : self.handle_shell,
+			"repo_create" : self.handle_repo_create,
 		}
 
 	def parse_command_update(self):
@@ -245,6 +264,20 @@ class CliBuilder(Cli):
 
 		sub_dist.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
+
+	def parse_command_repo(self):
+		sub_repo = self.sub_commands.add_parser("repo",
+			help=_("Repository management commands."))
+
+		sub_repo_commands = sub_repo.add_subparsers()
+
+		self.parse_command_repo_create(sub_repo_commands)
+
+	def parse_command_repo_create(self, sub_commands):
+		sub_create = sub_commands.add_parser("create",
+			help=_("Create a new repository index."))
+		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
+		sub_create.add_argument("action", action="store_const", const="repo_create")
 
 	def handle_build(self):
 		print self.args
@@ -307,4 +340,9 @@ class CliBuilder(Cli):
 			pass
 
 		self.pakfire.dist(pkg, self.args.resultdir)
+
+	def handle_repo_create(self):
+		path = self.args.path[0]
+
+		self.pakfire.repo_create(path)
 
