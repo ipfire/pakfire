@@ -126,6 +126,11 @@ class Builder(object):
 		for p in BUILD_PACKAGES + requires:
 			ds.add_requires(p)
 
+		# XXX just because I screwed things up
+		# Adds all packages to the chroot environment
+		#for p in self.pakfire.repos.get_all():
+		#	ds.add_requires(p.name)
+
 		# If we have icecream enabled, we need to extract it
 		# to the build chroot.
 		if self.settings.get("enable_icecream"):
