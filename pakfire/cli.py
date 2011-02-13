@@ -204,6 +204,7 @@ class CliBuilder(Cli):
 		self.parse_command_shell()
 		self.parse_command_update()
 		self.parse_command_repo()
+		self.parse_command_provides()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -222,6 +223,7 @@ class CliBuilder(Cli):
 			"search"      : self.handle_search,
 			"shell"       : self.handle_shell,
 			"repo_create" : self.handle_repo_create,
+			"provides"    : self.handle_provides,
 		}
 
 	def parse_command_update(self):
