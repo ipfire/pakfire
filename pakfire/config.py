@@ -39,7 +39,7 @@ class Config(object):
 
 	def read(self, filename):
 		# If filename does not exist we return silently
-		if not os.path.exists(filename):
+		if not filename or not os.path.exists(filename):
 			return
 
 		filename = os.path.abspath(filename)
