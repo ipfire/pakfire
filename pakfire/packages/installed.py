@@ -125,7 +125,11 @@ class InstalledPackage(Package):
 		c.execute("SELECT name FROM files WHERE pkg = '%s'" % self.id) # XXX?
 
 		for f in c:
-			yield f["name"]
+			filename = f["name"]
+			if not filename.startswith("/"):
+				filename = "/%s" % filename
+
+			yield filename
 
 		c.close()
 

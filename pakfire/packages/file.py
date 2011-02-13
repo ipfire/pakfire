@@ -91,7 +91,13 @@ class FilePackage(Package):
 	def __filelist_from_metadata(self):
 		f = self.get_file("filelist")
 
-		ret = f.readlines()
+		ret = []
+		for line in f.readlines():
+			line = line.strip()
+			if not line.startswith("/"):
+				line = "/%s" % line
+
+			ret.append(line)
 
 		f.close()
 
@@ -121,10 +127,13 @@ class FilePackage(Package):
 			read it instead. The latter is a very slow procedure and
 			should not be used anyway.
 		"""
-		try:
-			return self.__filelist_from_metadata()
-		except KeyError:
-			return self.__filelist_from_payload()
+		if not hasattr(self, "__filelist"):
+			try:
+				self.__filelist = self.__filelist_from_metadata()
+			except KeyError:
+				self.__filelist = self.__filelist_from_payload()
+
+		return self.__filelist
 
 	@property
 	def payload_compression(self):
