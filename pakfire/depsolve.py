@@ -58,6 +58,12 @@ class Provides(object):
 	def __str__(self):
 		return self.provides
 
+	def __cmp__(self, other):
+		if isinstance(other, Requires):
+			return cmp(self.provides, other.requires)
+
+		return cmp(self.provides, other.provides)
+
 
 class Obsoletes(object):
 	def __init__(self, pkg, obsoletes):
@@ -102,10 +108,15 @@ class DependencySet(object):
 		if requires in self.__unresolveable:
 			return
 
+		if requires in self.__provides:
+			return
+
 		for pkg in self.__packages:
 			if pkg.does_provide(requires):
+				logging.debug("Skipping requires '%s' which is already provided by %s" % (requires.requires, pkg))
 				return
 
+		#logging.debug("Adding requires: %s" % requires)
 		self.__requires.append(requires)
 
 	def add_provides(self, provides, pkg=None):
@@ -115,8 +126,10 @@ class DependencySet(object):
 			raise Exception, "Could not add provides"
 
 		while provides in self.__requires:
+			#logging.debug("Removing requires: %s" % provides.provides)
 			self.__requires.remove(provides)
 
+		#logging.debug("Adding provides: %s" % provides)
 		self.__provides.append(provides)
 
 	def add_obsoletes(self, obsoletes, pkg=None):
@@ -131,14 +144,15 @@ class DependencySet(object):
 			logging.debug("Trying to add package which is already in the dependency set: %s" % pkg)
 			return
 
+		logging.info(" --> Adding package to dependency set: %s" % pkg)
 		self.__packages.append(pkg)
 
 		self.add_provides(pkg.name, pkg)
 		for prov in pkg.provides:
 			self.add_provides(prov, pkg)
 
-		for filename in pkg.filelist:
-			self.add_provides(filename, pkg)
+		#for filename in pkg.filelist:
+		#	self.add_provides(filename, pkg)
 
 		for req in pkg.requires:
 			self.add_requires(req, pkg)
