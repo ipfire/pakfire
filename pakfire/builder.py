@@ -353,6 +353,10 @@ class Builder(object):
 	@property
 	def environ(self):
 		env = {
+			# Add HOME manually, because it is occasionally not set
+			# and some builds get in trouble then.
+			"HOME" : "/root",
+
 			"BUILDROOT" : self.buildroot,
 			"PARALLELISMFLAGS" : "-j%s" % self.calc_parallelism(),
 		}
