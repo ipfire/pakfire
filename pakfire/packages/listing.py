@@ -26,3 +26,14 @@ class PackageListing(object):
 		if self.__packages:
 			return self.__packages[-1]
 
+	def unique(self):
+		pkgs = []
+
+		for pkg in self.__packages:
+			if pkg in pkgs:
+				continue
+
+			pkgs.append(pkg)
+
+		self.__packages = pkgs
+
