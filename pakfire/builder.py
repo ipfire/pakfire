@@ -30,6 +30,7 @@ class Builder(object):
 
 		self.settings = {
 			"enable_loop_devices" : True,
+			"enable_ccache"   : True,
 			"enable_icecream" : True,
 		}
 		self.settings.update(settings)
@@ -132,6 +133,11 @@ class Builder(object):
 		#for p in self.pakfire.repos.get_all():
 		#	ds.add_requires(p.name)
 
+		# If we have ccache enabled, we need to extract it
+		# to the build chroot.
+		if self.settings.get("enable_ccache"):
+			ds.add_requires("ccache")
+
 		# If we have icecream enabled, we need to extract it
 		# to the build chroot.
 		if self.settings.get("enable_icecream"):
@@ -208,6 +214,14 @@ class Builder(object):
 			"tmp",
 			"usr/src",
 		]
+
+		# Create cache dir if ccache is enabled.
+		if self.settings.get("enable_ccache"):
+			dirs.append("var/cache/ccache")
+
+			if not os.path.exists(CCACHE_CACHE_DIR):
+				os.makedirs(CCACHE_CACHE_DIR)
+
 		for dir in dirs:
 			dir = self.chrootPath(dir)
 			if not os.path.exists(dir):
@@ -316,6 +330,9 @@ class Builder(object):
 			("mount -n -t devpts -o %s pakfire_chroot_devpts" % mountopt, "dev/pts"),
 			("mount -n -t tmpfs pakfire_chroot_shmfs", "dev/shm"),
 		])
+
+		if self.settings.get("enable_ccache"):
+			ret.append(("mount -n --bind %s" % CCACHE_CACHE_DIR, "var/cache/ccache"))
 
 		return ret
 
