@@ -1,0 +1,13 @@
+
+# Requirements #
+
+ * Python 2.x (only tested with 2.7 so far)
+ * python-distutils-extra (for install)
+ * pyliblzma
+ * python-progressbar
+ * python-xattr
+
+
+# Install instructions #
+
+Run   make install   as the root user and you are done.
