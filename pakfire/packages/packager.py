@@ -172,7 +172,7 @@ class InnerTarFile(tarfile.TarFile):
 # XXX this is totally ugly and needs to be done right!
 
 class Packager(object):
-	ARCHIVE_FILES = ("info", "signature", "data.img")
+	ARCHIVE_FILES = ("info", "filelist", "signature", "data.img")
 
 	def __init__(self, pakfire, pkg, env):
 		self.pakfire = pakfire
@@ -280,6 +280,16 @@ class Packager(object):
 		# Reopen the tarfile in read mode and extract all content to tempdir
 		tar = InnerTarFile(self.archive_files["data.img"])
 		tar.extractall(path=self.tempdir)
+
+		# Write filelist
+		f = open(self.archive_files["filelist"], mode="w")
+		for filename in tar.getnames():
+			if not filename.startswith("/"):
+				filename = "/%s" % filename
+
+			f.write("%s\n" % filename)
+		f.close()
+
 		tar.close()
 
 		# XXX compress the tarball here
