@@ -366,6 +366,10 @@ class Builder(object):
 			if kwargs.has_key("env"):
 				env.update(kwargs.pop("env"))
 
+			logging.debug("Environment:")
+			for k, v in sorted(env.items()):
+				logging.debug("  %s=%s" % (k, v))
+
 			# Update personality it none was set
 			if not personality:
 				personality = self.pakfire.distro.personality
