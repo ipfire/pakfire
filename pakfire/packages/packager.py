@@ -238,8 +238,20 @@ class Packager(object):
 	def create_tarball(self):
 		tar = InnerTarFile(self.archive_files["data.img"], mode="w", env=self.env)
 
-		files = []
+		includes = []
+		excludes = []
+
 		for pattern in self.pkg.file_patterns:
+			# Check if we are running in include or exclude mode.
+			if pattern.startswith("!"):
+				files = excludes
+
+				# Strip the ! charater
+				pattern = pattern[1:]
+
+			else:
+				files = includes
+
 			if pattern.startswith("/"):
 				pattern = pattern[1:]
 			pattern = self.env.chrootPath(self.env.buildroot, pattern)
@@ -265,12 +277,19 @@ class Packager(object):
 			else:
 				logging.warning("Unrecognized pattern type: %s" % pattern)
 
+		files = []
+		for file in includes:
+			if file in excludes:
+				continue
+
+			files.append(file)
+
 		files.sort()
 
 		for file_real in files:
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
 
-			tar.add(file_real, arcname=file_tar)
+			tar.add(file_real, arcname=file_tar, recursive=False)
 			if not os.path.isdir(file_real):
 				os.unlink(file_real)
 
