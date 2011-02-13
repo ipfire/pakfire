@@ -39,3 +39,8 @@ class VirtualPackage(Package):
 	@property
 	def file_patterns(self):
 		return self.metadata.get("PKG_FILES").split()
+
+	@property
+	def env(self):
+		return self.metadata
+

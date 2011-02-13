@@ -210,9 +210,9 @@ class Packager(object):
 		chroot_tempdir = self.tempdir[len(self.env.chrootPath()):]
 		self.info.update({
 			"requires" : self.env.do("/usr/lib/buildsystem-tools/dependency-tracker requires %s" % chroot_tempdir,
-				returnOutput=True),
+				returnOutput=True, env=self.pkg.env).strip(),
 			"provides" : self.env.do("/usr/lib/buildsystem-tools/dependency-tracker provides %s" % chroot_tempdir,
-				returnOutput=True),
+				returnOutput=True, env=self.pkg.env).strip(),
 		})
 
 		self.create_info()
