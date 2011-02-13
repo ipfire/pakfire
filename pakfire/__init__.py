@@ -96,19 +96,28 @@ class Pakfire(object):
 
 		raise BuildError, arch
 
-	def build(self, pkg, arch=None, resultdir=None):
+	def build(self, pkg, arch=None, resultdirs=None):
 		self.check_build_mode()
 		self.check_host_arch(arch)
+
+		if not resultdirs:
+			resultdirs = []
+
+		# Always include local repository
+		resultdirs.append(self.repos.local_build.path)
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
 		b.extract()
 
-		if not resultdir:
-			resultdir = self.config.get("resultdir")
-
 		try:
 			b.build()
-			b.copy_result(resultdir)
+
+			# Copy-out all resultfiles
+			for resultdir in resultdirs:
+				if not resultdir:
+					continue
+
+				b.copy_result(resultdir)
 		finally:
 			b.cleanup()
 

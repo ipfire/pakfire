@@ -36,6 +36,11 @@ class Repositories(object):
 		self.local = LocalRepository(self.pakfire)
 		self.add_repo(self.local)
 
+		# If we running in build mode, we include our local build repository.
+		if self.pakfire.build:
+			self.local_build = LocalBuildRepository(self.pakfire)
+			self.add_repo(self.local_build)
+
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
 
@@ -238,6 +243,20 @@ class LocalRepository(RepositoryFactory):
 
 	# XXX need to implement better get_by_name
 
+
+class LocalBuildRepository(LocalRepository):
+	def __init__(self, pakfire):
+		RepositoryFactory.__init__(self, pakfire, "build", "Locally built packages")
+
+		self.path = self.pakfire.config.get("local_build_repo_path")
+		if not os.path.exists(self.path):
+			os.makedirs(self.path)
+
+		self.index = index.DirectoryIndex(self.pakfire, self, self.path)
+
+	@property
+	def priority(self):
+		return 20000
 
 
 class RemoteRepository(RepositoryFactory):

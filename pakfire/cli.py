@@ -299,7 +299,7 @@ class CliBuilder(Cli):
 			# XXX walk through the source tree and find a matching makefile
 			pass
 
-		self.pakfire.build(pkg, arch=self.args.arch, resultdir=self.args.resultdir)
+		self.pakfire.build(pkg, arch=self.args.arch, resultdirs=[self.args.resultdir,])
 
 	def handle_shell(self):
 		print self.args

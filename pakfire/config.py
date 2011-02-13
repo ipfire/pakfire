@@ -17,6 +17,7 @@ class Config(object):
 			"debug" : True,
 			"logfile" : "/var/log/pakfire.log",
 			"source_download_url" : SOURCE_DOWNLOAD_URL,
+			"local_build_repo_path" : LOCAL_BUILD_REPO_PATH,
 		}
 
 		self._config_repos = {}
