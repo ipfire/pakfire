@@ -356,6 +356,8 @@ class Builder(object):
 			# Add HOME manually, because it is occasionally not set
 			# and some builds get in trouble then.
 			"HOME" : "/root",
+			"TERM" : os.environ.get("TERM", "dumb"),
+			"PS1"  : "\u:\w\$ ",
 
 			"BUILDROOT" : self.buildroot,
 			"PARALLELISMFLAGS" : "-j%s" % self.calc_parallelism(),
