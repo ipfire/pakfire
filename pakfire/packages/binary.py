@@ -26,7 +26,14 @@ class BinaryPackage(FilePackage):
 
 	@property
 	def provides(self):
-		return self.metadata.get("PKG_PROVIDES").split()
+		provides = self.metadata.get("PKG_PROVIDES").split()
+
+		# Add autoprovides
+		for prov in self._provides:
+			if not prov in provides:
+				provides.append(prov)
+
+		return provides
 
 	@property
 	def conflicts(self):

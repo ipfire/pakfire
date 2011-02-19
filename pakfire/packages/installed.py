@@ -86,12 +86,14 @@ class DatabasePackage(Package):
 
 	@property
 	def provides(self):
-		provides = self.metadata.get("provides")
-		
-		if provides:
-			return provides.split()
+		provides = self.metadata.get("provides", "").split()
 
-		return []
+		# Add autoprovides
+		for prov in self._provides:
+			if not prov in provides:
+				provides.append(prov)
+
+		return provides
 
 	@property
 	def requires(self):

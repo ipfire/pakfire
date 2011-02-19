@@ -149,7 +149,6 @@ class DependencySet(object):
 			logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
 		self.__packages.append(pkg)
 
-		self.add_provides(pkg.name, pkg)
 		for prov in pkg.provides:
 			self.add_provides(prov, pkg)
 

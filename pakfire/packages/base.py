@@ -190,6 +190,17 @@ class Package(object):
 	def build_id(self):
 		return self.metadata.get("BUILD_ID")
 
+	@property
+	def _provides(self):
+		# Make package identifyable by its name and version/release tuples.
+		provides = [
+			self.name,
+			"%s=%s-%s" % (self.name, self.version, self.release),
+			"%s=%s:%s-%s" % (self.name, self.epoch, self.version, self.release),
+		]
+
+		return provides
+
 	### methods ###
 
 	def does_provide(self, requires):
