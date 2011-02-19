@@ -3,8 +3,11 @@
 import logging
 import os
 import sqlite3
+import time
 
 import packages
+
+from constants import *
 
 class Database(object):
 	def __init__(self, pakfire, filename):
@@ -60,9 +63,7 @@ class PackageDatabase(Database):
 				pkg			INTEGER,
 				size		INTEGER,
 				type		INTEGER,
-				hash1		TEXT,
-				installed	INTEGER,
-				changed		INTEGER
+				hash1		TEXT
 			);
 
 			CREATE TABLE packages(
@@ -72,9 +73,6 @@ class PackageDatabase(Database):
 				version		TEXT,
 				release		TEXT,
 				filename	TEXT,
-				installed	INTEGER,
-				reason		TEXT,
-				repository	TEXT,
 				hash1		TEXT,
 				provides	TEXT,
 				requires	TEXT,
@@ -115,17 +113,26 @@ class PackageDatabase(Database):
 		for i in c:
 			ret = i["id"]
 			break
-		
+
 		c.close()
 
 		return ret
 
 	def add_package(self, pkg):
+		raise NotImplementedError
+
+
+class RemotePackageDatabase(PackageDatabase):
+	def add_package(self, pkg, reason=None):
 		if self.package_exists(pkg):
 			logging.debug("Skipping package which already exists in database: %s" % pkg.friendly_name)
 			return
 
 		logging.debug("Adding package to database: %s" % pkg.friendly_name)
+
+		filename = ""
+		if pkg.repo.local:
+			filename = pkg.filename[len(pkg.repo.path) + 1:]
 
 		c = self.cursor()
 		c.execute("""
@@ -135,21 +142,39 @@ class PackageDatabase(Database):
 				version,
 				release,
 				filename,
+				hash1,
 				provides,
-				requires
-			) VALUES(?, ?, ?, ?, ?, ?, ?)""",
+				requires,
+				conflicts,
+				obsoletes,
+				license,
+				summary,
+				description,
+				build_id,
+				build_host,
+				build_date
+			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 			(
 				pkg.name,
 				pkg.epoch,
 				pkg.version,
 				pkg.release,
-				pkg.filename,
+				filename,
+				pkg.hash1,
 				" ".join(pkg.provides),
 				" ".join(pkg.requires),
+				" ".join(pkg.conflicts),
+				" ".join(pkg.obsoletes),
+				pkg.license,
+				pkg.summary,
+				pkg.description,
+				pkg.build_id,
+				pkg.build_host,
+				pkg.build_date
 			)
 		)
-		c.close()
 		self.commit()
+		c.close()
 
 		pkg_id = self.get_id_by_pkg(pkg)
 
@@ -157,44 +182,52 @@ class PackageDatabase(Database):
 		for file in pkg.filelist:
 			c.execute("INSERT INTO files(name, pkg) VALUES(?, ?)", (file, pkg_id))
 
-		c.close()
 		self.commit()
+		c.close()
+
+		return pkg_id
 
 
-class LocalPackageDatabase(PackageDatabase):
-	def add_package(self, pkg, installed=True):
+class LocalPackageDatabase(RemotePackageDatabase):
+	def __init__(self, pakfire):
+		# Generate filename for package database
+		filename = os.path.join(pakfire.path, PACKAGES_DB)
+
+		RemotePackageDatabase.__init__(self, pakfire, filename)
+
+	def create(self):
+		RemotePackageDatabase.create(self)
+
+		# Alter the database layout to store additional local information.
+		logging.debug("Altering database table for local information.")
+		c = self.cursor()
+		c.executescript("""
+			ALTER TABLE packages ADD COLUMN installed INT;
+			ALTER TABLE packages ADD COLUMN reason TEXT;
+			ALTER TABLE packages ADD COLUMN repository TEXT;
+		""")
+		self.commit()
+		c.close()
+
+	def add_package(self, pkg, reason=None):
+		# Insert all the information to the database we have in the remote database
+		pkg_id = RemotePackageDatabase.add_package(self, pkg)
+
+		# then: add some more information
 		c = self.cursor()
 
-		c.execute("INSERT INTO packages(name, epoch, version, release, installed, \
-			provides, requires, build_id, build_host, build_date) \
-			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
-			pkg.name,
-			pkg.epoch,
-			pkg.version,
-			pkg.release,
-			int(installed),
-			" ".join(pkg.provides),
-			" ".join(pkg.requires),
-			pkg.build_id,
-			pkg.build_host,
-			pkg.build_date
-		))
+		# Save timestamp when the package was installed.
+		c.execute("UPDATE packages SET installed = ? WHERE id = ?", (time.time(), pkg_id))
 
-		#c.close()
+		# Add repository information.
+		c.execute("UPDATE packages SET repository = ? WHERE id = ?", (pkg.repo.name, pkg_id))
 
-		# Get the id from the package
-		#c = self.cursor()
-		#c.execute("SELECT * FROM packages WHERE build_id = ? LIMIT 1", (pkg.build_id))
-		c.execute("SELECT * FROM packages WHERE name = ? AND version = ? AND \
-			release = ? AND epoch = ? LIMIT 1", (pkg.name, pkg.version, pkg.release, pkg.epoch))
+		# Save reason of installation (if any).
+		if reason:
+			c.execute("UPDATE packages SET reason = ? WHERE id = ?", (reason, pkg_id))
 
-		ret = None
-		for pkg in c:
-			ret = packages.InstalledPackage(self.pakfire, self, pkg)
-			break
+		# Update the filename information.
+		c.execute("UPDATE packages SET filename = ? WHERE id = ?", (pkg.filename, pkg_id))
 
-		assert ret
+		self.commit()
 		c.close()
-
-		return ret
-

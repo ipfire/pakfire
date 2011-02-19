@@ -5,6 +5,7 @@ import os
 
 import database
 import packages
+import repository
 
 from constants import *
 
@@ -55,9 +56,14 @@ class Index(object):
 	def update(self, force=False):
 		raise NotImplementedError
 
+	def add_package(self, pkg):
+		raise NotImplementedError
+
 
 class DirectoryIndex(Index):
 	def __init__(self, pakfire, repo, path):
+		if path.startswith("file://"):
+			path = path[7:]
 		self.path = path
 
 		Index.__init__(self, pakfire, repo)
@@ -108,10 +114,22 @@ class DirectoryIndex(Index):
 
 
 class DatabaseIndex(Index):
-	def __init__(self, pakfire, repo, db):
-		self.db = db
-
+	def __init__(self, pakfire, repo):
 		Index.__init__(self, pakfire, repo)
+
+		self.db = None
+
+		if isinstance(repo, repository.InstalledRepository):
+			self.db = database.LocalPackageDatabase(self.pakfire)
+
+		else:
+			# Generate path to database file.
+			filename = os.path.join(repo.path, "XXX-to-be-renamed.db")
+			self.db = database.RemotePackageDatabase(self.pakfire, filename)
+
+	@property
+	def local(self):
+		pass
 
 	def update(self, force=False):
 		"""
@@ -147,6 +165,9 @@ class DatabaseIndex(Index):
 			yield packages.DatabasePackage(self.pakfire, self.db, pkg)
 
 		c.close()
+
+	def add_package(self, pkg, reason=None):
+		return self.db.add_package(pkg, reason)
 
 
 # XXX maybe this can be removed later?

@@ -13,6 +13,7 @@ from urlgrabber.progress import TextMultiFileMeter
 import base
 import database
 import index
+import packages
 
 from constants import *
 
@@ -33,7 +34,7 @@ class Repositories(object):
 		self._repos = []
 
 		# Create the local repository
-		self.local = LocalRepository(self.pakfire)
+		self.local = InstalledRepository(self.pakfire)
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
@@ -149,6 +150,15 @@ class RepositoryFactory(object):
 	def priority(self):
 		raise NotImplementedError
 
+	@property
+	def local(self):
+		"""
+			Say if a repository is a local one or remotely located.
+
+			Used to check if we need to download files.
+		"""
+		return False
+
 	def update_index(self, force=False):
 		"""
 			A function that is called to update the local data of
@@ -226,23 +236,93 @@ class FileSystemRepository(RepositoryFactory):
 
 
 class LocalRepository(RepositoryFactory):
-	def __init__(self, pakfire):
-		RepositoryFactory.__init__(self, pakfire, "installed", "Installed packages")
+	def __init__(self, pakfire, name, description, path):
+		RepositoryFactory.__init__(self, pakfire, name, description)
 
-		self.path = os.path.join(self.pakfire.path, PACKAGES_DB)
+		# Save location of the repository
+		self.path = path
 
-		self.db = database.LocalPackageDatabase(self.pakfire, self.path)
+		self.index = index.DatabaseIndex(self.pakfire, self)
 
-		self.index = index.InstalledIndex(self.pakfire, self, self.db)
+	@property
+	def local(self):
+		# This is obviously local.
+		return True
 
 	@property
 	def priority(self):
 		"""
-			The local repository has always the highest priority.
+			The local repository has always a high priority.
 		"""
-		return 0
+		return 10
 
 	# XXX need to implement better get_by_name
+
+	def _collect_packages(self, path):
+		logging.info("Collecting packages from %s." % path)
+
+		for dir, subdirs, files in os.walk(path):
+			for file in files:
+				if not file.endswith(".%s" % PACKAGE_EXTENSION):
+					continue
+
+				file = os.path.join(dir, file)
+
+				pkg = packages.BinaryPackage(self.pakfire, self, file)
+				self._add_package(pkg)
+
+	def _add_package(self, pkg):
+		# XXX gets an instance of binary package and puts it into the
+		# repo location if not done yet
+		# then: the package gets added to the index
+
+		if not isinstance(pkg, packages.BinaryPackage):
+			raise Exception
+
+		repo_filename = os.path.join(self.path, pkg.arch, os.path.basename(pkg.filename))
+
+		pkg_exists = None
+		if os.path.exists(repo_filename):
+			pkg_exists = packages.BinaryPackage(self.pakfire, self, repo_filename)
+
+			# If package in the repo is equivalent to the given one, we can
+			# skip any further processing.
+			if pkg == pkg_exists:
+				logging.debug("The package does already exist in this repo: %s" % pkg.friendly_name)
+				return
+
+		logging.debug("Copying package '%s' to repository." % pkg.friendly_name)
+		repo_dirname = os.path.dirname(repo_filename)
+		if not os.path.exists(repo_dirname):
+			os.makedirs(repo_dirname)
+
+		os.link(pkg.filename, repo_filename)
+
+		# Create new package object, that is connected to this repository
+		# and so we can do stuff.
+		pkg = packages.BinaryPackage(self.pakfire, self, repo_filename)
+
+		logging.info("Adding package '%s' to repository." % pkg.friendly_name)
+		self.index.add_package(pkg)
+
+
+class InstalledRepository(RepositoryFactory):
+	def __init__(self, pakfire):
+		RepositoryFactory.__init__(self, pakfire, "installed", "Installed packages")
+
+		self.index = index.InstalledIndex(self.pakfire, self)
+
+	@property
+	def local(self):
+		# This is obviously local.
+		return True
+
+	@property
+	def priority(self):
+		"""
+			The installed repository has always the highest priority.
+		"""
+		return 0
 
 
 class LocalBuildRepository(LocalRepository):
@@ -271,17 +351,33 @@ class RemoteRepository(RepositoryFactory):
 		else:
 			self.enabled = False
 
-		if self.url.startswith("file://"):
-			self.index = index.DirectoryIndex(self.pakfire, self, self.url[7:])
-		
+		if self.local:
+			self.index = index.DirectoryIndex(self.pakfire, self, self.url)
 		else:
-			self.index = None
+			self.index = index.DatabaseIndex(self.pakfire, self)
 
 		logging.debug("Created new repository(name='%s', url='%s', enabled='%s')" % \
 			(self.name, self.url, self.enabled))
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.url)
+
+	@property
+	def local(self):
+		# If files are located somewhere in the filesystem we assume it is
+		# local.
+		if self.url.startswith("file://"):
+			return True
+
+		# Otherwise not.
+		return False
+
+	@property
+	def path(self):
+		if self.local:
+			return self.url[7:]
+
+		raise Exception, "XXX find some cache dir"
 
 	@property
 	def priority(self):

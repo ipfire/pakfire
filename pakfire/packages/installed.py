@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-import hashlib
-import time
-
-import util
-
 from base import Package
 
 class DatabasePackage(Package):
@@ -128,26 +123,6 @@ class DatabasePackage(Package):
 
 			yield filename
 
-		c.close()
-
-	## database methods
-
-	def set_installed(self, installed):
-		c = self.db.cursor()
-		c.execute("UPDATE packages SET installed = ? WHERE id = ?", (installed, self.id))
-		c.close()
-
-	def add_file(self, filename, type=None, size=None, hash1=None, **kwargs):
-		if not hash1:
-			hash1 = util.calc_hash1(filename)
-
-		if size is None:
-			size = os.path.getsize(filename)
-
-		c = self.db.cursor()
-		c.execute("INSERT INTO files(name, pkg, size, type, hash1, installed) \
-			VALUES(?, ?, ?, ?, ?, ?)",
-			(filename, self.id, size, type, hash1, time.time()))
 		c.close()
 
 

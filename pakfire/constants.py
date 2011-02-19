@@ -14,7 +14,8 @@ CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
 
-PACKAGES_DB = "var/lib/pakfire/packages.db"
+PACKAGES_DB_DIR = "var/lib/pakfire"
+PACKAGES_DB = os.path.join(PACKAGES_DB_DIR, "packages.db")
 REPOSITORY_DB = "index.db"
 
 BUFFER_SIZE = 1024**2

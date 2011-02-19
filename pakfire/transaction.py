@@ -48,17 +48,13 @@ class ActionExtract(Action):
 		logging.debug("Extracting package %s" % self.pkg.friendly_name)
 
 		# Create package in the database
-		virtpkg = self.local.db.add_package(self.pkg, installed=False)
+		virtpkg = self.local.index.add_package(self.pkg)
 
 		# Grab an instance of the extractor and set it up
 		extractor = self.pkg.get_extractor(self.pakfire)
 
 		# Extract all files to instroot
-		extractor.extractall(self.pakfire.path, callback=virtpkg.add_file)
-
-		# Mark package as installed
-		virtpkg.set_installed(True)
-		#self.db.commit()
+		extractor.extractall(self.pakfire.path)
 
 		# Remove all temporary files
 		extractor.cleanup()

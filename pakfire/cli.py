@@ -279,6 +279,7 @@ class CliBuilder(Cli):
 		sub_create = sub_commands.add_parser("create",
 			help=_("Create a new repository index."))
 		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
+		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
 		sub_create.add_argument("action", action="store_const", const="repo_create")
 
 	def handle_build(self):
@@ -346,5 +347,5 @@ class CliBuilder(Cli):
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
-		self.pakfire.repo_create(path)
+		self.pakfire.repo_create(path, self.args.inputs)
 

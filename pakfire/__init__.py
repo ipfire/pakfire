@@ -179,18 +179,17 @@ class Pakfire(object):
 
 		return pkgs
 
-	def repo_create(self, path):
+	def repo_create(self, path, input_paths):
 		if not os.path.exists(path) or not os.path.isdir(path):
 			raise PakfireError, "Given path is not existant or not a directory: %s" % path
 
-		repo = repository.RemoteRepository(
+		repo = repository.LocalRepository(
 			self,
 			name="new",
 			description="New repository.",
-			url="file://%s" % path,
-			gpgkey="XXX",
-			enabled=True,
+			path=path,
 		)
 
-		repo.save_index()
+		for input_path in input_paths:
+			repo._collect_packages(input_path)
 

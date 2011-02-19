@@ -28,6 +28,14 @@ class BinaryPackage(FilePackage):
 	def provides(self):
 		return self.metadata.get("PKG_PROVIDES").split()
 
+	@property
+	def conflicts(self):
+		return self.metadata.get("PKG_CONFLICTS", "").split()
+
+	@property
+	def obsoletes(self):
+		return self.metadata.get("PKG_OBSOLETES", "").split()
+
 	def get_extractor(self, pakfire):
 		return packager.Extractor(pakfire, self)
 

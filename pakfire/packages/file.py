@@ -4,6 +4,8 @@ import tarfile
 import os
 import re
 
+import util
+
 from pakfire.errors import FileError
 
 from base import Package
@@ -159,4 +161,11 @@ class FilePackage(Package):
 			pass
 
 		return ret or None
+
+	@property
+	def hash1(self):
+		"""
+			Calculate the hash1 of this package.
+		"""
+		return util.calc_hash1(self.filename)
 
