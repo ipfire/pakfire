@@ -20,9 +20,6 @@ class Requires(object):
 		return self.requires
 
 	def __cmp__(self, other):
-		if isinstance(other, Provides):
-			return cmp(self.requires, other.provides)
-
 		return cmp(self.requires, other.requires)
 
 	@property
@@ -48,24 +45,6 @@ class Conflicts(object):
 		return self.conflicts
 
 
-class Provides(object):
-	def __init__(self, pkg, provides):
-		self.pkg = pkg
-		self.provides = provides
-
-	def __repr__(self):
-		return "<%s %s>" % (self.__class__.__name__, self.provides)
-
-	def __str__(self):
-		return self.provides
-
-	def __cmp__(self, other):
-		if isinstance(other, Requires):
-			return cmp(self.provides, other.requires)
-
-		return cmp(self.provides, other.provides)
-
-
 class Obsoletes(object):
 	def __init__(self, pkg, obsoletes):
 		self.pkg = pkg
@@ -88,12 +67,9 @@ class DependencySet(object):
 
 		# Helper lists
 		self.__conflicts = []
-		self.__provides = []
 		self.__requires = []
 		self.__obsoletes = []
 
-		self.__unresolveable = []
-		
 		# Read-in all packages from the database that have
 		# been installed previously and need to be taken into
 		# account when resolving dependencies.
@@ -110,12 +86,6 @@ class DependencySet(object):
 		if requires in self.__requires:
 			return
 
-		if requires in self.__unresolveable:
-			return
-
-		if requires in self.__provides:
-			return
-
 		for pkg in self.__packages:
 			if pkg.does_provide(requires):
 				logging.debug("Skipping requires '%s' which is already provided by %s" % (requires.requires, pkg))
@@ -123,19 +93,6 @@ class DependencySet(object):
 
 		#logging.debug("Adding requires: %s" % requires)
 		self.__requires.append(requires)
-
-	def add_provides(self, provides, pkg=None):
-		provides = Provides(pkg, provides)
-
-		if provides in self.__conflicts:
-			raise Exception, "Could not add provides"
-
-		while provides in self.__requires:
-			#logging.debug("Removing requires: %s" % provides.provides)
-			self.__requires.remove(provides)
-
-		#logging.debug("Adding provides: %s" % provides)
-		self.__provides.append(provides)
 
 	def add_obsoletes(self, obsoletes, pkg=None):
 		obsoletes = Obsoletes(pkg, obsoletes)
@@ -153,14 +110,21 @@ class DependencySet(object):
 			logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
 		self.__packages.append(pkg)
 
-		for prov in pkg.provides:
-			self.add_provides(prov, pkg)
-
-		#for filename in pkg.filelist:
-		#	self.add_provides(filename, pkg)
-
+		# Add the requirements of the newly added package.
 		for req in pkg.requires:
 			self.add_requires(req, pkg)
+
+		# Remove all requires that are fulfilled by this package.
+		# For that we copy the matching requires to _requires and remove them
+		# afterwards, because changing self.__requires in a "for" loop is not
+		# a good idea.
+		_requires = []
+		for req in self.__requires:
+			if pkg.does_provide(req):
+				_requires.append(req)
+
+		for req in _requires:
+			self.__requires.remove(req)
 
 	@property
 	def packages(self):
