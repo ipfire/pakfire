@@ -26,6 +26,10 @@ class Package(object):
 		ret = util.version_compare((self.epoch, self.version, self.release),
 			(other.epoch, other.version, other.release))
 
+		# Compare the build times if we have a rebuilt package.
+		if not ret:
+			ret = cmp(self.build_time, other.build_time)
+
 		#if ret == 0:
 		#	logging.debug("%s is equal to %s" % (self, other))
 		#elif ret < 0:
@@ -189,6 +193,12 @@ class Package(object):
 	@property
 	def build_id(self):
 		return self.metadata.get("BUILD_ID")
+
+	@property
+	def build_time(self):
+		build_time = self.metadata.get("BUILD_TIME", 0)
+
+		return int(build_time)
 
 	@property
 	def _provides(self):
