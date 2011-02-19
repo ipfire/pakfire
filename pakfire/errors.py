@@ -12,6 +12,9 @@ class BuildRootLocked(Error):
 class ConfigError(Error):
 	pass
 
+class DependencyError(Error):
+	pass
+
 class DownloadError(Error):
 	pass
 

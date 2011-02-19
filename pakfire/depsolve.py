@@ -6,6 +6,7 @@ import re
 import packages
 import repository
 
+from errors import *
 
 class Requires(object):
 	def __init__(self, pkg, requires):
@@ -187,5 +188,7 @@ class DependencySet(object):
 			if best:
 				self.add_package(best)
 
-		#print unresolveable_reqs
+		if unresolveable_reqs:
+			raise DependencyError, "Cannot resolve %s" % \
+				" ".join([r.requires for r in unresolveable_reqs])
 
