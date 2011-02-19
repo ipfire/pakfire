@@ -144,7 +144,8 @@ class DependencySet(object):
 			logging.debug("Trying to add package which is already in the dependency set: %s" % pkg)
 			return
 
-		logging.info(" --> Adding package to dependency set: %s" % pkg)
+		if not isinstance(pkg, packages.DatabasePackage):
+			logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
 		self.__packages.append(pkg)
 
 		self.add_provides(pkg.name, pkg)
