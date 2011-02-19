@@ -101,6 +101,10 @@ class DependencySet(object):
 			self.add_package(pkg)
 
 	def add_requires(self, requires, pkg=None):
+		# XXX for now, we skip the virtual perl requires
+		if requires.startswith("perl(") or requires.startswith("perl>") or requires.startswith("perl="):
+			return
+
 		requires = Requires(pkg, requires)
 
 		if requires in self.__requires:
