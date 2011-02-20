@@ -345,7 +345,7 @@ class CliBuilder(Cli):
 			# XXX walk through the source tree and find a matching makefile
 			pass
 
-		self.pakfire.dist(pkg, self.args.resultdir)
+		self.pakfire.dist(pkg, resultdirs=[self.args.resultdir,])
 
 	def handle_repo_create(self):
 		path = self.args.path[0]

@@ -133,18 +133,27 @@ class Pakfire(object):
 		finally:
 			b.cleanup()
 
-	def dist(self, pkg, resultdir=None):
+	def dist(self, pkg, resultdirs=None):
 		self.check_build_mode()
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
 		b.extract(build_deps=False)
 
-		if not resultdir:
-			resultdir = self.config.get("resultdir")
+		if not resultdirs:
+			resultdirs = []
+
+		# Always include local repository
+		resultdirs.append(self.repos.local_build.path)
 
 		try:
 			b.dist()
-			b.copy_result(resultdir)
+
+			# Copy-out all resultfiles
+			for resultdir in resultdirs:
+				if not resultdir:
+					continue
+
+				b.copy_result(resultdir)
 		finally:
 			b.cleanup()
 
