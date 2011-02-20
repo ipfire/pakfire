@@ -27,6 +27,9 @@ class Requires(object):
 		if self.requires.startswith("/"):
 			return "file"
 
+		elif ">" in self.requires or "<" in self.requires or "=" in self.requires:
+			return "expr"
+
 		elif not re.match("^lib.*\.so.*", self.requires):
 			return "lib"
 

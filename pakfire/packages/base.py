@@ -23,8 +23,7 @@ class Package(object):
 		if not self.name == other.name:
 			return cmp(self.name, other.name)
 
-		ret = util.version_compare((self.epoch, self.version, self.release),
-			(other.epoch, other.version, other.release))
+		ret = util.version_compare(self.version_tuple, other.version_tuple)
 
 		# Compare the build times if we have a rebuilt package.
 		if not ret:
@@ -156,6 +155,14 @@ class Package(object):
 		return int(epoch)
 
 	@property
+	def version_tuple(self):
+		"""
+			Returns a tuple like (epoch, version, release) that can
+			be used to compare versions of packages.
+		"""
+		return (self.epoch, self.version, self.release)
+
+	@property
 	def arch(self):
 		raise NotImplementedError
 
@@ -227,17 +234,39 @@ class Package(object):
 		if self.name == requires.requires:
 			return True
 
+		# Get all provide strings from the package data
+		# and return true if requires is matched.
+		if requires.requires in self.provides:
+			return True
+
 		if requires.type == "file":
 			return requires.requires in self.filelist
 
-		# Get all provide strings from the package data
-		# and return true if requires is matched. Otherwise return false.
-		provides = self.provides
+		elif requires.type == "expr":
+			# Handle all expressions like "gcc>=4.0.0-1"
+			(e_expr, e_name, e_epoch, e_version, e_release) = \
+				util.parse_pkg_expr(requires.requires)
 
-		return requires.requires in provides
-		
-		# XXX this function has to do lots more of magic:
-		#  e.g. filename matches, etc.
+			# If the package names do not match, we do not provide this:
+			if not self.name == e_name:
+				return False
+
+			ret = util.version_compare(self.version_tuple, (e_epoch, e_version, e_release))
+
+			# If we equal the version, we provide this
+			if "=" in e_expr and ret == 0:
+				return True
+
+			elif ">" in e_expr and ret > 0:
+				return True
+
+			elif "<" in e_expr and ret < 0:
+				return True
+
+			return False
+
+		# No match was found at all
+		return False
 
 	def extract(self, path):
 		raise NotImplementedError
