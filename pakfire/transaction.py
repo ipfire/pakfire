@@ -220,7 +220,7 @@ class TransactionSet(object):
 	def dump(self):
 		width = 80
 		line = "=" * width
-		format = " %-22s %-13s %-21s %-14s %4s "
+		format = " %-21s %-8s %-21s %-19s %5s "
 
 		s = []
 		s.append(line)
