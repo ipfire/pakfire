@@ -143,14 +143,14 @@ class Cli(object):
 
 		return func()
 
-	def handle_info(self):
+	def handle_info(self, long=False):
 		for pattern in self.args.package:
 			pkgs = self.pakfire.repos.get_by_glob(pattern)
 
 			pkgs = packages.PackageListing(pkgs)
 
 			for pkg in pkgs:
-				print pkg.dump()
+				print pkg.dump(long=long)
 
 	def handle_search(self):
 		pkgs = self.pakfire.repos.search(self.args.pattern)
@@ -281,6 +281,9 @@ class CliBuilder(Cli):
 		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
 		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
 		sub_create.add_argument("action", action="store_const", const="repo_create")
+
+	def handle_info(self):
+		Cli.handle_info(self, long=True)
 
 	def handle_build(self):
 		print self.args

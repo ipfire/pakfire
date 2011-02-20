@@ -43,7 +43,7 @@ class Package(object):
 
 		return ret
 
-	def dump(self, short=False):
+	def dump(self, short=False, long=False):
 		if short:
 			return "%s.%s : %s" % (self.name, self.arch, self.summary)
 
@@ -63,6 +63,11 @@ class Package(object):
 		for line in util.text_wrap(self.description):
 			items.append((caption, line))
 			caption = ""
+
+		if long:
+			items.append((_("Build ID"), self.build_id))
+			items.append((_("Build date"), self.build_date))
+			items.append((_("Build host"), self.build_host))
 
 		format = "%%-%ds : %%s" % (max([len(k) for k, v in items]))
 

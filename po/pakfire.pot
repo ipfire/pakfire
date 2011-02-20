@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-19 17:57+0100\n"
+"POT-Creation-Date: 2011-02-20 01:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -150,44 +150,56 @@ msgstr ""
 msgid "Is this okay?"
 msgstr ""
 
-#: ../pakfire/packages/base.py:47
+#: ../pakfire/packages/base.py:51
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:48 ../pakfire/transaction.py:227
+#: ../pakfire/packages/base.py:52 ../pakfire/transaction.py:227
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:49 ../pakfire/transaction.py:227
+#: ../pakfire/packages/base.py:53 ../pakfire/transaction.py:227
 msgid "Version"
 msgstr ""
 
-#: ../pakfire/packages/base.py:50
+#: ../pakfire/packages/base.py:54
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:51 ../pakfire/transaction.py:227
+#: ../pakfire/packages/base.py:55 ../pakfire/transaction.py:227
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/packages/base.py:52
+#: ../pakfire/packages/base.py:56
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:53
+#: ../pakfire/packages/base.py:57
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:54
+#: ../pakfire/packages/base.py:58
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:55
+#: ../pakfire/packages/base.py:59
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:58
+#: ../pakfire/packages/base.py:62
 msgid "Description"
+msgstr ""
+
+#: ../pakfire/packages/base.py:68
+msgid "Build ID"
+msgstr ""
+
+#: ../pakfire/packages/base.py:69
+msgid "Build date"
+msgstr ""
+
+#: ../pakfire/packages/base.py:70
+msgid "Build host"
 msgstr ""
 
 #: ../pakfire/packages/packager.py:70
