@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-20 01:13+0100\n"
+"POT-Creation-Date: 2011-02-20 11:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,59 +94,63 @@ msgstr ""
 msgid "Pakfire builder command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:232
+#: ../pakfire/cli.py:230
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../pakfire/cli.py:238
+#: ../pakfire/cli.py:236
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../pakfire/cli.py:240
+#: ../pakfire/cli.py:238
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../pakfire/cli.py:244
+#: ../pakfire/cli.py:242
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:246 ../pakfire/cli.py:268
+#: ../pakfire/cli.py:244 ../pakfire/cli.py:266
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:251
+#: ../pakfire/cli.py:249
 msgid "Go into a shell."
 msgstr ""
 
-#: ../pakfire/cli.py:253 ../pakfire/cli.py:264
+#: ../pakfire/cli.py:251 ../pakfire/cli.py:262
 msgid "Give name of a package."
 msgstr ""
 
-#: ../pakfire/cli.py:257
+#: ../pakfire/cli.py:255
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:262
+#: ../pakfire/cli.py:260
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:272
+#: ../pakfire/cli.py:336
+msgid "Pakfire server command line interface."
+msgstr ""
+
+#: ../pakfire/cli.py:361
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:280
+#: ../pakfire/cli.py:369
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:281
+#: ../pakfire/cli.py:370
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:282
+#: ../pakfire/cli.py:371
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/__init__.py:165
+#: ../pakfire/__init__.py:174
 msgid "Is this okay?"
 msgstr ""
 

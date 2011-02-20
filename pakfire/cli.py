@@ -203,7 +203,6 @@ class CliBuilder(Cli):
 		self.parse_command_search()
 		self.parse_command_shell()
 		self.parse_command_update()
-		self.parse_command_repo()
 		self.parse_command_provides()
 
 		# Finally parse all arguments from the command line and save them.
@@ -222,7 +221,6 @@ class CliBuilder(Cli):
 			"info"        : self.handle_info,
 			"search"      : self.handle_search,
 			"shell"       : self.handle_shell,
-			"repo_create" : self.handle_repo_create,
 			"provides"    : self.handle_provides,
 		}
 
@@ -266,21 +264,6 @@ class CliBuilder(Cli):
 
 		sub_dist.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
-
-	def parse_command_repo(self):
-		sub_repo = self.sub_commands.add_parser("repo",
-			help=_("Repository management commands."))
-
-		sub_repo_commands = sub_repo.add_subparsers()
-
-		self.parse_command_repo_create(sub_repo_commands)
-
-	def parse_command_repo_create(self, sub_commands):
-		sub_create = sub_commands.add_parser("create",
-			help=_("Create a new repository index."))
-		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
-		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
-		sub_create.add_argument("action", action="store_const", const="repo_create")
 
 	def handle_info(self):
 		Cli.handle_info(self, long=True)
@@ -347,8 +330,48 @@ class CliBuilder(Cli):
 
 		self.pakfire.dist(pkg, resultdirs=[self.args.resultdir,])
 
+class CliServer(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire server command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_repo()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.pakfire = Pakfire(
+			builder = True,
+			configs = [self.args.config],
+			disable_repos = self.args.disable_repo,
+		)
+
+		self.action2func = {
+			"repo_create" : self.handle_repo_create,
+		}
+
+	def parse_command_repo(self):
+		sub_repo = self.sub_commands.add_parser("repo",
+			help=_("Repository management commands."))
+
+		sub_repo_commands = sub_repo.add_subparsers()
+
+		self.parse_command_repo_create(sub_repo_commands)
+
+	def parse_command_repo_create(self, sub_commands):
+		sub_create = sub_commands.add_parser("create",
+			help=_("Create a new repository index."))
+		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
+		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
+		sub_create.add_argument("action", action="store_const", const="repo_create")
+
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
 		self.pakfire.repo_create(path, self.args.inputs)
-
