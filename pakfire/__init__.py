@@ -202,3 +202,4 @@ class Pakfire(object):
 		for input_path in input_paths:
 			repo._collect_packages(input_path)
 
+		repo.index.tag_db()

@@ -281,6 +281,9 @@ class LocalRepository(RepositoryFactory):
 
 		repo_filename = os.path.join(self.path, pkg.arch, os.path.basename(pkg.filename))
 
+		# Do we need to copy the package files?
+		copy = True
+
 		pkg_exists = None
 		if os.path.exists(repo_filename):
 			pkg_exists = packages.BinaryPackage(self.pakfire, self, repo_filename)
@@ -289,14 +292,15 @@ class LocalRepository(RepositoryFactory):
 			# skip any further processing.
 			if pkg == pkg_exists:
 				logging.debug("The package does already exist in this repo: %s" % pkg.friendly_name)
-				return
+				copy = False
 
-		logging.debug("Copying package '%s' to repository." % pkg.friendly_name)
-		repo_dirname = os.path.dirname(repo_filename)
-		if not os.path.exists(repo_dirname):
-			os.makedirs(repo_dirname)
+		if copy:
+			logging.debug("Copying package '%s' to repository." % pkg.friendly_name)
+			repo_dirname = os.path.dirname(repo_filename)
+			if not os.path.exists(repo_dirname):
+				os.makedirs(repo_dirname)
 
-		os.link(pkg.filename, repo_filename)
+			os.link(pkg.filename, repo_filename)
 
 		# Create new package object, that is connected to this repository
 		# and so we can do stuff.

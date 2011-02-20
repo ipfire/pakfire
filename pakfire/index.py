@@ -2,10 +2,13 @@
 
 import logging
 import os
+import random
+import shutil
 
 import database
 import packages
 import repository
+import util
 
 from constants import *
 
@@ -57,6 +60,9 @@ class Index(object):
 		raise NotImplementedError
 
 	def add_package(self, pkg):
+		raise NotImplementedError
+
+	def tag_db(self):
 		raise NotImplementedError
 
 
@@ -124,7 +130,7 @@ class DatabaseIndex(Index):
 
 		else:
 			# Generate path to database file.
-			filename = os.path.join(repo.path, "XXX-to-be-renamed.db")
+			filename = os.path.join(repo.path, ".index.db.%s" % random.randint(0, 1024))
 			self.db = database.RemotePackageDatabase(self.pakfire, filename)
 
 	@property
@@ -168,6 +174,19 @@ class DatabaseIndex(Index):
 
 	def add_package(self, pkg, reason=None):
 		return self.db.add_package(pkg, reason)
+
+	def tag_db(self):
+		self.db.close()
+
+		# Calculate a filename that is based on the hash of the file
+		# (just to trick proxies, etc.)
+		filename = util.calc_hash1(self.db.filename) + "-packages.db"
+
+		# Copy the database to the right place.
+		shutil.copy2(self.db.filename, os.path.join(self.repo.path, filename))
+
+		# Reopen the database.
+		self.db = database.RemotePackageDatabase(self.pakfire, self.db.filename)
 
 
 # XXX maybe this can be removed later?

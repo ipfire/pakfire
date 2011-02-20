@@ -12,7 +12,7 @@ import sys
 import time
 
 from errors import Error
-from packages.util import format_size
+from packages.util import calc_hash1, format_size
 
 _libc = ctypes.cdll.LoadLibrary(None)
 _errno = ctypes.c_int.in_dll(_libc, "errno")
