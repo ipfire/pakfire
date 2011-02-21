@@ -14,3 +14,10 @@ url = file:///tmp/pakfire3
 
 gpgkey = /not/yet/existant
 
+[testingbay]
+description = IPFire Testing Repository
+
+mirrorlist = http://people.ipfire.org/~ms/testingbay/mirrors
+
+url = http://people.ipfire.org/~ms/testingbay
+
