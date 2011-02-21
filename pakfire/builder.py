@@ -144,14 +144,14 @@ class Builder(object):
 			ds.add_requires("icecream")
 
 		ds.resolve()
+		ds.dump()
 
 		# Get build dependencies from source package.
 		if isinstance(self.pkg, packages.SourcePackage):
 			for req in self.pkg.requires:
 				ds.add_requires(req)
 
-		ts = transaction.TransactionSet(self.pakfire, ds)
-		ts.dump()
+		ts = transaction.Transaction(self.pakfire, ds)
 		ts.run()
 
 		# Copy the makefile and load source tarballs.
@@ -169,9 +169,9 @@ class Builder(object):
 			for r in requires:
 				ds.add_requires(r)
 			ds.resolve()
+			ds.dump()
 
-			ts = transaction.TransactionSet(self.pakfire, ds)
-			ts.dump()
+			ts = transaction.Transaction(self.pakfire, ds)
 			ts.run()
 
 	@property

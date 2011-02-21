@@ -167,14 +167,13 @@ class Pakfire(object):
 				ds.add_requires(req)
 
 		ds.resolve()
-
-		ts = transaction.TransactionSet(self, ds)
-		ts.dump()
+		ds.dump()
 
 		ret = cli.ask_user(_("Is this okay?"))
 		if not ret:
 			return
 
+		ts = transaction.Transaction(self, ds)
 		ts.run()
 
 	def provides(self, patterns):

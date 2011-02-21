@@ -3,15 +3,14 @@
 import fnmatch
 import logging
 import os
+import stat
+import time
 
 from ConfigParser import ConfigParser
 
-from urlgrabber.grabber import URLGrabber
-from urlgrabber.mirror import MGRandomOrder
-from urlgrabber.progress import TextMultiFileMeter
-
 import base
 import database
+import downloader
 import index
 import packages
 
@@ -62,6 +61,7 @@ class Repositories(object):
 			"name" : name,
 			"enabled" : True,
 			"gpgkey" : None,
+			"mirrorlist" : None,
 		}
 		_args.update(args)
 
@@ -344,16 +344,76 @@ class LocalBuildRepository(LocalRepository):
 		return 20000
 
 
+class RepositoryCache(object):
+	"""
+		An object that is able to cache all data that is loaded from a
+		remote repository.
+	"""
+
+	def __init__(self, pakfire, repo):
+		self.pakfire = pakfire
+		self.repo = repo
+
+		self.create()
+
+	@property
+	def path(self):
+		return os.path.join(REPO_CACHE_DIR, self.repo.name, self.repo.arch)
+
+	def create(self):
+		"""
+			Create all necessary directories.
+		"""
+		for d in ("mirrors", "packages", "metadata"):
+			path = os.path.join(self.path, d)
+
+			if not os.path.exists(path):
+				os.makedirs(path)
+
+	def exists(self, filename):
+		"""
+			Returns True if a file exists and False if it doesn't.
+		"""
+		return os.path.exists(os.path.join(self.path, filename))
+
+	def age(self, filename):
+		"""
+			Returns the age of a downloaded file in minutes.
+			i.e. the time from download until now.
+		"""
+		if not self.exists(filename):
+			return None
+
+		filename = os.path.join(self.path, filename)
+
+		# Creation time of the file
+		ctime = os.stat(filename)[stat.ST_CTIME]
+
+		return (time.time() - ctime) / 60
+
+	def open(self, filename, *args, **kwargs):
+		filename = os.path.join(self.path, filename)
+
+		return open(filename, *args, **kwargs)
+
+
 class RemoteRepository(RepositoryFactory):
-	def __init__(self, pakfire, name, description, url, gpgkey, enabled):
+	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled):
 		RepositoryFactory.__init__(self, pakfire, name, description)
 
 		self.url, self.gpgkey = url, gpgkey
+		self.mirrorlist = mirrorlist
 
 		if enabled in (True, 1, "1", "yes", "y"):
 			self.enabled = True
 		else:
 			self.enabled = False
+
+		# Create a cache for the repository where we can keep all temporary data.
+		self.cache = RepositoryCache(self.pakfire, self)
+
+		# Initialize mirror servers.
+		self.mirrors = downloader.MirrorList(self.pakfire, self)
 
 		if self.local:
 			self.index = index.DirectoryIndex(self.pakfire, self, self.url)
@@ -377,11 +437,15 @@ class RemoteRepository(RepositoryFactory):
 		return False
 
 	@property
+	def arch(self):
+		return self.pakfire.distro.arch
+
+	@property
 	def path(self):
 		if self.local:
 			return self.url[7:]
 
-		raise Exception, "XXX find some cache dir"
+		return self.cache.path
 
 	@property
 	def priority(self):
@@ -398,13 +462,6 @@ class RemoteRepository(RepositoryFactory):
 				break
 
 		return priority
-
-	@property
-	def mirrorlist(self):
-		# XXX
-		return [
-			"http://mirror0.ipfire.org/",
-		]
 
 	def fetch_file(self, filename):
 		grabber = URLGrabber(

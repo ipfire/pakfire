@@ -22,6 +22,11 @@ class PackageListing(object):
 	def __len__(self):
 		return len(self.__packages)
 
+	def get_by_name(self, name):
+		for pkg in self.__packages:
+			if pkg.name == name:
+				yield pkg
+
 	def get_most_recent(self):
 		if self.__packages:
 			return self.__packages[-1]

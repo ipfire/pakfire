@@ -6,6 +6,7 @@ pakfire/constants.py
 pakfire/database.py
 pakfire/depsolve.py
 pakfire/distro.py
+pakfire/downloader.py
 pakfire/errors.py
 pakfire/i18n.py
 pakfire/index.py

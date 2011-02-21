@@ -11,6 +11,7 @@ CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")
 
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
+REPO_CACHE_DIR = os.path.join(CACHE_DIR, "repos")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
 
@@ -32,6 +33,8 @@ BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"
 SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
+
+TIME_24H = 60*60*24
 
 SOURCE_PACKAGE_META = """\
 

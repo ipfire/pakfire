@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-20 11:01+0100\n"
+"POT-Creation-Date: 2011-02-21 02:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -150,59 +150,117 @@ msgstr ""
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/__init__.py:174
-msgid "Is this okay?"
+#: ../pakfire/depsolve.py:211
+msgid "Package"
 msgstr ""
 
-#: ../pakfire/packages/base.py:51
-msgid "Name"
-msgstr ""
-
-#: ../pakfire/packages/base.py:52 ../pakfire/transaction.py:227
+#: ../pakfire/depsolve.py:211 ../pakfire/packages/base.py:51
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:53 ../pakfire/transaction.py:227
+#: ../pakfire/depsolve.py:211 ../pakfire/packages/base.py:52
 msgid "Version"
 msgstr ""
 
-#: ../pakfire/packages/base.py:54
-msgid "Release"
+#: ../pakfire/depsolve.py:211
+msgid "Repository"
 msgstr ""
 
-#: ../pakfire/packages/base.py:55 ../pakfire/transaction.py:227
+#: ../pakfire/depsolve.py:211 ../pakfire/packages/base.py:54
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/packages/base.py:56
+#: ../pakfire/depsolve.py:214
+msgid "Installing:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:215
+msgid "Installing for dependencies:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:216
+msgid "Updating:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:217
+msgid "Updating for dependencies:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:218
+msgid "Removing:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:219
+msgid "Removing for dependencies:"
+msgstr ""
+
+#: ../pakfire/depsolve.py:221
+msgid "Transaction Summary"
+msgstr ""
+
+#: ../pakfire/depsolve.py:227
+msgid "Install"
+msgstr ""
+
+#: ../pakfire/depsolve.py:228 ../pakfire/depsolve.py:232
+#: ../pakfire/depsolve.py:236
+msgid "Package(s)"
+msgstr ""
+
+#: ../pakfire/depsolve.py:231
+msgid "Updates"
+msgstr ""
+
+#: ../pakfire/depsolve.py:235
+msgid "Remove"
+msgstr ""
+
+#: ../pakfire/depsolve.py:240
+#, python-format
+msgid "Total download size: %s"
+msgstr ""
+
+#: ../pakfire/__init__.py:172
+msgid "Is this okay?"
+msgstr ""
+
+#: ../pakfire/packages/base.py:50
+msgid "Name"
+msgstr ""
+
+#: ../pakfire/packages/base.py:53
+msgid "Release"
+msgstr ""
+
+#: ../pakfire/packages/base.py:55
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:57
+#: ../pakfire/packages/base.py:56
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:58
+#: ../pakfire/packages/base.py:57
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:59
+#: ../pakfire/packages/base.py:58
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:62
+#: ../pakfire/packages/base.py:61
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:68
+#: ../pakfire/packages/base.py:67
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:69
+#: ../pakfire/packages/base.py:68
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:70
+#: ../pakfire/packages/base.py:69
 msgid "Build host"
 msgstr ""
 
@@ -212,50 +270,4 @@ msgstr ""
 
 #: ../pakfire/packages/packager.py:125
 msgid "Extracting:"
-msgstr ""
-
-#: ../pakfire/transaction.py:227
-msgid "Package"
-msgstr ""
-
-#: ../pakfire/transaction.py:227
-msgid "Repository"
-msgstr ""
-
-#: ../pakfire/transaction.py:231
-msgid "Installing:"
-msgstr ""
-
-#: ../pakfire/transaction.py:237
-msgid "Updating:"
-msgstr ""
-
-#: ../pakfire/transaction.py:243
-msgid "Removing:"
-msgstr ""
-
-#: ../pakfire/transaction.py:248
-msgid "Transaction Summary"
-msgstr ""
-
-#: ../pakfire/transaction.py:254
-msgid "Install"
-msgstr ""
-
-#: ../pakfire/transaction.py:254 ../pakfire/transaction.py:257
-#: ../pakfire/transaction.py:260
-msgid "Package(s)"
-msgstr ""
-
-#: ../pakfire/transaction.py:257
-msgid "Updates"
-msgstr ""
-
-#: ../pakfire/transaction.py:260
-msgid "Remove"
-msgstr ""
-
-#: ../pakfire/transaction.py:263
-#, python-format
-msgid "Total download size: %s"
 msgstr ""

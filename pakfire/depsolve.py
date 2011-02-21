@@ -5,13 +5,20 @@ import re
 
 import packages
 import repository
+import transaction
+import util
 
 from errors import *
 
+from i18n import _
+
+PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-19s %5s "
+
 class Requires(object):
-	def __init__(self, pkg, requires):
+	def __init__(self, pkg, requires, dep=False):
 		self.pkg = pkg
 		self.requires = requires
+		self.dep = dep
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.requires)
@@ -73,18 +80,21 @@ class DependencySet(object):
 		self.__requires = []
 		self.__obsoletes = []
 
+		# Create a new transaction set.
+		self.ts = transaction.TransactionSet()
+
 		# Read-in all packages from the database that have
 		# been installed previously and need to be taken into
 		# account when resolving dependencies.
 		for pkg in self.repos.local.packages:
-			self.add_package(pkg)
+			self.add_package(pkg, transaction=False)
 
-	def add_requires(self, requires, pkg=None):
+	def add_requires(self, requires, pkg=None, dep=False):
 		# XXX for now, we skip the virtual perl requires
 		if requires.startswith("perl(") or requires.startswith("perl>") or requires.startswith("perl="):
 			return
 
-		requires = Requires(pkg, requires)
+		requires = Requires(pkg, requires, dep)
 
 		if requires in self.__requires:
 			return
@@ -102,20 +112,31 @@ class DependencySet(object):
 
 		self.__obsoletes.append(obsoletes)
 
-	def add_package(self, pkg):
+	def add_package(self, pkg, dep=False, transaction=True):
 		#print pkg, sorted(self.__packages)
 		#assert not pkg in self.__packages
 		if pkg in self.__packages:
 			logging.debug("Trying to add package which is already in the dependency set: %s" % pkg)
 			return
 
-		if not isinstance(pkg, packages.DatabasePackage):
-			logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
+		if transaction:
+			transaction_mode = "install"
+			for p in self.__packages:
+				if pkg.name == p.name:
+					transaction_mode = "update"
+					break
+
+			# Add package to transaction set
+			func = getattr(self.ts, transaction_mode)
+			func(pkg, dep=dep)
+
+		#if not isinstance(pkg, packages.DatabasePackage):
+		#	logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
 		self.__packages.append(pkg)
 
 		# Add the requirements of the newly added package.
 		for req in pkg.requires:
-			self.add_requires(req, pkg)
+			self.add_requires(req, pkg, dep=True)
 
 		# Remove all requires that are fulfilled by this package.
 		# For that we copy the matching requires to _requires and remove them
@@ -156,9 +177,68 @@ class DependencySet(object):
 
 			best = candidates.get_most_recent()
 			if best:
-				self.add_package(best)
+				self.add_package(best, dep=requires.dep)
 
 		if unresolveable_reqs:
 			raise DependencyError, "Cannot resolve %s" % \
 				" ".join([r.requires for r in unresolveable_reqs])
 
+	def dump_pkg(self, format, pkg):
+		return format % (
+			pkg.name,
+			pkg.arch,
+			pkg.friendly_version,
+			pkg.repo.name,
+			util.format_size(pkg.size),
+		)
+
+	def dump_pkgs(self, caption, pkgs):
+		if not pkgs:
+			return []
+
+		s = [caption,]
+		for pkg in sorted(pkgs):
+			s.append(self.dump_pkg(PKG_DUMP_FORMAT, pkg))
+		s.append("")
+		return s
+
+	def dump(self):
+		width = 80
+		line = "=" * width
+
+		s = []
+		s.append(line)
+		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"), _("Repository"), _("Size")))
+		s.append(line)
+
+		s += self.dump_pkgs(_("Installing:"), self.ts.installs)
+		s += self.dump_pkgs(_("Installing for dependencies:"), self.ts.install_deps)
+		s += self.dump_pkgs(_("Updating:"), self.ts.updates)
+		s += self.dump_pkgs(_("Updating for dependencies:"), self.ts.update_deps)
+		s += self.dump_pkgs(_("Removing:"), self.ts.removes)
+		s += self.dump_pkgs(_("Removing for dependencies:"), self.ts.remove_deps)
+
+		s.append(_("Transaction Summary"))
+		s.append(line)
+
+		format = "%-20s %-4d %s"
+
+		if self.ts.installs or self.ts.install_deps:
+			s.append(format % (_("Install"),
+				len(self.ts.installs + self.ts.install_deps), _("Package(s)")))
+
+		if self.ts.updates or self.ts.update_deps:
+			s.append(format % (_("Updates"),
+				len(self.ts.updates + self.ts.update_deps), _("Package(s)")))
+
+		if self.ts.removes or self.ts.remove_deps:
+			s.append(format % (_("Remove"),
+				len(self.ts.removes + self.ts.remove_deps), _("Package(s)")))
+
+		download_size = sum([p.size for p in self.ts.installs + \
+			self.ts.install_deps + self.ts.updates + self.ts.update_deps])
+		s.append(_("Total download size: %s") % util.format_size(download_size))
+		s.append("")
+
+		for line in s:
+			logging.info(line)
