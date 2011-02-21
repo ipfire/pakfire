@@ -511,20 +511,19 @@ class Builder(object):
 		self.pkg.dist(self)
 
 	def shell(self, args=[]):
-		# XXX need to add linux32 or linux64 to the command line
 		# XXX need to set CFLAGS here
-		command = "chroot %s /usr/bin/chroot-shell %s" % \
+		command = "/usr/sbin/chroot %s /usr/bin/chroot-shell %s" % \
 			(self.chrootPath(), " ".join(args))
+
+		# Add personality if we require one
+		if self.pakfire.distro.personality:
+			command = "%s %s" % (self.pakfire.distro.personality, command)
 
 		for key, val in self.environ.items():
 			command = "%s=\"%s\" " % (key, val) + command
 
-		# Add personality if we require one
-		if self.pakfire.distro.personality:
-			command = "%s %s" % (self.pakfire.disto.personality, command)
-
 		# Empty the environment
-		#command = "env -i - %s" % command
+		command = "env -i - %s" % command
 
 		logging.debug("Shell command: %s" % command)
 
