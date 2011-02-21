@@ -279,36 +279,20 @@ class Packager(object):
 
 		files = []
 		for file in includes:
-			if file in excludes:
+			# Skip if file is already in the file set or
+			# marked to be excluded from this archive.
+			if file in excludes or file in files:
 				continue
 
 			files.append(file)
 
 		files.sort()
 
-		# Save files that need to be removed after they were packaged.
-		files_to_be_removed = []
-
 		for file_real in files:
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
 
-			if not os.path.exists(file_real):
-				logging.warning("This file has vanished unexpectedly: %s" % file_real)
-				continue
-
 			tar.add(file_real, arcname=file_tar, recursive=False)
-
-			# Mark file for deletion, and add symlinks on top of list.
-			if os.path.islink(file_real):
-				files_to_be_removed.insert(0, file_real)
-			elif not os.path.isdir(file_real):
-				files_to_be_removed.append(file_real)
-
-		# Remove all files afterwards, because tarfile has some kind of trouble
-		# when a symlink points into nirvana.
-		for file_real in files_to_be_removed:
-			if os.path.exists(file_real):
-				os.unlink(file_real)
+			os.unlink(file_real)
 
 		# Dump all files that are in the archive.
 		tar.list()
