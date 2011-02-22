@@ -185,12 +185,30 @@ class DatabaseIndex(Index):
 		# Reopen the database
 		self.db = database.RemotePackageDatabase(self.pakfire, cache.abspath(cache_filename))
 
+	def __get_from_cache(self, pkg):
+		"""
+			Check if package is already in cache and return an instance of
+			BinaryPackage instead.
+		"""
+		if hasattr(self.repo, "cache"):
+			filename = os.path.join("packages", os.path.basename(pkg.filename))
+
+			if self.repo.cache.exists(filename):
+				filename = self.repo.cache.abspath(filename)
+
+				pkg = packages.BinaryPackage(self.pakfire, self.repo, filename)
+
+		return pkg
+
 	def get_all_by_name(self, name):
 		c = self.db.cursor()
 		c.execute("SELECT * FROM packages WHERE name = ?", name)
 
 		for pkg in c:
-			yield package.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+			pkg = package.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+
+			# Try to get package from cache.
+			yield self.__get_from_cache(pkg)
 
 		c.close()
 
@@ -210,7 +228,10 @@ class DatabaseIndex(Index):
 		c.execute("SELECT * FROM packages")
 
 		for pkg in c:
-			yield packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+			pkg = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+
+			# Try to get package from cache.
+			yield self.__get_from_cache(pkg)
 
 		c.close()
 
