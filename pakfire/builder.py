@@ -31,7 +31,7 @@ class Builder(object):
 		self.settings = {
 			"enable_loop_devices" : True,
 			"enable_ccache"   : True,
-			"enable_icecream" : True,
+			"enable_icecream" : False,
 		}
 		self.settings.update(settings)
 
