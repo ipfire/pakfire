@@ -102,11 +102,21 @@ class TransactionSet(object):
 		self.remove_deps = []
 
 	@property
+	def download_lists(self):
+		# All elements in these lists must be local.
+		return (self.installs, self.install_deps, self.updates, self.update_deps)
+
+	@property
 	def downloads(self):
 		"""
 			Return a list containing all packages that need to be downloaded.
 		"""
-		for pkg in self.installs + self.install_deps + self.updates + self.update_deps:
+		pkgs = []
+		for dl_list in self.download_lists:
+			pkgs += dl_list
+		pkgs.sort()
+
+		for pkg in pkgs:
 			# Skip all packages that are already local.
 			if pkg.local:
 				continue
@@ -137,26 +147,18 @@ class TransactionSet(object):
 		else:
 			self.updates.append(pkg)
 
-	def _download(self, pkgs):
-		"""
-			Download all given packages and return a list of BinaryPackages.
-		"""
-		_pkgs = []
-		for pkg in pkgs:
-			if not isinstance(pkg, packages.BinaryPackage):
-				pkg = pkg.download()
-			_pkgs.append(pkg)
-
-		return _pkgs
-
 	def download(self):
 		"""
 			Convert all packages to BinaryPackage.
 		"""
-		self.installs = self._download(self.installs)
-		self.install_deps = self._download(self.install_deps)
-		self.updates = self._download(self.updates)
-		self.update_deps = self._download(self.update_deps)
+		for download in self.downloads:
+			pkg = download.download()
+
+			for download_list in self.download_lists:
+				if download in download_list:
+					download_list.remove(download)
+					download_list.append(pkg)
+					break
 
 
 class Transaction(object):
