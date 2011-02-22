@@ -360,7 +360,8 @@ class RepositoryCache(object):
 
 	@property
 	def path(self):
-		return os.path.join(REPO_CACHE_DIR, self.repo.name, self.repo.arch)
+		return os.path.join(REPO_CACHE_DIR, self.pakfire.distro.release, \
+			self.repo.name, self.repo.arch)
 
 	def abspath(self, path):
 		return os.path.join(self.path, path)
