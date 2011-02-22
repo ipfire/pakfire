@@ -191,6 +191,12 @@ class Package(object):
 		return self.metadata.get("PKG_URL")
 
 	@property
+	def triggers(self):
+		triggers = self.metadata.get("PKG_TRIGGERS", "")
+
+		return triggers.split()
+
+	@property
 	def signature(self):
 		raise NotImplementedError
 

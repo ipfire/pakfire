@@ -169,3 +169,20 @@ class FilePackage(Package):
 		"""
 		return util.calc_hash1(self.filename)
 
+	@property
+	def scriptlet(self):
+		"""
+			Read the scriptlet from the archive or return an empty string if no
+			scriptlet does exist.
+		"""
+		ret = None
+		try:
+			f = self.get_file("control")
+			ret = f.read()
+			f.close()
+
+		except KeyError:
+			# scriptlet file could not be found
+			pass
+
+		return ret or ""

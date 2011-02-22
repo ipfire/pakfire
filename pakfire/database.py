@@ -72,7 +72,9 @@ class PackageDatabase(Database):
 				epoch		INTEGER,
 				version		TEXT,
 				release		TEXT,
+				arch		TEXT,
 				filename	TEXT,
+				size		INT,
 				hash1		TEXT,
 				provides	TEXT,
 				requires	TEXT,
@@ -132,7 +134,11 @@ class RemotePackageDatabase(PackageDatabase):
 
 		filename = ""
 		if pkg.repo.local:
-			filename = pkg.filename[len(pkg.repo.path) + 1:]
+			# Get the path relatively to the repository.
+			filename = pkg.filename[len(pkg.repo.path):]
+			# Strip leading / if any.
+			if filename.startswith("/"):
+				filename = filename[1:]
 
 		c = self.cursor()
 		c.execute("""
@@ -141,7 +147,9 @@ class RemotePackageDatabase(PackageDatabase):
 				epoch,
 				version,
 				release,
+				arch,
 				filename,
+				size,
 				hash1,
 				provides,
 				requires,
@@ -153,13 +161,15 @@ class RemotePackageDatabase(PackageDatabase):
 				build_id,
 				build_host,
 				build_date
-			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 			(
 				pkg.name,
 				pkg.epoch,
 				pkg.version,
 				pkg.release,
+				pkg.arch,
 				filename,
+				pkg.size,
 				pkg.hash1,
 				" ".join(pkg.provides),
 				" ".join(pkg.requires),
@@ -205,6 +215,8 @@ class LocalPackageDatabase(RemotePackageDatabase):
 			ALTER TABLE packages ADD COLUMN installed INT;
 			ALTER TABLE packages ADD COLUMN reason TEXT;
 			ALTER TABLE packages ADD COLUMN repository TEXT;
+			ALTER TABLE packages ADD COLUMN scriptlet TEXT;
+			ALTER TABLE packages ADD COLUMN triggers TEXT;
 		""")
 		self.commit()
 		c.close()
@@ -228,6 +240,13 @@ class LocalPackageDatabase(RemotePackageDatabase):
 
 		# Update the filename information.
 		c.execute("UPDATE packages SET filename = ? WHERE id = ?", (pkg.filename, pkg_id))
+
+		# Add the scriptlet to database (needed to update or uninstall packages).
+		c.execute("UPDATE packages SET scriptlet = ? WHERE id = ?", (pkg.scriptlet, pkg_id))
+
+		# Add triggers to the database.
+		triggers = " ".join(pkg.triggers)
+		c.execute("UPDATE packages SET triggers = ? WHERE id = ?", (triggers, pkg_id))
 
 		self.commit()
 		c.close()
