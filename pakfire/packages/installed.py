@@ -2,6 +2,8 @@
 
 import os
 
+import pakfire.downloader
+
 from base import Package
 from binary import BinaryPackage
 
@@ -148,7 +150,7 @@ class DatabasePackage(Package):
 
 		c.close()
 
-	def download(self):
+	def download(self, text=""):
 		"""
 			Downloads the package from repository and returns a new instance
 			of BinaryPackage.
@@ -172,12 +174,19 @@ class DatabasePackage(Package):
 				cache.remove(cache_filename)
 
 		if download:
-			# Open input and output files and download the file.
-			o = cache.open(cache_filename, "w")
 			# Make sure filename is of type string (and not unicode)
 			filename = str(self.filename)
 
-			i = self.repo.grabber.urlopen(filename)
+			# Get a package grabber and add mirror download capabilities to it.
+			grabber = pakfire.downloader.PackageDownloader(
+				text=text + os.path.basename(filename),
+			)
+			grabber = self.repo.mirrors.group(grabber)
+
+			i = grabber.urlopen(filename)
+
+			# Open input and output files and download the file.
+			o = cache.open(cache_filename, "w")
 
 			buf = i.read(BUFFER_SIZE)
 			while buf:

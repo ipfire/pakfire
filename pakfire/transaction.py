@@ -151,14 +151,28 @@ class TransactionSet(object):
 		"""
 			Convert all packages to BinaryPackage.
 		"""
-		for download in self.downloads:
-			pkg = download.download()
+		pkgs = []
+		for pkg in self.downloads:
+			pkgs.append(pkg)
+
+		# If there are no packages to download skip the rest.
+		if not pkgs:
+			return
+
+		logging.info("Downloading packages:")
+		i = 0
+		for download in pkgs:
+			i += 1
+			pkg = download.download(text="(%2d/%02d): " % (i, len(pkgs)))
 
 			for download_list in self.download_lists:
 				if download in download_list:
 					download_list.remove(download)
 					download_list.append(pkg)
 					break
+
+		# Just an empty line to seperate the downloads from the extractions.
+		logging.info("")
 
 
 class Transaction(object):

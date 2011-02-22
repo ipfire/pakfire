@@ -6,6 +6,7 @@ import random
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.mirror import MirrorGroup
+from urlgrabber.progress import TextMeter
 
 from constants import *
 
@@ -15,9 +16,42 @@ class PakfireGrabber(URLGrabber):
 	"""
 		Class to make some modifications on the urlgrabber configuration.
 	"""
-	# XXX add proxy, user_agent, keep-alive, throttle things here
-	pass
+	# XXX add proxy, throttle things here
 
+	def __init__(self, *args, **kwargs):
+		kwargs.update({
+			"quote" : 0,
+			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
+		})
+
+		URLGrabber.__init__(self, *args, **kwargs)
+
+
+class PackageDownloader(PakfireGrabber):
+	def __init__(self, *args, **kwargs):
+		kwargs.update({
+				"progress_obj" : TextMeter(),
+		})
+
+		PakfireGrabber.__init__(self, *args, **kwargs)
+
+
+class MetadataDownloader(PakfireGrabber):
+	def __init__(self, *args, **kwargs):
+		kwargs.update({
+			"http_headers" : (('Pragma', 'no-cache'),),
+		})
+
+		PakfireGrabber.__init__(self, *args, **kwargs)
+
+
+class DatabaseDownloader(PackageDownloader):
+	def __init__(self, *args, **kwargs):
+		kwargs.update({
+			"http_headers" : (('Pragma', 'no-cache'),),
+		})
+
+		PackageDownloader.__init__(self, *args, **kwargs)
 
 
 class Mirror(object):
@@ -73,7 +107,7 @@ class MirrorList(object):
 				force = True
 
 		if force:
-			g = PakfireGrabber()
+			g = MetadataDownloader()
 
 			try:
 				mirrordata = g.urlread(self.mirrorlist, limit=MIRRORLIST_MAXSIZE)

@@ -7,7 +7,6 @@ import stat
 import time
 
 from ConfigParser import ConfigParser
-from urlgrabber.progress import TextMeter, TextMultiFileMeter
 
 import base
 import database
@@ -487,18 +486,6 @@ class RemoteRepository(RepositoryFactory):
 				break
 
 		return priority
-
-	@property
-	def grabber(self):
-		if not self.__grabber:
-			grabber = downloader.PakfireGrabber(
-#				progress_obj = TextMultiFileMeter(), # XXX broken?
-				progress_obj = TextMeter(),
-			)
-			
-			self.__grabber = self.mirrors.group(grabber)
-
-		return self.__grabber
 
 	def update_index(self, force=False):
 		if self.index:

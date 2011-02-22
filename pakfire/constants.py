@@ -2,6 +2,8 @@
 
 import os.path
 
+PAKFIRE_VERSION = "testing"
+
 SYSCONFDIR = os.path.join(os.path.dirname(__file__), "..", "examples")
 if not os.path.exists(SYSCONFDIR):
 	SYSCONFDIR = "/etc"

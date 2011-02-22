@@ -6,11 +6,13 @@ import random
 import shutil
 
 import database
+import downloader
 import packages
 import repository
 import util
 
 from constants import *
+from i18n import _
 
 class Index(object):
 	def __init__(self, pakfire, repo):
@@ -156,8 +158,12 @@ class DatabaseIndex(Index):
 				download = False
 
 		if download:
+			# Initialize a grabber for download.
+			grabber = downloader.MetadataDownloader()
+			grabber = self.repo.mirrors.group(grabber)
+
 			# XXX do we need limit here for security reasons?
-			metadata = self.repo.grabber.urlread("repodata/repomd.json")
+			metadata = grabber.urlread("repodata/repomd.json")
 
 			with cache.open(cache_filename, "w") as o:
 				o.write(metadata)
@@ -169,9 +175,15 @@ class DatabaseIndex(Index):
 		cache_filename = "metadata/packages.db" # XXX just for now
 
 		if not cache.exists(cache_filename):
+			# Initialize a grabber for download.
+			grabber = downloader.DatabaseDownloader(
+				text = _("%s: package database") % self.repo.name,
+			)
+			grabber = self.repo.mirrors.group(grabber)
+
+			i = grabber.urlopen("repodata/packages.db") # XXX just for now
 			o = cache.open(cache_filename, "w")
-			i = self.repo.grabber.urlopen("repodata/packages.db") # XXX just for now
-			
+
 			buf = i.read(BUFFER_SIZE)
 			while buf:
 				o.write(buf)
