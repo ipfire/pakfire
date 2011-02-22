@@ -101,6 +101,18 @@ class TransactionSet(object):
 		self.removes = []
 		self.remove_deps = []
 
+	@property
+	def downloads(self):
+		"""
+			Return a list containing all packages that need to be downloaded.
+		"""
+		for pkg in self.installs + self.install_deps + self.updates + self.update_deps:
+			# Skip all packages that are already local.
+			if pkg.local:
+				continue
+
+			yield pkg
+
 	def install(self, pkg, dep=False):
 		logging.info(" --> Marking package for install: %s" % pkg.friendly_name)
 

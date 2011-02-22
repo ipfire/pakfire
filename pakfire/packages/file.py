@@ -42,6 +42,11 @@ class FilePackage(Package):
 			self._archive.close()
 
 	@property
+	def local(self):
+		# A file package is always local.
+		return True
+
+	@property
 	def archive(self):
 		if not self._archive:
 			self._archive = tarfile.open(self.filename)

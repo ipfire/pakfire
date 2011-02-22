@@ -235,9 +235,11 @@ class DependencySet(object):
 			s.append(format % (_("Remove"),
 				len(self.ts.removes + self.ts.remove_deps), _("Package(s)")))
 
-		download_size = sum([p.size for p in self.ts.installs + \
-			self.ts.install_deps + self.ts.updates + self.ts.update_deps])
-		s.append(_("Total download size: %s") % util.format_size(download_size))
+		# Calculate the size of all files that need to be downloaded this this
+		# transaction.
+		download_size = sum([p.size for p in self.ts.downloads])
+		if download_size:
+			s.append(_("Total download size: %s") % util.format_size(download_size))
 		s.append("")
 
 		for line in s:

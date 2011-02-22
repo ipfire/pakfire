@@ -106,6 +106,14 @@ class Package(object):
 		"""
 		return 0
 
+	@property
+	def local(self):
+		"""
+			Indicates whether a package is located "local" means on disk
+			and has not be downloaded.
+		"""
+		return False
+
 	### META INFORMATION ###
 
 	@property
