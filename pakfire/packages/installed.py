@@ -91,7 +91,7 @@ class DatabasePackage(Package):
 
 	@property
 	def size(self):
-		return self.metadata.get("size")
+		return self.metadata.get("size", 0)
 
 	@property
 	def provides(self):
@@ -125,6 +125,10 @@ class DatabasePackage(Package):
 	@property
 	def hash1(self):
 		return self.metadata.get("hash1")
+
+	@property
+	def scriptlet(self):
+		return self.metadata.get("scriptlet")
 
 	@property
 	def filename(self):

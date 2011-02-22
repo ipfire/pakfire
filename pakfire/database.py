@@ -215,6 +215,7 @@ class LocalPackageDatabase(RemotePackageDatabase):
 			ALTER TABLE packages ADD COLUMN installed INT;
 			ALTER TABLE packages ADD COLUMN reason TEXT;
 			ALTER TABLE packages ADD COLUMN repository TEXT;
+			ALTER TABLE packages ADD COLUMN scriptlet TEXT;
 		""")
 		self.commit()
 		c.close()
@@ -238,6 +239,9 @@ class LocalPackageDatabase(RemotePackageDatabase):
 
 		# Update the filename information.
 		c.execute("UPDATE packages SET filename = ? WHERE id = ?", (pkg.filename, pkg_id))
+
+		# Add the scriptlet to database (needed to update or uninstall packages).
+		c.execute("UPDATE packages SET scriptlet = ? WHERE id = ?", (pkg.scriptlet, pkg_id))
 
 		self.commit()
 		c.close()
