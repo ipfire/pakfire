@@ -74,7 +74,7 @@ class PackageDatabase(Database):
 				release		TEXT,
 				arch		TEXT,
 				filename	TEXT,
-				size		INT,
+				size		INTEGER,
 				hash1		TEXT,
 				provides	TEXT,
 				requires	TEXT,
@@ -85,7 +85,7 @@ class PackageDatabase(Database):
 				description	TEXT,
 				build_id	TEXT,
 				build_host	TEXT,
-				build_date	INT
+				build_date	INTEGER
 			);
 		""")
 		# XXX add some indexes here
