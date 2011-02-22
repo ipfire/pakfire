@@ -216,6 +216,7 @@ class LocalPackageDatabase(RemotePackageDatabase):
 			ALTER TABLE packages ADD COLUMN reason TEXT;
 			ALTER TABLE packages ADD COLUMN repository TEXT;
 			ALTER TABLE packages ADD COLUMN scriptlet TEXT;
+			ALTER TABLE packages ADD COLUMN triggers TEXT;
 		""")
 		self.commit()
 		c.close()
@@ -242,6 +243,10 @@ class LocalPackageDatabase(RemotePackageDatabase):
 
 		# Add the scriptlet to database (needed to update or uninstall packages).
 		c.execute("UPDATE packages SET scriptlet = ? WHERE id = ?", (pkg.scriptlet, pkg_id))
+
+		# Add triggers to the database.
+		triggers = " ".join(pkg.triggers)
+		c.execute("UPDATE packages SET triggers = ? WHERE id = ?", (triggers, pkg_id))
 
 		self.commit()
 		c.close()
