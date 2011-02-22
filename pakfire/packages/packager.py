@@ -132,9 +132,13 @@ class Extractor(object):
 			"  ",
 		]
 
+		# maxval must be > 0 and so we assume that
+		# empty packages have at least one file.
+		maxval = len(self.files) or 1
+
 		return progressbar.ProgressBar(
 			widgets=widgets,
-			maxval=len(self.files),
+			maxval=maxval,
 			term_width=80,
 		)
 
