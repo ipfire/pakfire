@@ -76,7 +76,8 @@ class Package(object):
 
 		s.append("") # New line at the end
 
-		return "\n".join(s)
+		# XXX why do we need to decode this?
+		return "\n".join([str.decode("utf-8") for str in s])
 
 	@property
 	def info(self):
