@@ -90,6 +90,10 @@ class DatabasePackage(Package):
 		return self.metadata.get("build_id")
 
 	@property
+	def size(self):
+		return self.metadata.get("size")
+
+	@property
 	def provides(self):
 		provides = self.metadata.get("provides", "").split()
 

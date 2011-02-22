@@ -74,6 +74,7 @@ class PackageDatabase(Database):
 				release		TEXT,
 				arch		TEXT,
 				filename	TEXT,
+				size		INT,
 				hash1		TEXT,
 				provides	TEXT,
 				requires	TEXT,
@@ -148,6 +149,7 @@ class RemotePackageDatabase(PackageDatabase):
 				release,
 				arch,
 				filename,
+				size,
 				hash1,
 				provides,
 				requires,
@@ -159,7 +161,7 @@ class RemotePackageDatabase(PackageDatabase):
 				build_id,
 				build_host,
 				build_date
-			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 			(
 				pkg.name,
 				pkg.epoch,
@@ -167,6 +169,7 @@ class RemotePackageDatabase(PackageDatabase):
 				pkg.release,
 				pkg.arch,
 				filename,
+				pkg.size,
 				pkg.hash1,
 				" ".join(pkg.provides),
 				" ".join(pkg.requires),
