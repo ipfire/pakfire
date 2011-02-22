@@ -177,10 +177,6 @@ class DatabasePackage(Package):
 			# Make sure filename is of type string (and not unicode)
 			filename = str(self.filename)
 
-			# XXX to be removed very soon
-			if filename.startswith("686"):
-				filename = "i%s" % filename
-
 			i = self.repo.grabber.urlopen(filename)
 
 			buf = i.read(BUFFER_SIZE)
