@@ -133,7 +133,11 @@ class RemotePackageDatabase(PackageDatabase):
 
 		filename = ""
 		if pkg.repo.local:
-			filename = pkg.filename[len(pkg.repo.path) + 1:]
+			# Get the path relatively to the repository.
+			filename = pkg.filename[len(pkg.repo.path):]
+			# Strip leading / if any.
+			if filename.startswith("/"):
+				filename = filename[1:]
 
 		c = self.cursor()
 		c.execute("""
