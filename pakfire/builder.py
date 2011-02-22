@@ -227,6 +227,20 @@ class Builder(object):
 			if not os.path.exists(dir):
 				os.makedirs(dir)
 
+		# Create neccessary files like /etc/fstab and /etc/mtab.
+		files = (
+			"etc/fstab",
+			"etc/mtab"
+		)
+
+		for file in files:
+			file = self.chrootPath(file)
+			dir = os.path.dirname(file)
+			if not os.path.exists(dir):
+				os.makedirs(dir)
+			f = open(file, "w")
+			f.close()
+
 		self._prepare_dev()
 		self._prepare_users()
 		self._prepare_dns()
