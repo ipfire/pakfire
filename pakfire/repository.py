@@ -7,12 +7,14 @@ import stat
 import time
 
 from ConfigParser import ConfigParser
+from urlgrabber.progress import TextMeter, TextMultiFileMeter
 
 import base
 import database
 import downloader
 import index
 import packages
+import util
 
 from constants import *
 
@@ -360,12 +362,15 @@ class RepositoryCache(object):
 	def path(self):
 		return os.path.join(REPO_CACHE_DIR, self.repo.name, self.repo.arch)
 
+	def abspath(self, path):
+		return os.path.join(self.path, path)
+
 	def create(self):
 		"""
 			Create all necessary directories.
 		"""
-		for d in ("mirrors", "packages", "metadata"):
-			path = os.path.join(self.path, d)
+		for path in ("mirrors", "packages", "metadata"):
+			path = self.abspath(path)
 
 			if not os.path.exists(path):
 				os.makedirs(path)
@@ -374,7 +379,7 @@ class RepositoryCache(object):
 		"""
 			Returns True if a file exists and False if it doesn't.
 		"""
-		return os.path.exists(os.path.join(self.path, filename))
+		return os.path.exists(self.abspath(filename))
 
 	def age(self, filename):
 		"""
@@ -384,7 +389,7 @@ class RepositoryCache(object):
 		if not self.exists(filename):
 			return None
 
-		filename = os.path.join(self.path, filename)
+		filename = self.abspath(filename)
 
 		# Creation time of the file
 		ctime = os.stat(filename)[stat.ST_CTIME]
@@ -392,9 +397,25 @@ class RepositoryCache(object):
 		return (time.time() - ctime) / 60
 
 	def open(self, filename, *args, **kwargs):
-		filename = os.path.join(self.path, filename)
+		filename = self.abspath(filename)
 
 		return open(filename, *args, **kwargs)
+
+	def verify(self, filename, hash1):
+		"""
+			Return a bool that indicates if a file matches the given hash.
+		"""
+		return util.calc_hash1(self.abspath(filename)) == hash1
+
+	def remove(self, filename):
+		"""
+			Remove a file from cache.
+		"""
+		if not self.exists(filename):
+			return
+
+		filename = self.abspath(filename)
+		os.unlink(filename)
 
 
 class RemoteRepository(RepositoryFactory):
@@ -408,6 +429,9 @@ class RemoteRepository(RepositoryFactory):
 			self.enabled = True
 		else:
 			self.enabled = False
+
+		# A place to cache the download grabber for this repo.
+		self.__grabber = None
 
 		# Create a cache for the repository where we can keep all temporary data.
 		self.cache = RepositoryCache(self.pakfire, self)
@@ -463,15 +487,17 @@ class RemoteRepository(RepositoryFactory):
 
 		return priority
 
-	def fetch_file(self, filename):
-		grabber = URLGrabber(
-			progress_obj = TextMultiFileMeter(),
-		)
+	@property
+	def grabber(self):
+		if not self.__grabber:
+			grabber = downloader.PakfireGrabber(
+#				progress_obj = TextMultiFileMeter(), # XXX broken?
+				progress_obj = TextMeter(),
+			)
+			
+			self.__grabber = self.mirrors.group(grabber)
 
-		mg = MGRandomOrder(grabber, self.mirrorlist)
-
-		# XXX Need to say destination here.
-		mg.urlgrab(filename)
+		return self.__grabber
 
 	def update_index(self, force=False):
 		if self.index:

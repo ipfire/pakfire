@@ -2,10 +2,10 @@
 
 import json
 import logging
+import random
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
-from urlgrabber.mirror import MGRandomOrder
-from urlgrabber.progress import TextMultiFileMeter
+from urlgrabber.mirror import MirrorGroup
 
 from constants import *
 
@@ -15,13 +15,15 @@ class PakfireGrabber(URLGrabber):
 	"""
 		Class to make some modifications on the urlgrabber configuration.
 	"""
+	# XXX add proxy, user_agent, keep-alive, throttle things here
 	pass
 
 
+
 class Mirror(object):
-	def __init__(self, mirror, location=None, preferred=False):
+	def __init__(self, url, location=None, preferred=False):
 		# Save URL of the mirror in full format
-		self.mirror = mirror
+		self.url = url
 
 		# Save the location (if given)
 		self.location = location
@@ -111,10 +113,51 @@ class MirrorList(object):
 				yield mirror
 
 	@property
+	def non_preferred(self):
+		"""
+			Return a generator for all mirrors that are not preferred.
+		"""
+		for mirror in self.__mirrors:
+			if not mirror.preferred:
+				yield mirror
+
+	@property
 	def all(self):
 		"""
 			Return a generator for all mirrors.
 		"""
 		for mirror in self.__mirrors:
 			yield mirror
+
+	def group(self, grabber):
+		"""
+			Return a MirrorGroup object for the given grabber.
+		"""
+		# A list of mirrors that is passed to MirrorGroup.
+		mirrors = []
+
+		# Add all preferred mirrors at the first place and shuffle them
+		# that we will start at a random place.
+		for mirror in self.preferred:
+			mirrors.append(mirror.url)
+		random.shuffle(mirrors)
+
+		# All other mirrors are added as well and will only be used if all
+		# preferred mirrors did not work.
+		for mirror in self.all:
+			if mirror.url in mirrors:
+				continue
+
+			mirrors.append(mirror.url)
+
+		return MirrorGroup(grabber, mirrors)
+
+
+
+class Downloader(object):
+	def __init__(self, mirrors, files):
+		self.grabber = PakfireGrabber()
+
+		self.mirrorgroup = mirrors.group(self.grabber)
+
 

@@ -1,12 +1,17 @@
 #!/usr/bin/python
 
+import os
+
 from base import Package
+from binary import BinaryPackage
+
+from pakfire.constants import *
 
 class DatabasePackage(Package):
 	type = "db"
 
-	def __init__(self, pakfire, db, data):
-		Package.__init__(self, pakfire, pakfire.repos.local)
+	def __init__(self, pakfire, repo, db, data):
+		Package.__init__(self, pakfire, repo)
 
 		self.db = db
 
@@ -114,6 +119,14 @@ class DatabasePackage(Package):
 		return []
 
 	@property
+	def hash1(self):
+		return self.metadata.get("hash1")
+
+	@property
+	def filename(self):
+		return self.metadata.get("filename") # XXX basename?
+
+	@property
 	def filelist(self):
 		c = self.db.cursor()
 		c.execute("SELECT name FROM files WHERE pkg = '%s'" % self.id) # XXX?
@@ -127,6 +140,55 @@ class DatabasePackage(Package):
 
 		c.close()
 
+	def download(self):
+		"""
+			Downloads the package from repository and returns a new instance
+			of BinaryPackage.
+		"""
+		# Marker, if we need to download the package.
+		download = True
+
+		# Add shortcut for cache.
+		cache = self.repo.cache
+
+		cache_filename = "packages/%s" % os.path.basename(self.filename)
+
+		# Check if file already exists in cache.
+		if cache.exists(cache_filename):
+			# If the file does already exist, we check if the hash1 matches.
+			if cache.verify(cache_filename, self.hash1):
+				# We already got the right file. Skip download.
+				download = False
+			else:
+				# The file in cache has a wrong hash. Remove it and repeat download.
+				cache.remove(cache_filename)
+
+		if download:
+			# Open input and output files and download the file.
+			o = cache.open(cache_filename, "w")
+			# Make sure filename is of type string (and not unicode)
+			filename = str(self.filename)
+
+			# XXX to be removed very soon
+			if filename.startswith("686"):
+				filename = "i%s" % filename
+
+			i = self.repo.grabber.urlopen(filename)
+
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(buf)
+				buf = i.read(BUFFER_SIZE)
+
+			i.close()
+			o.close()
+
+			# Verify if the download was okay.
+			if not cache.verify(cache_filename, self.hash1):
+				raise Exception, "XXX this should never happen..."
+
+		filename = os.path.join(cache.path, cache_filename)
+		return BinaryPackage(self.pakfire, self.repo, filename)
 
 # XXX maybe we can remove this later?
 class InstalledPackage(DatabasePackage):

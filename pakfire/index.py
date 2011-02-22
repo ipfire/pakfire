@@ -139,16 +139,58 @@ class DatabaseIndex(Index):
 
 	def update(self, force=False):
 		"""
-			Nothing to do here.
+			Download the repository metadata and the package database.
 		"""
-		pass
+		# Shortcut to repository cache.
+		cache = self.repo.cache
+
+		cache_filename = "metadata/repomd.json"
+
+		# Marker if we need to do the download.
+		download = True
+
+		# Check if file does exists and is not too old.
+		if cache.exists(cache_filename):
+			age = cache.age(cache_filename)
+			if age and age < TIME_10M:
+				download = False
+
+		if download:
+			# XXX do we need limit here for security reasons?
+			metadata = self.repo.grabber.urlread("repodata/repomd.json")
+
+			with cache.open(cache_filename, "w") as o:
+				o.write(metadata)
+
+			# XXX need to parse metadata here
+
+		# XXX split this into two functions
+
+		cache_filename = "metadata/packages.db" # XXX just for now
+
+		if not cache.exists(cache_filename):
+			o = cache.open(cache_filename, "w")
+			i = self.repo.grabber.urlopen("repodata/packages.db") # XXX just for now
+			
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(buf)
+				buf = i.read(BUFFER_SIZE)
+
+			i.close()
+			o.close()
+
+			# XXX possibly, the database needs to be decompressed
+
+		# Reopen the database
+		self.db = database.RemotePackageDatabase(self.pakfire, cache.abspath(cache_filename))
 
 	def get_all_by_name(self, name):
 		c = self.db.cursor()
 		c.execute("SELECT * FROM packages WHERE name = ?", name)
 
 		for pkg in c:
-			yield package.DatabasePackage(self.pakfire, self.db, pkg)
+			yield package.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
 
 		c.close()
 
@@ -168,7 +210,7 @@ class DatabaseIndex(Index):
 		c.execute("SELECT * FROM packages")
 
 		for pkg in c:
-			yield packages.DatabasePackage(self.pakfire, self.db, pkg)
+			yield packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
 
 		c.close()
 

@@ -125,8 +125,26 @@ class TransactionSet(object):
 		else:
 			self.updates.append(pkg)
 
+	def _download(self, pkgs):
+		"""
+			Download all given packages and return a list of BinaryPackages.
+		"""
+		_pkgs = []
+		for pkg in pkgs:
+			if not isinstance(pkg, packages.BinaryPackage):
+				pkg = pkg.download()
+			_pkgs.append(pkg)
+
+		return _pkgs
+
 	def download(self):
-		pass
+		"""
+			Convert all packages to BinaryPackage.
+		"""
+		self.installs = self._download(self.installs)
+		self.install_deps = self._download(self.install_deps)
+		self.updates = self._download(self.updates)
+		self.update_deps = self._download(self.update_deps)
 
 
 class Transaction(object):
