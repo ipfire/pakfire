@@ -3,6 +3,7 @@
 import fnmatch
 import logging
 import os
+import shutil
 import stat
 import time
 
@@ -301,7 +302,12 @@ class LocalRepository(RepositoryFactory):
 			if not os.path.exists(repo_dirname):
 				os.makedirs(repo_dirname)
 
-			os.link(pkg.filename, repo_filename)
+			# Try to use a hard link if possible, if we cannot do that we simply
+			# copy the file.
+			try:
+				os.link(pkg.filename, repo_filename)
+			except OSError:
+				shutil.copy2(pkg.filename, repo_filename)
 
 		# Create new package object, that is connected to this repository
 		# and so we can do stuff.
