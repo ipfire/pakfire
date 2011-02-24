@@ -296,7 +296,10 @@ class Packager(object):
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
 
 			tar.add(file_real, arcname=file_tar, recursive=False)
-			os.unlink(file_real)
+
+			# Remove the file if it is not a directory.
+			if not os.path.isdir(file_real):
+				os.unlink(file_real)
 
 		# Dump all files that are in the archive.
 		tar.list()
