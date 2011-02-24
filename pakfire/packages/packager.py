@@ -292,35 +292,45 @@ class Packager(object):
 
 		files.sort()
 
+		filelist = open(self.archive_files["filelist"], mode="w")
+
 		for file_real in files:
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
+			file_tmp = os.path.join(self.tempdir, file_tar)
 
 			tar.add(file_real, arcname=file_tar, recursive=False)
 
-			# Remove the file if it is not a directory.
+			# Record the packaged file to the filelist.
+			filelist.write("/%s\n" % file_tar)
+
+			# "Copy" the file to the tmp path for later investigation.
+			if os.path.isdir(file_real):
+				file_dir = file_tmp
+			else:
+				file_dir = os.path.dirname(file_tmp)
+
+			if not os.path.exists(file_dir):
+				os.makedirs(file_dir)
+
+			if os.path.isfile(file_real):
+				os.link(file_real, file_tmp)
+
+			else:
+				shutil.copy2(file_real, file_tmp)
+
+			# Unlink the file and remove empty directories.
 			if not os.path.isdir(file_real):
 				os.unlink(file_real)
+
+			elif os.path.isdir(file_real) and not os.listdir(file_real):
+				os.rmdir(file_real)
 
 		# Dump all files that are in the archive.
 		tar.list()
 
 		# Write all data to disk.
 		tar.close()
-
-		# Reopen the tarfile in read mode and extract all content to tempdir
-		tar = InnerTarFile(self.archive_files["data.img"])
-		tar.extractall(path=self.tempdir)
-
-		# Write filelist
-		f = open(self.archive_files["filelist"], mode="w")
-		for filename in tar.getnames():
-			if not filename.startswith("/"):
-				filename = "/%s" % filename
-
-			f.write("%s\n" % filename)
-		f.close()
-
-		tar.close()
+		filelist.close()
 
 		# XXX compress the tarball here
 
