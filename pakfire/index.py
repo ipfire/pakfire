@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import json
 import logging
 import os
 import random
@@ -143,6 +144,14 @@ class DatabaseIndex(Index):
 		"""
 			Download the repository metadata and the package database.
 		"""
+
+		# XXX this code needs lots of work:
+		# XXX   * fix the hardcoded paths
+		# XXX   * make checks for downloads (filesize, hashsums)
+		# XXX   * don't download the package database in place
+		# XXX   * check the metadata content
+		# XXX   * use compression
+
 		# Shortcut to repository cache.
 		cache = self.repo.cache
 
@@ -168,11 +177,15 @@ class DatabaseIndex(Index):
 			with cache.open(cache_filename, "w") as o:
 				o.write(metadata)
 
-			# XXX need to parse metadata here
+		# Parse the metadata that we just downloaded or opened from cache.
+		f = cache.open(cache_filename)
+		metadata = json.loads(f.read())
+		f.close()
 
-		# XXX split this into two functions
+		# Get the filename of the package database from the metadata.
+		download_filename = "repodata/%s" % metadata.get("package_database")
 
-		cache_filename = "metadata/packages.db" # XXX just for now
+		cache_filename = "metadata/packages.db"
 
 		if not cache.exists(cache_filename):
 			# Initialize a grabber for download.
@@ -181,7 +194,7 @@ class DatabaseIndex(Index):
 			)
 			grabber = self.repo.mirrors.group(grabber)
 
-			i = grabber.urlopen("repodata/packages.db") # XXX just for now
+			i = grabber.urlopen(download_filename)
 			o = cache.open(cache_filename, "w")
 
 			buf = i.read(BUFFER_SIZE)
