@@ -269,12 +269,6 @@ class DatabaseIndex(InstalledIndex):
 
 			data = grabber.urlread(filename)
 
-			# check the hashsum of the downloaded file
-			if not util.calc_hash1(data=data) == self.metadata.database_hash1:
-				# XXX an exception is not a very good idea because this file could
-				# be downloaded from another mirror. need a better way to handle this.
-				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
-
 			with cache.open(filename, "w") as o:
 				o.write(data)
 
@@ -306,6 +300,12 @@ class DatabaseIndex(InstalledIndex):
 
 				i.close()
 				o.close()
+
+			# check the hashsum of the downloaded file
+			if not util.calc_hash1(cache.abspath(filename)) == self.metadata.database_hash1:
+				# XXX an exception is not a very good idea because this file could
+				# be downloaded from another mirror. need a better way to handle this.
+				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
 
 		# (Re-)open the database.
 		self.db = database.RemotePackageDatabase(self.pakfire,
@@ -348,6 +348,13 @@ class DatabaseIndex(InstalledIndex):
 		# Save the database to path and get the filename.
 		self.db.save(db_path)
 
+		# Make a reference to the database file that it will get a unique name
+		# so we won't get into any trouble with caching proxies.
+		db_hash = util.calc_hash1(db_path)
+
+		db_path2 = os.path.join(os.path.dirname(db_path),
+			"%s-%s" % (db_hash, os.path.basename(db_path)))
+
 		# Compress the database.
 		if compress:
 			i = open(db_path)
@@ -372,15 +379,8 @@ class DatabaseIndex(InstalledIndex):
 			i.close()
 			o.close()
 
-		# Make a reference to the database file that it will get a unique name
-		# so we won't get into any trouble with caching proxies.
-		db_hash = util.calc_hash1(db_path)
-
-		db_path2 = os.path.join(os.path.dirname(db_path),
-			"%s-%s" % (db_hash, os.path.basename(db_path)))
-
 		if not os.path.exists(db_path2):
-			os.link(db_path, db_path2)
+			shutil.move(db_path, db_path2)
 
 		# Create a new metadata object and add out information to it.
 		md = metadata.Metadata(self.pakfire, self)
