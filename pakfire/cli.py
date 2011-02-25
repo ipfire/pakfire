@@ -30,8 +30,6 @@ def ask_user(question):
 
 
 class Cli(object):
-	# XXX check if we are running as the root user
-
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire command line interface."),

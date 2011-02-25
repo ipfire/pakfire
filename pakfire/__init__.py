@@ -26,6 +26,9 @@ __version__ = 0.1
 class Pakfire(object):
 	def __init__(self, path="/tmp/pakfire", builder=False, configs=[],
 			disable_repos=None):
+		# Check if we are operating as the root user.
+		self.check_root_user()
+
 		# The path where we are operating in
 		self.path = path
 
@@ -72,6 +75,10 @@ class Pakfire(object):
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
 		self.repos.update_indexes()
+
+	def check_root_user(self):
+		if not os.getuid() == 0 or not os.getgid() == 0:
+			raise Exception, "You must run pakfire as the root user."
 
 	def check_build_mode(self):
 		"""
