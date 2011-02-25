@@ -375,7 +375,7 @@ class RepositoryCache(object):
 		"""
 			Create all necessary directories.
 		"""
-		for path in ("mirrors", "packages", "metadata"):
+		for path in ("mirrors", "packages", "repodata"):
 			path = self.abspath(path)
 
 			if not os.path.exists(path):

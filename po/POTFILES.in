@@ -12,6 +12,7 @@ pakfire/i18n.py
 pakfire/index.py
 pakfire/__init__.py
 pakfire/logger.py
+pakfire/metadata.py
 pakfire/packages/base.py
 pakfire/packages/binary.py
 pakfire/packages/__init__.py

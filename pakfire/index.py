@@ -8,6 +8,7 @@ import shutil
 
 import database
 import downloader
+import metadata
 import packages
 import repository
 import util
@@ -122,93 +123,12 @@ class DirectoryIndex(Index):
 		db.close()
 
 
-class DatabaseIndex(Index):
+class InstalledIndex(Index):
 	def __init__(self, pakfire, repo):
 		Index.__init__(self, pakfire, repo)
 
-		self.db = None
-
-		if isinstance(repo, repository.InstalledRepository):
-			self.db = database.LocalPackageDatabase(self.pakfire)
-
-		else:
-			# Generate path to database file.
-			filename = os.path.join(repo.path, ".index.db.%s" % random.randint(0, 1024))
-			self.db = database.RemotePackageDatabase(self.pakfire, filename)
-
-	@property
-	def local(self):
-		pass
-
-	def update(self, force=False):
-		"""
-			Download the repository metadata and the package database.
-		"""
-
-		# XXX this code needs lots of work:
-		# XXX   * fix the hardcoded paths
-		# XXX   * make checks for downloads (filesize, hashsums)
-		# XXX   * don't download the package database in place
-		# XXX   * check the metadata content
-		# XXX   * use compression
-
-		# Shortcut to repository cache.
-		cache = self.repo.cache
-
-		cache_filename = "metadata/repomd.json"
-
-		# Marker if we need to do the download.
-		download = True
-
-		# Check if file does exists and is not too old.
-		if cache.exists(cache_filename):
-			age = cache.age(cache_filename)
-			if age and age < TIME_10M:
-				download = False
-
-		if download:
-			# Initialize a grabber for download.
-			grabber = downloader.MetadataDownloader()
-			grabber = self.repo.mirrors.group(grabber)
-
-			# XXX do we need limit here for security reasons?
-			metadata = grabber.urlread("repodata/repomd.json")
-
-			with cache.open(cache_filename, "w") as o:
-				o.write(metadata)
-
-		# Parse the metadata that we just downloaded or opened from cache.
-		f = cache.open(cache_filename)
-		metadata = json.loads(f.read())
-		f.close()
-
-		# Get the filename of the package database from the metadata.
-		download_filename = "repodata/%s" % metadata.get("package_database")
-
-		cache_filename = "metadata/packages.db"
-
-		if not cache.exists(cache_filename):
-			# Initialize a grabber for download.
-			grabber = downloader.DatabaseDownloader(
-				text = _("%s: package database") % self.repo.name,
-			)
-			grabber = self.repo.mirrors.group(grabber)
-
-			i = grabber.urlopen(download_filename)
-			o = cache.open(cache_filename, "w")
-
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(buf)
-				buf = i.read(BUFFER_SIZE)
-
-			i.close()
-			o.close()
-
-			# XXX possibly, the database needs to be decompressed
-
-		# Reopen the database
-		self.db = database.RemotePackageDatabase(self.pakfire, cache.abspath(cache_filename))
+		# Open the database.
+		self.db = database.LocalPackageDatabase(self.pakfire)
 
 	def __get_from_cache(self, pkg):
 		"""
@@ -264,6 +184,7 @@ class DatabaseIndex(Index):
 		return self.db.add_package(pkg, reason)
 
 	def tag_db(self):
+		# XXX DEPRECATED
 		self.db.close()
 
 		# Calculate a filename that is based on the hash of the file
@@ -277,7 +198,100 @@ class DatabaseIndex(Index):
 		self.db = database.RemotePackageDatabase(self.pakfire, self.db.filename)
 
 
-# XXX maybe this can be removed later?
-class InstalledIndex(DatabaseIndex):
-	pass
+class DatabaseIndex(InstalledIndex):
+	def __init__(self, pakfire, repo):
+		Index.__init__(self, pakfire, repo)
+
+		# Initialize with no content.
+		self.db, self.metadata = None, None
+
+	def _update_metadata(self, force):
+		# Shortcut to repository cache.
+		cache = self.repo.cache
+
+		filename = METADATA_DOWNLOAD_FILE
+
+		# Marker if we need to do the download.
+		download = True
+
+		# Marker for the current metadata.
+		old_metadata = None
+
+		if not force:
+			# Check if file does exists and is not too old.
+			if cache.exists(filename):
+				age = cache.age(filename)
+				if age and age < TIME_10M:
+					download = False
+					logging.debug("Metadata is recent enough. I don't download it again.")
+
+				# Open old metadata for comparison.
+				old_metadata = metadata.Metadata(self.pakfire, self,
+					cache.abspath(filename))
+
+		if download:
+			logging.debug("Going to (re-)download the repository metadata.")
+
+			# Initialize a grabber for download.
+			grabber = downloader.MetadataDownloader()
+			grabber = self.repo.mirrors.group(grabber)
+
+			data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
+
+			# Parse new metadata for comparison.
+			new_metadata = metadata.Metadata(self.pakfire, self, metadata=data)
+
+			if old_metadata and new_metadata < old_metadata:
+				logging.warning("The downloaded metadata was less recent than the current one. Trashing that.")
+
+			else:
+				# We explicitely rewrite the metadata if it is equal to have
+				# a new timestamp and do not download it over and over again.
+				with cache.open(filename, "w") as o:
+					o.write(data)
+
+		# Parse the metadata that we just downloaded or load it from cache.
+		self.metadata = metadata.Metadata(self.pakfire, self,
+			cache.abspath(filename))
+
+	def _update_database(self, force):
+		# Shortcut to repository cache.
+		cache = self.repo.cache
+
+		# Construct cache and download filename.
+		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
+
+		if not cache.exists(filename):
+			# Initialize a grabber for download.
+			grabber = downloader.DatabaseDownloader(
+				text = _("%s: package database") % self.repo.name,
+			)
+			grabber = self.repo.mirrors.group(grabber)
+
+			data = grabber.urlread(filename)
+
+			with cache.open(filename, "w") as o:
+				o.write(data)
+
+			# XXX possibly, the database needs to be decompressed
+
+		# (Re-)open the database.
+		self.db = database.RemotePackageDatabase(self.pakfire,
+			cache.abspath(filename))
+
+	def update(self, force=False):
+		"""
+			Download the repository metadata and the package database.
+		"""
+
+		# At first, update the metadata.
+		self._update_metadata(force)
+
+		# Then, we download the database eventually.
+		self._update_database(force)
+
+		# XXX this code needs lots of work:
+		# XXX   * make checks for downloads (hashsums)
+		# XXX   * check the metadata content
+		# XXX   * use compression
 
