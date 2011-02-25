@@ -7,6 +7,7 @@ import math
 import os
 import re
 import shutil
+import socket
 import stat
 import time
 
@@ -24,7 +25,7 @@ class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pakfire, pkg, **settings):
+	def __init__(self, pakfire, pkg, build_id="", **settings):
 		self.pakfire = pakfire
 		self.pkg = pkg
 
@@ -41,8 +42,21 @@ class Builder(object):
 		self._lock = None
 		self.lock()
 
+		# Save the build time.
+		self.build_time = int(time.time())
+		self.build_id = build_id
+
 		# Initialize the environment
 		self.prepare()
+
+	@property
+	def info(self):
+		return {
+			"build_date" : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(self.build_time)),
+			"build_host" : socket.gethostname(),
+			"build_id"   : self.build_id,
+			"build_time" : self.build_time,
+		}
 
 	@property
 	def path(self):

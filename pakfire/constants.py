@@ -57,9 +57,10 @@ BINARY_PACKAGE_META = """\
 VERSION="%(package_format)s"
 
 # Build information
-BUILD_DATE="XXX"
-BUILD_HOST="XXX"
-BUILD_ID="XXX"
+BUILD_DATE="%(build_date)s"
+BUILD_HOST="%(build_host)s"
+BUILD_ID="%(build_id)s"
+BUILD_TIME="%(build_time)s"
 
 # Distribution information
 DISTRO_NAME="%(distro_name)s"

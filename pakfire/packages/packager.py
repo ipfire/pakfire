@@ -194,6 +194,7 @@ class Packager(object):
 		}
 		self.info.update(self.pkg.info)
 		self.info.update(self.pakfire.distro.info)
+		self.info.update(self.env.info)
 
 		### Create temporary files
 		# Create temp directory to where we extract all files again and
