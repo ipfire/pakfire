@@ -94,3 +94,12 @@ class Metadata(object):
 		self._data["database_hash1"] = val
 
 	database_hash1 = property(get_database_hash1, set_database_hash1)
+
+	def get_database_compression(self):
+		return self._data.get("database_compression", None)
+
+	def set_database_compression(self, val):
+		self._data["database_compression"] = val
+
+	database_compression = property(get_database_compression,
+		set_database_compression)

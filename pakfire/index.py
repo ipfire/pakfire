@@ -2,9 +2,11 @@
 
 import json
 import logging
+import lzma
 import os
 import random
 import shutil
+import zlib
 
 import database
 import downloader
@@ -272,7 +274,34 @@ class DatabaseIndex(InstalledIndex):
 			with cache.open(filename, "w") as o:
 				o.write(data)
 
-			# XXX possibly, the database needs to be decompressed
+			# decompress the database
+			if self.metadata.database_compression:
+				# Open input file and remove the file immediately.
+				# The fileobj is still open and the data will be removed
+				# when it is closed.
+				i = cache.open(filename)
+				cache.remove(filename)
+
+				# Open output file.
+				o = cache.open(filename, "w")
+
+				# Choose a decompessor.
+				if self.metadata.database_compression == "xz":
+					comp = lzma.LZMADecompressor()
+
+				elif self.metadata.database_compression == "zlib":
+					comp = zlib.decompressobj()
+
+				buf = i.read(BUFFER_SIZE)
+				while buf:
+					o.write(comp.decompress(buf))
+
+					buf = i.read(BUFFER_SIZE)
+
+				o.write(decompressor.flush())
+
+				i.close()
+				o.close()
 
 		# (Re-)open the database.
 		self.db = database.RemotePackageDatabase(self.pakfire,
@@ -296,9 +325,8 @@ class DatabaseIndex(InstalledIndex):
 		# XXX this code needs lots of work:
 		# XXX   * make checks for downloads (hashsums)
 		# XXX   * check the metadata content
-		# XXX   * use compression
 
-	def save(self, path=None):
+	def save(self, path=None, compress="xz"):
 		"""
 			This function saves the database and metadata to path so it can
 			be exported to a remote repository.
@@ -314,8 +342,32 @@ class DatabaseIndex(InstalledIndex):
 		if not os.path.exists(metapath):
 			os.makedirs(metapath)
 
-		# Save the database to path and get the filename
+		# Save the database to path and get the filename.
 		self.db.save(db_path)
+
+		# Compress the database.
+		if compress:
+			i = open(db_path)
+			os.unlink(db_path)
+
+			o = open(db_path, "w")
+
+			# Choose a compressor.
+			if compress == "xz":
+				comp = lzma.LZMACompressor()
+			elif compress == "zlib":
+				comp = zlib.compressobj(9)
+
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(comp.compress(buf))
+
+				buf = i.read(BUFFER_SIZE)
+
+			o.write(comp.flush())
+
+			i.close()
+			o.close()
 
 		# Make a reference to the database file that it will get a unique name
 		# so we won't get into any trouble with caching proxies.
@@ -333,6 +385,7 @@ class DatabaseIndex(InstalledIndex):
 		# Save name of the hashed database to the metadata.
 		md.database = os.path.basename(db_path2)
 		md.database_hash1 = db_hash
+		md.database_compression = compress
 
 		# Save metdata to repository.
 		md.save(md_path)
