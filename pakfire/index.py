@@ -302,7 +302,7 @@ class DatabaseIndex(InstalledIndex):
 
 					buf = i.read(BUFFER_SIZE)
 
-				o.write(decompressor.flush())
+				o.write(comp.flush())
 
 				i.close()
 				o.close()
