@@ -241,8 +241,10 @@ class LocalRepository(RepositoryFactory):
 	def __init__(self, pakfire, name, description, path):
 		RepositoryFactory.__init__(self, pakfire, name, description)
 
-		# Save location of the repository
+		# Save location of the repository and create it if not existant.
 		self.path = path
+		if not os.path.exists(self.path):
+			os.makedirs(self.path)
 
 		self.index = index.DatabaseIndex(self.pakfire, self)
 
@@ -281,7 +283,7 @@ class LocalRepository(RepositoryFactory):
 		if not isinstance(pkg, packages.BinaryPackage):
 			raise Exception
 
-		repo_filename = os.path.join(self.path, pkg.arch, os.path.basename(pkg.filename))
+		repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
 
 		# Do we need to copy the package files?
 		copy = True
@@ -315,6 +317,12 @@ class LocalRepository(RepositoryFactory):
 
 		logging.info("Adding package '%s' to repository." % pkg.friendly_name)
 		self.index.add_package(pkg)
+
+	def save(self, path=None):
+		"""
+			Save the index information to path.
+		"""
+		self.index.save(path)
 
 
 class InstalledRepository(RepositoryFactory):

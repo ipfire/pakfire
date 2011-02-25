@@ -188,9 +188,6 @@ class Pakfire(object):
 		return pkgs
 
 	def repo_create(self, path, input_paths):
-		if not os.path.exists(path) or not os.path.isdir(path):
-			raise PakfireError, "Given path is not existant or not a directory: %s" % path
-
 		repo = repository.LocalRepository(
 			self,
 			name="new",
@@ -198,7 +195,13 @@ class Pakfire(object):
 			path=path,
 		)
 
+		# Create a new temporary repository.
+		repo.index.create_database()
+
 		for input_path in input_paths:
 			repo._collect_packages(input_path)
 
-		repo.index.tag_db()
+		repo.save()
+
+		# Destroy the temporary database.
+		repo.index.destroy_database()

@@ -2,6 +2,7 @@
 
 import logging
 import os
+import shutil
 import sqlite3
 import time
 
@@ -45,12 +46,23 @@ class Database(object):
 
 	def close(self):
 		self._db.close()
+		self._db = None
 
 	def commit(self):
 		self._db.commit()
 
 	def cursor(self):
 		return self._db.cursor()
+
+	def save(self, path):
+		"""
+			Save (means copy) the database to path.
+		"""
+		# Commit all data in memory to the database.
+		self.commit()
+
+		# Copy the file.
+		shutil.copy(self.filename, path)
 
 
 class PackageDatabase(Database):

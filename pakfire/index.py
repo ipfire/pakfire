@@ -205,11 +205,22 @@ class DatabaseIndex(InstalledIndex):
 		# Initialize with no content.
 		self.db, self.metadata = None, None
 
+	def create_database(self):
+		filename = "/tmp/.%s-%s" % (random.randint(0, 1024**2), METADATA_DATABASE_FILE)
+
+		self.db = database.RemotePackageDatabase(self.pakfire, filename)
+
+	def destroy_database(self):
+		if self.db:
+			self.db.close()
+
+			os.unlink(self.db.filename)
+
 	def _update_metadata(self, force):
 		# Shortcut to repository cache.
 		cache = self.repo.cache
 
-		filename = METADATA_DOWNLOAD_FILE
+		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
 
 		# Marker if we need to do the download.
 		download = True
@@ -270,6 +281,8 @@ class DatabaseIndex(InstalledIndex):
 
 			data = grabber.urlread(filename)
 
+			# XXX check the hashsum of the downloaded file
+
 			with cache.open(filename, "w") as o:
 				o.write(data)
 
@@ -284,6 +297,10 @@ class DatabaseIndex(InstalledIndex):
 			Download the repository metadata and the package database.
 		"""
 
+		# Skip the download for local repositories.
+		if self.repo.local:
+			return
+
 		# At first, update the metadata.
 		self._update_metadata(force)
 
@@ -295,3 +312,41 @@ class DatabaseIndex(InstalledIndex):
 		# XXX   * check the metadata content
 		# XXX   * use compression
 
+	def save(self, path=None):
+		"""
+			This function saves the database and metadata to path so it can
+			be exported to a remote repository.
+		"""
+		if not path:
+			path = self.repo.path
+
+		# Create filenames
+		metapath = os.path.join(path, METADATA_DOWNLOAD_PATH)
+		db_path  = os.path.join(metapath, METADATA_DATABASE_FILE)
+		md_path  = os.path.join(metapath, METADATA_DOWNLOAD_FILE)
+
+		if not os.path.exists(metapath):
+			os.makedirs(metapath)
+
+		# Save the database to path and get the filename
+		self.db.save(db_path)
+
+		# Make a reference to the database file that it will get a unique name
+		# so we won't get into any trouble with caching proxies.
+		db_hash = util.calc_hash1(db_path)
+
+		db_path2 = os.path.join(os.path.dirname(db_path),
+			"%s-%s" % (db_hash, os.path.basename(db_path)))
+
+		if not os.path.exists(db_path2):
+			os.link(db_path, db_path2)
+
+		# Create a new metadata object and add out information to it.
+		md = metadata.Metadata(self.pakfire, self)
+
+		# Save name of the hashed database to the metadata.
+		md.database = os.path.basename(db_path2)
+		md.database_hash1 = db_hash
+
+		# Save metdata to repository.
+		md.save(md_path)

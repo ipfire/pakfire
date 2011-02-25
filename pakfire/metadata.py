@@ -83,6 +83,14 @@ class Metadata(object):
 		return self._data.get("database")
 
 	def set_database(self, val):
-		self._data.set("database", val)
+		self._data["database"] = val
 
 	database = property(get_database, set_database)
+
+	def get_database_hash1(self):
+		return self._data.get("database_hash1", None)
+
+	def set_database_hash1(self, val):
+		self._data["database_hash1"] = val
+
+	database_hash1 = property(get_database_hash1, set_database_hash1)
