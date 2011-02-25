@@ -68,16 +68,21 @@ def format_size(s):
 
 	return "%d%s" % (int(s), units[unit])
 
-def calc_hash1(filename):
+def calc_hash1(filename=None, data=None):
 	h = hashlib.sha1()
 
-	f = open(filename)
-	buf = f.read(BUFFER_SIZE)
-	while buf:
-		h.update(buf)
+	if filename:
+		f = open(filename)
 		buf = f.read(BUFFER_SIZE)
+		while buf:
+			h.update(buf)
+			buf = f.read(BUFFER_SIZE)
 
-	f.close()
+		f.close()
+
+	elif data:
+		h.update(data)
+
 	return h.hexdigest()
 
 def parse_pkg_expr(s):

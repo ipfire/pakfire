@@ -269,7 +269,11 @@ class DatabaseIndex(InstalledIndex):
 
 			data = grabber.urlread(filename)
 
-			# XXX check the hashsum of the downloaded file
+			# check the hashsum of the downloaded file
+			if not util.calc_hash1(data=data) == self.metadata.database_hash1:
+				# XXX an exception is not a very good idea because this file could
+				# be downloaded from another mirror. need a better way to handle this.
+				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
 
 			with cache.open(filename, "w") as o:
 				o.write(data)
@@ -323,7 +327,6 @@ class DatabaseIndex(InstalledIndex):
 		self._update_database(force)
 
 		# XXX this code needs lots of work:
-		# XXX   * make checks for downloads (hashsums)
 		# XXX   * check the metadata content
 
 	def save(self, path=None, compress="xz"):
