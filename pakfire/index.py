@@ -183,20 +183,6 @@ class InstalledIndex(Index):
 	def add_package(self, pkg, reason=None):
 		return self.db.add_package(pkg, reason)
 
-	def tag_db(self):
-		# XXX DEPRECATED
-		self.db.close()
-
-		# Calculate a filename that is based on the hash of the file
-		# (just to trick proxies, etc.)
-		filename = util.calc_hash1(self.db.filename) + "-packages.db"
-
-		# Copy the database to the right place.
-		shutil.copy2(self.db.filename, os.path.join(self.repo.path, filename))
-
-		# Reopen the database.
-		self.db = database.RemotePackageDatabase(self.pakfire, self.db.filename)
-
 
 class DatabaseIndex(InstalledIndex):
 	def __init__(self, pakfire, repo):
