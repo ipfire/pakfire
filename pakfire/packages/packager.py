@@ -5,6 +5,7 @@ import logging
 import lzma
 import os
 import progressbar
+import shutil
 import sys
 import tarfile
 import tempfile
