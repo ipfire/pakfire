@@ -305,6 +305,10 @@ class DatabaseIndex(InstalledIndex):
 			if not util.calc_hash1(cache.abspath(filename)) == self.metadata.database_hash1:
 				# XXX an exception is not a very good idea because this file could
 				# be downloaded from another mirror. need a better way to handle this.
+
+				# Remove bad file from cache.
+				cache.remove(filename)
+
 				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
 
 		# (Re-)open the database.
