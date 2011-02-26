@@ -319,6 +319,10 @@ class Packager(object):
 			if os.path.isfile(file_real):
 				os.link(file_real, file_tmp)
 
+			elif os.path.islink(file_real):
+				# Dead symlinks cannot be copied by shutil.
+				os.symlink(os.readlink(file_real), file_tmp)
+
 			else:
 				shutil.copy2(file_real, file_tmp)
 
