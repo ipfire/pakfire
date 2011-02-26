@@ -141,7 +141,7 @@ class Pakfire(object):
 
 		try:
 			b.prepare()
-			b.extract(SHELL_PACKAGES)
+			b.extract()
 			b.shell()
 		finally:
 			b.cleanup()

@@ -136,40 +136,34 @@ class Builder(object):
 
 				self.copyout(file_in, file_out)
 
-	def extract(self, requires=[], build_deps=True):
+	def extract(self, requires=None, build_deps=True):
 		"""
 			Gets a dependency set and extracts all packages
 			to the environment.
 		"""
-		ds = depsolve.DependencySet(self.pakfire)
-		for p in BUILD_PACKAGES + requires:
-			ds.add_requires(p)
+		if not requires:
+			requires = []
 
-		# XXX just because I screwed things up
-		# Adds all packages to the chroot environment
-		#for p in self.pakfire.repos.get_all():
-		#	ds.add_requires(p.name)
+		# Add neccessary build dependencies.
+		requires += BUILD_PACKAGES
 
 		# If we have ccache enabled, we need to extract it
 		# to the build chroot.
 		if self.settings.get("enable_ccache"):
-			ds.add_requires("ccache")
+			requires.append("ccache")
 
 		# If we have icecream enabled, we need to extract it
 		# to the build chroot.
 		if self.settings.get("enable_icecream"):
-			ds.add_requires("icecream")
-
-		ds.resolve()
-		ds.dump()
+			requires.append("icecream")
 
 		# Get build dependencies from source package.
 		if isinstance(self.pkg, packages.SourcePackage):
 			for req in self.pkg.requires:
-				ds.add_requires(req)
+				requires.append(req)
 
-		ts = transaction.Transaction(self.pakfire, ds)
-		ts.run()
+		# Install all packages.
+		self.install(requires)
 
 		# Copy the makefile and load source tarballs.
 		if isinstance(self.pkg, packages.Makefile):
@@ -182,14 +176,20 @@ class Builder(object):
 			if not requires:
 				return
 
-			ds = depsolve.DependencySet(self.pakfire)
-			for r in requires:
-				ds.add_requires(r)
-			ds.resolve()
-			ds.dump()
+			self.install(requires)
 
-			ts = transaction.Transaction(self.pakfire, ds)
-			ts.run()
+	def install(self, requires):
+		"""
+			Install everything that is required in requires.
+		"""
+		ds = depsolve.DependencySet(self.pakfire)
+		for r in requires:
+			ds.add_requires(r)
+		ds.resolve()
+		ds.dump()
+
+		ts = transaction.Transaction(self.pakfire, ds)
+		ts.run()
 
 	@property
 	def log(self):
@@ -549,6 +549,9 @@ class Builder(object):
 		if not util.cli_is_interactive():
 			logging.warning("Cannot run shell on non-interactive console.")
 			return
+
+		# Install all packages that are needed to run a shell.
+		self.install(SHELL_PACKAGES)
 
 		# XXX need to set CFLAGS here
 		command = "/usr/sbin/chroot %s /usr/bin/chroot-shell %s" % \
