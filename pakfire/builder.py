@@ -10,6 +10,7 @@ import shutil
 import socket
 import stat
 import time
+import uuid
 
 import depsolve
 import packages
@@ -25,7 +26,7 @@ class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pakfire, pkg, build_id="", **settings):
+	def __init__(self, pakfire, pkg, build_id=None, **settings):
 		self.pakfire = pakfire
 		self.pkg = pkg
 
@@ -44,6 +45,11 @@ class Builder(object):
 
 		# Save the build time.
 		self.build_time = int(time.time())
+
+		# Save the build id and generate one if no build id was provided.
+		if not build_id:
+			build_id = uuid.uuid4()
+
 		self.build_id = build_id
 
 		# Initialize the environment
