@@ -72,6 +72,7 @@ PKG_NAME="%(name)s"
 PKG_VER="%(version)s"
 PKG_REL="%(release)s"
 PKG_EPOCH="%(epoch)s"
+PKG_UUID="%(package_uuid)s"
 
 PKG_GROUP="%(group)s"
 PKG_ARCH="%(arch)s"

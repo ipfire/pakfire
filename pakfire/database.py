@@ -95,6 +95,7 @@ class PackageDatabase(Database):
 				license		TEXT,
 				summary		TEXT,
 				description	TEXT,
+				uuid		TEXT,
 				build_id	TEXT,
 				build_host	TEXT,
 				build_date	INTEGER
@@ -170,10 +171,11 @@ class RemotePackageDatabase(PackageDatabase):
 				license,
 				summary,
 				description,
+				uuid,
 				build_id,
 				build_host,
 				build_date
-			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 			(
 				pkg.name,
 				pkg.epoch,
@@ -190,6 +192,7 @@ class RemotePackageDatabase(PackageDatabase):
 				pkg.license,
 				pkg.summary,
 				pkg.description,
+				pkg.uuid,
 				pkg.build_id,
 				pkg.build_host,
 				pkg.build_date

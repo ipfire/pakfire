@@ -9,6 +9,7 @@ import shutil
 import sys
 import tarfile
 import tempfile
+import uuid
 import xattr
 
 from pakfire.constants import *
@@ -192,6 +193,7 @@ class Packager(object):
 		# Store meta information
 		self.info = {
 			"package_format" : PACKAGE_FORMAT,
+			"package_uuid" : uuid.uuid4(),
 		}
 		self.info.update(self.pkg.info)
 		self.info.update(self.pakfire.distro.info)

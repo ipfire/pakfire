@@ -64,6 +64,7 @@ class Package(object):
 			caption = ""
 
 		if long:
+			items.append((_("UUID"), self.uuid))
 			items.append((_("Build ID"), self.build_id))
 			items.append((_("Build date"), self.build_date))
 			items.append((_("Build host"), self.build_host))
@@ -226,6 +227,10 @@ class Package(object):
 		build_time = self.metadata.get("BUILD_TIME", 0)
 
 		return int(build_time)
+
+	@property
+	def uuid(self):
+		return self.metadata.get("PKG_UUID", None)
 
 	@property
 	def _provides(self):
