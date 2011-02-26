@@ -256,11 +256,6 @@ class Package(object):
 		if not isinstance(requires, pakfire.depsolve.Requires):
 			requires = pakfire.depsolve.Requires(self, requires)
 
-		# If the provides string equals the name of the package, we
-		# return true.
-		if self.name == requires.requires:
-			return True
-
 		# Get all provide strings from the package data
 		# and return true if requires is matched.
 		if requires.requires in self.provides:

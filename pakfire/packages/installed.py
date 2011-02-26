@@ -101,14 +101,18 @@ class DatabasePackage(Package):
 
 	@property
 	def provides(self):
-		provides = self.metadata.get("provides", "").split()
+		if not hasattr(self, "__provides"):
+			# Get automatic provides
+			provides = self._provides
 
-		# Add autoprovides
-		for prov in self._provides:
-			if not prov in provides:
-				provides.append(prov)
+			# Add other provides
+			for prov in self.metadata.get("provides", "").split():
+				if not prov in provides:
+					provides.append(prov)
 
-		return provides
+			self.__provides = provides
+
+		return self.__provides
 
 	@property
 	def requires(self):
@@ -142,17 +146,17 @@ class DatabasePackage(Package):
 
 	@property
 	def filelist(self):
-		c = self.db.cursor()
-		c.execute("SELECT name FROM files WHERE pkg = '%s'" % self.id) # XXX?
+		if not hasattr(self, "__filelist"):
+			c = self.db.cursor()
+			c.execute("SELECT name FROM files WHERE pkg = ?", (self.id,))
 
-		for f in c:
-			filename = f["name"]
-			if not filename.startswith("/"):
-				filename = "/%s" % filename
+			self.__filelist = []
+			for f in c:
+				self.__filelist.append(f["name"])
 
-			yield filename
+			c.close()
 
-		c.close()
+		return self.__filelist
 
 	def _does_provide_file(self, requires):
 		"""
