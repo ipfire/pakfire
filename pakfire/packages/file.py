@@ -147,7 +147,17 @@ class FilePackage(Package):
 		"""
 			Return the compression type of the payload.
 		"""
-		return self.metadata.get("PKG_PAYLOAD_COMP")
+		comp = self.metadata.get("PKG_PAYLOAD_COMP", None)
+
+		# Remove triple X placeholder that was used some time.
+		if comp == "X"*3:
+			comp = None
+
+		# XXX remove that later, because of compatibility for naoki.
+		elif not comp:
+			comp = "xz"
+
+		return comp
 
 	@property
 	def signature(self):

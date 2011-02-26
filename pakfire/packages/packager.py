@@ -11,6 +11,7 @@ import tarfile
 import tempfile
 import uuid
 import xattr
+import zlib
 
 from pakfire.constants import *
 from pakfire.i18n import _
@@ -25,28 +26,30 @@ class Extractor(object):
 		self.archive = None
 		self._tempfile = None
 
-		if pkg.payload_compression == "XXX":
-			self.archive = tarfile.open(fileobj=self.data)
+		if self.pkg.payload_compression:
+			self.uncompress_payload()
 		else:
-			self._uncompress_data()
+			self.archive = tarfile.open(fileobj=self.data)
 
 	def cleanup(self):
 		# XXX not called by anything
 		if self._tempfile:
 			os.unlink(self._tempfile)
 
-	def _uncompress_data(self):
+	def uncompress_payload(self):
 		# XXX this function uncompresses the data.img file
 		# and saves the bare tarball to /tmp which takes a lot
 		# of space.
-
-		self.data.seek(0)
 
 		# Create a temporary file to save the content in
 		f, self._tempfile = tempfile.mkstemp()
 		f = open(self._tempfile, "w")
 
-		decompressor = lzma.LZMADecompressor()
+		if self.pkg.payload_compression == "xz":
+			decompressor = lzma.LZMADecompressor()
+
+		elif self.pkg.payload_compression == "zlib":
+			decompressor = zlib.decompressobj()
 
 		buf = self.data.read(BUFFER_SIZE)
 		while buf:
@@ -194,6 +197,7 @@ class Packager(object):
 		self.info = {
 			"package_format" : PACKAGE_FORMAT,
 			"package_uuid" : uuid.uuid4(),
+			"payload_comp" : None,
 		}
 		self.info.update(self.pkg.info)
 		self.info.update(self.pakfire.distro.info)
@@ -243,7 +247,7 @@ class Packager(object):
 
 		tar.close()
 
-	def create_tarball(self):
+	def create_tarball(self, compress="xz"):
 		tar = InnerTarFile(self.archive_files["data.img"], mode="w", env=self.env)
 
 		includes = []
@@ -336,7 +340,35 @@ class Packager(object):
 		tar.close()
 		filelist.close()
 
-		# XXX compress the tarball here
+		# compress the tarball here
+		if compress:
+			# Save algorithm to metadata.
+			self.info["payload_comp"] = compress
+
+			logging.debug("Compressing package with %s algorithm." % compress or "no")
+
+			filename = self.archive_files["data.img"]
+			i = open(filename)
+			os.unlink(filename)
+
+			o = open(filename, "w")
+
+			if compress == "xz":
+				comp = lzma.LZMACompressor()
+
+			elif compress == "zlib":
+				comp = zlib.compressobj(9)
+
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(comp.compress(buf))
+
+				buf = i.read(BUFFER_SIZE)
+
+			o.write(comp.flush())
+
+			i.close()
+			o.close()
 
 	def create_info(self):
 		f = open(self.archive_files["info"], "w")
