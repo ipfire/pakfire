@@ -85,7 +85,7 @@ PKG_SUMMARY="%(summary)s"
 PKG_DESCRIPTION="%(description)s"
 
 # Dependency info
-PKG_DEPS="%(requires)s"
+PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
 
 PKG_PAYLOAD_COMP="XXX"
