@@ -36,7 +36,7 @@ MAKEFILE_EXTENSION = "nm"
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
 BUILD_PACKAGES = ["build-essentials",]
-SHELL_PACKAGES = ["less", "vim",]
+SHELL_PACKAGES = ["less", "pakfire", "vim",]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"
@@ -85,10 +85,9 @@ PKG_SUMMARY="%(summary)s"
 PKG_DESCRIPTION="%(description)s"
 
 # Dependency info
-PKG_DEPS="%(requires)s"
+PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
 
-PKG_PAYLOAD_COMP="XXX"
-PKG_PAYLOAD_SIZE="107869"
+PKG_PAYLOAD_COMP="%(payload_comp)s"
 
 """

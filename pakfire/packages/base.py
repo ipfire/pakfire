@@ -249,6 +249,9 @@ class Package(object):
 
 	### methods ###
 
+	def _does_provide_file(self, requires):
+		return requires.requires in self.filelist
+
 	def does_provide(self, requires):
 		if not isinstance(requires, pakfire.depsolve.Requires):
 			requires = pakfire.depsolve.Requires(self, requires)
@@ -264,7 +267,7 @@ class Package(object):
 			return True
 
 		if requires.type == "file":
-			return requires.requires in self.filelist
+			return self._does_provide_file(requires)
 
 		elif requires.type == "expr":
 			# Handle all expressions like "gcc>=4.0.0-1"

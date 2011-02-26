@@ -154,6 +154,23 @@ class DatabasePackage(Package):
 
 		c.close()
 
+	def _does_provide_file(self, requires):
+		"""
+			A faster version to find a file in the database.
+		"""
+		c = self.db.cursor()
+		c.execute("SELECT pkg FROM files WHERE name = ?", (requires.requires,))
+
+		ret = False
+		for pkg in c:
+			if self.id == pkg[0]:
+				ret = True
+				break
+
+		c.close()
+
+		return ret
+
 	def download(self, text=""):
 		"""
 			Downloads the package from repository and returns a new instance
