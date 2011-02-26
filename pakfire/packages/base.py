@@ -23,6 +23,10 @@ class Package(object):
 		if not self.name == other.name:
 			return cmp(self.name, other.name)
 
+		# Compare the uuids: if packages have the same id they are totally equal.
+		if self.uuid and self.uuid == other.uuid:
+			return 0
+
 		ret = util.version_compare(self.version_tuple, other.version_tuple)
 
 		# Compare the build times if we have a rebuilt package.
