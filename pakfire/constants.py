@@ -89,6 +89,5 @@ PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
 
 PKG_PAYLOAD_COMP="%(payload_comp)s"
-PKG_PAYLOAD_SIZE="107869"
 
 """
