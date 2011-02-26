@@ -114,9 +114,10 @@ class Pakfire(object):
 		resultdirs.append(self.repos.local_build.path)
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
-		b.extract()
 
 		try:
+			b.prepare()
+			b.extract()
 			b.build()
 
 			# Copy-out all resultfiles
@@ -133,9 +134,10 @@ class Pakfire(object):
 		self.check_host_arch(arch)
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
-		b.extract(SHELL_PACKAGES)
 
 		try:
+			b.prepare()
+			b.extract(SHELL_PACKAGES)
 			b.shell()
 		finally:
 			b.cleanup()
@@ -144,7 +146,13 @@ class Pakfire(object):
 		self.check_build_mode()
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
-		b.extract(build_deps=False)
+		try:
+			b.prepare()
+			b.extract(build_deps=False)
+		except:
+			# If there is any exception, we cleanup our stuff and raise it.
+			b.cleanup()
+			raise
 
 		if not resultdirs:
 			resultdirs = []

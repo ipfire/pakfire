@@ -52,9 +52,6 @@ class Builder(object):
 
 		self.build_id = build_id
 
-		# Initialize the environment
-		self.prepare()
-
 	@property
 	def info(self):
 		return {
