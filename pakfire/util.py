@@ -22,6 +22,15 @@ _libc.unshare.argtypes = [ctypes.c_int,]
 _libc.unshare.restype = ctypes.c_int
 CLONE_NEWNS = 0x00020000
 
+def cli_is_interactive():
+	"""
+		Say weather a shell is interactive or not.
+	"""
+	if sys.stdin.isatty() and sys.stdout.isatty() and sys.stderr.isatty():
+		return True
+
+	return False
+
 def rm(path, *args, **kargs):
 	"""
 		version of shutil.rmtree that ignores no-such-file-or-directory errors,

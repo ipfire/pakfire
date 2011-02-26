@@ -126,6 +126,10 @@ class Pakfire(object):
 					continue
 
 				b.copy_result(resultdir)
+
+		except BuildError:
+			b.shell()
+
 		finally:
 			b.cleanup()
 

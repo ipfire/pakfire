@@ -19,7 +19,7 @@ import transaction
 import util
 
 from constants import *
-from errors import BuildRootLocked
+from errors import BuildError, BuildRootLocked, Error
 
 
 class Builder(object):
@@ -532,7 +532,11 @@ class Builder(object):
 	def build(self):
 		self.create_icecream_toolchain()
 
-		self.make("build")
+		try:
+			self.make("build")
+
+		except Error:
+			raise BuildError, "The build command failed."
 
 		for pkg in reversed(self.packages):
 			packager = packages.Packager(self.pakfire, pkg, self)
@@ -542,6 +546,10 @@ class Builder(object):
 		self.pkg.dist(self)
 
 	def shell(self, args=[]):
+		if not util.cli_is_interactive():
+			logging.warning("Cannot run shell on non-interactive console.")
+			return
+
 		# XXX need to set CFLAGS here
 		command = "/usr/sbin/chroot %s /usr/bin/chroot-shell %s" % \
 			(self.chrootPath(), " ".join(args))

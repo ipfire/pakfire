@@ -5,6 +5,7 @@ import sys
 
 import packages
 import repository
+import util
 
 from pakfire import Pakfire
 
@@ -20,7 +21,7 @@ def ask_user(question):
 		If the software is running in a non-inteactive shell, no question
 		is asked at all and the answer is always "yes".
 	"""
-	if not sys.stdin.isatty() or not sys.stdout.isatty() or not sys.stderr.isatty():
+	if not util.cli_is_interactive():
 		return True
 
 	print _("%s [y/N]") % question,
