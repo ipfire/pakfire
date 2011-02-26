@@ -164,7 +164,13 @@ class DependencySet(object):
 
 			# Fetch all candidates from the repositories and save the
 			# best one
-			candidates = packages.PackageListing(self.repos.get_by_provides(requires))
+			if requires.type == "file":
+				candidates = self.repos.get_by_file(requires.requires)
+			else:
+				candidates = self.repos.get_by_provides(requires)
+
+			# Turn the candidates into a package listing.
+			candidates = packages.PackageListing(candidates)
 
 			if not candidates:
 				logging.debug("  Got no candidates for that")

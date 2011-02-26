@@ -39,7 +39,8 @@ class Repositories(object):
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
-		if self.pakfire.builder:
+		#if self.pakfire.builder:
+		if True:
 			self.local_build = LocalBuildRepository(self.pakfire)
 			self.add_repo(self.local_build)
 
@@ -115,6 +116,11 @@ class Repositories(object):
 	def get_by_provides(self, requires):
 		for repo in self.enabled:
 			for pkg in repo.get_by_provides(requires):
+				yield pkg
+
+	def get_by_file(self, filename):
+		for repo in self.enabled:
+			for pkg in repo.get_by_file(filename):
 				yield pkg
 
 	def search(self, pattern):
@@ -196,6 +202,11 @@ class RepositoryFactory(object):
 		"""
 		for pkg in self.packages:
 			if pkg.does_provide(requires):
+				yield pkg
+
+	def get_by_file(self, filename):
+		for pkg in self.packages:
+			if filename in pkg.filelist:
 				yield pkg
 
 	def search(self, pattern):
@@ -512,4 +523,7 @@ class RemoteRepository(RepositoryFactory):
 	#	for pkg in self.index.get_all():
 	#		if pkg.does_provide(requires):
 	#			yield pkg
+
+	def get_by_file(self, filename):
+		return self.index.get_by_file(filename)
 

@@ -10,6 +10,14 @@ import packages
 
 from constants import *
 
+class Cursor(sqlite3.Cursor):
+	def execute(self, *args, **kwargs):
+		# For debugging of SQL queries.
+		#print args, kwargs
+
+		return sqlite3.Cursor.execute(self, *args, **kwargs)
+
+
 class Database(object):
 	def __init__(self, pakfire, filename):
 		self.pakfire = pakfire
@@ -52,7 +60,7 @@ class Database(object):
 		self._db.commit()
 
 	def cursor(self):
-		return self._db.cursor()
+		return self._db.cursor(Cursor)
 
 	def save(self, path):
 		"""

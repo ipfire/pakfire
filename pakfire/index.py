@@ -48,19 +48,23 @@ class Index(object):
 		# Return the last one.
 		return p[-1]
 
+	def get_by_file(self, filename):
+		for pkg in self.packages:
+			if filename in pkg.filelist:
+				yield pkg
+
+	def get_by_id(self, id):
+		raise NotImplementedError
+
+	def get_by_uuid(self, uuid):
+		for pkg in self.packages:
+			if pkg.uuid == uuid:
+				return pkg
+
 	@property
 	def packages(self):
 		for pkg in self._packages:
 			yield pkg
-
-	@property
-	def package_names(self):
-		names = []
-		for name in [p.name for p in self.packages]:
-			if not name in names:
-				names.append(name)
-
-		return sorted(names)
 
 	def update(self, force=False):
 		raise NotImplementedError
@@ -132,7 +136,7 @@ class InstalledIndex(Index):
 		# Open the database.
 		self.db = database.LocalPackageDatabase(self.pakfire)
 
-	def __get_from_cache(self, pkg):
+	def _get_from_cache(self, pkg):
 		"""
 			Check if package is already in cache and return an instance of
 			BinaryPackage instead.
@@ -147,43 +151,30 @@ class InstalledIndex(Index):
 
 		return pkg
 
-	def get_all_by_name(self, name):
-		c = self.db.cursor()
-		c.execute("SELECT * FROM packages WHERE name = ?", name)
-
-		for pkg in c:
-			pkg = package.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
-
-			# Try to get package from cache.
-			yield self.__get_from_cache(pkg)
-
-		c.close()
-
-	@property
-	def package_names(self):
-		c = self.db.cursor()
-		c.execute("SELECT DISTINCT name FROM packages ORDER BY name")
-
-		for pkg in c:
-			yield pkg["name"]
-
-		c.close()
-
-	@property
-	def packages(self):
-		c = self.db.cursor()
-		c.execute("SELECT * FROM packages")
-
-		for pkg in c:
-			pkg = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
-
-			# Try to get package from cache.
-			yield self.__get_from_cache(pkg)
-
-		c.close()
-
 	def add_package(self, pkg, reason=None):
 		return self.db.add_package(pkg, reason)
+
+	def get_by_id(self, id):
+		c = self.db.cursor()
+		c.execute("SELECT uuid FROM packages WHERE id = ?", (id,))
+
+		for pkg in c:
+			break
+
+		c.close()
+
+		return self.get_by_uuid(pkg["uuid"])
+
+	def get_by_file(self, filename):
+		c = self.db.cursor()
+		c.execute("SELECT pkg FROM files WHERE name = ?", (filename,))
+
+		for file in c:
+			pkg = self.get_by_id(file["pkg"])
+			if pkg:
+				yield pkg
+
+		c.close()
 
 
 class DatabaseIndex(InstalledIndex):
@@ -203,6 +194,23 @@ class DatabaseIndex(InstalledIndex):
 			self.db.close()
 
 			os.unlink(self.db.filename)
+
+	def load_database(self):
+		"""
+			Read all packages into RAM.
+		"""
+		self._packages = []
+
+		c = self.db.cursor()
+		c.execute("SELECT * FROM packages")
+
+		for pkg in c:
+			pkg = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+
+			# Try to get package from cache.
+			self._packages.append(self._get_from_cache(pkg))
+
+		c.close()
 
 	def _update_metadata(self, force):
 		# Shortcut to repository cache.
@@ -314,6 +322,7 @@ class DatabaseIndex(InstalledIndex):
 		# (Re-)open the database.
 		self.db = database.RemotePackageDatabase(self.pakfire,
 			cache.abspath(filename))
+		self.load_database()
 
 	def update(self, force=False):
 		"""
