@@ -5,14 +5,14 @@
 ;
 ;gpgkey = /not/yet/existant
 
-[ipfire-development]
-description = IPFire Development Repository
+;[ipfire-development]
+;description = IPFire Development Repository
 
 #url = http://mirror0.ipfire.org/pakfire3/$name/$arch
 #url = file:///ipfire-3.x/build/packages/i686
-url = file:///tmp/pakfire3
+;url = file:///tmp/pakfire3
 
-gpgkey = /not/yet/existant
+;gpgkey = /not/yet/existant
 
 [testingbay]
 description = IPFire Testing Repository

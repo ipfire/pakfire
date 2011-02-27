@@ -7,7 +7,6 @@ from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.progress import TextMeter
 
 import packager
-import pakfire.repository as repository
 
 from base import Package
 from source import SourcePackage
@@ -45,9 +44,7 @@ class SourceDownloader(object):
 
 class Makefile(Package):
 	def __init__(self, pakfire, filename):
-		repo = repository.DummyRepository(pakfire)
-
-		Package.__init__(self, pakfire, repo)
+		Package.__init__(self, pakfire)
 		self.filename = filename
 
 	@property

@@ -3,7 +3,7 @@
 import json
 import time
 
-from constants import *
+from pakfire.constants import *
 
 class Metadata(object):
 	def __init__(self, pakfire, index, metafile=None, metadata=None):

@@ -184,7 +184,7 @@ class InnerTarFile(tarfile.TarFile):
 # XXX this is totally ugly and needs to be done right!
 
 class Packager(object):
-	ARCHIVE_FILES = ("info", "filelist", "signature", "data.img")
+	ARCHIVE_FILES = ("info", "filelist", "data.img")
 
 	def __init__(self, pakfire, pkg, env):
 		self.pakfire = pakfire
@@ -231,7 +231,6 @@ class Packager(object):
 		})
 
 		self.create_info()
-		self.create_signature()
 
 		# Create the outer tarball.
 		resultdir = os.path.join(self.env.chrootPath("result", self.pkg.arch))
@@ -381,9 +380,4 @@ class Packager(object):
 	def create_info(self):
 		f = open(self.archive_files["info"], "w")
 		f.write(BINARY_PACKAGE_META % self.info)
-		f.close()
-
-	def create_signature(self):
-		# Create an empty signature.
-		f = open(self.archive_files["signature"], "w")
 		f.close()
