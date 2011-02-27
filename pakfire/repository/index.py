@@ -6,47 +6,34 @@ import lzma
 import os
 import random
 import shutil
+import time
 import zlib
 
 import database
 import downloader
 import metadata
-import packages
-import repository
-import util
 
-from constants import *
-from i18n import _
+import pakfire.packages as packages
+import pakfire.util as util
+
+from pakfire.constants import *
+from pakfire.i18n import _
 
 class Index(object):
 	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
 		self.repo = repo
 
-		self.arch = self.pakfire.distro.arch # XXX ???
-
 		self._packages = []
 
-	def get_all(self):
-		for package in self.packages:
-			yield package
+	@property
+	def arch(self):
+		return self.pakfire.distro.arch
 
 	def get_all_by_name(self, name):
 		for package in self.packages:
 			if package.name == name:
 				yield package
-
-	def get_latest_by_name(self, name):
-		p = [p for p in self.get_all_by_name(name)]
-		if not p:
-			return
-
-		# Get latest version of the package to the bottom of
-		# the list.
-		p.sort()
-
-		# Return the last one.
-		return p[-1]
 
 	def get_by_file(self, filename):
 		for pkg in self.packages:
@@ -61,18 +48,20 @@ class Index(object):
 			if pkg.uuid == uuid:
 				return pkg
 
+	def get_by_provides(self, requires):
+		for pkg in self.packages:
+			if pkg.does_provide(requires):
+				yield pkg
+
 	@property
 	def packages(self):
 		for pkg in self._packages:
 			yield pkg
 
 	def update(self, force=False):
-		raise NotImplementedError
+		pass
 
 	def add_package(self, pkg):
-		raise NotImplementedError
-
-	def tag_db(self):
 		raise NotImplementedError
 
 
@@ -129,88 +118,137 @@ class DirectoryIndex(Index):
 		db.close()
 
 
-class InstalledIndex(Index):
+class DatabaseIndexFactory(Index):
 	def __init__(self, pakfire, repo):
 		Index.__init__(self, pakfire, repo)
 
-		# Open the database.
-		self.db = database.LocalPackageDatabase(self.pakfire)
+		# Add empty reference to a fictional database.
+		self.db = None
 
-	def _get_from_cache(self, pkg):
-		"""
-			Check if package is already in cache and return an instance of
-			BinaryPackage instead.
-		"""
-		if hasattr(self.repo, "cache"):
-			filename = os.path.join("packages", os.path.basename(pkg.filename))
+		self.open_database()
 
-			if self.repo.cache.exists(filename):
-				filename = self.repo.cache.abspath(filename)
+	def open_database(self):
+		raise NotImplementedError
 
-				pkg = packages.BinaryPackage(self.pakfire, self.repo, filename)
+	@property
+	def packages(self):
+		c = self.db.cursor()
+		c.execute("SELECT * FROM packages")
 
-		return pkg
+		for pkg in c:
+			yield packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
+
+		c.close()
 
 	def add_package(self, pkg, reason=None):
 		return self.db.add_package(pkg, reason)
 
 	def get_by_id(self, id):
 		c = self.db.cursor()
-		c.execute("SELECT uuid FROM packages WHERE id = ?", (id,))
+		c.execute("SELECT * FROM packages WHERE id = ? LIMIT 1", (id,))
 
+		ret = None
 		for pkg in c:
-			break
+			ret = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
 
 		c.close()
 
-		return self.get_by_uuid(pkg["uuid"])
+		return ret
 
 	def get_by_file(self, filename):
 		c = self.db.cursor()
 		c.execute("SELECT pkg FROM files WHERE name = ?", (filename,))
 
-		for file in c:
-			pkg = self.get_by_id(file["pkg"])
-			if pkg:
-				yield pkg
-
-		c.close()
-
-
-class DatabaseIndex(InstalledIndex):
-	def __init__(self, pakfire, repo):
-		Index.__init__(self, pakfire, repo)
-
-		# Initialize with no content.
-		self.db, self.metadata = None, None
-
-	def create_database(self):
-		filename = "/tmp/.%s-%s" % (random.randint(0, 1024**2), METADATA_DATABASE_FILE)
-
-		self.db = database.RemotePackageDatabase(self.pakfire, filename)
-
-	def destroy_database(self):
-		if self.db:
-			self.db.close()
-
-			os.unlink(self.db.filename)
-
-	def load_database(self):
-		"""
-			Read all packages into RAM.
-		"""
-		self._packages = []
-
-		c = self.db.cursor()
-		c.execute("SELECT * FROM packages")
-
 		for pkg in c:
-			pkg = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
-
-			# Try to get package from cache.
-			self._packages.append(self._get_from_cache(pkg))
+			yield self.get_by_id(pkg["pkg"])
 
 		c.close()
+
+
+class InstalledIndex(DatabaseIndexFactory):
+	def open_database(self):
+		# Open the local package database.
+		self.db = database.LocalPackageDatabase(self.pakfire)
+
+
+class LocalIndex(DatabaseIndexFactory):
+	def open_database(self):
+		self.db = database.RemotePackageDatabase(self.pakfire, ":memory:")
+
+	def save(self, path=None, compress="xz"):
+		"""
+			This function saves the database and metadata to path so it can
+			be exported to a remote repository.
+		"""
+		if not path:
+			path = self.repo.path
+
+		# Create filenames
+		metapath = os.path.join(path, METADATA_DOWNLOAD_PATH)
+		db_path  = os.path.join(metapath, METADATA_DATABASE_FILE)
+		md_path  = os.path.join(metapath, METADATA_DOWNLOAD_FILE)
+
+		if not os.path.exists(metapath):
+			os.makedirs(metapath)
+
+		else:
+			# If a database is present, we remove it because we want to start
+			# with a clean environment.
+			if os.path.exists(db_path):
+				os.unlink(db_path)
+
+		# Save the database to path and get the filename.
+		self.db.save(db_path)
+
+		# Make a reference to the database file that it will get a unique name
+		# so we won't get into any trouble with caching proxies.
+		db_hash = util.calc_hash1(db_path)
+
+		db_path2 = os.path.join(os.path.dirname(db_path),
+			"%s-%s" % (db_hash, os.path.basename(db_path)))
+
+		# Compress the database.
+		if compress:
+			i = open(db_path)
+			os.unlink(db_path)
+
+			o = open(db_path, "w")
+
+			# Choose a compressor.
+			if compress == "xz":
+				comp = lzma.LZMACompressor()
+			elif compress == "zlib":
+				comp = zlib.compressobj(9)
+
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(comp.compress(buf))
+
+				buf = i.read(BUFFER_SIZE)
+
+			o.write(comp.flush())
+
+			i.close()
+			o.close()
+
+		if not os.path.exists(db_path2):
+			shutil.move(db_path, db_path2)
+
+		# Create a new metadata object and add out information to it.
+		md = metadata.Metadata(self.pakfire, self)
+
+		# Save name of the hashed database to the metadata.
+		md.database = os.path.basename(db_path2)
+		md.database_hash1 = db_hash
+		md.database_compression = compress
+
+		# Save metdata to repository.
+		md.save(md_path)
+
+
+class RemoteIndex(DatabaseIndexFactory):
+	def open_database(self):
+		self.update(force=False)
 
 	def _update_metadata(self, force):
 		# Shortcut to repository cache.
@@ -322,7 +360,6 @@ class DatabaseIndex(InstalledIndex):
 		# (Re-)open the database.
 		self.db = database.RemotePackageDatabase(self.pakfire,
 			cache.abspath(filename))
-		self.load_database()
 
 	def update(self, force=False):
 		"""
@@ -341,67 +378,3 @@ class DatabaseIndex(InstalledIndex):
 
 		# XXX this code needs lots of work:
 		# XXX   * check the metadata content
-
-	def save(self, path=None, compress="xz"):
-		"""
-			This function saves the database and metadata to path so it can
-			be exported to a remote repository.
-		"""
-		if not path:
-			path = self.repo.path
-
-		# Create filenames
-		metapath = os.path.join(path, METADATA_DOWNLOAD_PATH)
-		db_path  = os.path.join(metapath, METADATA_DATABASE_FILE)
-		md_path  = os.path.join(metapath, METADATA_DOWNLOAD_FILE)
-
-		if not os.path.exists(metapath):
-			os.makedirs(metapath)
-
-		# Save the database to path and get the filename.
-		self.db.save(db_path)
-
-		# Make a reference to the database file that it will get a unique name
-		# so we won't get into any trouble with caching proxies.
-		db_hash = util.calc_hash1(db_path)
-
-		db_path2 = os.path.join(os.path.dirname(db_path),
-			"%s-%s" % (db_hash, os.path.basename(db_path)))
-
-		# Compress the database.
-		if compress:
-			i = open(db_path)
-			os.unlink(db_path)
-
-			o = open(db_path, "w")
-
-			# Choose a compressor.
-			if compress == "xz":
-				comp = lzma.LZMACompressor()
-			elif compress == "zlib":
-				comp = zlib.compressobj(9)
-
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(comp.compress(buf))
-
-				buf = i.read(BUFFER_SIZE)
-
-			o.write(comp.flush())
-
-			i.close()
-			o.close()
-
-		if not os.path.exists(db_path2):
-			shutil.move(db_path, db_path2)
-
-		# Create a new metadata object and add out information to it.
-		md = metadata.Metadata(self.pakfire, self)
-
-		# Save name of the hashed database to the metadata.
-		md.database = os.path.basename(db_path2)
-		md.database_hash1 = db_hash
-		md.database_compression = compress
-
-		# Save metdata to repository.
-		md.save(md_path)

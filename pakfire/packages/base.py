@@ -11,7 +11,7 @@ from pakfire.i18n import _
 class Package(object):
 	type = None # either "bin", "src" or "virt"
 
-	def __init__(self, pakfire, repo):
+	def __init__(self, pakfire, repo=None):
 		self.pakfire = pakfire
 		self._repo = repo
 
@@ -30,7 +30,7 @@ class Package(object):
 		ret = util.version_compare(self.version_tuple, other.version_tuple)
 
 		# Compare the build times if we have a rebuilt package.
-		if not ret:
+		if not ret and self.build_time and other.build_time:
 			ret = cmp(self.build_time, other.build_time)
 
 		#if ret == 0:
@@ -141,7 +141,11 @@ class Package(object):
 
 	@property
 	def repo(self):
-		return self._repo
+		if self._repo:
+			return self._repo
+
+		# By default, every package is connected to a dummy repository
+		return self.pakfire.repos.dummy
 
 	@property
 	def name(self):

@@ -8,9 +8,7 @@ from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.mirror import MirrorGroup
 from urlgrabber.progress import TextMeter
 
-from constants import *
-
-MIRRORLIST_MAXSIZE = 1024**2
+from pakfire.constants import *
 
 class PakfireGrabber(URLGrabber):
 	"""

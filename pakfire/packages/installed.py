@@ -163,13 +163,13 @@ class DatabasePackage(Package):
 			A faster version to find a file in the database.
 		"""
 		c = self.db.cursor()
-		c.execute("SELECT pkg FROM files WHERE name = ?", (requires.requires,))
+		c.execute("SELECT * FROM files WHERE name = ? AND pkg = ?",
+			(requires.requires, self.id))
 
 		ret = False
 		for pkg in c:
-			if self.id == pkg[0]:
-				ret = True
-				break
+			ret = True
+			break
 
 		c.close()
 

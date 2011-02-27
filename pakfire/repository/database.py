@@ -6,9 +6,7 @@ import shutil
 import sqlite3
 import time
 
-import packages
-
-from constants import *
+from pakfire.constants import *
 
 class Cursor(sqlite3.Cursor):
 	def execute(self, *args, **kwargs):
@@ -38,11 +36,14 @@ class Database(object):
 		if not self._db:
 			logging.debug("Open database %s" % self.filename)
 
-			dirname = os.path.dirname(self.filename)
-			if not os.path.exists(dirname):
-				os.makedirs(dirname)
+			database_exists = False
 
-			database_exists = os.path.exists(self.filename)
+			if not self.filename == ":memory:":
+				dirname = os.path.dirname(self.filename)
+				if not os.path.exists(dirname):
+					os.makedirs(dirname)
+
+				database_exists = os.path.exists(self.filename)
 
 			# Make a connection to the database.
 			self._db = sqlite3.connect(self.filename)
@@ -62,15 +63,23 @@ class Database(object):
 	def cursor(self):
 		return self._db.cursor(Cursor)
 
+	def executescript(self, *args, **kwargs):
+		return self._db.executescript(*args, **kwargs)
+
 	def save(self, path):
 		"""
-			Save (means copy) the database to path.
+			Save a copy of this database to a new one located at path.
 		"""
-		# Commit all data in memory to the database.
-		self.commit()
+		db2 = Database(self.pakfire, path)
 
-		# Copy the file.
-		shutil.copy(self.filename, path)
+		script = ""
+		for line in self._db.iterdump():
+			script += "%s\n" % line
+
+		db2.executescript(script)
+		db2.commit()
+
+		db2.close()
 
 
 class PackageDatabase(Database):

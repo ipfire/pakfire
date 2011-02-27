@@ -10,7 +10,7 @@ setup(
 	author = "IPFire.org Team",
 	author_email = "info@ipfire.org",
 	url = "http://redmine.ipfire.org/projects/buildsystem3",
-	packages = ["pakfire", "pakfire.packages", "pakfire.plugins"],
+	packages = ["pakfire", "pakfire.packages", "pakfire.plugins", "pakfire.repository",],
 	scripts = ["scripts/pakfire", "scripts/pakfire-build", "scripts/pakfire-server"],
 	cmdclass = { "build" : build_extra.build_extra,
 	             "build_i18n" :  build_i18n.build_i18n },

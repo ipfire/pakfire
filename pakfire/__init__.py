@@ -74,7 +74,7 @@ class Pakfire(object):
 
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
-		self.repos.update_indexes()
+		self.repos.update()
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:
@@ -199,7 +199,8 @@ class Pakfire(object):
 		pkgs = []
 
 		for pattern in patterns:
-			pkgs += self.repos.get_by_provides(pattern)
+			requires = depsolve.Requires(None, pattern)
+			pkgs += self.repos.get_by_provides(requires)
 
 		pkgs = packages.PackageListing(pkgs)
 		#pkgs.unique()
@@ -214,13 +215,7 @@ class Pakfire(object):
 			path=path,
 		)
 
-		# Create a new temporary repository.
-		repo.index.create_database()
-
 		for input_path in input_paths:
 			repo._collect_packages(input_path)
 
 		repo.save()
-
-		# Destroy the temporary database.
-		repo.index.destroy_database()
