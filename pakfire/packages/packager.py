@@ -326,6 +326,10 @@ class Packager(object):
 				# Dead symlinks cannot be copied by shutil.
 				os.symlink(os.readlink(file_real), file_tmp)
 
+			elif os.path.isdir(file_real):
+				if not os.path.exists(file_tmp):
+					os.makedirs(file_tmp)
+
 			else:
 				shutil.copy2(file_real, file_tmp)
 
