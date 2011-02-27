@@ -233,6 +233,8 @@ class LocalIndex(DatabaseIndexFactory):
 
 		if not os.path.exists(db_path2):
 			shutil.move(db_path, db_path2)
+		else:
+			os.unlink(db_path)
 
 		# Create a new metadata object and add out information to it.
 		md = metadata.Metadata(self.pakfire, self)
