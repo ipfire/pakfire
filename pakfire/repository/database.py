@@ -2,6 +2,7 @@
 
 import logging
 import os
+import random
 import shutil
 import sqlite3
 import time
@@ -19,8 +20,17 @@ class Cursor(sqlite3.Cursor):
 class Database(object):
 	def __init__(self, pakfire, filename):
 		self.pakfire = pakfire
-		self.filename = filename
 		self._db = None
+
+		self._tmp = False
+
+		if filename == ":memory:":
+			self._tmp = True
+
+			filename = "/tmp/.%s-%s" % \
+				(random.randint(0, 1024**2), os.path.basename(filename))
+
+		self.filename = filename
 
 		self.open()
 
@@ -36,14 +46,11 @@ class Database(object):
 		if not self._db:
 			logging.debug("Open database %s" % self.filename)
 
-			database_exists = False
+			dirname = os.path.dirname(self.filename)
+			if not os.path.exists(dirname):
+				os.makedirs(dirname)
 
-			if not self.filename == ":memory:":
-				dirname = os.path.dirname(self.filename)
-				if not os.path.exists(dirname):
-					os.makedirs(dirname)
-
-				database_exists = os.path.exists(self.filename)
+			database_exists = os.path.exists(self.filename)
 
 			# Make a connection to the database.
 			self._db = sqlite3.connect(self.filename)
@@ -56,6 +63,9 @@ class Database(object):
 	def close(self):
 		self._db.close()
 		self._db = None
+
+		if self._tmp:
+			os.unlink(self.filename)
 
 	def commit(self):
 		self._db.commit()
@@ -70,16 +80,9 @@ class Database(object):
 		"""
 			Save a copy of this database to a new one located at path.
 		"""
-		db2 = Database(self.pakfire, path)
+		self.commit()
 
-		script = ""
-		for line in self._db.iterdump():
-			script += "%s\n" % line
-
-		db2.executescript(script)
-		db2.commit()
-
-		db2.close()
+		shutil.copy2(self.filename, path)
 
 
 class PackageDatabase(Database):
