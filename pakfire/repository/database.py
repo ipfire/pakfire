@@ -27,8 +27,7 @@ class Database(object):
 		if filename == ":memory:":
 			self._tmp = True
 
-			filename = "/tmp/.%s-%s" % \
-				(random.randint(0, 1024**2), os.path.basename(filename))
+			filename = "/tmp/.%s-db" % random.randint(0, 1024**2)
 
 		self.filename = filename
 
