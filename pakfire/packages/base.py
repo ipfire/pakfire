@@ -128,7 +128,7 @@ class Package(object):
 
 	@property
 	def friendly_name(self):
-		return "%s-%s" % (self.name, self.friendly_version)
+		return "%s-%s.%s" % (self.name, self.friendly_version, self.arch)
 
 	@property
 	def friendly_version(self):
