@@ -80,8 +80,12 @@ class DatabasePackage(Package):
 		return self.metadata.get("group")
 
 	@property
-	def build_data(self):
-		return self.metadata.get("build_data")
+	def build_date(self):
+		return self.metadata.get("build_date")
+
+	@property
+	def build_time(self):
+		return self.metadata.get("build_time")
 
 	@property
 	def build_host(self):

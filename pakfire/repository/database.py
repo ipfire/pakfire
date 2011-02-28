@@ -117,7 +117,8 @@ class PackageDatabase(Database):
 				uuid		TEXT,
 				build_id	TEXT,
 				build_host	TEXT,
-				build_date	INTEGER
+				build_date	TEXT,
+				build_time	INTEGER
 			);
 		""")
 		# XXX add some indexes here
@@ -193,8 +194,9 @@ class RemotePackageDatabase(PackageDatabase):
 				uuid,
 				build_id,
 				build_host,
-				build_date
-			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+				build_date,
+				build_time
+			) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 			(
 				pkg.name,
 				pkg.epoch,
@@ -214,7 +216,8 @@ class RemotePackageDatabase(PackageDatabase):
 				pkg.uuid,
 				pkg.build_id,
 				pkg.build_host,
-				pkg.build_date
+				pkg.build_date,
+				pkg.build_time,
 			)
 		)
 		self.commit()
