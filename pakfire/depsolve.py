@@ -34,6 +34,9 @@ class Requires(object):
 		if self.requires.startswith("/"):
 			return "file"
 
+		elif self.requires.startswith("pkgconfig("):
+			return "pkgconfig"
+
 		elif ">" in self.requires or "<" in self.requires or "=" in self.requires:
 			return "expr"
 

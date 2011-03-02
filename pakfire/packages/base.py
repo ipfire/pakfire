@@ -291,6 +291,42 @@ class Package(object):
 
 			return False
 
+		elif requires.type == "pkgconfig":
+			(r_expr, r_name, r_version) = \
+				util.parse_pkgconfig_expr(requires.requires)
+
+			for provides in self.provides:
+				if not provides.startswith("pkgconfig("):
+					continue
+
+				(p_expr, p_name, p_version) = \
+					util.parse_pkgconfig_expr(provides)
+
+				# If name does not match, we have no match at all.
+				if not p_name == r_name:
+					continue
+
+				# Check if the expression is fulfilled.
+				if r_expr == "=":
+					return p_version == r_version
+
+				elif r_expr == ">=":
+					return p_version >= r_version
+
+				elif r_expr == ">":
+					return p_version > r_version
+
+				elif r_expr == "<":
+					return p_version < r_version
+
+				elif r_expr == "<=":
+					return p_version <= r_version
+
+				elif not r_expr:
+					# If we get here, the name matches and there was no version
+					# required.
+					return True
+
 		# No match was found at all
 		return False
 

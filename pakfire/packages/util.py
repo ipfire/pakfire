@@ -127,5 +127,19 @@ def test_parse_pkg_expr():
 	for s in strings:
 		print s, parse_pkg_expr(s)
 
+
+def parse_pkgconfig_expr(s):
+	# pkgconfig(bla)=1.2.3
+
+	(name, exp, version) = (None, None, None)
+
+	m = re.match(r"^([A-Za-z0-9\-\+]+)(=|\<|\>|\>=|\<=)?([A-Za-z0-9\.\-]+)?", s)
+
+	if m:
+		(name, exp, version) = m.groups()
+
+	return (exp, name, version)
+
+
 if __name__ == "__main__":
 	test_parse_pkg_expr()
