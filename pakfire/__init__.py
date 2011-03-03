@@ -131,7 +131,7 @@ class Pakfire(object):
 			b.shell()
 
 		finally:
-			b.cleanup()
+			b.destroy()
 
 	def shell(self, pkg, arch=None):
 		self.check_build_mode()
@@ -144,7 +144,7 @@ class Pakfire(object):
 			b.extract()
 			b.shell()
 		finally:
-			b.cleanup()
+			b.destroy()
 
 	def dist(self, pkg, resultdirs=None):
 		self.check_build_mode()
@@ -154,8 +154,8 @@ class Pakfire(object):
 			b.prepare()
 			b.extract(build_deps=False)
 		except:
-			# If there is any exception, we cleanup our stuff and raise it.
-			b.cleanup()
+			# If there is any exception, we destroy our stuff and raise it.
+			b.destroy()
 			raise
 
 		if not resultdirs:
@@ -174,7 +174,7 @@ class Pakfire(object):
 
 				b.copy_result(resultdir)
 		finally:
-			b.cleanup()
+			b.destroy()
 
 	def install(self, requires):
 		ds = depsolve.DependencySet(pakfire=self)

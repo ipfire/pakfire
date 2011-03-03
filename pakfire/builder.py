@@ -328,7 +328,7 @@ class Builder(object):
 
 		os.mknod(filename, mode, device)
 
-	def cleanup(self):
+	def destroy(self):
 		logging.debug("Cleanup environment %s" % self.path)
 
 		if os.path.exists(self.path):
