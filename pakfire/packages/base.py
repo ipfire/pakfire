@@ -295,6 +295,11 @@ class Package(object):
 			(r_expr, r_name, r_version) = \
 				util.parse_pkgconfig_expr(requires.requires)
 
+			# If we get an invalid expression with no name, we
+			# do not provide this.
+			if not r_name:
+				return False
+
 			for provides in self.provides:
 				if not provides.startswith("pkgconfig("):
 					continue
