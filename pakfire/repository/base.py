@@ -79,7 +79,13 @@ class RepositoryFactory(object):
 
 	def get_by_file(self, filename):
 		for pkg in self.packages:
-			if filename in pkg.filelist:
+			match = False
+			for pkg_filename in pkg.filelist:
+				if fnmatch.fnmatch(pkg_filename, filename):
+					match = True
+					break
+
+			if match:
 				yield pkg
 
 	def search(self, pattern):

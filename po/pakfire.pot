@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-04 13:23+0100\n"
+"POT-Creation-Date: 2011-03-04 14:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,11 +158,11 @@ msgstr ""
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:55
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:57
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:56
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:58
 msgid "Version"
 msgstr ""
 
@@ -170,7 +170,7 @@ msgstr ""
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:58
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:60
 msgid "Size"
 msgstr ""
 
@@ -228,47 +228,47 @@ msgstr ""
 msgid "Is this okay?"
 msgstr ""
 
-#: ../pakfire/packages/base.py:54
+#: ../pakfire/packages/base.py:56
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:57
+#: ../pakfire/packages/base.py:59
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:59
+#: ../pakfire/packages/base.py:61
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:60
+#: ../pakfire/packages/base.py:62
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:61
+#: ../pakfire/packages/base.py:63
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:62
+#: ../pakfire/packages/base.py:64
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:65
+#: ../pakfire/packages/base.py:67
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:71
+#: ../pakfire/packages/base.py:73
 msgid "UUID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:72
+#: ../pakfire/packages/base.py:74
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73
+#: ../pakfire/packages/base.py:75
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:74
+#: ../pakfire/packages/base.py:76
 msgid "Build host"
 msgstr ""
 
@@ -280,7 +280,7 @@ msgstr ""
 msgid "Extracting:"
 msgstr ""
 
-#: ../pakfire/repository/index.py:314
+#: ../pakfire/repository/index.py:321
 #, python-format
 msgid "%s: package database"
 msgstr ""

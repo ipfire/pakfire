@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import fnmatch
 import json
 import logging
 import lzma
@@ -37,7 +38,13 @@ class Index(object):
 
 	def get_by_file(self, filename):
 		for pkg in self.packages:
-			if filename in pkg.filelist:
+			match = False
+			for pkg_filename in pkg.filelist:
+				if fnmatch.fnmatch(pkg_filename, filename):
+					match = True
+					break
+
+			if match:
 				yield pkg
 
 	def get_by_id(self, id):
@@ -157,7 +164,7 @@ class DatabaseIndexFactory(Index):
 
 	def get_by_file(self, filename):
 		c = self.db.cursor()
-		c.execute("SELECT pkg FROM files WHERE name = ?", (filename,))
+		c.execute("SELECT pkg FROM files WHERE name GLOB ?", (filename,))
 
 		for pkg in c:
 			yield self.get_by_id(pkg["pkg"])

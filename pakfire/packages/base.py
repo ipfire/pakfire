@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+
+import fnmatch
 import logging
 import re
 
@@ -254,7 +256,11 @@ class Package(object):
 	### methods ###
 
 	def _does_provide_file(self, requires):
-		return requires.requires in self.filelist
+		for file in self.filelist:
+			if fnmatch.fnmatch(file, requires.requires):
+				return True
+
+		return False
 
 	def does_provide(self, requires):
 		if not isinstance(requires, pakfire.depsolve.Requires):
