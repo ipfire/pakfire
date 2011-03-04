@@ -146,8 +146,11 @@ class Pakfire(object):
 		finally:
 			b.destroy()
 
-	def dist(self, pkg, resultdirs=None):
+	def dist(self, pkgs, resultdirs=None):
 		self.check_build_mode()
+
+		# Select first package out of pkgs.
+		pkg = pkgs[0]
 
 		b = builder.Builder(pakfire=self, pkg=pkg)
 		try:
@@ -165,14 +168,23 @@ class Pakfire(object):
 		resultdirs.append(self.repos.local_build.path)
 
 		try:
-			b.dist()
+			for pkg in pkgs:
+				# Change package of the builder to current one.
+				b.pkg = pkg
+				b.extract(build_deps=False)
 
-			# Copy-out all resultfiles
-			for resultdir in resultdirs:
-				if not resultdir:
-					continue
+				# Run the actual dist.
+				b.dist()
 
-				b.copy_result(resultdir)
+				# Copy-out all resultfiles
+				for resultdir in resultdirs:
+					if not resultdir:
+						continue
+
+					b.copy_result(resultdir)
+
+				# Cleanup all the stuff from pkg.
+				b.cleanup()
 		finally:
 			b.destroy()
 

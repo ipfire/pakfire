@@ -329,10 +329,31 @@ class Builder(object):
 		os.mknod(filename, mode, device)
 
 	def destroy(self):
-		logging.debug("Cleanup environment %s" % self.path)
+		logging.debug("Destroying environment %s" % self.path)
 
 		if os.path.exists(self.path):
 			util.rm(self.path)
+
+	def cleanup(self):
+		logging.debug("Cleaning environemnt.")
+
+		# Run make clean and let it cleanup its stuff.
+		self.make("clean")
+
+		# Remove the build directory and buildroot.
+		dirs = ("build", self.buildroot, "result")
+
+		for d in dirs:
+			d = self.chrootPath(d)
+			if not os.path.exists(d):
+				continue
+
+			util.rm(d)
+			os.makedirs(d)
+
+		# Clear make_info cache.
+		if hasattr(self, "_make_info"):
+			del self._make_info
 
 	def _mountall(self):
 		self.log.debug("Mounting environment")

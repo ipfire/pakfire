@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-28 16:41+0100\n"
+"POT-Creation-Date: 2011-03-04 13:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,7 +118,7 @@ msgstr ""
 msgid "Go into a shell."
 msgstr ""
 
-#: ../pakfire/cli.py:250 ../pakfire/cli.py:261
+#: ../pakfire/cli.py:250
 msgid "Give name of a package."
 msgstr ""
 
@@ -130,97 +130,101 @@ msgstr ""
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:335
+#: ../pakfire/cli.py:261
+msgid "Give name(s) of a package(s)."
+msgstr ""
+
+#: ../pakfire/cli.py:336
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:360
+#: ../pakfire/cli.py:361
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:368
+#: ../pakfire/cli.py:369
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:369
+#: ../pakfire/cli.py:370
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:370
+#: ../pakfire/cli.py:371
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/depsolve.py:217
+#: ../pakfire/depsolve.py:220
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/depsolve.py:217 ../pakfire/packages/base.py:55
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:55
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/depsolve.py:217 ../pakfire/packages/base.py:56
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:56
 msgid "Version"
 msgstr ""
 
-#: ../pakfire/depsolve.py:217
+#: ../pakfire/depsolve.py:220
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/depsolve.py:217 ../pakfire/packages/base.py:58
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:58
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220
+#: ../pakfire/depsolve.py:223
 msgid "Installing:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:221
+#: ../pakfire/depsolve.py:224
 msgid "Installing for dependencies:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:222
+#: ../pakfire/depsolve.py:225
 msgid "Updating:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:223
+#: ../pakfire/depsolve.py:226
 msgid "Updating for dependencies:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:224
+#: ../pakfire/depsolve.py:227
 msgid "Removing:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:225
+#: ../pakfire/depsolve.py:228
 msgid "Removing for dependencies:"
 msgstr ""
 
-#: ../pakfire/depsolve.py:227
+#: ../pakfire/depsolve.py:230
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../pakfire/depsolve.py:233
+#: ../pakfire/depsolve.py:236
 msgid "Install"
 msgstr ""
 
-#: ../pakfire/depsolve.py:234 ../pakfire/depsolve.py:238
-#: ../pakfire/depsolve.py:242
+#: ../pakfire/depsolve.py:237 ../pakfire/depsolve.py:241
+#: ../pakfire/depsolve.py:245
 msgid "Package(s)"
 msgstr ""
 
-#: ../pakfire/depsolve.py:237
+#: ../pakfire/depsolve.py:240
 msgid "Updates"
 msgstr ""
 
-#: ../pakfire/depsolve.py:241
+#: ../pakfire/depsolve.py:244
 msgid "Remove"
 msgstr ""
 
-#: ../pakfire/depsolve.py:248
+#: ../pakfire/depsolve.py:251
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/__init__.py:191
+#: ../pakfire/__init__.py:203
 msgid "Is this okay?"
 msgstr ""
 

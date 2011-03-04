@@ -257,8 +257,8 @@ class CliBuilder(Cli):
 		# Implement the "dist" command.
 		sub_dist = self.sub_commands.add_parser("dist",
 			help=_("Generate a source package."))
-		sub_dist.add_argument("package", nargs=1,
-			help=_("Give name of a package."))
+		sub_dist.add_argument("package", nargs="+",
+			help=_("Give name(s) of a package(s)."))
 		sub_dist.add_argument("action", action="store_const", const="dist")
 
 		sub_dist.add_argument("--resultdir", nargs="?",
@@ -312,22 +312,23 @@ class CliBuilder(Cli):
 		self.pakfire.shell(pkg, arch=self.args.arch)
 
 	def handle_dist(self):
-		print self.args
-		# Get the package descriptor from the command line options
-		pkg = self.args.package[0]
+		# Get the packages from the command line options
+		pkgs = []
 
-		# Check, if we got a regular file
-		if os.path.exists(pkg):
-			pkg = os.path.abspath(pkg)
+		for pkg in self.args.package:
+			# Check, if we got a regular file
+			if os.path.exists(pkg):
+				pkg = os.path.abspath(pkg)
 
-			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(self.pakfire, pkg)
+				if pkg.endswith(MAKEFILE_EXTENSION):
+					pkg = packages.Makefile(self.pakfire, pkg)
+					pkgs.append(pkg)
 
-		else:
-			# XXX walk through the source tree and find a matching makefile
-			pass
+			else:
+				# XXX walk through the source tree and find a matching makefile
+				pass
 
-		self.pakfire.dist(pkg, resultdirs=[self.args.resultdir,])
+		self.pakfire.dist(pkgs, resultdirs=[self.args.resultdir,])
 
 class CliServer(Cli):
 	def __init__(self):
