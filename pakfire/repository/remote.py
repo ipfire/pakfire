@@ -4,8 +4,9 @@ import logging
 import os
 
 import cache
-import downloader
 import index
+
+import pakfire.downloader as downloader
 
 from base import RepositoryFactory
 

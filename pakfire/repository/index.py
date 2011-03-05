@@ -9,10 +9,10 @@ import shutil
 import time
 
 import database
-import downloader
 import metadata
 
 import pakfire.compress as compress
+import pakfire.downloader as downloader
 import pakfire.packages as packages
 import pakfire.util as util
 
