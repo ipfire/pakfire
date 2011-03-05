@@ -20,3 +20,9 @@ class FileSystemRepository(RepositoryFactory):
 		RepositoryFactory.__init__(self, pakfire, "filesystem",
 			"Filesystem repository")
 
+	@property
+	def priority(self):
+		# Has always the highest priority because it has packages
+		# the user passed on the command line and really wants to get
+		# installed.
+		return 0
