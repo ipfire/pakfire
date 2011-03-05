@@ -3,17 +3,16 @@
 import fnmatch
 import json
 import logging
-import lzma
 import os
 import random
 import shutil
 import time
-import zlib
 
 import database
 import downloader
 import metadata
 
+import pakfire.compress as compress
 import pakfire.packages as packages
 import pakfire.util as util
 
@@ -216,27 +215,7 @@ class LocalIndex(DatabaseIndexFactory):
 
 		# Compress the database.
 		if compress:
-			i = open(db_path)
-			os.unlink(db_path)
-
-			o = open(db_path, "w")
-
-			# Choose a compressor.
-			if compress == "xz":
-				comp = lzma.LZMACompressor()
-			elif compress == "zlib":
-				comp = zlib.compressobj(9)
-
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(comp.compress(buf))
-
-				buf = i.read(BUFFER_SIZE)
-
-			o.write(comp.flush())
-
-			i.close()
-			o.close()
+			compress.compress(db_path, algo=compress, progress=True)
 
 		if not os.path.exists(db_path2):
 			shutil.move(db_path, db_path2)
@@ -332,29 +311,8 @@ class RemoteIndex(DatabaseIndexFactory):
 				# Open input file and remove the file immediately.
 				# The fileobj is still open and the data will be removed
 				# when it is closed.
-				i = cache.open(filename)
-				cache.remove(filename)
-
-				# Open output file.
-				o = cache.open(filename, "w")
-
-				# Choose a decompessor.
-				if self.metadata.database_compression == "xz":
-					comp = lzma.LZMADecompressor()
-
-				elif self.metadata.database_compression == "zlib":
-					comp = zlib.decompressobj()
-
-				buf = i.read(BUFFER_SIZE)
-				while buf:
-					o.write(comp.decompress(buf))
-
-					buf = i.read(BUFFER_SIZE)
-
-				o.write(comp.flush())
-
-				i.close()
-				o.close()
+				compress.decompress(cache.abspath(filename),
+					algo=self.metadata.database_compression)
 
 			# check the hashsum of the downloaded file
 			if not util.calc_hash1(cache.abspath(filename)) == self.metadata.database_hash1:

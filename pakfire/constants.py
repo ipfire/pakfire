@@ -21,7 +21,7 @@ PACKAGES_DB_DIR = "var/lib/pakfire"
 PACKAGES_DB = os.path.join(PACKAGES_DB_DIR, "packages.db")
 REPOSITORY_DB = "index.db"
 
-BUFFER_SIZE = 1024**2
+BUFFER_SIZE = 102400
 
 MIRRORLIST_MAXSIZE = 1024**2
 
