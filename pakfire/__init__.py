@@ -7,7 +7,6 @@ import string
 
 import builder
 import config
-import database
 import depsolve
 import distro
 import logger
