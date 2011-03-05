@@ -4,7 +4,7 @@ import logging
 
 from installed import InstalledRepository
 from local import LocalRepository, LocalBuildRepository
-from oddments import DummyRepository
+from oddments import DummyRepository, FileSystemRepository
 from remote import RemoteRepository
 
 class Repositories(object):
