@@ -181,7 +181,7 @@ class LocalIndex(DatabaseIndexFactory):
 	def open_database(self):
 		self.db = database.RemotePackageDatabase(self.pakfire, ":memory:")
 
-	def save(self, path=None, compress="xz"):
+	def save(self, path=None, algo="xz"):
 		"""
 			This function saves the database and metadata to path so it can
 			be exported to a remote repository.
@@ -214,8 +214,8 @@ class LocalIndex(DatabaseIndexFactory):
 			"%s-%s" % (db_hash, os.path.basename(db_path)))
 
 		# Compress the database.
-		if compress:
-			compress.compress(db_path, algo=compress, progress=True)
+		if algo:
+			compress.compress(db_path, algo=algo, progress=True)
 
 		if not os.path.exists(db_path2):
 			shutil.move(db_path, db_path2)
@@ -228,7 +228,7 @@ class LocalIndex(DatabaseIndexFactory):
 		# Save name of the hashed database to the metadata.
 		md.database = os.path.basename(db_path2)
 		md.database_hash1 = db_hash
-		md.database_compression = compress
+		md.database_compression = algo
 
 		# Save metdata to repository.
 		md.save(md_path)
