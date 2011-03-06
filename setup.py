@@ -5,7 +5,7 @@ from DistUtilsExtra.command import *
 
 setup(
 	name = "pakfire",
-	version = "0.0.1",
+	version = "0.9.1",
 	description = "Pakfire - Package manager for IPFire.",
 	author = "IPFire.org Team",
 	author_email = "info@ipfire.org",
