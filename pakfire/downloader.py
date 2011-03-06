@@ -180,7 +180,7 @@ class MirrorList(object):
 			if mirror.url in mirrors:
 				continue
 
-			mirrors.append(mirror.url)
+			mirrors.append({ "mirror" : mirror.url })
 
 		return MirrorGroup(grabber, mirrors)
 
