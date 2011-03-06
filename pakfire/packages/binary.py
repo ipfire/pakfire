@@ -31,7 +31,7 @@ class BinaryPackage(FilePackage):
 			provides = self._provides
 
 			# Add other provides
-			for prov in self.metadata.get("PKG_PROVIDES").split():
+			for prov in self.metadata.get("PKG_PROVIDES", "").split():
 				if not prov in provides:
 					provides.append(prov)
 
