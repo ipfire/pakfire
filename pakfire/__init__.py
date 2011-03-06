@@ -23,7 +23,7 @@ __version__ = 0.1
 
 
 class Pakfire(object):
-	def __init__(self, path="/tmp/pakfire", builder=False, configs=[],
+	def __init__(self, path="/", builder=False, configs=[],
 			disable_repos=None):
 		# Check if we are operating as the root user.
 		self.check_root_user()

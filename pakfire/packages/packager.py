@@ -13,6 +13,8 @@ import uuid
 import xattr
 import zlib
 
+import pakfire.compress
+
 from pakfire.constants import *
 from pakfire.i18n import _
 
@@ -354,28 +356,9 @@ class Packager(object):
 
 			logging.debug("Compressing package with %s algorithm." % compress or "no")
 
-			filename = self.archive_files["data.img"]
-			i = open(filename)
-			os.unlink(filename)
-
-			o = open(filename, "w")
-
-			if compress == "xz":
-				comp = lzma.LZMACompressor()
-
-			elif compress == "zlib":
-				comp = zlib.compressobj(9)
-
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(comp.compress(buf))
-
-				buf = i.read(BUFFER_SIZE)
-
-			o.write(comp.flush())
-
-			i.close()
-			o.close()
+			# Compress file (in place).
+			pakfire.compress.compress(self.archive_files["data.img"],
+				algo=compress, progress=True)
 
 	def create_info(self):
 		f = open(self.archive_files["info"], "w")
