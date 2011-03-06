@@ -118,6 +118,7 @@ class Distribution(object):
 			"DISTRO_ARCH"    : self.arch,
 			"DISTRO_MACHINE" : self.machine,
 			"DISTRO_VENDOR"  : self.vendor,
+			"DISTRO_SLOGAN"  : self.slogan,
 		}
 
 		return env
