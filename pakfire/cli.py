@@ -39,7 +39,7 @@ class Cli(object):
 		self.parse_common_arguments()
 
 		self.parser.add_argument("--instroot", metavar="PATH",
-			default="/tmp/pakfire",
+			default="/",
 			help=_("The path where pakfire should operate in."))
 
 		# Add sub-commands.
