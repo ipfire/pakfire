@@ -206,6 +206,37 @@ class Pakfire(object):
 		ts = transaction.Transaction(self, ds)
 		ts.run()
 
+	def update(self, pkgs):
+		ds = depsolve.DependencySet(pakfire=self)
+
+		for pkg in ds.packages:
+			# Skip unwanted packages (passed on command line)
+			if pkgs and not pkg.name in pkgs:
+				continue
+
+			updates = self.repos.get_by_name(pkg.name)
+			updates = packages.PackageListing(updates)
+
+			latest = updates.get_most_recent()
+
+			# If the current package is already the latest
+			# we skip it.
+			if latest == pkg:
+				continue
+
+			# Otherwise we want to update the package.
+			ds.add_package(latest)
+
+		ds.resolve()
+		ds.dump()
+
+		ret = cli.ask_user(_("Is this okay?"))
+		if not ret:
+			return
+
+		ts = transaction.Transaction(self, ds)
+		ts.run()
+
 	def provides(self, patterns):
 		pkgs = []
 

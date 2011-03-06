@@ -160,7 +160,7 @@ class Cli(object):
 			print pkg.dump(short=True)
 
 	def handle_update(self):
-		pass
+		self.pakfire.update(self.args.package)
 
 	def handle_install(self, local=False):
 		if local:
