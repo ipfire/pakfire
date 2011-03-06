@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-04 14:33+0100\n"
+"POT-Creation-Date: 2011-03-06 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,7 +224,7 @@ msgstr ""
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/__init__.py:203
+#: ../pakfire/__init__.py:202
 msgid "Is this okay?"
 msgstr ""
 
@@ -272,15 +272,15 @@ msgstr ""
 msgid "Build host"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:75
+#: ../pakfire/packages/packager.py:77
 msgid "Extracting"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:130
+#: ../pakfire/packages/packager.py:132
 msgid "Extracting:"
 msgstr ""
 
-#: ../pakfire/repository/index.py:321
+#: ../pakfire/repository/index.py:300
 #, python-format
 msgid "%s: package database"
 msgstr ""

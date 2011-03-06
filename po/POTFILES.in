@@ -5,6 +5,7 @@ pakfire/config.py
 pakfire/constants.py
 pakfire/depsolve.py
 pakfire/distro.py
+pakfire/downloader.py
 pakfire/errors.py
 pakfire/i18n.py
 pakfire/__init__.py
@@ -25,7 +26,6 @@ pakfire/plugins/__init__.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
 pakfire/repository/database.py
-pakfire/repository/downloader.py
 pakfire/repository/index.py
 pakfire/repository/__init__.py
 pakfire/repository/installed.py
