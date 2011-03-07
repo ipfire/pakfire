@@ -19,8 +19,7 @@ class FilePackage(Package):
 		Package.__init__(self, pakfire, repo)
 		self.filename = filename
 
-		# Place to keep the tarfile handle and cache the metadata
-		self._archive = None
+		# Place to cache the metadata
 		self._metadata = {}
 
 		self.check()
@@ -36,30 +35,13 @@ class FilePackage(Package):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.filename)
 
-	def __del__(self):
-		# Close tarfile handle
-		if self._archive:
-			self._archive.close()
-
 	@property
 	def local(self):
 		# A file package is always local.
 		return True
 
-	@property
-	def archive(self):
-		if not self._archive:
-			self._archive = tarfile.open(self.filename)
-
-		return self._archive
-
-	def get_file(self, name):
-		"""
-			Return a file-object for the given filename.
-
-			If the file does not exist KeyError is raised.
-		"""
-		return self.archive.extractfile(name)
+	def open_archive(self):
+		return tarfile.open(self.filename)
 
 	@property
 	def file_version(self):
@@ -74,7 +56,8 @@ class FilePackage(Package):
 			Read-in the metadata from the "info" file and cache it in _metadata.
 		"""
 		if not self._metadata:
-			f = self.get_file("info")
+			a = self.open_archive()
+			f = a.extractfile("info")
 
 			for line in f.readlines():
 				m = re.match(r"^(\w+)=(.*)$", line)
@@ -85,6 +68,7 @@ class FilePackage(Package):
 				self._metadata[key] = val.strip("\"")
 
 			f.close()
+			a.close()
 
 		return self._metadata
 
@@ -96,7 +80,8 @@ class FilePackage(Package):
 		return os.path.getsize(self.filename)
 
 	def __filelist_from_metadata(self):
-		f = self.get_file("filelist")
+		a = self.open_archive()
+		f = a.extractfile("filelist")
 
 		ret = []
 		for line in f.readlines():
@@ -107,6 +92,7 @@ class FilePackage(Package):
 			ret.append(line)
 
 		f.close()
+		a.close()
 
 		return ret
 
@@ -114,11 +100,15 @@ class FilePackage(Package):
 		# XXX expect uncompressed payload for now
 		# this is very simple and very slow
 
-		t = tarfile.open(fileobj=self.get_file("data.img"))
+		a = self.open_archive()
+		f = a.extractfile("data.img")
+		t = tarfile.open(fileobj=f)
 
 		ret = ["/%s" % n for n in t.getnames()]
 
 		t.close()
+		f.close()
+		a.close()
 
 		return ret
 
@@ -167,9 +157,13 @@ class FilePackage(Package):
 		"""
 		ret = None
 		try:
-			f = self.get_file("signature")
+			a = self.open_archive()
+			f = a.extractfile("signature")
+
 			ret = f.read()
+
 			f.close()
+			a.close()
 
 		except KeyError:
 			# signature file could not be found
@@ -192,9 +186,13 @@ class FilePackage(Package):
 		"""
 		ret = None
 		try:
-			f = self.get_file("control")
+			a = self.open_archive()
+			f = a.extractfile("control")
+
 			ret = f.read()
+
 			f.close()
+			a.close()
 
 		except KeyError:
 			# scriptlet file could not be found

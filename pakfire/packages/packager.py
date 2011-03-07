@@ -23,7 +23,8 @@ class Extractor(object):
 		self.pakfire = pakfire
 		self.pkg = pkg
 
-		self.data = pkg.get_file("data.img")
+		self.archive = pkg.open_archive()
+		self.data = self.archive.extractfile("data.img")
 
 		self.archive = None
 		self._tempfile = None
@@ -32,6 +33,10 @@ class Extractor(object):
 			self.uncompress_payload()
 		else:
 			self.archive = tarfile.open(fileobj=self.data)
+
+	def __del__(self):
+		self.data.close()
+		self.archive.close()
 
 	def cleanup(self):
 		# XXX not called by anything
