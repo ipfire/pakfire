@@ -75,6 +75,16 @@ class Package(object):
 			items.append((_("Build date"), self.build_date))
 			items.append((_("Build host"), self.build_host))
 
+			caption = _("Provides")
+			for prov in sorted(self.provides):
+				items.append((caption, prov))
+				caption = ""
+
+			caption = _("Requires")
+			for req in sorted(self.requires):
+				items.append((caption, req))
+				caption = ""
+
 		format = "%%-%ds : %%s" % (max([len(k) for k, v in items]))
 
 		s = []
