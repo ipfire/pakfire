@@ -26,10 +26,22 @@ class Package(object):
 			return cmp(self.name, other.name)
 
 		# Compare the uuids: if packages have the same id they are totally equal.
-		if self.uuid and self.uuid == other.uuid:
+		if self.uuid and other.uuid and self.uuid == other.uuid:
 			return 0
 
 		ret = util.version_compare(self.version_tuple, other.version_tuple)
+
+		# XXX this is to move packages that have been built a while ago and
+		# do not have all the meta information that they won't be evaluated
+		# as the best match.
+		if not ret:
+			if "X"*3 in (self.build_id, other.build_id):
+				if self.build_id == "X"*3 and not other.build_id == "X"*3:
+					ret = -1
+
+				elif not self.build_id == "X"*3 and other.build_id == "X"*3:
+					ret = 1
+		# XXX hack end
 
 		# Compare the build times if we have a rebuilt package.
 		if not ret and self.build_time and other.build_time:
