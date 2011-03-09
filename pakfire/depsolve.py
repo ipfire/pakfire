@@ -34,8 +34,8 @@ class Requires(object):
 		if self.requires.startswith("/"):
 			return "file"
 
-		elif self.requires.startswith("pkgconfig("):
-			return "pkgconfig"
+		elif "(" in self.requires:
+			return "virtual"
 
 		elif ">" in self.requires or "<" in self.requires or "=" in self.requires:
 			return "expr"
@@ -93,10 +93,6 @@ class DependencySet(object):
 			self.add_package(pkg, transaction=False)
 
 	def add_requires(self, requires, pkg=None, dep=False):
-		# XXX for now, we skip the virtual perl requires
-		if requires.startswith("perl(") or requires.startswith("perl>") or requires.startswith("perl="):
-			return
-
 		requires = Requires(pkg, requires, dep)
 
 		if requires in self.__requires:

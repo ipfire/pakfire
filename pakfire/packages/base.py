@@ -319,9 +319,9 @@ class Package(object):
 
 			return False
 
-		elif requires.type == "pkgconfig":
-			(r_expr, r_name, r_version) = \
-				util.parse_pkgconfig_expr(requires.requires)
+		elif requires.type == "virtual":
+			(r_type, r_expr, r_name, r_version) = \
+				util.parse_virtual_expr(requires.requires)
 
 			# If we get an invalid expression with no name, we
 			# do not provide this.
@@ -329,14 +329,11 @@ class Package(object):
 				return False
 
 			for provides in self.provides:
-				if not provides.startswith("pkgconfig("):
-					continue
-
-				(p_expr, p_name, p_version) = \
-					util.parse_pkgconfig_expr(provides)
+				(p_type, p_expr, p_name, p_version) = \
+					util.parse_virtual_expr(provides)
 
 				# If name does not match, we have no match at all.
-				if not p_name == r_name:
+				if not p_type == r_type or not p_name == r_name:
 					continue
 
 				# Check if the expression is fulfilled.

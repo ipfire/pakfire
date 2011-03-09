@@ -127,21 +127,19 @@ def test_parse_pkg_expr():
 	for s in strings:
 		print s, parse_pkg_expr(s)
 
-
-def parse_pkgconfig_expr(s):
+def parse_virtual_expr(s):
 	# pkgconfig(bla)=1.2.3
 
-	(name, exp, version) = (None, None, None)
+	(type, name, exp, version) = (None, None, None, None)
 
-	m = re.match(r"^pkgconfig\(([A-Za-z0-9\.\-\+]+)\)(=|\<|\>|\>=|\<=)?([A-Za-z0-9\.\-]+)?", s)
+	m = re.match(r"^([A-Za-z0-9]+)\(([A-Za-z0-9\.\-\+:]+)\)?(=|\<|\>|\>=|\<=)?([A-Za-z0-9\.\-]+)?", s)
 
 	if m:
-		(name, exp, version) = m.groups()
+		(type, name, exp, version) = m.groups()
 
-	return (exp, name, version)
+	return (type, exp, name, version)
 
-
-def test_parse_pkgconfig_expr():
+def test_parse_virtual_expr():
 	strings = (
 		"pkgconfig(libxml-2.0)",
 		"pkgconfig(libxml-2.0)=1.2.3",
@@ -149,8 +147,8 @@ def test_parse_pkgconfig_expr():
 	)
 
 	for s in strings:
-		print s, parse_pkgconfig_expr(s)
+		print s, parse_virtual_expr(s)
 
 if __name__ == "__main__":
 	test_parse_pkg_expr()
-	test_parse_pkgconfig_expr()
+	test_parse_virtual_expr()
