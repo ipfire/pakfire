@@ -19,7 +19,7 @@ from constants import *
 from errors import BuildError, PakfireError
 from i18n import _
 
-__version__ = 0.1
+__version__ = PAKFIRE_VERSION
 
 
 class Pakfire(object):

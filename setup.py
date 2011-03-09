@@ -3,9 +3,11 @@ from distutils.core import setup
 
 from DistUtilsExtra.command import *
 
+from pakfire.constants import PAKFIRE_VERSION
+
 setup(
 	name = "pakfire",
-	version = "0.9.1",
+	version = PAKFIRE_VERSION,
 	description = "Pakfire - Package manager for IPFire.",
 	author = "IPFire.org Team",
 	author_email = "info@ipfire.org",

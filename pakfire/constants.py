@@ -2,7 +2,7 @@
 
 import os.path
 
-PAKFIRE_VERSION = "testing"
+PAKFIRE_VERSION = "0.9.2"
 
 SYSCONFDIR = os.path.join(os.path.dirname(__file__), "..", "examples")
 if not os.path.exists(SYSCONFDIR):
