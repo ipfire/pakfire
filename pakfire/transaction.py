@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import logging
+import progressbar
 
 import depsolve
 import packages
@@ -43,6 +44,24 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
+	@staticmethod
+	def make_progress(self, message, maxval):
+		# Return nothing if stdout is not a terminal.
+		if not sys.stdout.isatty():
+			return
+
+		widgets = [
+			"  ",
+			message,
+			" ",
+			progressbar.Bar(left="[", right="]"),
+			"  ",
+			progressbar.ETA(),
+			"  ",
+		]
+
+		return progressbar.ProgressBar(widgets=widgets, maxval=maxval)
+
 
 class ActionExtract(Action):
 	def run(self):
@@ -59,6 +78,59 @@ class ActionExtract(Action):
 
 		# Remove all temporary files
 		extractor.cleanup()
+
+
+class ActionCleanup(Action):
+	def gen_files(self):
+		"""
+			Return a list of all files that are not in the package anymore
+			and so to be removed.
+		"""
+		files = []
+
+		# Compare the filelist of the old and the new package and save the
+		# difference.
+
+		for f in self.pkg.old_package.filelist:
+			if f in self.pkg.filelist:
+				continue
+
+			# Save absolute path.
+			f = os.path.join(self.pakfire.path, f)
+			files.append(f)
+
+		return files
+
+	def run(self):
+		files = self.gen_files()
+
+		if not files:
+			return
+
+		pb = self.make_progress(_("Cleanup: %s") % pkg.name, len(files))
+		i = 0
+
+		for f in self.files:
+			# Update progress if any.
+			i += 1
+			if pb:
+				pb.update(i)
+
+			# Skip non-existant files (mabye the user removed it already?)
+			if not os.path.exists(f):
+				continue
+
+			logging.debug("Going to remove file: %s" % f)
+
+			try:
+				os.unlink(f)
+			except:
+				logging.critical("Could not remove file: %s. Do it manually." % f)
+
+			# XXX remove file from database
+
+		if pb:
+			pb.finish()
 
 
 class ActionScript(Action):
@@ -114,6 +186,7 @@ class TransactionSet(object):
 		pkgs = []
 		for dl_list in self.download_lists:
 			pkgs += dl_list
+
 		pkgs.sort()
 
 		for pkg in pkgs:
@@ -140,7 +213,10 @@ class TransactionSet(object):
 			self.removes.append(pkg)
 
 	def update(self, pkg, dep=False):
-		logging.info(" --> Marking package for update: %s" % pkg.friendly_name)
+		assert pkg.old_package
+
+		logging.info(" --> Marking package for update: %s (was %s)" % \
+			(pkg.friendly_name, pkg.old_package.friendly_version))
 
 		if dep:
 			self.update_deps.append(pkg)
@@ -201,7 +277,10 @@ class Transaction(object):
 
 		action_extract = ActionExtract(self.pakfire, pkg)
 
-		self.add_action(action_extract)
+		action_cleanup  = ActionCleanup(self.pakfire, pkg, deps=[action_extract])
+
+		for action in (action_extract, action_cleanup):
+			self.add_action(action)
 
 	def _remove_pkg(self, pkg):
 		# XXX TBD

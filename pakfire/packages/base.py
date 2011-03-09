@@ -17,6 +17,9 @@ class Package(object):
 		self.pakfire = pakfire
 		self._repo = repo
 
+		# Pointer to a package that is updated by this one.
+		self.old_package = None
+
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.friendly_name)
 
