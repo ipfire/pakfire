@@ -101,13 +101,11 @@ class ActionCleanup(Action):
 
 		return files
 
-	def run(self):
-		files = self.gen_files()
-
+	def remove_files(self, message, files):
 		if not files:
 			return
 
-		pb = self.make_progress(_("Cleanup: %s") % pkg.name, len(files))
+		pb = self.make_progress(message, len(files))
 		i = 0
 
 		for f in self.files:
@@ -131,6 +129,14 @@ class ActionCleanup(Action):
 
 		if pb:
 			pb.finish()
+
+	def run(self):
+		files = self.gen_files()
+
+		if not files:
+			return
+
+		self.remove_files(_("Cleanup: %s") % pkg.name, files)
 
 
 class ActionScript(Action):
@@ -158,8 +164,14 @@ class ActionInstall(Action):
 	pass
 
 
-class ActionRemove(Action):
-	pass
+class ActionRemove(ActionCleanup):
+	def run(self):
+		files = self.pkg.filelist
+
+		if not files:
+			return
+
+		self.remove_files(_("Remove: %s") % pkg.name, files)
 
 
 class TransactionSet(object):
@@ -283,8 +295,11 @@ class Transaction(object):
 			self.add_action(action)
 
 	def _remove_pkg(self, pkg):
-		# XXX TBD
-		pass
+		# XXX add scripts
+		action_remove = ActionRemove(self.pakfire, pkg)
+
+		for action in (action_remove):
+			self.add_action(action)
 
 	def populate(self):
 		# Determine which packages we have to add
