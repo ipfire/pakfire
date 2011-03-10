@@ -65,6 +65,9 @@ class Action(object):
 			"  ",
 		]
 
+		if not maxval:
+			maxval = 1
+
 		pb = progressbar.ProgressBar(widgets=widgets, maxval=maxval)
 		pb.start()
 
