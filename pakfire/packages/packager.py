@@ -18,50 +18,7 @@ import pakfire.compress
 from pakfire.constants import *
 from pakfire.i18n import _
 
-
-# XXX disable because python 2.6 does not support tarfile with filter
-#
-#class InnerTarFile(tarfile.TarFile):
-#	def __init__(self, *args, **kwargs):
-#		# Force the pax format
-#		kwargs["format"] = tarfile.PAX_FORMAT
-#
-#		if kwargs.has_key("env"):
-#			self.env = kwargs.pop("env")
-#
-#		tarfile.TarFile.__init__(self, *args, **kwargs)
-#
-#	def __filter_xattrs(self, tarinfo):
-#		logging.debug("Adding file: %s" % tarinfo.name)
-#
-#		filename = self.env.chrootPath(self.env.buildroot, tarinfo.name)
-#
-#		# xattrs do only exists for regular files. If we don't have one,
-#		# simply skip.
-#		if os.path.isfile(filename):
-#			for attr, value in xattr.get_all(filename):
-#				tarinfo.pax_headers[attr] = value
-#
-#				logging.debug("  xattr: %s=%s" % (attr, value))
-#
-#		return tarinfo
-#
-#	def add(self, *args, **kwargs):
-#		# Add filter for xattrs if no other filter is set.
-#		if not kwargs.has_key("filter") and len(args) < 5:
-#			kwargs["filter"] = self.__filter_xattrs
-#
-#		tarfile.TarFile.add(self, *args, **kwargs)
-
-class InnerTarFile(tarfile.TarFile):
-	def __init__(self, *args, **kwargs):
-		kwargs["format"] = tarfile.PAX_FORMAT
-
-		if kwargs.has_key("env"):
-			del kwargs["env"]
-
-		tarfile.TarFile.__init__(self, *args, **kwargs)
-
+from file import InnerTarFile
 
 # XXX this is totally ugly and needs to be done right!
 
@@ -130,7 +87,7 @@ class Packager(object):
 		tar.close()
 
 	def create_tarball(self, compress="xz"):
-		tar = InnerTarFile(self.archive_files["data.img"], mode="w", env=self.env)
+		tar = InnerTarFile(self.archive_files["data.img"], mode="w")
 
 		includes = []
 		excludes = []
@@ -188,7 +145,7 @@ class Packager(object):
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
 			file_tmp = os.path.join(self.tempdir, file_tar)
 
-			tar.add(file_real, arcname=file_tar, recursive=False)
+			tar.add(file_real, arcname=file_tar)
 
 			# Record the packaged file to the filelist.
 			filelist.write("/%s\n" % file_tar)

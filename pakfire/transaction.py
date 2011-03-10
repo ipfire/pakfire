@@ -184,7 +184,7 @@ class ActionInstall(Action):
 			payload = open(tempf)
 
 		# Open the tarball in the package.
-		payload_archive = tarfile.open(fileobj=payload)
+		payload_archive = packages.InnerTarFile.open(fileobj=payload)
 
 		members = payload_archive.getmembers()
 

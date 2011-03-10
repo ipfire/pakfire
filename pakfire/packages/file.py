@@ -1,14 +1,75 @@
 #!/usr/bin/python
 
-import tarfile
+import logging
 import os
 import re
+import tarfile
+import xattr
 
 import util
 
 from pakfire.errors import FileError
 
 from base import Package
+
+class InnerTarFile(tarfile.TarFile):
+	SUPPORTED_XATTRS = ("security.capability",)
+
+	def __init__(self, *args, **kwargs):
+		# Force the PAX format.
+		kwargs["format"] = tarfile.PAX_FORMAT
+
+		tarfile.TarFile.__init__(self, *args, **kwargs)
+
+	def add(self, name, arcname=None, recursive=None, exclude=None, filter=None):
+		"""
+			Emulate the add function with xattrs support.
+		"""
+		tarinfo = self.gettarinfo(name, arcname)
+
+		if tarinfo.isreg():
+			attrs = xattr.get_all(name)
+
+			for attr, val in attrs:
+				# Skip all attrs that are not supported (e.g. selinux).
+				if not attr in self.SUPPORTED_XATTRS:
+					continue
+
+				logging.debug("Saving xattr %s=%s from %s" % (attr, val, name))
+
+				tarinfo.pax_headers[attr] = val
+
+	        # Append the tar header and data to the archive.
+			f = tarfile.bltn_open(name, "rb")
+			self.addfile(tarinfo, f)
+			f.close()
+
+		elif tarinfo.isdir():
+			self.addfile(tarinfo)
+			if recursive:
+				for f in os.listdir(name):
+					self.add(os.path.join(name, f), os.path.join(arcname, f),
+							recursive, exclude, filter)
+
+		else:
+			self.addfile(tarinfo)
+
+	def extract(self, member, path=""):
+		# Extract file the normal way...
+		tarfile.TarFile.extract(self, member, path)
+
+		# ...and then apply the extended attributes.
+		if member.pax_headers:
+			target = os.path.join(path, member.name)
+
+			for attr, val in member.pax_headers.items():
+				# Skip all attrs that are not supported (e.g. selinux).
+				if not attr in self.SUPPORTED_XATTRS:
+					continue
+
+				logging.debug("Restoring xattr %s=%s to %s" % (attr, val, target))
+				xattr.set(target, attr, val)
+
 
 class FilePackage(Package):
 	"""
