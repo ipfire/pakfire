@@ -293,7 +293,7 @@ class CliBuilder(Cli):
 
 		# Get the package descriptor from the command line options
 		if self.args.package:
-			pkg = self.args.package[0]
+			pkg = self.args.package
 
 		# Check, if we got a regular file
 		if pkg and os.path.exists(pkg):
