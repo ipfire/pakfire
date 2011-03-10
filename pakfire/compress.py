@@ -16,25 +16,18 @@ PROGRESS_WIDGETS = [
 	"  ",
 ]
 
-
-def __compress_helper(filename, comp, flush, progress=None):
+def __compress_helper(i, o, comp, flush, progress=None):
 	if progress:
 		widgets = [ "%-30s  " % os.path.basename(filename)] + PROGRESS_WIDGETS
 
 		maxval = os.path.getsize(filename)
-		
+
 		progress = progressbar.ProgressBar(
 			widgets=widgets,
 			maxval=maxval,
-			term_width=80,
 		)
 
 		progress.start()
-
-	i = open(filename)
-	os.unlink(filename)
-
-	o = open(filename, "w")
 
 	size = 0
 	buf = i.read(BUFFER_SIZE)
@@ -49,14 +42,24 @@ def __compress_helper(filename, comp, flush, progress=None):
 
 	o.write(flush())
 
-	i.close()
-	o.close()
-
 	if progress:
 		progress.finish()
 
+def compress(filename, filename2=None, algo="xz", progress=None):
+	i = open(filename)
 
-def compress(filename, algo="xz", progress=None):
+	if not filename2:
+		filename2 = filename
+		os.unlink(filename)
+
+	o = open(filename2, "w")
+
+	compressobj(i, o, algo="xz", progress=None)
+
+	i.close()
+	o.close()
+
+def compressobj(i, o, algo="xz", progress=None):
 	comp = None
 	if algo == "xz":
 		comp = lzma.LZMACompressor()
@@ -64,11 +67,23 @@ def compress(filename, algo="xz", progress=None):
 	elif algo == "zlib":
 		comp = zlib.compressobj(9)
 
-	return __compress_helper(filename, comp.compress, comp.flush,
-		progress=progress)
+	return __compress_helper(i, o, comp.compress, comp.flush, progress=progress)
 
+def decompress(filename, filename2=None, algo="xz", progress=None):
+	i = open(filename)
 
-def decompress(filename, algo="xz", progress=None):
+	if not filename2:
+		filename2 = filename
+		os.unlink(filename)
+
+	o = open(filename2, "w")
+
+	decompressobj(i, o, algo="xz", progress=None)
+
+	i.close()
+	o.close()
+
+def decompressobj(i, o, algo="xz", progress=None):
 	comp = None
 	if algo == "xz":
 		comp = lzma.LZMADecompressor()
@@ -76,9 +91,5 @@ def decompress(filename, algo="xz", progress=None):
 	elif algo == "zlib":
 		comp = zlib.decompressobj(9)
 
-	return __compress_helper(filename, comp.decompress, comp.flush,
-		progress=progress)
+	return __compress_helper(i, o, comp.decompress, comp.flush, progress=progress)
 
-
-if __name__ == "__main__":
-	decompress("test.img", progress=True)

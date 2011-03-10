@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-09 20:46+0100\n"
+"POT-Creation-Date: 2011-03-10 11:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -280,25 +280,27 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:82
-msgid "Extracting"
-msgstr ""
-
-#: ../pakfire/packages/packager.py:137
-msgid "Extracting:"
-msgstr ""
-
 #: ../pakfire/repository/index.py:300
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
-#: ../pakfire/transaction.py:139
+#: ../pakfire/transaction.py:130
 #, python-format
 msgid "Cleanup: %s"
 msgstr ""
 
-#: ../pakfire/transaction.py:174
+#: ../pakfire/transaction.py:244
 #, python-format
-msgid "Remove: %s"
+msgid "Installing: %s"
+msgstr ""
+
+#: ../pakfire/transaction.py:249
+#, python-format
+msgid "Updating: %s"
+msgstr ""
+
+#: ../pakfire/transaction.py:259
+#, python-format
+msgid "Removing: %s"
 msgstr ""
