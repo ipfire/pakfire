@@ -15,12 +15,8 @@ from errors import Error
 from packages.util import calc_hash1, format_size
 
 _libc = ctypes.cdll.LoadLibrary(None)
-_errno = ctypes.c_int.in_dll(_libc, "errno")
 _libc.personality.argtypes = [ctypes.c_ulong]
 _libc.personality.restype = ctypes.c_int
-_libc.unshare.argtypes = [ctypes.c_int,]
-_libc.unshare.restype = ctypes.c_int
-CLONE_NEWNS = 0x00020000
 
 def cli_is_interactive():
 	"""
@@ -192,7 +188,7 @@ class ChildPreExec(object):
 		if self.personality:
 			res = _libc.personality(self.personality)
 			if res == -1:
-				raise OSError(_errno.value, os.strerror(_errno.value))
+				raise OSError, "Could not set personality"
 
 		# Change into new root.
 		if self.chrootPath:
