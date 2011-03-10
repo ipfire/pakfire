@@ -78,7 +78,7 @@ class FilePackage(Package):
 	"""
 	def __init__(self, pakfire, repo, filename):
 		Package.__init__(self, pakfire, repo)
-		self.filename = filename
+		self.filename = os.path.abspath(filename)
 
 		# Place to cache the metadata
 		self._metadata = {}
