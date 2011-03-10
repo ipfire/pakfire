@@ -28,7 +28,17 @@ class InnerTarFile(tarfile.TarFile):
 		tarinfo = self.gettarinfo(name, arcname)
 
 		if tarinfo.isreg():
-			attrs = xattr.get_all(name)
+			attrs = []
+
+			# Use new modules code...
+			if hasattr(xattr, "get_all"):
+				attrs = xattr.get_all(name)
+
+			# ...or use the deprecated API.
+			else:
+				for attr in xattr.listxattr(name):
+					val = xattr.getxattr(name, attr)
+					attrs.append((attr, val))
 
 			for attr, val in attrs:
 				# Skip all attrs that are not supported (e.g. selinux).
@@ -68,7 +78,11 @@ class InnerTarFile(tarfile.TarFile):
 					continue
 
 				logging.debug("Restoring xattr %s=%s to %s" % (attr, val, target))
-				xattr.set(target, attr, val)
+				if hasattr(xattr, "set"):
+					xattr.set(target, attr, val)
+
+				else:
+					xattr.setxattr(target, attr, val)
 
 
 class FilePackage(Package):
