@@ -2,8 +2,6 @@
 
 import sys
 
-import packager
-
 from file import FilePackage
 
 class BinaryPackage(FilePackage):
@@ -46,7 +44,4 @@ class BinaryPackage(FilePackage):
 	@property
 	def obsoletes(self):
 		return self.metadata.get("PKG_OBSOLETES", "").split()
-
-	def get_extractor(self, pakfire):
-		return packager.Extractor(pakfire, self)
 

@@ -123,6 +123,10 @@ class DependencySet(object):
 			for p in self.__packages:
 				if pkg.name == p.name:
 					transaction_mode = "update"
+
+					# Set pointer to package that is updated.
+					pkg.old_package = p
+
 					break
 
 			# Add package to transaction set

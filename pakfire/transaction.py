@@ -1,7 +1,13 @@
 #!/usr/bin/python
 
 import logging
+import os
+import progressbar
+import sys
+import tarfile
+import tempfile
 
+import compress
 import depsolve
 import packages
 import util
@@ -43,22 +49,85 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
+	@staticmethod
+	def make_progress(message, maxval):
+		# Return nothing if stdout is not a terminal.
+		if not sys.stdout.isatty():
+			return
 
-class ActionExtract(Action):
+		widgets = [
+			"  ",
+			message,
+			" ",
+			progressbar.Bar(left="[", right="]"),
+			"  ",
+			progressbar.ETA(),
+			"  ",
+		]
+
+		pb = progressbar.ProgressBar(widgets=widgets, maxval=maxval)
+		pb.start()
+
+		return pb
+
+
+class ActionCleanup(Action):
+	def gen_files(self):
+		"""
+			Return a list of all files that are not in the package anymore
+			and so to be removed.
+		"""
+		files = []
+
+		# Compare the filelist of the old and the new package and save the
+		# difference.
+
+		for f in self.pkg.old_package.filelist:
+			if f in self.pkg.filelist:
+				continue
+
+			# Save absolute path.
+			f = os.path.join(self.pakfire.path, f)
+			files.append(f)
+
+		return files
+
+	def remove_files(self, message, files):
+		if not files:
+			return
+
+		pb = self.make_progress(message, len(files))
+		i = 0
+
+		for f in self.files:
+			# Update progress if any.
+			i += 1
+			if pb:
+				pb.update(i)
+
+			# Skip non-existant files (mabye the user removed it already?)
+			if not os.path.exists(f):
+				continue
+
+			logging.debug("Going to remove file: %s" % f)
+
+			try:
+				os.unlink(f)
+			except:
+				logging.critical("Could not remove file: %s. Do it manually." % f)
+
+			# XXX remove file from database
+
+		if pb:
+			pb.finish()
+
 	def run(self):
-		logging.debug("Extracting package %s" % self.pkg.friendly_name)
+		files = self.gen_files()
 
-		# Create package in the database
-		virtpkg = self.local.index.add_package(self.pkg)
+		if not files:
+			return
 
-		# Grab an instance of the extractor and set it up
-		extractor = self.pkg.get_extractor(self.pakfire)
-
-		# Extract all files to instroot
-		extractor.extractall(self.pakfire.path)
-
-		# Remove all temporary files
-		extractor.cleanup()
+		self.remove_files(_("Cleanup: %s") % pkg.name, files)
 
 
 class ActionScript(Action):
@@ -83,11 +152,111 @@ class ActionScriptPostUn(ActionScript):
 
 
 class ActionInstall(Action):
-	pass
+	def extract(self, message, prefix=None):
+		logging.debug("Extracting package %s" % self.pkg.friendly_name)
+
+		if prefix is None:
+			prefix = self.pakfire.path
+
+		# A place to store temporary data.
+		tempf = None
+
+		# Open package data for read.
+		archive = self.pkg.open_archive()
+
+		# Get the package payload.
+		payload = archive.extractfile("data.img")
+
+		# Decompress the payload if needed.
+		if self.pkg.payload_compression:
+			# Create a temporary file to store the decompressed output.
+			garbage, tempf = tempfile.mkstemp(prefix="pakfire")
+
+			i = payload
+			o = open(tempf, "w")
+
+			# Decompress the package payload.
+			compress.decompressobj(i, o, algo=self.pkg.payload_compression)
+
+			i.close()
+			o.close()
+
+			payload = open(tempf)
+
+		# Open the tarball in the package.
+		payload_archive = tarfile.open(fileobj=payload)
+
+		members = payload_archive.getmembers()
+
+		# Load progressbar.
+		pb = self.make_progress("%-40s" % message, len(members))
+
+		i = 0
+		for member in members:
+			# Update progress.
+			if pb:
+				i += 1
+				pb.update(i)
+
+			target = os.path.join(prefix, member.name)
+
+			# If the member is a directory and if it already exists, we
+			# don't need to create it again.
+
+			if os.path.exists(target):
+				if member.isdir():
+					continue
+
+				else:
+					# Remove file if it has been existant
+					os.unlink(target)
+
+			#if self.pakfire.config.get("debug"):
+			#	msg = "Creating file (%s:%03d:%03d) " % \
+			#		(tarfile.filemode(member.mode), member.uid, member.gid)
+			#	if member.issym():
+			#		msg += "/%s -> %s" % (member.name, member.linkname)
+			#	elif member.islnk():
+			#		msg += "/%s link to /%s" % (member.name, member.linkname)
+			#	else:
+			#		msg += "/%s" % member.name
+			#	logging.debug(msg)
+
+			payload_archive.extract(member, path=prefix)
+
+			# XXX implement setting of xattrs/acls here
+
+		# Close all open files.
+		payload_archive.close()
+		payload.close()
+		archive.close()
+
+		if tempf:
+			os.unlink(tempf)
+
+		# Create package in the database
+		self.local.index.add_package(self.pkg)
+
+		if pb:
+			pb.finish()
+
+	def run(self):
+		self.extract(_("Installing: %s") % self.pkg.name)
 
 
-class ActionRemove(Action):
-	pass
+class ActionUpdate(ActionInstall):
+	def run(self):
+		self.extract(_("Updating: %s") % self.pkg.name)
+
+
+class ActionRemove(ActionCleanup):
+	def run(self):
+		files = self.pkg.filelist
+
+		if not files:
+			return
+
+		self.remove_files(_("Removing: %s") % self.pkg.name, files)
 
 
 class TransactionSet(object):
@@ -114,6 +283,7 @@ class TransactionSet(object):
 		pkgs = []
 		for dl_list in self.download_lists:
 			pkgs += dl_list
+
 		pkgs.sort()
 
 		for pkg in pkgs:
@@ -140,7 +310,10 @@ class TransactionSet(object):
 			self.removes.append(pkg)
 
 	def update(self, pkg, dep=False):
-		logging.info(" --> Marking package for update: %s" % pkg.friendly_name)
+		assert pkg.old_package
+
+		logging.info(" --> Marking package for update: %s (was %s)" % \
+			(pkg.friendly_name, pkg.old_package.friendly_version))
 
 		if dep:
 			self.update_deps.append(pkg)
@@ -188,24 +361,30 @@ class Transaction(object):
 		# XXX add dependencies for running the script here
 		action_prein   = ActionScriptPreIn(self.pakfire, pkg)
 
-		action_extract = ActionExtract(self.pakfire, pkg, deps=[action_prein])
+		action_install = ActionInstall(self.pakfire, pkg, deps=[action_prein])
 
 		# XXX add dependencies for running the script here
-		action_postin  = ActionScriptPostIn(self.pakfire, pkg, deps=[action_extract])
+		action_postin  = ActionScriptPostIn(self.pakfire, pkg, deps=[action_install])
 
-		for action in (action_prein, action_extract, action_postin):
+		for action in (action_prein, action_install, action_postin):
 			self.add_action(action)
 
 	def _update_pkg(self, pkg):
 		assert isinstance(pkg, packages.BinaryPackage)
 
-		action_extract = ActionExtract(self.pakfire, pkg)
+		action_update = ActionUpdate(self.pakfire, pkg)
 
-		self.add_action(action_extract)
+		action_cleanup  = ActionCleanup(self.pakfire, pkg, deps=[action_update])
+
+		for action in (action_update, action_cleanup):
+			self.add_action(action)
 
 	def _remove_pkg(self, pkg):
-		# XXX TBD
-		pass
+		# XXX add scripts
+		action_remove = ActionRemove(self.pakfire, pkg)
+
+		for action in (action_remove):
+			self.add_action(action)
 
 	def populate(self):
 		# Determine which packages we have to add

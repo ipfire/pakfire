@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-06 12:48+0000\n"
+"POT-Creation-Date: 2011-03-10 11:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,11 +158,11 @@ msgstr ""
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:57
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:72
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:58
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:73
 msgid "Version"
 msgstr ""
 
@@ -170,7 +170,7 @@ msgstr ""
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:60
+#: ../pakfire/depsolve.py:220 ../pakfire/packages/base.py:75
 msgid "Size"
 msgstr ""
 
@@ -224,63 +224,83 @@ msgstr ""
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/__init__.py:202 ../pakfire/__init__.py:234
+#: ../pakfire/__init__.py:202 ../pakfire/__init__.py:233
 msgid "Is this okay?"
 msgstr ""
 
-#: ../pakfire/packages/base.py:56
+#: ../pakfire/packages/base.py:71
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:59
+#: ../pakfire/packages/base.py:74
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:61
+#: ../pakfire/packages/base.py:76
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:62
+#: ../pakfire/packages/base.py:77
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:63
+#: ../pakfire/packages/base.py:78
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:64
+#: ../pakfire/packages/base.py:79
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:67
+#: ../pakfire/packages/base.py:82
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73
+#: ../pakfire/packages/base.py:88
 msgid "UUID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:74
+#: ../pakfire/packages/base.py:89
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:75
+#: ../pakfire/packages/base.py:90
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:76
+#: ../pakfire/packages/base.py:91
 msgid "Build host"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:77
-msgid "Extracting"
+#: ../pakfire/packages/base.py:93
+msgid "Provides"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:132
-msgid "Extracting:"
+#: ../pakfire/packages/base.py:98
+msgid "Requires"
 msgstr ""
 
 #: ../pakfire/repository/index.py:300
 #, python-format
 msgid "%s: package database"
+msgstr ""
+
+#: ../pakfire/transaction.py:130
+#, python-format
+msgid "Cleanup: %s"
+msgstr ""
+
+#: ../pakfire/transaction.py:244
+#, python-format
+msgid "Installing: %s"
+msgstr ""
+
+#: ../pakfire/transaction.py:249
+#, python-format
+msgid "Updating: %s"
+msgstr ""
+
+#: ../pakfire/transaction.py:259
+#, python-format
+msgid "Removing: %s"
 msgstr ""
