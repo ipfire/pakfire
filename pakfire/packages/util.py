@@ -28,6 +28,9 @@ def version_compare_release(r1, r2):
 	if "." in r2:
 		r2 = r2.split(".")[0]
 
+	r1 = int(r1)
+	r2 = int(r2)
+
 	return cmp(r1, r2)
 
 def version_compare((e1, v1, r1), (e2, v2, r2)):
