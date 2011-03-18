@@ -39,7 +39,7 @@ class Packager(object):
 			"package_format" : PACKAGE_FORMAT,
 			"package_type" : self.type,
 			"package_uuid" : uuid.uuid4(),
-			"payload_comp" : None,
+			"payload_comp" : "",
 
 			"requires" : "",
 			"provides" : "",
