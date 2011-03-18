@@ -47,13 +47,17 @@ SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
 TIME_10M = 10
 TIME_24H = 60*24
 
-SOURCE_PACKAGE_META = """\
+ORPHAN_DIRECTORIES = [
+	"lib", "lib64", "usr/lib", "usr/lib64", "libexec", "usr/libexec",
+	"bin", "sbin", "usr/bin", "usr/sbin", "usr/include", "usr/share",
+	"usr/share/man", "usr/share/man/man0", "usr/share/man/man1",
+	"usr/share/man/man2", "usr/share/man/man3", "usr/share/man/man4",
+	"usr/share/man/man5", "usr/share/man/man6", "usr/share/man/man7",
+	"usr/share/man/man8", "usr/share/man/man9", "usr/lib/pkgconfig",
+]
+ORPHAN_DIRECTORIES.sort(cmp=lambda x,y: cmp(len(x), len(y)), reverse=True)
 
-PKG_NAME="%(PKG_NAME)s"
-
-"""
-
-BINARY_PACKAGE_META = """\
+BINARY_PACKAGE_META = SOURCE_PACKAGE_META = """\
 ### %(name)s package
 
 VERSION="%(package_format)s"
@@ -91,5 +95,6 @@ PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
 
 PKG_PAYLOAD_COMP="%(payload_comp)s"
+PKG_PAYLOAD_HASH1="%(payload_hash1)s"
 
 """

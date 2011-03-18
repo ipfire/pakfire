@@ -5,6 +5,7 @@ import logging
 import lzma
 import os
 import progressbar
+import re
 import shutil
 import sys
 import tarfile
@@ -14,6 +15,7 @@ import xattr
 import zlib
 
 import pakfire.compress
+import util
 
 from pakfire.constants import *
 from pakfire.i18n import _
@@ -62,13 +64,24 @@ class Packager(object):
 		# Create the tarball and add all data to it.
 		self.create_tarball()
 
-		chroot_tempdir = self.tempdir[len(self.env.chrootPath()):]
-		self.info.update({
-			"requires" : self.env.do("/usr/lib/buildsystem-tools/dependency-tracker requires %s" % chroot_tempdir,
-				returnOutput=True, env=self.pkg.env).strip(),
-			"provides" : self.env.do("/usr/lib/buildsystem-tools/dependency-tracker provides %s" % chroot_tempdir,
-				returnOutput=True, env=self.pkg.env).strip(),
-		})
+		e = self.env.do("/usr/lib/buildsystem-tools/dependency-tracker %s" % \
+			self.tempdir[len(self.env.chrootPath()):], returnOutput=True,
+			env=self.pkg.env)
+
+		for line in e.splitlines():
+			m = re.match(r"^(\w+)=(.*)$", line)
+			if m is None:
+				continue
+
+			key, val = m.groups()
+
+			if not key in ("requires", "provides"):
+				continue
+
+			val = val.strip("\"")
+			val = val.split()
+
+			self.info[key] = " ".join(sorted(val))
 
 		self.create_info()
 
@@ -125,9 +138,6 @@ class Packager(object):
 				else:
 					files.append(pattern)
 
-			else:
-				logging.warning("Unrecognized pattern type: %s" % pattern)
-
 		files = []
 		for file in includes:
 			# Skip if file is already in the file set or
@@ -144,6 +154,11 @@ class Packager(object):
 		for file_real in files:
 			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
 			file_tmp = os.path.join(self.tempdir, file_tar)
+
+			if file_tar in ORPHAN_DIRECTORIES and not os.listdir(file_real):
+				logging.debug("Found an orphaned directory: %s" % file_tar)
+				os.unlink(file_real)
+				continue
 
 			tar.add(file_real, arcname=file_tar)
 
@@ -197,6 +212,9 @@ class Packager(object):
 			# Compress file (in place).
 			pakfire.compress.compress(self.archive_files["data.img"],
 				algo=compress, progress=True)
+
+		# Calc hashsum of the payload of the package.
+		self.info["payload_hash1"] = util.calc_hash1(self.archive_files["data.img"])
 
 	def create_info(self):
 		f = open(self.archive_files["info"], "w")
