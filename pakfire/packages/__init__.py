@@ -8,4 +8,4 @@ from virtual import VirtualPackage
 
 from listing import PackageListing
 from make import Makefile
-from packager import Packager
+from packager import BinaryPackager

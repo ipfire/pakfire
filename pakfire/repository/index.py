@@ -103,9 +103,14 @@ class DirectoryIndex(Index):
 
 				package = packages.BinaryPackage(self.pakfire, self.repo, file)
 
+				if package.type == "source":
+					# Silently skip source packages.
+					continue
+
 				if not package.arch in (self.arch, "noarch"):
 					logging.warning("Skipped package with wrong architecture: %s (%s)" \
 						% (package.filename, package.arch))
+					print package.type
 					continue
 
 				self._packages.append(package)

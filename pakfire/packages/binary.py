@@ -5,8 +5,6 @@ import sys
 from file import FilePackage
 
 class BinaryPackage(FilePackage):
-	type = "bin"
-
 	@property
 	def arch(self):
 		return self.metadata.get("PKG_ARCH")

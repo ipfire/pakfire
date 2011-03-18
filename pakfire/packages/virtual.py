@@ -6,8 +6,6 @@ from pakfire.constants import *
 
 
 class VirtualPackage(Package):
-	type = "virt"
-
 	def __init__(self, pakfire, data):
 		self.pakfire = pakfire
 		self._data = {}

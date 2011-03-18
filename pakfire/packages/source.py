@@ -3,11 +3,9 @@
 from file import FilePackage
 
 class SourcePackage(FilePackage):
-	type = "src"
-
 	@property
 	def arch(self):
-		return self.type
+		return "src"
 
 	def extract(self, path):
 		pass

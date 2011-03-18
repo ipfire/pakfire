@@ -11,8 +11,6 @@ import pakfire.depsolve
 from pakfire.i18n import _
 
 class Package(object):
-	type = None # either "bin", "src" or "virt"
-
 	def __init__(self, pakfire, repo=None):
 		self.pakfire = pakfire
 		self._repo = repo
@@ -210,6 +208,10 @@ class Package(object):
 	@property
 	def arch(self):
 		raise NotImplementedError
+
+	@property
+	def type(self):
+		return self.metadata.get("TYPE", "unknown")
 
 	@property
 	def maintainer(self):
