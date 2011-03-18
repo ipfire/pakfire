@@ -585,7 +585,7 @@ class Builder(object):
 			raise BuildError, "The build command failed."
 
 		for pkg in reversed(self.packages):
-			packager = packages.Packager(self.pakfire, pkg, self)
+			packager = packages.BinaryPackager(self.pakfire, pkg, self)
 			packager()
 
 	def dist(self):

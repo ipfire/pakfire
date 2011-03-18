@@ -22,8 +22,6 @@ from pakfire.i18n import _
 
 from file import InnerTarFile
 
-# XXX this is totally ugly and needs to be done right!
-
 class Packager(object):
 	ARCHIVE_FILES = ("info", "filelist", "data.img")
 
@@ -34,12 +32,17 @@ class Packager(object):
 
 		self.tarball = None
 
+		self.cleanup = True
+
 		# Store meta information
 		self.info = {
 			"package_format" : PACKAGE_FORMAT,
-			"package_type" : "binary",
+			"package_type" : self.type,
 			"package_uuid" : uuid.uuid4(),
 			"payload_comp" : None,
+
+			"requires" : "",
+			"provides" : "",
 		}
 		self.info.update(self.pkg.info)
 		self.info.update(self.pakfire.distro.info)
@@ -64,24 +67,25 @@ class Packager(object):
 		# Create the tarball and add all data to it.
 		self.create_tarball()
 
-		e = self.env.do("/usr/lib/buildsystem-tools/dependency-tracker %s" % \
-			self.tempdir[len(self.env.chrootPath()):], returnOutput=True,
-			env=self.pkg.env)
+		if self.type == "binary":
+			e = self.env.do("/usr/lib/buildsystem-tools/dependency-tracker %s" % \
+				self.tempdir[len(self.env.chrootPath()):], returnOutput=True,
+				env=self.pkg.env)
 
-		for line in e.splitlines():
-			m = re.match(r"^(\w+)=(.*)$", line)
-			if m is None:
-				continue
+			for line in e.splitlines():
+				m = re.match(r"^(\w+)=(.*)$", line)
+				if m is None:
+					continue
 
-			key, val = m.groups()
+				key, val = m.groups()
 
-			if not key in ("requires", "provides"):
-				continue
+				if not key in ("requires", "provides"):
+					continue
 
-			val = val.strip("\"")
-			val = val.split()
+				val = val.strip("\"")
+				val = val.split()
 
-			self.info[key] = " ".join(sorted(val))
+				self.info[key] = " ".join(sorted(val))
 
 		self.create_info()
 
@@ -99,8 +103,15 @@ class Packager(object):
 
 		tar.close()
 
-	def create_tarball(self, compress="xz"):
+	def create_tarball(self, compress=None):
 		tar = InnerTarFile(self.archive_files["data.img"], mode="w")
+
+		prefix = self.env.buildroot
+		if self.type == "source":
+			prefix = "build"
+
+		if not compress and self.type == "binary":
+			compress = "xz"
 
 		includes = []
 		excludes = []
@@ -118,7 +129,7 @@ class Packager(object):
 
 			if pattern.startswith("/"):
 				pattern = pattern[1:]
-			pattern = self.env.chrootPath(self.env.buildroot, pattern)
+			pattern = self.env.chrootPath(prefix, pattern)
 
 			# Recognize the type of the pattern. Patterns could be a glob
 			# pattern that is expanded here or just a directory which will
@@ -152,7 +163,7 @@ class Packager(object):
 		filelist = open(self.archive_files["filelist"], mode="w")
 
 		for file_real in files:
-			file_tar = file_real[len(self.env.chrootPath(self.env.buildroot)) + 1:]
+			file_tar = file_real[len(self.env.chrootPath(prefix)) + 1:]
 			file_tmp = os.path.join(self.tempdir, file_tar)
 
 			if file_tar in ORPHAN_DIRECTORIES and not os.listdir(file_real):
@@ -189,11 +200,12 @@ class Packager(object):
 				shutil.copy2(file_real, file_tmp)
 
 			# Unlink the file and remove empty directories.
-			if not os.path.isdir(file_real):
-				os.unlink(file_real)
+			if self.cleanup:
+				if not os.path.isdir(file_real):
+					os.unlink(file_real)
 
-			elif os.path.isdir(file_real) and not os.listdir(file_real):
-				os.rmdir(file_real)
+				elif os.path.isdir(file_real) and not os.listdir(file_real):
+					os.rmdir(file_real)
 
 		# Dump all files that are in the archive.
 		tar.list()
@@ -220,3 +232,24 @@ class Packager(object):
 		f = open(self.archive_files["info"], "w")
 		f.write(BINARY_PACKAGE_META % self.info)
 		f.close()
+
+	@property
+	def type(self):
+		raise NotImplementedError
+
+
+class BinaryPackager(Packager):
+	@property
+	def type(self):
+		return "binary"
+
+
+class SourcePackager(Packager):
+	def __init__(self, *args, **kwargs):
+		Packager.__init__(self, *args, **kwargs)
+
+		self.cleanup = False
+
+	@property
+	def type(self):
+		return "source"

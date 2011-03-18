@@ -61,6 +61,7 @@ BINARY_PACKAGE_META = SOURCE_PACKAGE_META = """\
 ### %(name)s package
 
 VERSION="%(package_format)s"
+TYPE="%(package_type)s"
 
 # Build information
 BUILD_DATE="%(build_date)s"

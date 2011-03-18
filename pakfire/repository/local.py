@@ -67,9 +67,15 @@ class LocalRepository(RepositoryFactory):
 
 			# If package in the repo is equivalent to the given one, we can
 			# skip any further processing.
-			if pkg == pkg_exists:
+			if pkg.hash1 == pkg_exists.hash1:
 				logging.debug("The package does already exist in this repo: %s" % pkg.friendly_name)
 				copy = False
+
+			else:
+				logging.warning("The package is going to be replaced: %s -> %s" % (pkg_exists, pkg))
+				os.unlink(repo_filename)
+
+			del pkg_exists
 
 		if copy:
 			logging.debug("Copying package '%s' to repository." % pkg.friendly_name)

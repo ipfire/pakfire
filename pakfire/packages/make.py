@@ -42,6 +42,17 @@ class SourceDownloader(object):
 		return filename
 
 
+class MakeVirtualPackage(VirtualPackage):
+	"""
+		A simple package that always overwrites the file_patterns.
+	"""
+	@property
+	def file_patterns(self):
+		"""
+			All files that belong into a source package are located in /build.
+		"""
+		return ["/",]
+
 class Makefile(Package):
 	def __init__(self, pakfire, filename):
 		Package.__init__(self, pakfire)
@@ -91,46 +102,8 @@ class Makefile(Package):
 
 			We assume that all requires files are in /build.
 		"""
-		basedir = env.chrootPath("build")
+		pkg = MakeVirtualPackage(self.pakfire, env.make_info)
 
-		files = {
-			"data.img" : env.chrootPath("tmp/data.img"),
-			"signature" : env.chrootPath("tmp/signature"),
-			"info" : env.chrootPath("tmp/info"),
-		}
-
-		# Package all files.
-		a = tarfile.open(files["data.img"], "w")
-		for dir, subdirs, _files in os.walk(basedir):
-			for file in _files:
-				file = os.path.join(dir, file)
-
-				a.add(file, arcname=file[len(basedir):])
-		a.close()
-
-		# XXX add compression for the sources
-
-		# Create an empty signature.
-		f = open(files["signature"], "w")
-		f.close()
-
-		pkg = VirtualPackage(self.pakfire, env.make_info)
-
-		# Save meta information.
-		f = open(files["info"], "w")
-		f.write(SOURCE_PACKAGE_META % {
-			"PKG_NAME" : pkg.name,
-		})
-		f.close()
-
-		result = env.chrootPath("result", "src", pkg.filename)
-		resultdir = os.path.dirname(result)
-		if not os.path.exists(resultdir):
-			os.makedirs(resultdir)
-
-		f = tarfile.open(result, "w")
-		for arcname, name in files.items():
-			f.add(name, arcname=arcname, recursive=False)
-
-		f.close()
+		p = packager.SourcePackager(self.pakfire, pkg, env)
+		p()
 
