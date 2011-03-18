@@ -56,7 +56,7 @@ class MakeVirtualPackage(VirtualPackage):
 class Makefile(Package):
 	def __init__(self, pakfire, filename):
 		Package.__init__(self, pakfire)
-		self.filename = filename
+		self.filename = os.path.abspath(filename)
 
 	@property
 	def files(self):

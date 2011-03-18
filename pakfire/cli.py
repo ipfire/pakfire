@@ -246,7 +246,7 @@ class CliBuilder(Cli):
 		# Implement the "shell" command.
 		sub_shell = self.sub_commands.add_parser("shell",
 			help=_("Go into a shell."))
-		sub_shell.add_argument("package", nargs=1,
+		sub_shell.add_argument("package", nargs="?",
 			help=_("Give name of a package."))
 		sub_shell.add_argument("action", action="store_const", const="shell")
 
@@ -268,7 +268,6 @@ class CliBuilder(Cli):
 		Cli.handle_info(self, long=True)
 
 	def handle_build(self):
-		print self.args
 		# Get the package descriptor from the command line options
 		pkg = self.args.package[0]
 
@@ -290,12 +289,14 @@ class CliBuilder(Cli):
 		self.pakfire.build(pkg, arch=self.args.arch, resultdirs=[self.args.resultdir,])
 
 	def handle_shell(self):
-		print self.args
+		pkg = None
+
 		# Get the package descriptor from the command line options
-		pkg = self.args.package[0]
+		if self.args.package:
+			pkg = self.args.package
 
 		# Check, if we got a regular file
-		if os.path.exists(pkg):
+		if pkg and os.path.exists(pkg):
 			pkg = os.path.abspath(pkg)
 
 			if pkg.endswith(MAKEFILE_EXTENSION):

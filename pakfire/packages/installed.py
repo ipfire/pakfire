@@ -87,10 +87,10 @@ class DatabasePackage(Package):
 	def build_time(self):
 		build_time = self.metadata.get("build_time", 0)
 
-		if build_time == "X"*3:
-			build_time = 0
-
-		return int(build_time)
+		try:
+			return int(build_time)
+		except TypeError:
+			return 0
 
 	@property
 	def build_host(self):
