@@ -118,6 +118,7 @@ class Pakfire(object):
 			b.prepare()
 			b.extract()
 			b.build()
+			b.install_test()
 
 			# Copy-out all resultfiles
 			for resultdir in resultdirs:

@@ -182,14 +182,39 @@ class Builder(object):
 		"""
 			Install everything that is required in requires.
 		"""
+		# If we got nothing to do, we quit immediately.
+		if not requires:
+			return
+
 		ds = depsolve.DependencySet(self.pakfire)
 		for r in requires:
-			ds.add_requires(r)
+			if isinstance(r, packages.BinaryPackage):
+				ds.add_package(r)
+			else:
+				ds.add_requires(r)
 		ds.resolve()
 		ds.dump()
 
 		ts = transaction.Transaction(self.pakfire, ds)
 		ts.run()
+
+	def install_test(self):
+		pkgs = []
+
+		# Connect packages to the FS repository.
+		r = repository.FileSystemRepository(self.pakfire)
+
+		for dir, subdirs, files in os.walk(self.chrootPath("result")):
+			for file in files:
+				file = os.path.join(dir, file)
+
+				if not file.endswith(PACKAGE_EXTENSION):
+					continue
+
+				p = packages.BinaryPackage(self.pakfire, r, file)
+				pkgs.append(p)
+
+		self.install(pkgs)
 
 	@property
 	def log(self):
