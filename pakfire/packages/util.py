@@ -22,6 +22,8 @@ def version_compare_release(r1, r2):
 	if None in (r1, r2):
 		return 0
 
+	d1, d2 = None, None
+
 	if "." in r1:
 		r1, d1 = r1.split(".", 1)
 
