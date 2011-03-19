@@ -23,10 +23,16 @@ def version_compare_release(r1, r2):
 		return 0
 
 	if "." in r1:
-		r1 = r1.split(".")[0]
+		r1, d1 = r1.split(".", 1)
 
 	if "." in r2:
-		r2 = r2.split(".")[0]
+		r2, d2 = r2.split(".", 1)
+
+	# Compare the distribution tag at first.
+	ret = cmp(d1, d2)
+
+	if not ret == 0:
+		return ret
 
 	r1 = int(r1)
 	r2 = int(r2)
