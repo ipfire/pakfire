@@ -31,10 +31,11 @@ def version_compare_release(r1, r2):
 		r2, d2 = r2.split(".", 1)
 
 	# Compare the distribution tag at first.
-	ret = cmp(d1, d2)
+	if d1 and d2:
+		ret = cmp(d1, d2)
 
-	if not ret == 0:
-		return ret
+		if not ret == 0:
+			return ret
 
 	r1 = int(r1)
 	r2 = int(r2)
@@ -133,6 +134,7 @@ def test_parse_pkg_expr():
 		"gcc>4.0.0-1",
 		"gcc<4.0.0-1",
 		"gcc<=4.0.0-1",
+		"openssl-devel>=1.0.0d-2",
 	)
 
 	for s in strings:
