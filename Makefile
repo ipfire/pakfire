@@ -22,3 +22,7 @@ install:
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
 	cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
 	cp -vf examples/pakfire.repos.d/* $(DESTDIR)/etc/pakfire.repos.d/
+
+.PHONY: check
+check:
+	./runpychecker.sh
