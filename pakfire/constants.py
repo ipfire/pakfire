@@ -81,7 +81,7 @@ PKG_REL="%(release)s"
 PKG_EPOCH="%(epoch)s"
 PKG_UUID="%(package_uuid)s"
 
-PKG_GROUP="%(group)s"
+PKG_GROUPS="%(groups)s"
 PKG_ARCH="%(arch)s"
 
 PKG_MAINTAINER="%(maintainer)s"

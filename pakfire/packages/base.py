@@ -69,6 +69,7 @@ class Package(object):
 			(_("Size"), util.format_size(self.size)),
 			(_("Repo"), self.repo.name),
 			(_("Summary"), self.summary),
+			(_("Groups"), " ".join(self.groups)),
 			(_("URL"), self.url),
 			(_("License"), self.license),
 		]
@@ -113,7 +114,7 @@ class Package(object):
 			"release"     : self.release,
 			"epoch"       : self.epoch,
 			"arch"        : self.arch,
-			"group"       : self.group,
+			"groups"      : self.groups,
 			"summary"     : self.summary,
 			"description" : self.description,
 			"maintainer"  : self.maintainer,
@@ -206,6 +207,21 @@ class Package(object):
 		raise NotImplementedError
 
 	@property
+	def base(self):
+		"""
+			Say if a package belongs to the basic set
+			that is installed by default.
+		"""
+		return "Base" in self.groups
+
+	@property
+	def critical(self):
+		"""
+			Return if a package is marked "critial".
+		"""
+		return "Critical" in self.groups
+
+	@property
 	def type(self):
 		return self.metadata.get("TYPE", "unknown")
 
@@ -226,8 +242,8 @@ class Package(object):
 		return self.metadata.get("PKG_DESCRIPTION")
 
 	@property
-	def group(self):
-		return self.metadata.get("PKG_GROUP")
+	def groups(self):
+		return self.metadata.get("PKG_GROUPS", "").split()
 
 	@property
 	def url(self):

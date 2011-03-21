@@ -45,6 +45,7 @@ class Packager(object):
 			"provides" : "",
 		}
 		self.info.update(self.pkg.info)
+		self.info["groups"] = " ".join(self.info["groups"])
 		self.info.update(self.pakfire.distro.info)
 		self.info.update(self.env.info)
 

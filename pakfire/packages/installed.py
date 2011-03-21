@@ -76,8 +76,8 @@ class DatabasePackage(Package):
 		return self.metadata.get("description")
 
 	@property
-	def group(self):
-		return self.metadata.get("group")
+	def groups(self):
+		return self.metadata.get("groups", "").split()
 
 	@property
 	def build_date(self):
