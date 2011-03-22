@@ -119,6 +119,11 @@ class Repositories(object):
 			for pkg in repo.get_by_file(filename):
 				yield pkg
 
+	def get_by_group(self, group):
+		for repo in self.enabled:
+			for pkg in repo.get_by_group(group):
+				yield pkg
+
 	def search(self, pattern):
 		pkg_names = []
 

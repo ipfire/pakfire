@@ -56,6 +56,10 @@ class LocalRepository(RepositoryFactory):
 		if not isinstance(pkg, packages.BinaryPackage):
 			raise Exception
 
+		# Skip everything but binary packages.
+		if pkg.type == "source":
+			return
+
 		repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
 
 		# Do we need to copy the package files?

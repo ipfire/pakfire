@@ -262,3 +262,11 @@ class Pakfire(object):
 			repo._collect_packages(input_path)
 
 		repo.save()
+
+	def grouplist(self, group):
+		pkgs = self.repos.get_by_group(group)
+
+		pkgs = packages.PackageListing(pkgs)
+		pkgs.unique()
+
+		return [p.name for p in pkgs]

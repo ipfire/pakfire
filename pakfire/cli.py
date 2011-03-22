@@ -51,6 +51,7 @@ class Cli(object):
 		self.parse_command_search()
 		self.parse_command_update()
 		self.parse_command_provides()
+		self.parse_command_grouplist()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -69,6 +70,7 @@ class Cli(object):
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
 			"provides"     : self.handle_provides,
+			"grouplist"    : self.handle_grouplist,
 		}
 
 	def parse_common_arguments(self):
@@ -129,6 +131,14 @@ class Cli(object):
 			help=_("File or feature to search for."))
 		sub_provides.add_argument("action", action="store_const", const="provides")
 
+	def parse_command_grouplist(self):
+		# Implement the "grouplist" command
+		sub_grouplist = self.sub_commands.add_parser("grouplist",
+			help=_("Get list of packages that belong to the given group."))
+		sub_grouplist.add_argument("group", nargs=1,
+			help=_("Group name to search for."))
+		sub_grouplist.add_argument("action", action="store_const", const="grouplist")
+
 	def run(self):
 		action = self.args.action
 
@@ -183,6 +193,12 @@ class Cli(object):
 
 		for pkg in pkgs:
 			print pkg.dump()
+
+	def handle_grouplist(self):
+		pkgs = self.pakfire.grouplist(self.args.group[0])
+
+		for pkg in pkgs:
+			print " * %s" % pkg
 
 
 class CliBuilder(Cli):

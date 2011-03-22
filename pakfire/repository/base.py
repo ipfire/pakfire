@@ -88,6 +88,14 @@ class RepositoryFactory(object):
 			if match:
 				yield pkg
 
+	def get_by_group(self, group):
+		"""
+			Get all packages that belong to a specific group.
+		"""
+		for pkg in self.packages:
+			if group in pkg.groups:
+				yield pkg
+
 	def search(self, pattern):
 		"""
 			Returns a list of packages, that match the given pattern,
