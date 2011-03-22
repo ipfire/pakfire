@@ -52,6 +52,7 @@ class Cli(object):
 		self.parse_command_update()
 		self.parse_command_provides()
 		self.parse_command_grouplist()
+		self.parse_command_groupinstall()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -71,6 +72,7 @@ class Cli(object):
 			"search"       : self.handle_search,
 			"provides"     : self.handle_provides,
 			"grouplist"    : self.handle_grouplist,
+			"groupinstall" : self.handle_groupinstall,
 		}
 
 	def parse_common_arguments(self):
@@ -139,6 +141,15 @@ class Cli(object):
 			help=_("Group name to search for."))
 		sub_grouplist.add_argument("action", action="store_const", const="grouplist")
 
+	def parse_command_groupinstall(self):
+		# Implement the "grouplist" command
+		sub_groupinstall = self.sub_commands.add_parser("groupinstall",
+			help=_("Install all packages that belong to the given group."))
+		sub_groupinstall.add_argument("group", nargs=1,
+			help=_("Group name."))
+		sub_groupinstall.add_argument("action", action="store_const", const="groupinstall")
+
+
 	def run(self):
 		action = self.args.action
 
@@ -199,6 +210,9 @@ class Cli(object):
 
 		for pkg in pkgs:
 			print " * %s" % pkg
+
+	def handle_groupinstall(self):
+		self.pakfire.groupinstall(self.args.group[0])
 
 
 class CliBuilder(Cli):

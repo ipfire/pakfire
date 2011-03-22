@@ -263,6 +263,11 @@ class Pakfire(object):
 
 		repo.save()
 
+	def groupinstall(self, group):
+		pkgs = self.grouplist(group)
+
+		self.install(pkgs)
+
 	def grouplist(self, group):
 		pkgs = self.repos.get_by_group(group)
 
