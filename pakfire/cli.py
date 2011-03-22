@@ -257,6 +257,7 @@ class CliBuilder(Cli):
 		self.parse_command_shell()
 		self.parse_command_update()
 		self.parse_command_provides()
+		self.parse_command_grouplist()
 		self.parse_command_repolist()
 
 		# Finally parse all arguments from the command line and save them.
@@ -276,6 +277,7 @@ class CliBuilder(Cli):
 			"search"      : self.handle_search,
 			"shell"       : self.handle_shell,
 			"provides"    : self.handle_provides,
+			"grouplist"   : self.handle_grouplist,
 			"repolist"    : self.handle_repolist,
 		}
 
