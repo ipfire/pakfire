@@ -275,3 +275,6 @@ class Pakfire(object):
 		pkgs.unique()
 
 		return [p.name for p in pkgs]
+
+	def repolist(self):
+		return self.repos.all

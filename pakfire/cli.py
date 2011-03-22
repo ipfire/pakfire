@@ -53,6 +53,7 @@ class Cli(object):
 		self.parse_command_provides()
 		self.parse_command_grouplist()
 		self.parse_command_groupinstall()
+		self.parse_command_repolist()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -73,6 +74,7 @@ class Cli(object):
 			"provides"     : self.handle_provides,
 			"grouplist"    : self.handle_grouplist,
 			"groupinstall" : self.handle_groupinstall,
+			"repolist"     : self.handle_repolist,
 		}
 
 	def parse_common_arguments(self):
@@ -149,6 +151,11 @@ class Cli(object):
 			help=_("Group name."))
 		sub_groupinstall.add_argument("action", action="store_const", const="groupinstall")
 
+	def parse_command_repolist(self):
+		# Implement the "repolist" command
+		sub_repolist = self.sub_commands.add_parser("repolist",
+			help=_("List all currently enabled repositories."))
+		sub_repolist.add_argument("action", action="store_const", const="repolist")
 
 	def run(self):
 		action = self.args.action
@@ -214,6 +221,23 @@ class Cli(object):
 	def handle_groupinstall(self):
 		self.pakfire.groupinstall(self.args.group[0])
 
+	def handle_repolist(self):
+		repos = self.pakfire.repolist()
+		repos.sort()
+
+		FORMAT = " %-20s %8s %12s "
+
+		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"))
+		print title
+		print "=" * len(title) # spacing line
+
+		for repo in repos:
+			# Skip the installed repository.
+			if repo.name == "installed":
+				continue
+
+			print FORMAT % (repo.name, repo.enabled, repo.priority)
+
 
 class CliBuilder(Cli):
 	def __init__(self):
@@ -233,6 +257,7 @@ class CliBuilder(Cli):
 		self.parse_command_shell()
 		self.parse_command_update()
 		self.parse_command_provides()
+		self.parse_command_repolist()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -251,6 +276,7 @@ class CliBuilder(Cli):
 			"search"      : self.handle_search,
 			"shell"       : self.handle_shell,
 			"provides"    : self.handle_provides,
+			"repolist"    : self.handle_repolist,
 		}
 
 	def parse_command_update(self):

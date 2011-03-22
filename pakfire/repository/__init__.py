@@ -68,6 +68,10 @@ class Repositories(object):
 		self._repos.sort()
 
 	@property
+	def all(self):
+		return self._repos[:]
+
+	@property
 	def enabled(self):
 		for repo in self._repos:
 			if not repo.enabled:
