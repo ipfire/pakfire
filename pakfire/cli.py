@@ -331,10 +331,10 @@ class CliBuilder(Cli):
 
 		self.pakfire.dist(pkgs, resultdirs=[self.args.resultdir,])
 
-class CliServer(Cli):
+class CliRepo(Cli):
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire server command line interface."),
+			description = _("Pakfire repo command line interface."),
 		)
 
 		self.parse_common_arguments()
@@ -376,3 +376,12 @@ class CliServer(Cli):
 		path = self.args.path[0]
 
 		self.pakfire.repo_create(path, self.args.inputs)
+
+
+class CliMaster(Cli):
+	pass
+
+
+class CliSlave(Cli):
+	pass
+
