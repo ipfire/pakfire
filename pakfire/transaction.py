@@ -102,7 +102,7 @@ class ActionCleanup(Action):
 		pb = self.make_progress(message, len(files))
 		i = 0
 
-		for f in self.files:
+		for f in self.gen_files():
 			# Update progress if any.
 			i += 1
 			if pb:
