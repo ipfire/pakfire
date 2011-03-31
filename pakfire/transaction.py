@@ -130,7 +130,7 @@ class ActionCleanup(Action):
 		if not files:
 			return
 
-		self.remove_files(_("Cleanup: %s") % pkg.name, files)
+		self.remove_files(_("Cleanup: %s") % self.pkg.name, files)
 
 
 class ActionScript(Action):
