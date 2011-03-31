@@ -39,13 +39,13 @@ class RepositoryFactory(object):
 		"""
 		return False
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		"""
 			A function that is called to update the local data of
 			the repository.
 		"""
 		if hasattr(self, "index"):
-			self.index.update(force)
+			self.index.update(force, offline=offline)
 
 	def get_all(self):
 		"""

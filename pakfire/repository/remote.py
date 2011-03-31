@@ -76,9 +76,9 @@ class RemoteRepository(RepositoryFactory):
 
 		return priority
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		if self.index:
-			self.index.update(force=force)
+			self.index.update(force=force, offline=offline)
 
 	def _replace_from_cache(self, pkg):
 		for _pkg in self.cache.packages:

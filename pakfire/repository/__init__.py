@@ -86,12 +86,12 @@ class Repositories(object):
 				repo.enabled = False
 				continue
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		logging.debug("Updating all repository indexes (force=%s)" % force)
 
 		# XXX update all indexes if necessary or forced
 		for repo in self.enabled:
-			repo.update(force=force)
+			repo.update(force=force, offline=offline)
 
 	#def get_all(self):
 	#	for repo in self.enabled:
