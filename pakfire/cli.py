@@ -63,7 +63,6 @@ class Cli(object):
 			self.args.instroot,
 			configs = [self.args.config],
 			disable_repos = self.args.disable_repo,
-			offline = self.args.offline,
 		)
 
 		self.action2func = {
@@ -87,9 +86,6 @@ class Cli(object):
 
 		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
 			help=_("Disable a repository temporarily."))
-
-		self.parser.add_argument("--offline", action="store_true",
-			help=_("Run in offline mode."))
 
 	def parse_command_install(self):
 		# Implement the "install" command.
@@ -271,7 +267,6 @@ class CliBuilder(Cli):
 			builder = True,
 			configs = [self.args.config],
 			disable_repos = self.args.disable_repo,
-			offline = self.args.offline,
 		)
 
 		self.action2func = {
@@ -414,7 +409,6 @@ class CliServer(Cli):
 			builder = True,
 			configs = [self.args.config],
 			disable_repos = self.args.disable_repo,
-			offline = self.args.offline,
 		)
 
 		self.action2func = {

@@ -24,7 +24,7 @@ __version__ = PAKFIRE_VERSION
 
 class Pakfire(object):
 	def __init__(self, path="/", builder=False, configs=[],
-			disable_repos=None, offline=False):
+			disable_repos=None):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
@@ -73,7 +73,7 @@ class Pakfire(object):
 
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
-		self.repos.update(offline=offline)
+		self.repos.update()
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:

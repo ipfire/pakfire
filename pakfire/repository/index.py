@@ -64,7 +64,7 @@ class Index(object):
 		for pkg in self._packages:
 			yield pkg
 
-	def update(self, force=False, offline=False):
+	def update(self, force=False):
 		pass
 
 	def add_package(self, pkg):
@@ -82,7 +82,7 @@ class DirectoryIndex(Index):
 		# Always update this because it will otherwise contain no data
 		self.update(force=True)
 
-	def update(self, force=False, offline=False):
+	def update(self, force=False):
 		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
 
 		# Do nothing if the update is not forced but populate the database
@@ -241,16 +241,16 @@ class LocalIndex(DatabaseIndexFactory):
 
 class RemoteIndex(DatabaseIndexFactory):
 	def open_database(self):
-		self.update(force=False, offline=True)
+		self.update(force=False)
 
-	def _update_metadata(self, force, offline):
+	def _update_metadata(self, force):
 		# Shortcut to repository cache.
 		cache = self.repo.cache
 
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
 
 		# Marker if we need to do the download.
-		download = not offline
+		download = True
 
 		# Marker for the current metadata.
 		old_metadata = None
@@ -292,7 +292,7 @@ class RemoteIndex(DatabaseIndexFactory):
 		self.metadata = metadata.Metadata(self.pakfire, self,
 			cache.abspath(filename))
 
-	def _update_database(self, force, offline):
+	def _update_database(self, force):
 		# Shortcut to repository cache.
 		cache = self.repo.cache
 
@@ -300,9 +300,6 @@ class RemoteIndex(DatabaseIndexFactory):
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
 
 		if not cache.exists(filename):
-			if offline:
-				raise Exception, "No database. Cannot download one in offline mode..."
-
 			# Initialize a grabber for download.
 			grabber = downloader.DatabaseDownloader(
 				text = _("%s: package database") % self.repo.name,
@@ -336,7 +333,7 @@ class RemoteIndex(DatabaseIndexFactory):
 		self.db = database.RemotePackageDatabase(self.pakfire,
 			cache.abspath(filename))
 
-	def update(self, force=False, offline=False):
+	def update(self, force=False):
 		"""
 			Download the repository metadata and the package database.
 		"""
@@ -346,10 +343,10 @@ class RemoteIndex(DatabaseIndexFactory):
 			return
 
 		# At first, update the metadata.
-		self._update_metadata(force, offline)
+		self._update_metadata(force)
 
 		# Then, we download the database eventually.
-		self._update_database(force, offline)
+		self._update_database(force)
 
 		# XXX this code needs lots of work:
 		# XXX   * check the metadata content
