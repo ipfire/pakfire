@@ -29,7 +29,6 @@ def ask_user(question):
 
 	return ret in ("y", "Y")
 
-
 class Cli(object):
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(

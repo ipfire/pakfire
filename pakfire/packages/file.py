@@ -4,11 +4,15 @@ import logging
 import os
 import re
 import tarfile
+import tempfile
 import xattr
 
 import util
 
+import pakfire.util as util
+import pakfire.compress as compress
 from pakfire.errors import FileError
+from pakfire.constants import *
 
 from base import Package
 
@@ -118,6 +122,99 @@ class FilePackage(Package):
 	def open_archive(self):
 		return tarfile.open(self.filename)
 
+	def extract(self, message=None, prefix=None):
+		logging.debug("Extracting package %s" % self.friendly_name)
+
+		if prefix is None:
+			prefix = ""
+
+		# A place to store temporary data.
+		tempf = None
+
+		# Open package data for read.
+		archive = self.open_archive()
+
+		# Get the package payload.
+		payload = archive.extractfile("data.img")
+
+		# Decompress the payload if needed.
+		logging.debug("Compression: %s" % self.payload_compression)
+
+		# Create a temporary file to store the decompressed output.
+		garbage, tempf = tempfile.mkstemp(prefix="pakfire")
+
+		i = payload
+		o = open(tempf, "w")
+
+		# Decompress the package payload.
+		if self.payload_compression:
+			compress.decompressobj(i, o, algo=self.payload_compression)
+
+		else:
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(buf)
+				buf = i.read(BUFFER_SIZE)
+
+		i.close()
+		o.close()
+
+		payload = open(tempf)
+
+		# Open the tarball in the package.
+		payload_archive = InnerTarFile.open(fileobj=payload)
+
+		members = payload_archive.getmembers()
+
+		# Load progressbar.
+		pb = None
+		if message:
+			pb = util.make_progress("%-40s" % message, len(members))
+
+		i = 0
+		for member in members:
+			# Update progress.
+			if pb:
+				i += 1
+				pb.update(i)
+
+			target = os.path.join(prefix, member.name)
+
+			# If the member is a directory and if it already exists, we
+			# don't need to create it again.
+
+			if os.path.exists(target):
+				if member.isdir():
+					continue
+
+				else:
+					# Remove file if it has been existant
+					os.unlink(target)
+
+			#if self.pakfire.config.get("debug"):
+			#	msg = "Creating file (%s:%03d:%03d) " % \
+			#		(tarfile.filemode(member.mode), member.uid, member.gid)
+			#	if member.issym():
+			#		msg += "/%s -> %s" % (member.name, member.linkname)
+			#	elif member.islnk():
+			#		msg += "/%s link to /%s" % (member.name, member.linkname)
+			#	else:
+			#		msg += "/%s" % member.name
+			#	logging.debug(msg)
+
+			payload_archive.extract(member, path=prefix)
+
+		# Close all open files.
+		payload_archive.close()
+		payload.close()
+		archive.close()
+
+		if tempf:
+			os.unlink(tempf)
+
+		if pb:
+			pb.finish()
+
 	@property
 	def file_version(self):
 		"""
@@ -217,10 +314,6 @@ class FilePackage(Package):
 		# Remove triple X placeholder that was used some time.
 		if comp == "X"*3:
 			comp = None
-
-		# XXX remove that later, because of compatibility for naoki.
-		elif not comp:
-			comp = "xz"
 
 		return comp
 

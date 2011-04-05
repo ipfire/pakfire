@@ -7,9 +7,6 @@ class SourcePackage(FilePackage):
 	def arch(self):
 		return "src"
 
-	def extract(self, path):
-		pass
-
 	@property
 	def requires(self):
 		"""

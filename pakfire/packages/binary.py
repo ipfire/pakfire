@@ -10,17 +10,6 @@ class BinaryPackage(FilePackage):
 		return self.metadata.get("PKG_ARCH")
 
 	@property
-	def requires(self):
-		ret = ""
-
-		for i in ("PKG_REQUIRES", "PKG_DEPS"):
-			ret = self.metadata.get(i, ret)
-			if ret:
-				break
-
-		return ret.split()
-
-	@property
 	def provides(self):
 		if not hasattr(self, "__provides"):
 			# Get automatic provides

@@ -3,6 +3,7 @@
 import ctypes
 import fcntl
 import os
+import progressbar
 import random
 import select
 import shutil
@@ -26,6 +27,29 @@ def cli_is_interactive():
 		return True
 
 	return False
+
+def make_progress(message, maxval):
+	# Return nothing if stdout is not a terminal.
+	if not sys.stdout.isatty():
+		return
+
+	widgets = [
+		"  ",
+		"%-40s" % message,
+		" ",
+		progressbar.Bar(left="[", right="]"),
+		"  ",
+		progressbar.ETA(),
+		"  ",
+	]
+
+	if not maxval:
+		maxval = 1
+
+	pb = progressbar.ProgressBar(widgets=widgets, maxval=maxval)
+	pb.start()
+
+	return pb
 
 def rm(path, *args, **kargs):
 	"""

@@ -19,6 +19,7 @@ import transaction
 import util
 
 from constants import *
+from i18n import _
 from errors import BuildError, BuildRootLocked, Error
 
 
@@ -168,6 +169,10 @@ class Builder(object):
 		# Copy the makefile and load source tarballs.
 		if isinstance(self.pkg, packages.Makefile):
 			self.pkg.extract(self)
+
+		elif isinstance(self.pkg, packages.SourcePackage):
+			self.pkg.extract(_("Extracting: %s (source)") % self.pkg.name,
+				prefix=os.path.join(self.path, "build"))
 
 		# If we have a makefile, we can only get the build dependencies
 		# after we have extracted all the rest.
@@ -501,8 +506,12 @@ class Builder(object):
 		return ret
 
 	def make(self, *args, **kwargs):
-		return self.do("make -f /build/%s %s" % \
-			(os.path.basename(self.pkg.filename), " ".join(args)),
+		if isinstance(self.pkg, packages.Makefile):
+			filename = os.path.basename(self.pkg.filename)
+		elif isinstance(self.pkg, packages.SourcePackage):
+			filename = "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION)
+
+		return self.do("make -f /build/%s %s" % (filename, " ".join(args)),
 			**kwargs)
 
 	@property

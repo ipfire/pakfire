@@ -282,6 +282,24 @@ class Package(object):
 		return self.metadata.get("PKG_UUID", None)
 
 	@property
+	def requires(self):
+		ret = ""
+
+		# The default attributes, that are process for the requires.
+		attrs = ("PKG_REQUIRES", "PKG_DEPS")
+
+		# Source packages do depend on their build dependencies.
+		if self.arch == "src":
+			attrs = ("PKG_BUILD_DEPS",)
+
+		for i in attrs:
+			ret = self.metadata.get(i, ret)
+			if ret:
+				break
+
+		return ret.split()
+
+	@property
 	def _provides(self):
 		# Make package identifyable by its name and version/release tuples.
 		provides = [
