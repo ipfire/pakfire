@@ -289,7 +289,6 @@ class Builder(object):
 			f.close()
 
 		self._prepare_dev()
-		self._prepare_users()
 		self._prepare_dns()
 
 	def _prepare_dev(self):
@@ -326,17 +325,6 @@ class Builder(object):
 			os.symlink("/dev/pts/ptmx", self.chrootPath("dev", "ptmx"))
 
 		os.umask(prevMask)
-
-	def _prepare_users(self):
-		f = open(self.chrootPath("etc", "passwd"), "w")
-		f.write("root:x:0:0:root:/root:/bin/bash\n")
-		f.write("nobody:x:99:99:Nobody:/:/sbin/nologin\n")
-		f.close()
-
-		f = open(self.chrootPath("etc", "group"), "w")
-		f.write("root:x:0:root\n")
-		f.write("nobody:x:99:\n")
-		f.close()
 
 	def _prepare_dns(self):
 		"""
