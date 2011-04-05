@@ -116,8 +116,7 @@ class DatabasePackage(Package):
 
 			# Add other provides
 			for prov in self.metadata.get("provides", "").split():
-				if not prov in provides:
-					provides.append(prov)
+				provides.add(prov)
 
 			self.__provides = provides
 

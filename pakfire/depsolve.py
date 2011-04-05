@@ -29,6 +29,9 @@ class Requires(object):
 	def __cmp__(self, other):
 		return cmp(self.requires, other.requires)
 
+	def __hash__(self):
+		return hash(self.requires)
+
 	@property
 	def type(self):
 		if self.requires.startswith("/"):
@@ -57,6 +60,9 @@ class Conflicts(object):
 	def __str__(self):
 		return self.conflicts
 
+	def __hash__(self):
+		return hash(self.conflicts)
+
 
 class Obsoletes(object):
 	def __init__(self, pkg, obsoletes):
@@ -69,6 +75,9 @@ class Obsoletes(object):
 	def __str__(self):
 		return self.obsoletes
 
+	def __hash__(self):
+		return hash(self.obsoletes)
+
 
 class DependencySet(object):
 	def __init__(self, pakfire):
@@ -76,12 +85,12 @@ class DependencySet(object):
 		self.repos = pakfire.repos #repository.Repositories()
 
 		# List of packages in this set
-		self.__packages = []
+		self.__packages = set()
 
 		# Helper lists
-		self.__conflicts = []
-		self.__requires = []
-		self.__obsoletes = []
+		self.__conflicts = set()
+		self.__requires = set()
+		self.__obsoletes = set()
 
 		# Create a new transaction set.
 		self.ts = transaction.TransactionSet()
@@ -104,12 +113,12 @@ class DependencySet(object):
 				return
 
 		#logging.debug("Adding requires: %s" % requires)
-		self.__requires.append(requires)
+		self.__requires.add(requires)
 
 	def add_obsoletes(self, obsoletes, pkg=None):
 		obsoletes = Obsoletes(pkg, obsoletes)
 
-		self.__obsoletes.append(obsoletes)
+		self.__obsoletes.add(obsoletes)
 
 	def add_package(self, pkg, dep=False, transaction=True):
 		#print pkg, sorted(self.__packages)
@@ -135,7 +144,7 @@ class DependencySet(object):
 
 		#if not isinstance(pkg, packages.DatabasePackage):
 		#	logging.info(" --> Adding package to dependency set: %s" % pkg.friendly_name)
-		self.__packages.append(pkg)
+		self.__packages.add(pkg)
 
 		# Add the requirements of the newly added package.
 		for req in pkg.requires:
@@ -162,7 +171,7 @@ class DependencySet(object):
 		unresolveable_reqs = []
 
 		while self.__requires:
-			requires = self.__requires.pop(0)
+			requires = self.__requires.pop()
 			logging.debug("Resolving requirement \"%s\"" % requires)
 
 			# Fetch all candidates from the repositories and save the

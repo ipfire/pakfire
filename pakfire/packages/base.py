@@ -57,6 +57,12 @@ class Package(object):
 
 		return ret
 
+	def __hash__(self):
+		hashstr = ["%s" % s for s in (self.name, self.epoch, self.version,
+			self.release, self.arch,)]
+
+		return hash("-".join(hashstr))
+
 	def dump(self, short=False, long=False):
 		if short:
 			return "%s.%s : %s" % (self.name, self.arch, self.summary)
@@ -297,7 +303,7 @@ class Package(object):
 			if ret:
 				break
 
-		return ret.split()
+		return set(ret.split())
 
 	@property
 	def _provides(self):
@@ -308,7 +314,7 @@ class Package(object):
 			"%s=%s:%s-%s" % (self.name, self.epoch, self.version, self.release),
 		]
 
-		return provides
+		return set(provides)
 
 	### methods ###
 

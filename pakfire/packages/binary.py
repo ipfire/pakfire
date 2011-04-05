@@ -17,8 +17,7 @@ class BinaryPackage(FilePackage):
 
 			# Add other provides
 			for prov in self.metadata.get("PKG_PROVIDES", "").split():
-				if not prov in provides:
-					provides.append(prov)
+				provides.add(prov)
 
 			self.__provides = provides
 
@@ -26,9 +25,13 @@ class BinaryPackage(FilePackage):
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("PKG_CONFLICTS", "").split()
+		conflicts = self.metadata.get("PKG_CONFLICTS", "").split()
+
+		return set(conflicts)
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("PKG_OBSOLETES", "").split()
+		obsoletes = self.metadata.get("PKG_OBSOLETES", "").split()
+
+		return set(obsoletes)
 
