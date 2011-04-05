@@ -27,7 +27,7 @@ def ask_user(question):
 	print _("%s [y/N]") % question,
 	ret = raw_input()
 
-	return ret in ("y", "Y")
+	return ret in ("y", "Y", "z", "Z", "j", "J")
 
 class Cli(object):
 	def __init__(self):
