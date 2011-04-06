@@ -12,7 +12,13 @@ setup(
 	author = "IPFire.org Team",
 	author_email = "info@ipfire.org",
 	url = "http://redmine.ipfire.org/projects/buildsystem3",
-	packages = ["pakfire", "pakfire.packages", "pakfire.plugins", "pakfire.repository",],
+	packages = [
+		"pakfire",
+		"pakfire.packages",
+		"pakfire.plugins",
+		"pakfire.server",
+		"pakfire.repository",
+	],
 	scripts = [
 		"scripts/pakfire",
 		"scripts/pakfire-build",

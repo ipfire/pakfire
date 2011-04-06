@@ -282,6 +282,10 @@ class Package(object):
 		return self.metadata.get("PKG_UUID", None)
 
 	@property
+	def supported_arches(self):
+		return self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
+
+	@property
 	def _provides(self):
 		# Make package identifyable by its name and version/release tuples.
 		provides = [

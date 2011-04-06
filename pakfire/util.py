@@ -102,7 +102,7 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 	preexec = ChildPreExec(personality, chrootPath, cwd)
 
 	if logger:
-		logger.debug("Executing command: %s" % command)
+		logger.debug("Executing command: %s in %s" % (command, chrootPath or "/"))
 
 	try:
 		child = None

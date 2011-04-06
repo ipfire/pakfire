@@ -101,17 +101,22 @@ class DirectoryIndex(Index):
 
 				file = os.path.join(dir, file)
 
-				package = packages.BinaryPackage(self.pakfire, self.repo, file)
+				package = packages.open(self.pakfire, self.repo, file)
 
-				if package.type == "source":
-					# Silently skip source packages.
-					continue
+				logging.debug("Found package: %s" % package)
 
-				if not package.arch in (self.arch, "noarch"):
-					logging.warning("Skipped package with wrong architecture: %s (%s)" \
-						% (package.filename, package.arch))
-					print package.type
-					continue
+				if isinstance(package, packages.BinaryPackage):
+					if not package.arch in (self.arch, "noarch"):
+						logging.warning("Skipped package with wrong architecture: %s (%s)" \
+							% (package.filename, package.arch))
+						print package.type
+						continue
+
+				# XXX this is disabled because we could also have source
+				# repositories. But we should not mix them.	
+				#if package.type == "source":
+				#	# Silently skip source packages.
+				#	continue
 
 				self._packages.append(package)
 

@@ -22,6 +22,8 @@ class Config(object):
 
 		self._config_repos = {}
 		self._distro = {}
+		self._master = {}
+		self._slave = {}
 		self._files = []
 
 		# Read default configuration files
@@ -64,6 +66,18 @@ class Config(object):
 			for k,v in config.items("distro"):
 				self._distro[k] = v
 			config.remove_section("distro")
+
+		# Read master settings from file
+		if "master" in config.sections():
+			for k,v in config.items("master"):
+				self._master[k] = v
+			config.remove_section("master")
+
+		# Read slave settings from file
+		if "slave" in config.sections():
+			for k,v in config.items("slave"):
+				self._slave[k] = v
+			config.remove_section("slave")
 
 		# Read repository definitions
 		for section in config.sections():

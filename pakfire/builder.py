@@ -238,6 +238,11 @@ class Builder(object):
 		return ret
 
 	def prepare(self):
+		prepared_tag = ".prepared"
+
+		if os.path.exists(self.chrootPath(prepared_tag)):
+			return
+
 		# Create directory.
 		if not os.path.exists(self.path):
 			os.makedirs(self.path)
@@ -272,7 +277,8 @@ class Builder(object):
 		# Create neccessary files like /etc/fstab and /etc/mtab.
 		files = (
 			"etc/fstab",
-			"etc/mtab"
+			"etc/mtab",
+			prepared_tag,
 		)
 
 		for file in files:

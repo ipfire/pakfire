@@ -5,6 +5,7 @@ import sys
 
 import packages
 import repository
+import server
 import util
 
 from pakfire import Pakfire
@@ -379,9 +380,78 @@ class CliRepo(Cli):
 
 
 class CliMaster(Cli):
-	pass
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire master command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_update()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.pakfire = Pakfire(
+			builder = True,
+			configs = [self.args.config],
+			disable_repos = self.args.disable_repo,
+		)
+
+		self.master = server.master.Master(self.pakfire)
+
+		self.action2func = {
+			"update"      : self.handle_update,
+		}
+
+	def parse_command_update(self):
+		# Implement the "update" command.
+		sub_update = self.sub_commands.add_parser("update",
+			help=_("Update the sources."))
+		sub_update.add_argument("action", action="store_const", const="update")
+
+	def handle_update(self):
+		self.master.update_sources()
 
 
 class CliSlave(Cli):
-	pass
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire slave command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_keepalive()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.pakfire = Pakfire(
+			builder = True,
+			configs = [self.args.config],
+			disable_repos = self.args.disable_repo,
+		)
+
+		self.slave = server.slave.Slave(self.pakfire)
+
+		self.action2func = {
+			"keepalive" : self.handle_keepalive,
+		}
+
+	def parse_command_keepalive(self):
+		# Implement the "keepalive" command.
+		sub_keepalive = self.sub_commands.add_parser("keepalive",
+			help=_("Send a keepalive to the server."))
+		sub_keepalive.add_argument("action", action="store_const",
+			const="keepalive")
+
+	def handle_keepalive(self):
+		self.slave.keepalive()
 

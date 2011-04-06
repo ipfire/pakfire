@@ -146,7 +146,7 @@ class Pakfire(object):
 		finally:
 			b.destroy()
 
-	def dist(self, pkgs, resultdirs=None):
+	def dist(self, pkgs, resultdirs=None, destroy=True):
 		self.check_build_mode()
 
 		# Select first package out of pkgs.
@@ -186,7 +186,8 @@ class Pakfire(object):
 				# Cleanup all the stuff from pkg.
 				b.cleanup()
 		finally:
-			b.destroy()
+			if destroy:
+				b.destroy()
 
 	def install(self, requires):
 		ds = depsolve.DependencySet(pakfire=self)
@@ -251,7 +252,7 @@ class Pakfire(object):
 		return pkgs
 
 	def repo_create(self, path, input_paths):
-		repo = repository.LocalRepository(
+		repo = repository.LocalBinaryRepository(
 			self,
 			name="new",
 			description="New repository.",

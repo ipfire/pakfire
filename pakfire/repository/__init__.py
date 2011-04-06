@@ -3,7 +3,7 @@
 import logging
 
 from installed import InstalledRepository
-from local import LocalRepository, LocalBuildRepository
+from local import LocalRepository, LocalBuildRepository, LocalSourceRepository
 from oddments import DummyRepository, FileSystemRepository
 from remote import RemoteRepository
 
