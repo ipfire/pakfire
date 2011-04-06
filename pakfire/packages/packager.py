@@ -89,6 +89,10 @@ class Packager(object):
 
 				self.info[key] = " ".join(sorted(val))
 
+		elif self.type == "source":
+			# Save the build requirements.
+			self.info["requires"] = " ".join(self.pkg.requires)
+
 		self.create_info()
 
 		# Create the outer tarball.

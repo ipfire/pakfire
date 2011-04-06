@@ -10,17 +10,6 @@ class BinaryPackage(FilePackage):
 		return self.metadata.get("PKG_ARCH")
 
 	@property
-	def requires(self):
-		ret = ""
-
-		for i in ("PKG_REQUIRES", "PKG_DEPS"):
-			ret = self.metadata.get(i, ret)
-			if ret:
-				break
-
-		return ret.split()
-
-	@property
 	def provides(self):
 		if not hasattr(self, "__provides"):
 			# Get automatic provides
@@ -28,8 +17,7 @@ class BinaryPackage(FilePackage):
 
 			# Add other provides
 			for prov in self.metadata.get("PKG_PROVIDES", "").split():
-				if not prov in provides:
-					provides.append(prov)
+				provides.add(prov)
 
 			self.__provides = provides
 
@@ -37,9 +25,13 @@ class BinaryPackage(FilePackage):
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("PKG_CONFLICTS", "").split()
+		conflicts = self.metadata.get("PKG_CONFLICTS", "").split()
+
+		return set(conflicts)
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("PKG_OBSOLETES", "").split()
+		obsoletes = self.metadata.get("PKG_OBSOLETES", "").split()
+
+		return set(obsoletes)
 

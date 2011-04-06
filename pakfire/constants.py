@@ -4,9 +4,7 @@ import os.path
 
 PAKFIRE_VERSION = "0.9.2"
 
-SYSCONFDIR = os.path.join(os.path.dirname(__file__), "..", "examples")
-if not os.path.exists(SYSCONFDIR):
-	SYSCONFDIR = "/etc"
+SYSCONFDIR = "/etc"
 
 CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire.repos.d")
 CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")

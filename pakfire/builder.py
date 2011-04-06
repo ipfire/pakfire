@@ -19,6 +19,7 @@ import transaction
 import util
 
 from constants import *
+from i18n import _
 from errors import BuildError, BuildRootLocked, Error
 
 
@@ -169,6 +170,10 @@ class Builder(object):
 		if isinstance(self.pkg, packages.Makefile):
 			self.pkg.extract(self)
 
+		elif isinstance(self.pkg, packages.SourcePackage):
+			self.pkg.extract(_("Extracting: %s (source)") % self.pkg.name,
+				prefix=os.path.join(self.path, "build"))
+
 		# If we have a makefile, we can only get the build dependencies
 		# after we have extracted all the rest.
 		if build_deps and isinstance(self.pkg, packages.Makefile):
@@ -290,7 +295,6 @@ class Builder(object):
 			f.close()
 
 		self._prepare_dev()
-		self._prepare_users()
 		self._prepare_dns()
 
 	def _prepare_dev(self):
@@ -327,17 +331,6 @@ class Builder(object):
 			os.symlink("/dev/pts/ptmx", self.chrootPath("dev", "ptmx"))
 
 		os.umask(prevMask)
-
-	def _prepare_users(self):
-		f = open(self.chrootPath("etc", "passwd"), "w")
-		f.write("root:x:0:0:root:/root:/bin/bash\n")
-		f.write("nobody:x:99:99:Nobody:/:/sbin/nologin\n")
-		f.close()
-
-		f = open(self.chrootPath("etc", "group"), "w")
-		f.write("root:x:0:root\n")
-		f.write("nobody:x:99:\n")
-		f.close()
 
 	def _prepare_dns(self):
 		"""
@@ -507,8 +500,12 @@ class Builder(object):
 		return ret
 
 	def make(self, *args, **kwargs):
-		return self.do("make -f /build/%s %s" % \
-			(os.path.basename(self.pkg.filename), " ".join(args)),
+		if isinstance(self.pkg, packages.Makefile):
+			filename = os.path.basename(self.pkg.filename)
+		elif isinstance(self.pkg, packages.SourcePackage):
+			filename = "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION)
+
+		return self.do("make -f /build/%s %s" % (filename, " ".join(args)),
 			**kwargs)
 
 	@property

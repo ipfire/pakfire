@@ -5,9 +5,7 @@ import os
 import progressbar
 import sys
 import tarfile
-import tempfile
 
-import compress
 import depsolve
 import packages
 import util
@@ -49,30 +47,6 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
-	@staticmethod
-	def make_progress(message, maxval):
-		# Return nothing if stdout is not a terminal.
-		if not sys.stdout.isatty():
-			return
-
-		widgets = [
-			"  ",
-			message,
-			" ",
-			progressbar.Bar(left="[", right="]"),
-			"  ",
-			progressbar.ETA(),
-			"  ",
-		]
-
-		if not maxval:
-			maxval = 1
-
-		pb = progressbar.ProgressBar(widgets=widgets, maxval=maxval)
-		pb.start()
-
-		return pb
-
 
 class ActionCleanup(Action):
 	def gen_files(self):
@@ -99,10 +73,10 @@ class ActionCleanup(Action):
 		if not files:
 			return
 
-		pb = self.make_progress(message, len(files))
+		pb = util.make_progress(message, len(files))
 		i = 0
 
-		for f in self.files:
+		for f in self.gen_files():
 			# Update progress if any.
 			i += 1
 			if pb:
@@ -130,7 +104,7 @@ class ActionCleanup(Action):
 		if not files:
 			return
 
-		self.remove_files(_("Cleanup: %s") % pkg.name, files)
+		self.remove_files(_("Cleanup: %s") % self.pkg.name, files)
 
 
 class ActionScript(Action):
@@ -161,87 +135,10 @@ class ActionInstall(Action):
 		if prefix is None:
 			prefix = self.pakfire.path
 
-		# A place to store temporary data.
-		tempf = None
-
-		# Open package data for read.
-		archive = self.pkg.open_archive()
-
-		# Get the package payload.
-		payload = archive.extractfile("data.img")
-
-		# Decompress the payload if needed.
-		if self.pkg.payload_compression:
-			# Create a temporary file to store the decompressed output.
-			garbage, tempf = tempfile.mkstemp(prefix="pakfire")
-
-			i = payload
-			o = open(tempf, "w")
-
-			# Decompress the package payload.
-			compress.decompressobj(i, o, algo=self.pkg.payload_compression)
-
-			i.close()
-			o.close()
-
-			payload = open(tempf)
-
-		# Open the tarball in the package.
-		payload_archive = packages.InnerTarFile.open(fileobj=payload)
-
-		members = payload_archive.getmembers()
-
-		# Load progressbar.
-		pb = self.make_progress("%-40s" % message, len(members))
-
-		i = 0
-		for member in members:
-			# Update progress.
-			if pb:
-				i += 1
-				pb.update(i)
-
-			target = os.path.join(prefix, member.name)
-
-			# If the member is a directory and if it already exists, we
-			# don't need to create it again.
-
-			if os.path.exists(target):
-				if member.isdir():
-					continue
-
-				else:
-					# Remove file if it has been existant
-					os.unlink(target)
-
-			#if self.pakfire.config.get("debug"):
-			#	msg = "Creating file (%s:%03d:%03d) " % \
-			#		(tarfile.filemode(member.mode), member.uid, member.gid)
-			#	if member.issym():
-			#		msg += "/%s -> %s" % (member.name, member.linkname)
-			#	elif member.islnk():
-			#		msg += "/%s link to /%s" % (member.name, member.linkname)
-			#	else:
-			#		msg += "/%s" % member.name
-			#	logging.debug(msg)
-
-			payload_archive.extract(member, path=prefix)
-
-			# XXX implement setting of xattrs/acls here
-
-		# Close all open files.
-		payload_archive.close()
-		payload.close()
-		archive.close()
-
-		if tempf:
-			os.unlink(tempf)
+		self.pkg.extract(message, prefix=prefix)
 
 		# Create package in the database
 		self.local.index.add_package(self.pkg)
-
-		if pb:
-			pb.finish()
 
 	def run(self):
 		self.extract(_("Installing: %s") % self.pkg.name)

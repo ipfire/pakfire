@@ -68,6 +68,10 @@ class Repositories(object):
 		self._repos.sort()
 
 	@property
+	def all(self):
+		return self._repos[:]
+
+	@property
 	def enabled(self):
 		for repo in self._repos:
 			if not repo.enabled:
@@ -117,6 +121,11 @@ class Repositories(object):
 	def get_by_file(self, filename):
 		for repo in self.enabled:
 			for pkg in repo.get_by_file(filename):
+				yield pkg
+
+	def get_by_group(self, group):
+		for repo in self.enabled:
+			for pkg in repo.get_by_group(group):
 				yield pkg
 
 	def search(self, pattern):

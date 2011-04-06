@@ -57,6 +57,12 @@ class Package(object):
 
 		return ret
 
+	def __hash__(self):
+		hashstr = ["%s" % s for s in (self.name, self.epoch, self.version,
+			self.release, self.arch,)]
+
+		return hash("-".join(hashstr))
+
 	def dump(self, short=False, long=False):
 		if short:
 			return "%s.%s : %s" % (self.name, self.arch, self.summary)
@@ -285,6 +291,23 @@ class Package(object):
 	def supported_arches(self):
 		return self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
 
+	def requires(self):
+		ret = ""
+
+		# The default attributes, that are process for the requires.
+		attrs = ("PKG_REQUIRES", "PKG_DEPS")
+
+		# Source packages do depend on their build dependencies.
+		if self.arch == "src":
+			attrs = ("PKG_BUILD_DEPS",)
+
+		for i in attrs:
+			ret = self.metadata.get(i, ret)
+			if ret:
+				break
+
+		return set(ret.split())
+
 	@property
 	def _provides(self):
 		# Make package identifyable by its name and version/release tuples.
@@ -294,7 +317,7 @@ class Package(object):
 			"%s=%s:%s-%s" % (self.name, self.epoch, self.version, self.release),
 		]
 
-		return provides
+		return set(provides)
 
 	### methods ###
 
