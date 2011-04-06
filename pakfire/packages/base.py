@@ -291,6 +291,7 @@ class Package(object):
 	def supported_arches(self):
 		return self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
 
+	@property
 	def requires(self):
 		ret = ""
 
