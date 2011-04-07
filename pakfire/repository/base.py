@@ -77,6 +77,15 @@ class RepositoryFactory(object):
 			if pkg.does_provide(requires):
 				yield pkg
 
+	def get_by_requires(self, requires):
+		"""
+			Returns a list of all packages that require the given requirement.
+		"""
+		for pkg in self.packages:
+			# XXX does not use the cmp() function of Requires.
+			if requires.requires in pkg.requires:
+				yield pkg
+
 	def get_by_file(self, filename):
 		for pkg in self.packages:
 			match = False
