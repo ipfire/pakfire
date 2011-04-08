@@ -136,6 +136,8 @@ class DependencySet(object):
 					# Set pointer to package that is updated.
 					pkg.old_package = p
 
+					# Remove old package from list of packages.
+					self.__packages.remove(pkg.old_package)
 					break
 
 			# Add package to transaction set
