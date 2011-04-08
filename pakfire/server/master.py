@@ -37,9 +37,20 @@ class Source(object):
 		if not revision:
 			revision = self.revision
 
-		revs = self._git("rev-list %s..origin/%s --no-merges" % (revision, self.branch))
+		command = "rev-list %s..origin/%s" % (revision, self.branch)
 
-		return reversed(revs.splitlines())
+		# Get all normal commits.
+		commits = self._git("%s --no-merges" % command)
+		commits = commits.splitlines()
+
+		revisions = []
+		for commit in self._git(command).splitlines():
+			# Check if commit is a normal commit or merge commit.
+			merge = not commit in commits
+
+			revisions.append((commit, merge))
+
+		return reversed(revisions)
 
 	def _git_changed_files(self, revision1, revision2=""):
 		files = self._git("diff --name-only %s %s" % (revision1, revision2))
@@ -49,17 +60,18 @@ class Source(object):
 	def _git_checkout_revision(self, revision):
 		self._git("checkout %s" % revision)
 
-	def update_revision(self, revision):
-		self._git_checkout_revision(revision)
+	def update_revision(self, (revision, merge)):
+		if not merge:
+			self._git_checkout_revision(revision)
 
-		# Get list of all changes files between the current revision and
-		# the previous one.
-		files = self._git_changed_files("HEAD^", "HEAD")
+			# Get list of all changes files between the current revision and
+			# the previous one.
+			files = self._git_changed_files("HEAD^", "HEAD")
 
-		self.update_files([f for f in files if f.endswith(".%s" % MAKEFILE_EXTENSION)])
+			self.update_files([f for f in files if f.endswith(".%s" % MAKEFILE_EXTENSION)])
 
 		# Send update to the server.
-		self.master.update_revision(self, revision)		
+		self.master.update_revision(self, revision)
 
 	def update_files(self, files):
 		rnd = random.randint(0, 1024**2)

@@ -485,6 +485,7 @@ class CliSlave(Cli):
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
 
+		self.parse_command_build()
 		self.parse_command_keepalive()
 
 		# Finally parse all arguments from the command line and save them.
@@ -499,8 +500,15 @@ class CliSlave(Cli):
 		self.slave = server.slave.Slave(self.pakfire)
 
 		self.action2func = {
+			"build"     : self.handle_build,
 			"keepalive" : self.handle_keepalive,
 		}
+
+	def parse_command_build(self):
+		# Implement the "build" command.
+		sub_keepalive = self.sub_commands.add_parser("build",
+			help=_("Request a build job from the server."))
+		sub_keepalive.add_argument("action", action="store_const", const="build")
 
 	def parse_command_keepalive(self):
 		# Implement the "keepalive" command.
@@ -512,3 +520,5 @@ class CliSlave(Cli):
 	def handle_keepalive(self):
 		self.slave.keepalive()
 
+	def handle_build(self):
+		self.slave.build_job()

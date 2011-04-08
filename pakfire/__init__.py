@@ -14,6 +14,7 @@ import packages
 import plugins
 import repository
 import transaction
+import util
 
 from constants import *
 from errors import BuildError, PakfireError
@@ -28,15 +29,22 @@ class Pakfire(object):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
+		# Generate a random value.
+		rnd = random.sample(string.lowercase + string.digits, 12)
+		rnd = "".join(rnd)
+
 		# The path where we are operating in
 		self.path = path
+		self.tempdir = os.path.join(LOCAL_TMP_PATH, rnd)
+
+		if not os.path.exists(self.tempdir):
+			os.makedirs(self.tempdir)
 
 		# Save if we are in the builder mode
 		self.builder = builder
 
 		if self.builder:
-			rnd = random.sample(string.lowercase + string.digits, 12)
-			self.path = os.path.join(BUILD_ROOT, "".join(rnd))
+			self.path = os.path.join(BUILD_ROOT, rnd)
 
 		self.debug = False
 
@@ -75,6 +83,13 @@ class Pakfire(object):
 		# always work with valid data.
 		self.repos.update()
 
+	def __del__(self):
+		util.rm(self.tempdir)
+
+	@property
+	def supported_arches(self):
+		return self.distro.supported_arches
+
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:
 			raise Exception, "You must run pakfire as the root user."
@@ -102,7 +117,7 @@ class Pakfire(object):
 
 		raise BuildError, arch
 
-	def build(self, pkg, arch=None, resultdirs=None):
+	def build(self, pkg, arch=None, resultdirs=None, **kwargs):
 		self.check_build_mode()
 		self.check_host_arch(arch)
 
@@ -112,7 +127,7 @@ class Pakfire(object):
 		# Always include local repository
 		resultdirs.append(self.repos.local_build.path)
 
-		b = builder.Builder(pakfire=self, pkg=pkg)
+		b = builder.Builder(pakfire=self, pkg=pkg, **kwargs)
 
 		try:
 			b.prepare()
