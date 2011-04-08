@@ -266,6 +266,18 @@ class Pakfire(object):
 
 		return pkgs
 
+	def requires(self, patterns):
+		pkgs = []
+
+		for pattern in patterns:
+			requires = depsolve.Requires(None, pattern)
+			pkgs += self.repos.get_by_requires(requires)
+
+		pkgs = packages.PackageListing(pkgs)
+		#pkgs.unique()
+
+		return pkgs
+
 	def repo_create(self, path, input_paths):
 		repo = repository.LocalBinaryRepository(
 			self,

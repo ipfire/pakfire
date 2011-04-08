@@ -118,6 +118,11 @@ class Repositories(object):
 				for pkg in repo.get_by_provides(requires):
 					yield pkg
 
+	def get_by_requires(self, requires):
+		for repo in self.enabled:
+			for pkg in repo.get_by_requires(requires):
+				yield pkg
+
 	def get_by_file(self, filename):
 		for repo in self.enabled:
 			for pkg in repo.get_by_file(filename):
