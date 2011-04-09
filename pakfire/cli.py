@@ -8,7 +8,7 @@ import repository
 import server
 import util
 
-import pakfire
+import pakfire.api as pakfire
 from constants import *
 from i18n import _
 
@@ -348,7 +348,7 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.build(pkg, distro_config, resultdirs=[self.args.resultdir,],
+		pakfire.build(pkg, distro_config=distro_config, resultdirs=[self.args.resultdir,],
 			**self.pakfire_args)
 
 	def handle_shell(self):
