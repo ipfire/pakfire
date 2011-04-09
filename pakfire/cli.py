@@ -8,8 +8,7 @@ import repository
 import server
 import util
 
-from pakfire import Pakfire
-
+import pakfire
 from constants import *
 from i18n import _
 
@@ -59,13 +58,6 @@ class Cli(object):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		# Create instance of the wonderful pakfire :)
-		self.pakfire = Pakfire(
-			self.args.instroot,
-			configs = [self.args.config],
-			disable_repos = self.args.disable_repo,
-		)
-
 		self.action2func = {
 			"install"      : self.handle_install,
 			"localinstall" : self.handle_localinstall,
@@ -78,6 +70,10 @@ class Cli(object):
 			"groupinstall" : self.handle_groupinstall,
 			"repolist"     : self.handle_repolist,
 		}
+
+	@property
+	def pakfire_args(self):
+		return {}
 
 	def parse_common_arguments(self):
 		self.parser.add_argument("-v", "--verbose", action="store_true",
@@ -181,24 +177,19 @@ class Cli(object):
 		return func()
 
 	def handle_info(self, long=False):
-		for pattern in self.args.package:
-			pkgs = self.pakfire.repos.get_by_glob(pattern)
+		pkgs = pakfire.info(self.args.package, **self.pakfire_args)
 
-			pkgs = packages.PackageListing(pkgs)
-
-			for pkg in pkgs:
-				print pkg.dump(long=long)
+		for pkg in pkgs:
+			print pkg.dump(long=long)
 
 	def handle_search(self):
-		pkgs = self.pakfire.repos.search(self.args.pattern)
-
-		pkgs = packages.PackageListing(pkgs)
+		pkgs = pakfire.search(self.args.pattern, **self.pakfire_args)
 
 		for pkg in pkgs:
 			print pkg.dump(short=True)
 
 	def handle_update(self):
-		self.pakfire.update(self.args.package)
+		pakfire.update(self.args.package, **self.pakfire_args)
 
 	def handle_install(self, local=False):
 		if local:
@@ -211,34 +202,34 @@ class Cli(object):
 
 			pkgs.append(pkg)
 
-		self.pakfire.install(pkgs)
+		pakfire.install(pkgs, **self.pakfire_args)
 
 	def handle_localinstall(self):
-		return self.handle_install(local=True)
+		return self.handle_install(local=True, **self.pakfire_args)
 
 	def handle_provides(self):
-		pkgs = self.pakfire.provides(self.args.pattern)
+		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)
 
 		for pkg in pkgs:
 			print pkg.dump()
 
 	def handle_requires(self):
-		pkgs = self.pakfire.requires(self.args.pattern)
+		pkgs = pakfire.requires(self.args.pattern, **self.pakfire_args)
 
 		for pkg in pkgs:
 			print pkg.dump()
 
 	def handle_grouplist(self):
-		pkgs = self.pakfire.grouplist(self.args.group[0])
+		pkgs = pakfire.grouplist(self.args.group[0], **self.pakfire_args)
 
 		for pkg in pkgs:
 			print " * %s" % pkg
 
 	def handle_groupinstall(self):
-		self.pakfire.groupinstall(self.args.group[0])
+		pakfire.groupinstall(self.args.group[0], **self.pakfire_args)
 
 	def handle_repolist(self):
-		repos = self.pakfire.repolist()
+		repos = pakfire.repo_list(**self.pakfire_args)
 		repos.sort()
 
 		FORMAT = " %-20s %8s %12s "
@@ -280,12 +271,6 @@ class CliBuilder(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		self.pakfire = Pakfire(
-			builder = True,
-			configs = [self.args.config],
-			disable_repos = self.args.disable_repo,
-		)
-
 		self.action2func = {
 			"build"       : self.handle_build,
 			"dist"        : self.handle_dist,
@@ -298,6 +283,10 @@ class CliBuilder(Cli):
 			"grouplist"   : self.handle_grouplist,
 			"repolist"    : self.handle_repolist,
 		}
+
+	@property
+	def pakfire_args(self):
+		return { "builder" : 1 }
 
 	def parse_command_update(self):
 		# Implement the "update" command.
@@ -351,18 +340,16 @@ class CliBuilder(Cli):
 		if os.path.exists(pkg):
 			pkg = os.path.abspath(pkg)
 
-			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(self.pakfire, pkg)
-
-			elif pkg.endswith(PACKAGE_EXTENSION):
-				repo = repository.FileSystemRepository(self.pakfire)
-				pkg = packages.SourcePackage(self.pakfire, repo, pkg)
-
 		else:
-			# XXX walk through the source tree and find a matching makefile
-			pass
+			raise FileNotFoundError, pkg
 
-		self.pakfire.build(pkg, arch=self.args.arch, resultdirs=[self.args.resultdir,])
+		# Create distribution configuration from command line.
+		distro_config = {
+			"arch" : self.args.arch,
+		}
+
+		pakfire.build(pkg, distro_config, resultdirs=[self.args.resultdir,],
+			**self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None
@@ -371,22 +358,19 @@ class CliBuilder(Cli):
 		if self.args.package:
 			pkg = self.args.package
 
-		# Check, if we got a regular file
-		if pkg and os.path.exists(pkg):
-			pkg = os.path.abspath(pkg)
+			# Check, if we got a regular file
+			if os.path.exists(pkg):
+				pkg = os.path.abspath(pkg)
 
-			if pkg.endswith(MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(self.pakfire, pkg)
+			else:
+				raise FileNotFoundError, pkg
 
-			elif pkg.endswith(PACKAGE_EXTENSION):
-				repo = repository.FileSystemRepository(self.pakfire)
-				pkg = packages.SourcePackage(self.pakfire, repo, pkg)
+		# Create distribution configuration from command line.
+		distro_config = {
+			"arch" : self.args.arch,
+		}
 
-		else:
-			# XXX walk through the source tree and find a matching makefile
-			pass
-
-		self.pakfire.shell(pkg, arch=self.args.arch)
+		pakfire.shell(pkg, distro_config, **self.pakfire_args)
 
 	def handle_dist(self):
 		# Get the packages from the command line options
@@ -396,16 +380,15 @@ class CliBuilder(Cli):
 			# Check, if we got a regular file
 			if os.path.exists(pkg):
 				pkg = os.path.abspath(pkg)
-
-				if pkg.endswith(MAKEFILE_EXTENSION):
-					pkg = packages.Makefile(self.pakfire, pkg)
-					pkgs.append(pkg)
+				pkgs.append(pkg)
 
 			else:
-				# XXX walk through the source tree and find a matching makefile
-				pass
+				raise FileNotFoundError, pkg
 
-		self.pakfire.dist(pkgs, resultdirs=[self.args.resultdir,])
+		for pkg in pkgs:
+			pakfire.dist(pkg, resultdirs=[self.args.resultdir,],
+				**self.pakfire_args)
+
 
 class CliRepo(Cli):
 	def __init__(self):
@@ -422,12 +405,6 @@ class CliRepo(Cli):
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
-
-		self.pakfire = Pakfire(
-			builder = True,
-			configs = [self.args.config],
-			disable_repos = self.args.disable_repo,
-		)
 
 		self.action2func = {
 			"repo_create" : self.handle_repo_create,
@@ -451,7 +428,7 @@ class CliRepo(Cli):
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
-		self.pakfire.repo_create(path, self.args.inputs)
+		pakfire.repo_create(path, self.args.inputs, **self.pakfire_args)
 
 
 class CliMaster(Cli):
@@ -470,13 +447,7 @@ class CliMaster(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		self.pakfire = Pakfire(
-			builder = True,
-			configs = [self.args.config],
-			disable_repos = self.args.disable_repo,
-		)
-
-		self.master = server.master.Master(self.pakfire)
+		self.master = server.master.Master()
 
 		self.action2func = {
 			"update"      : self.handle_update,
@@ -509,13 +480,7 @@ class CliSlave(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		self.pakfire = Pakfire(
-			builder = True,
-			configs = [self.args.config],
-			disable_repos = self.args.disable_repo,
-		)
-
-		self.slave = server.slave.Slave(self.pakfire)
+		self.slave = server.slave.Slave()
 
 		self.action2func = {
 			"build"     : self.handle_build,

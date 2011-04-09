@@ -23,4 +23,7 @@ def open(pakfire, repo, filename):
 	if filename.endswith(".src.%s" % PACKAGE_EXTENSION):
 		return SourcePackage(pakfire, repo, filename)
 
+	elif filename.endswith(".%s" % MAKEFILE_EXTENSION):
+		return Makefile(pakfire, filename)
+
 	return BinaryPackage(pakfire, repo, filename)

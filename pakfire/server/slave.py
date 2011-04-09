@@ -5,14 +5,16 @@ import os
 import socket
 import xmlrpclib
 
+import pakfire
+import pakfire.base
 import pakfire.downloader
 import pakfire.packages
 
 from pakfire.errors import *
 
 class Slave(object):
-	def __init__(self, pakfire):
-		self.pakfire = pakfire
+	def __init__(self, **pakfire_args):
+		self.pakfire = pakfire.base.Pakfire(**pakfire_args)
 
 		server = self.pakfire.config._slave.get("server")
 
@@ -59,25 +61,23 @@ class Slave(object):
 		grabber = pakfire.downloader.PackageDownloader()
 
 		# Temporary path to store the source.
-		tempfile = os.path.join(self.pakfire.tempdir, os.path.basename(filename))
+		tempfile = os.path.join("/var/tmp", os.path.basename(filename))
 
 		# Download the source.
-		grabber.urlgrab(filename, filename=tempfile)
-
-		# Read the package file.
-		pkg = pakfire.packages.SourcePackage(self.pakfire,
-			self.pakfire.repos.dummy, tempfile)
+		pkg = grabber.urlgrab(filename, filename=tempfile)
 
 		try:
 			self.update_build_status(build_id, "running")
 
-			self.pakfire.build(pkg, build_id=build_id)
+			pakfire.build(pkg, build_id=build_id)
 
 		except DependencyError, e:
 			self.update_build_status(build_id, "dependency_error", e)
 
 		except:
 			self.update_build_status(build_id, "failed")
+			raise
 
-		self.update_build_status(build_id, "finished")
+		else:
+			self.update_build_status(build_id, "finished")
 

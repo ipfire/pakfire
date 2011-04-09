@@ -28,6 +28,14 @@ def cli_is_interactive():
 
 	return False
 
+def random_string(length=20):
+	s = ""
+
+	for i in range(length):
+		s += random.choice(string.letters)
+
+	return s
+
 def make_progress(message, maxval):
 	# Return nothing if stdout is not a terminal.
 	if not sys.stdout.isatty():

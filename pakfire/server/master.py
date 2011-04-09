@@ -7,6 +7,9 @@ import shutil
 import subprocess
 import xmlrpclib
 
+import pakfire
+import pakfire.base
+
 import pakfire.packages as packages
 import pakfire.repository as repository
 import pakfire.util as util
@@ -80,7 +83,7 @@ class Source(object):
 		pkgs = []
 		for file in files:
 			if os.path.exists(file):
-				pkgs.append(packages.Makefile(self.pakfire, file))
+				pkgs.append(file)
 			else:
 				pkg_name = os.path.basename(os.path.dirname(file))
 
@@ -91,7 +94,8 @@ class Source(object):
 			return
 
 		# XXX This totally ignores the local configuration.
-		self.pakfire.dist(pkgs, destroy=False, resultdirs=[tmpdir,])
+		for pkg in pkgs:
+			pakfire.dist(pkg, resultdirs=[tmpdir,])
 
 		# Create a kind of dummy repository to link the packages against it.
 		repo = repository.LocalSourceRepository(self.pakfire,
@@ -153,8 +157,8 @@ class Source(object):
 
 
 class Master(object):
-	def __init__(self, pakfire):
-		self.pakfire = pakfire
+	def __init__(self, **pakfire_args):
+		self.pakfire = pakfire.base.Pakfire(**pakfire_args)
 
 		server = self.pakfire.config._master.get("server")
 

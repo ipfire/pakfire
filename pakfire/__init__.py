@@ -1,308 +1,222 @@
 #!/usr/bin/python
 
-import logging
-import os
-import random
-import string
-
+import base
 import builder
-import config
 import depsolve
-import distro
-import logger
 import packages
-import plugins
-import repository
 import transaction
-import util
 
-from constants import *
-from errors import BuildError, PakfireError
-from i18n import _
+from errors import *
 
-__version__ = PAKFIRE_VERSION
+Builder = builder.Builder
+Pakfire = base.Pakfire
 
+def install(requires, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-class Pakfire(object):
-	def __init__(self, path="/", builder=False, configs=[],
-			disable_repos=None):
-		# Check if we are operating as the root user.
-		self.check_root_user()
+	ds = depsolve.DependencySet(pakfire=pakfire)
 
-		# Generate a random value.
-		rnd = random.sample(string.lowercase + string.digits, 12)
-		rnd = "".join(rnd)
+	for req in requires:
+		if isinstance(req, packages.BinaryPackage):
+			ds.add_package(req)
+		else:
+			ds.add_requires(req)
 
-		# The path where we are operating in
-		self.path = path
-		self.tempdir = os.path.join(LOCAL_TMP_PATH, rnd)
+	ds.resolve()
+	ds.dump()
 
-		if not os.path.exists(self.tempdir):
-			os.makedirs(self.tempdir)
+	ret = cli.ask_user(_("Is this okay?"))
+	if not ret:
+		return
 
-		# Save if we are in the builder mode
-		self.builder = builder
+	ts = transaction.Transaction(pakfire, ds)
+	ts.run()
 
-		if self.builder:
-			self.path = os.path.join(BUILD_ROOT, rnd)
+def remove(**pakfire_args):
+	pass
 
-		self.debug = False
+def update(pkgs, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-		# Read configuration file(s)
-		self.config = config.Config(pakfire=self)
-		for filename in configs:
-			self.config.read(filename)
+	ds = depsolve.DependencySet(pakfire=self)
 
-		# Setup the logger
-		logger.setup_logging(self.config)
-		self.config.dump()
+	for pkg in ds.packages:
+		# Skip unwanted packages (passed on command line)
+		if pkgs and not pkg.name in pkgs:
+			continue
 
-		# Load plugins
-		self.plugins = plugins.Plugins(pakfire=self)
+		updates = pakfire.repos.get_by_name(pkg.name)
+		updates = packages.PackageListing(updates)
 
-		# Get more information about the distribution we are running
-		# or building
-		self.distro = distro.Distribution(pakfire=self)
+		latest = updates.get_most_recent()
 
-		# Load all repositories
-		self.repos = repository.Repositories(pakfire=self)
+		# If the current package is already the latest
+		# we skip it.
+		if latest == pkg:
+			continue
 
-		# Run plugins that implement an initialization method.
-		self.plugins.run("init")
+		# Otherwise we want to update the package.
+		ds.add_package(latest)
 
-		# Disable repositories if passed on command line
-		if disable_repos:
-			for repo in disable_repos:
-				self.repos.disable_repo(repo)
+	ds.resolve()
+	ds.dump()
 
-		# Check if there is at least one enabled repository.
-		if len(self.repos) < 2:
-			raise PakfireError, "No repositories were configured."
+	ret = cli.ask_user(_("Is this okay?"))
+	if not ret:
+		return
 
-		# Update all indexes of the repositories (not force) so that we will
-		# always work with valid data.
-		self.repos.update()
+	ts = transaction.Transaction(pakfire, ds)
+	ts.run()
 
-	def __del__(self):
-		util.rm(self.tempdir)
+def info(patterns, **pakfire_args):
+	# Create pakfire instance.
+	pakfire = Pakfire(**pakfire_args)
 
-	@property
-	def supported_arches(self):
-		return self.distro.supported_arches
+	pkgs = []
 
-	def check_root_user(self):
-		if not os.getuid() == 0 or not os.getgid() == 0:
-			raise Exception, "You must run pakfire as the root user."
+	for pattern in patterns:
+		pkgs += pakfire.repos.get_by_glob(pattern)
 
-	def check_build_mode(self):
-		"""
-			Check if we are running in build mode.
-			Otherwise, raise an exception.
-		"""
-		if not self.builder:
-			raise BuildError, "Cannot build when not in build mode."
+	return packages.PackageListing(pkgs)
 
-	def check_host_arch(self, arch):
-		"""
-			Check if we can build for arch.
-		"""
+def search(pattern, **pakfire_args):
+	# Create pakfire instance.
+	pakfire = Pakfire(**pakfire_args)
 
-		# If no arch was given on the command line we build for our
-		# own arch which should always work.
-		if not arch:
-			return True
+	# Do the search.
+	pkgs = pakfire.repos.search(pattern)
 
-		if not self.distro.host_supports_arch(arch):
-			raise BuildError, "Cannot build for the target architecture: %s" % arch
+	# Return the output as a package listing.
+	return packages.PackageListing(pkgs)
 
-		raise BuildError, arch
+def groupinstall(group, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-	def build(self, pkg, arch=None, resultdirs=None, **kwargs):
-		self.check_build_mode()
-		self.check_host_arch(arch)
+	pkgs = grouplist(group, **pakfire_args)
 
-		if not resultdirs:
-			resultdirs = []
+	install(pkgs, **pakfire_args)
 
-		# Always include local repository
-		resultdirs.append(self.repos.local_build.path)
+def grouplist(group, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-		b = builder.Builder(pakfire=self, pkg=pkg, **kwargs)
+	pkgs = pakfire.repos.get_by_group(group)
 
-		try:
-			b.prepare()
-			b.extract()
-			b.build()
-			b.install_test()
+	pkgs = packages.PackageListing(pkgs)
+	pkgs.unique()
 
-			# Copy-out all resultfiles
-			for resultdir in resultdirs:
-				if not resultdir:
-					continue
+	return [p.name for p in pkgs]
 
-				b.copy_result(resultdir)
+def build(pkg, distro_config=None, build_id=None, resultdirs=None, **pakfire_args):
+	if not resultdirs:
+		resultdirs = []
 
-		except BuildError:
-			b.shell()
+	b = Builder(pkg, distro_config, build_id=build_id, **pakfire_args)
 
-		finally:
-			b.destroy()
+	# Make shortcut to pakfire instance.
+	p = b.pakfire
 
-	def shell(self, pkg, arch=None):
-		self.check_build_mode()
-		self.check_host_arch(arch)
+	# Always include local repository.
+	resultdirs.append(p.repos.local_build.path)
 
-		b = builder.Builder(pakfire=self, pkg=pkg)
+	try:
+		b.prepare()
+		b.extract()
+		b.build()
+		b.install_test()
 
-		try:
-			b.prepare()
-			b.extract()
-			b.shell()
-		finally:
-			b.destroy()
-
-	def dist(self, pkgs, resultdirs=None, destroy=True):
-		self.check_build_mode()
-
-		# Select first package out of pkgs.
-		pkg = pkgs[0]
-
-		b = builder.Builder(pakfire=self, pkg=pkg)
-		try:
-			b.prepare()
-			b.extract(build_deps=False)
-		except:
-			# If there is any exception, we destroy our stuff and raise it.
-			b.destroy()
-			raise
-
-		if not resultdirs:
-			resultdirs = []
-
-		# Always include local repository
-		resultdirs.append(self.repos.local_build.path)
-
-		try:
-			for pkg in pkgs:
-				# Change package of the builder to current one.
-				b.pkg = pkg
-				b.extract(build_deps=False)
-
-				# Run the actual dist.
-				b.dist()
-
-				# Copy-out all resultfiles
-				for resultdir in resultdirs:
-					if not resultdir:
-						continue
-
-					b.copy_result(resultdir)
-
-				# Cleanup all the stuff from pkg.
-				b.cleanup()
-		finally:
-			if destroy:
-				b.destroy()
-
-	def install(self, requires):
-		ds = depsolve.DependencySet(pakfire=self)
-
-		for req in requires:
-			if isinstance(req, packages.BinaryPackage):
-				ds.add_package(req)
-			else:
-				ds.add_requires(req)
-
-		ds.resolve()
-		ds.dump()
-
-		ret = cli.ask_user(_("Is this okay?"))
-		if not ret:
-			return
-
-		ts = transaction.Transaction(self, ds)
-		ts.run()
-
-	def update(self, pkgs):
-		ds = depsolve.DependencySet(pakfire=self)
-
-		for pkg in ds.packages:
-			# Skip unwanted packages (passed on command line)
-			if pkgs and not pkg.name in pkgs:
+		# Copy-out all resultfiles
+		for resultdir in resultdirs:
+			if not resultdir:
 				continue
 
-			updates = self.repos.get_by_name(pkg.name)
-			updates = packages.PackageListing(updates)
+			b.copy_result(resultdir)
 
-			latest = updates.get_most_recent()
+	except BuildError:
+		b.shell()
 
-			# If the current package is already the latest
-			# we skip it.
-			if latest == pkg:
+	finally:
+		b.destroy()
+
+def shell(pkg, distro_config=None, **pakfire_args):
+	b = builder.Builder(pkg, distro_config, **pakfire_args)
+
+	try:
+		b.prepare()
+		b.extract()
+		b.shell()
+	finally:
+		b.destroy()
+
+def dist(pkg, resultdirs=None, **pakfire_args):
+	b = builder.Builder(pkg, **pakfire_args)
+	p = b.pakfire
+
+	if not resultdirs:
+		resultdirs = []
+
+	# Always include local repository
+	resultdirs.append(p.repos.local_build.path)
+
+	try:
+		b.prepare()
+		b.extract(build_deps=False)
+
+		# Run the actual dist.
+		b.dist()
+
+		# Copy-out all resultfiles
+		for resultdir in resultdirs:
+			if not resultdir:
 				continue
 
-			# Otherwise we want to update the package.
-			ds.add_package(latest)
+			b.copy_result(resultdir)
+	finally:
+		b.destroy()
 
-		ds.resolve()
-		ds.dump()
+def provides(patterns, **pakfire_args):
+	# Create pakfire instance.
+	pakfire = Pakfire(**pakfire_args)
 
-		ret = cli.ask_user(_("Is this okay?"))
-		if not ret:
-			return
+	pkgs = []
+	for pattern in patterns:
+		requires = depsolve.Requires(None, pattern)
+		pkgs += pakfire.repos.get_by_provides(requires)
 
-		ts = transaction.Transaction(self, ds)
-		ts.run()
+	pkgs = packages.PackageListing(pkgs)
+	#pkgs.unique()
 
-	def provides(self, patterns):
-		pkgs = []
+	return pkgs
 
-		for pattern in patterns:
-			requires = depsolve.Requires(None, pattern)
-			pkgs += self.repos.get_by_provides(requires)
+def requires(patterns, **pakfire_args):
+	# Create pakfire instance.
+	pakfire = Pakfire(**pakfire_args)
 
-		pkgs = packages.PackageListing(pkgs)
-		#pkgs.unique()
+	pkgs = []
+	for pattern in patterns:
+		requires = depsolve.Requires(None, pattern)
+		pkgs += pakfire.repos.get_by_requires(requires)
 
-		return pkgs
+	pkgs = packages.PackageListing(pkgs)
+	#pkgs.unique()
 
-	def requires(self, patterns):
-		pkgs = []
+	return pkgs
 
-		for pattern in patterns:
-			requires = depsolve.Requires(None, pattern)
-			pkgs += self.repos.get_by_requires(requires)
+def repo_create(path, input_paths, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-		pkgs = packages.PackageListing(pkgs)
-		#pkgs.unique()
+	repo = repository.LocalBinaryRepository(
+		pakfire,
+		name="new",
+		description="New repository.",
+		path=path,
+	)
 
-		return pkgs
+	for input_path in input_paths:
+		repo._collect_packages(input_path)
 
-	def repo_create(self, path, input_paths):
-		repo = repository.LocalBinaryRepository(
-			self,
-			name="new",
-			description="New repository.",
-			path=path,
-		)
+	repo.save()
 
-		for input_path in input_paths:
-			repo._collect_packages(input_path)
+def repo_list(**pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
 
-		repo.save()
-
-	def groupinstall(self, group):
-		pkgs = self.grouplist(group)
-
-		self.install(pkgs)
-
-	def grouplist(self, group):
-		pkgs = self.repos.get_by_group(group)
-
-		pkgs = packages.PackageListing(pkgs)
-		pkgs.unique()
-
-		return [p.name for p in pkgs]
-
-	def repolist(self):
-		return self.repos.all
+	return pakfire.repos.all

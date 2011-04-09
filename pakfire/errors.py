@@ -21,6 +21,9 @@ class DownloadError(Error):
 class FileError(Error):
 	pass
 
+class FileNotFoundError(Error):
+	pass
+
 class PakfireError(Error):
 	pass
 
