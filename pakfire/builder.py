@@ -499,7 +499,7 @@ class Builder(object):
 			if not kwargs.has_key("chrootPath"):
 				kwargs["chrootPath"] = self.chrootPath()
 
-			ret = util.do(
+			ret = chroot.do(
 				command,
 				personality=personality,
 				shell=False,
