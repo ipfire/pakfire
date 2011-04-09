@@ -15,7 +15,6 @@ setup(
 	packages = [
 		"pakfire",
 		"pakfire.packages",
-		"pakfire.plugins",
 		"pakfire.server",
 		"pakfire.repository",
 	],
