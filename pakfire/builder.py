@@ -13,6 +13,7 @@ import time
 import uuid
 
 import base
+import chroot
 import depsolve
 import packages
 import repository
@@ -397,13 +398,13 @@ class Builder(object):
 		self.log.debug("Mounting environment")
 		for cmd, mountpoint in self.mountpoints:
 			cmd = "%s %s" % (cmd, self.chrootPath(mountpoint))
-			util.do(cmd, shell=True)
+			chroot.do(cmd, shell=True)
 
 	def _umountall(self):
 		self.log.debug("Umounting environment")
 		for cmd, mountpoint in self.mountpoints:
 			cmd = "umount -n %s" % self.chrootPath(mountpoint)
-			util.do(cmd, raiseExc=0, shell=True)
+			chroot.do(cmd, raiseExc=0, shell=True)
 
 	@property
 	def mountpoints(self):
