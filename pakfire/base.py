@@ -5,18 +5,16 @@ import os
 import random
 import string
 
+import config
 import depsolve
 import distro
 import logger
 import packages
+import repository
 import transaction
 import util
 
-from config import Config
 from constants import *
-from distro import Distribution
-from errors import BuildError, PakfireError
-from repository import Repositories
 from i18n import _
 
 __version__ = PAKFIRE_VERSION
@@ -38,7 +36,7 @@ class Pakfire(object):
 			# XXX check if we are actually running on an ipfire system.
 
 		# Read configuration file(s)
-		self.config = Config(pakfire=self)
+		self.config = config.Config(pakfire=self)
 		for filename in configs:
 			self.config.read(filename)
 
@@ -48,8 +46,8 @@ class Pakfire(object):
 
 		# Get more information about the distribution we are running
 		# or building
-		self.distro = Distribution(self, distro_config)
-		self.repos  = Repositories(self)
+		self.distro = distro.Distribution(self, distro_config)
+		self.repos  = repository.Repositories(self)
 
 		# XXX Disable repositories if passed on command line
 		#if disable_repos:

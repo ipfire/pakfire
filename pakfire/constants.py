@@ -2,6 +2,8 @@
 
 import os.path
 
+from errors import *
+
 PAKFIRE_VERSION = "0.9.2"
 
 SYSCONFDIR = "/etc"
