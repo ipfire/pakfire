@@ -7,6 +7,8 @@ import select
 import subprocess
 import time
 
+from errors import *
+
 _libc = ctypes.cdll.LoadLibrary(None)
 _libc.personality.argtypes = [ctypes.c_ulong]
 _libc.personality.restype = ctypes.c_int
