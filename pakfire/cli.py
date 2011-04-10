@@ -370,7 +370,7 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.shell(pkg, distro_config, **self.pakfire_args)
+		pakfire.shell(pkg, distro_config=distro_config, **self.pakfire_args)
 
 	def handle_dist(self):
 		# Get the packages from the command line options

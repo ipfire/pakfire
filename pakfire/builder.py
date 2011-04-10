@@ -40,7 +40,11 @@ class Builder(object):
 		self.path = self.pakfire.path
 
 		# Open the package.
-		self.pkg = packages.open(self.pakfire, None, pkg)
+		if pkg:
+			self.pkg = packages.open(self.pakfire, None, pkg)
+		else:
+			# No package was given.
+			self.pkg = None
 
 		# XXX need to make this configureable
 		self.settings = {
