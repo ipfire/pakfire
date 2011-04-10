@@ -141,7 +141,7 @@ class Pakfire(object):
 		ts = transaction.Transaction(self, ds)
 		ts.run()
 
-	def info(self):
+	def info(self, patterns):
 		pkgs = []
 
 		for pattern in patterns:
