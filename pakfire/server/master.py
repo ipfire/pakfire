@@ -8,6 +8,7 @@ import subprocess
 import xmlrpclib
 
 import pakfire
+import pakfire.api
 import pakfire.base
 
 import pakfire.packages as packages
@@ -95,7 +96,7 @@ class Source(object):
 
 		# XXX This totally ignores the local configuration.
 		for pkg in pkgs:
-			pakfire.dist(pkg, resultdirs=[tmpdir,])
+			pakfire.api.dist(pkg, resultdirs=[tmpdir,])
 
 		# Create a kind of dummy repository to link the packages against it.
 		repo = repository.LocalSourceRepository(self.pakfire,
