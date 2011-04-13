@@ -5,14 +5,17 @@ import os
 import socket
 import xmlrpclib
 
-import pakfire
+import pakfire.api
 import pakfire.base
 import pakfire.downloader
 import pakfire.packages
+import pakfire.util
 
-from pakfire.errors import *
+from pakfire.constants import *
 
-class Slave(object):
+from base import MasterSlave
+
+class Slave(MasterSlave):
 	def __init__(self, **pakfire_args):
 		self.pakfire = pakfire.base.Pakfire(**pakfire_args)
 
@@ -21,13 +24,6 @@ class Slave(object):
 		logging.info("Establishing RPC connection to: %s" % server)
 
 		self.conn = xmlrpclib.Server(server)
-
-	@property
-	def hostname(self):
-		"""
-			Return the host's name.
-		"""
-		return socket.gethostname()
 
 	def keepalive(self):
 		"""
@@ -55,29 +51,56 @@ class Slave(object):
 			return
 
 		build_id = build["id"]
-		filename = build["source"]
+		filename = build["name"]
+		data     = build["data"].data
+		hash1    = build["hash1"]
 
-		# Get a package grabber and add mirror download capabilities to it.
-		grabber = pakfire.downloader.PackageDownloader()
-
-		# Temporary path to store the source.
-		tempfile = os.path.join("/var/tmp", os.path.basename(filename))
-
-		# Download the source.
-		pkg = grabber.urlgrab(filename, filename=tempfile)
+		# XXX need to find a better temp dir.
+		tempfile = os.path.join("/var/tmp", filename)
+		resultdir = os.path.join("/var/tmp", build_id)
 
 		try:
+			# Check if the download checksum matches.
+			if pakfire.util.calc_hash1(data=data) == hash1:
+				print "Checksum matches: %s" % hash1
+			else:
+				raise DownloadError, "Download was corrupted"
+
+			# Save the data to a temporary directory.
+			f = open(tempfile, "wb")
+			f.write(data)
+			f.close()
+
+			# Update the build status on the server.
 			self.update_build_status(build_id, "running")
 
-			pakfire.build(pkg, build_id=build_id)
+			# Run the build.
+			pakfire.api.build(tempfile, build_id=build_id,
+				resultdirs=[resultdir,])
+
+			self.update_build_status(build_id, "uploading")
+
+			for dir, subdirs, files in os.walk(resultdir):
+				for file in files:
+					file = os.path.join(dir, file)
+
+					pkg = pakfire.packages.open(self.pakfire, None, file)
+
+					self.upload_package_file(build["source_id"], build["pkg_id"], pkg)
 
 		except DependencyError, e:
-			self.update_build_status(build_id, "dependency_error", e)
+			message = "%s: %s" % (e.__class__.__name__, e)
+			self.update_build_status(build_id, "dependency_error", message)
 
-		except:
-			self.update_build_status(build_id, "failed")
+		except Exception, e:
+			raise
+			message = "%s: %s" % (e.__class__.__name__, e)
+			self.update_build_status(build_id, "failed", message)
 			raise
 
 		else:
 			self.update_build_status(build_id, "finished")
 
+		finally:
+			#pakfire.util.rm(tempfile)
+			pass

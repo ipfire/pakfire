@@ -14,3 +14,7 @@ class SourcePackage(FilePackage):
 		"""
 		return self.metadata.get("PKG_REQUIRES", "").split()
 
+	@property
+	def provides(self):
+		# XXX just a dummy
+		return []

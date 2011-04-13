@@ -16,6 +16,8 @@ import pakfire.repository as repository
 import pakfire.util as util
 from pakfire.constants import *
 
+from base import MasterSlave
+
 class Source(object):
 	def __init__(self, master, id, name, path, targetpath, revision, branch):
 		self.master = master
@@ -106,30 +108,11 @@ class Source(object):
 		for pkg in repo.get_all():
 			logging.debug("Processing package: %s" % pkg)
 
-			pkg_path = "%(name)s/%(epoch)s-%(version)s-%(release)s/%(arch)s" % pkg.info
-
-			file = os.path.join(self.targetpath, pkg_path, os.path.basename(pkg.filename))
-			dir  = os.path.dirname(file)
-
-			print file
-
-			if os.path.exists(file):
-				logging.warning("Package does already exist: %s" % file)
-
-			else:
-				if not os.path.exists(dir):
-					os.makedirs(dir)
-
-				# Copy the source file to the designated data pool.
-				shutil.copy2(pkg.filename, file)
-
 			# Register package in database and get an ID.
 			pkg_id = self.master.package_add(self, pkg)
 
-			# Re-read the package metadata (mainly update filenames).
-			pkg = packages.SourcePackage(self.pakfire, repo, file)
-
-			self.master.package_file_add(self, pkg_id, pkg)
+			# Upload the package.
+			self.master.upload_package_file(self.id, pkg_id, pkg)
 
 		util.rm(tmpdir)
 
@@ -157,7 +140,7 @@ class Source(object):
 		self.update_files(_files)
 
 
-class Master(object):
+class Master(MasterSlave):
 	def __init__(self, **pakfire_args):
 		self.pakfire = pakfire.base.Pakfire(**pakfire_args)
 
@@ -198,40 +181,6 @@ class Master(object):
 		}
 
 		return self.conn.package_add(info)
-
-	def package_file_add(self, source, pkg_id, pkg):
-		logging.info("Adding package file: %s" % pkg.filename)
-
-		info = {
-			"path"        : pkg.filename[len(source.path) + 1:],
-			"source_id"   : source.id,
-			"type"        : pkg.type,
-			"arch"        : pkg.arch,
-			"summary"     : pkg.summary,
-			"description" : pkg.description,
-			"requires"    : " ".join(pkg.requires),
-			"provides"    : "",
-			"obsoletes"   : "",
-			"conflicts"   : "",
-			"url"         : pkg.url,
-			"license"     : pkg.license,
-			"maintainer"  : pkg.maintainer,
-			"size"        : pkg.size,
-			"hash1"       : pkg.hash1,
-			"build_host"  : pkg.build_host,
-			"build_id"    : pkg.build_id,
-			"build_time"  : pkg.build_time,
-			"uuid"        : pkg.uuid,
-		}
-
-		if isinstance(pkg, packages.BinaryPackage):
-			info.update({
-				"provides"    : " ".join(pkg.provides),
-				"obsoletes"   : " ".join(pkg.obsoletes),
-				"conflicts"   : " ".join(pkg.conflicts),
-			})
-
-		return self.conn.package_file_add(pkg_id, info)
 
 	def package_remove(self, source, pkg):
 		logging.info("Package '%s' has been removed." % pkg)
