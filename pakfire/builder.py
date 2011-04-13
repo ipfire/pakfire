@@ -42,6 +42,11 @@ class Builder(object):
 		# Open the package.
 		if pkg:
 			self.pkg = packages.open(self.pakfire, None, pkg)
+
+			# Log the package information.
+			if not isinstance(self.pkg, packages.Makefile):
+				dump = self.pkg.dump(long=True)
+				self.log.info(dump)
 		else:
 			# No package was given.
 			self.pkg = None
