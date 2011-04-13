@@ -170,7 +170,7 @@ class Pakfire(object):
 		return [p.name for p in pkgs]
 
 	@staticmethod
-	def build(pkg, resultdirs=None, **kwargs):
+	def build(pkg, resultdirs=None, shell=False, **kwargs):
 		if not resultdirs:
 			resultdirs = []
 
@@ -194,7 +194,10 @@ class Pakfire(object):
 				b.copy_result(resultdir)
 
 		except BuildError:
-			b.shell()
+			if shell:
+				b.shell()
+			else:
+				raise
 
 		finally:
 			b.destroy()

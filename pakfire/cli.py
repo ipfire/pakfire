@@ -349,7 +349,7 @@ class CliBuilder(Cli):
 		}
 
 		pakfire.build(pkg, distro_config=distro_config, resultdirs=[self.args.resultdir,],
-			**self.pakfire_args)
+			shell=True, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None
