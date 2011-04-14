@@ -93,7 +93,6 @@ class Slave(MasterSlave):
 			self.update_build_status(build_id, "dependency_error", message)
 
 		except Exception, e:
-			raise
 			message = "%s: %s" % (e.__class__.__name__, e)
 			self.update_build_status(build_id, "failed", message)
 			raise
