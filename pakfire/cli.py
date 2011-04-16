@@ -442,6 +442,7 @@ class CliMaster(Cli):
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
 
+		self.parse_command_build()
 		self.parse_command_update()
 
 		# Finally parse all arguments from the command line and save them.
@@ -450,8 +451,15 @@ class CliMaster(Cli):
 		self.master = server.master.Master()
 
 		self.action2func = {
+			"build"       : self.handle_build,
 			"update"      : self.handle_update,
 		}
+
+	def parse_command_build(self):
+		# Implement the "build" command.
+		sub_build = self.sub_commands.add_parser("build",
+			help=_("Build one or more packages."))
+		sub_build.add_argument("action", action="store_const", const="build")
 
 	def parse_command_update(self):
 		# Implement the "update" command.
@@ -461,6 +469,9 @@ class CliMaster(Cli):
 
 	def handle_update(self):
 		self.master.update_sources()
+
+	def handle_build(self):
+		self.master.build()
 
 
 class CliSlave(Cli):

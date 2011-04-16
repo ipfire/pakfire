@@ -66,7 +66,7 @@ class Source(object):
 	def _git_checkout_revision(self, revision):
 		self._git("checkout %s" % revision)
 
-	def update_revision(self, (revision, merge)):
+	def update_revision(self, (revision, merge), **pakfire_args):
 		if not merge:
 			self._git_checkout_revision(revision)
 
@@ -74,12 +74,13 @@ class Source(object):
 			# the previous one.
 			files = self._git_changed_files("HEAD^", "HEAD")
 
-			self.update_files([f for f in files if f.endswith(".%s" % MAKEFILE_EXTENSION)])
+			self.update_files([f for f in files if f.endswith(".%s" % MAKEFILE_EXTENSION)],
+				**pakfire_args)
 
 		# Send update to the server.
 		self.master.update_revision(self, revision)
 
-	def update_files(self, files):
+	def update_files(self, files, **pakfire_args):
 		rnd = random.randint(0, 1024**2)
 		tmpdir = "/tmp/pakfire-source-%s" % rnd
 
@@ -98,7 +99,7 @@ class Source(object):
 
 		# XXX This totally ignores the local configuration.
 		for pkg in pkgs:
-			pakfire.api.dist(pkg, resultdirs=[tmpdir,])
+			pakfire.api.dist(pkg, resultdirs=[tmpdir,], **pakfire_args)
 
 		# Create a kind of dummy repository to link the packages against it.
 		repo = repository.LocalSourceRepository(self.pakfire,
@@ -125,8 +126,17 @@ class Source(object):
 		if not self.revision:
 			self.update_all()
 
-		for rev in self._git_rev_list():
-			self.update_revision(rev)
+		# Update the revisions on the server.
+		for revision, merge in self._git_rev_list():
+			if merge:
+				continue
+
+			logging.info("Sending revision to server: %s" % revision)
+			self.master.conn.source_add_revision(self.id, revision)
+
+		# Get all pending revisions from the server and process them.
+		#for rev in self.master.conn.source_get_pending_revisions(self.id):
+		#	self.update_revision(rev)
 
 	def update_all(self):
 		_files = []
@@ -157,6 +167,18 @@ class Master(MasterSlave):
 			source = Source(self, **source)
 
 			source.update()
+
+	def build(self):
+		build = self.conn.build_job(self.hostname)
+
+		if not build:
+			return
+
+		print build
+
+		source = Source(self, **build["source"])
+
+		source.update_revision((build["revision"], False), build_id=build["id"])
 
 	def update_revision(self, source, revision):
 		self.conn.sources_update_revision(source.id, revision)
