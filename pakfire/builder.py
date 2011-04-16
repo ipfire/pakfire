@@ -12,6 +12,8 @@ import stat
 import time
 import uuid
 
+import base
+import chroot
 import depsolve
 import packages
 import repository
@@ -27,16 +29,35 @@ class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pakfire, pkg, build_id=None, **settings):
-		self.pakfire = pakfire
-		self.pkg = pkg
+	def __init__(self, pkg, distro_config=None, build_id=None, **pakfire_args):
+		pakfire_args.update({
+			"builder" : True,
+		})
 
+		# Create pakfire instance.
+		self.pakfire = base.Pakfire(distro_config=distro_config, **pakfire_args)
+		self.distro = self.pakfire.distro
+		self.path = self.pakfire.path
+
+		# Open the package.
+		if pkg:
+			self.pkg = packages.open(self.pakfire, None, pkg)
+
+			# Log the package information.
+			if not isinstance(self.pkg, packages.Makefile):
+				dump = self.pkg.dump(long=True)
+				self.log.info(dump)
+		else:
+			# No package was given.
+			self.pkg = None
+
+		# XXX need to make this configureable
 		self.settings = {
 			"enable_loop_devices" : True,
 			"enable_ccache"   : True,
 			"enable_icecream" : False,
 		}
-		self.settings.update(settings)
+		#self.settings.update(settings)
 
 		self.buildroot = "/buildroot"
 
@@ -54,6 +75,13 @@ class Builder(object):
 		self.build_id = build_id
 
 	@property
+	def arch(self):
+		"""
+			Inherit architecture from distribution configuration.
+		"""
+		return self.distro.arch
+
+	@property
 	def info(self):
 		return {
 			"build_date" : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(self.build_time)),
@@ -61,10 +89,6 @@ class Builder(object):
 			"build_id"   : self.build_id,
 			"build_time" : self.build_time,
 		}
-
-	@property
-	def path(self):
-		return self.pakfire.path
 
 	def lock(self):
 		filename = os.path.join(self.path, ".lock")
@@ -243,6 +267,11 @@ class Builder(object):
 		return ret
 
 	def prepare(self):
+		prepared_tag = ".prepared"
+
+		if os.path.exists(self.chrootPath(prepared_tag)):
+			return
+
 		# Create directory.
 		if not os.path.exists(self.path):
 			os.makedirs(self.path)
@@ -277,7 +306,8 @@ class Builder(object):
 		# Create neccessary files like /etc/fstab and /etc/mtab.
 		files = (
 			"etc/fstab",
-			"etc/mtab"
+			"etc/mtab",
+			prepared_tag,
 		)
 
 		for file in files:
@@ -377,13 +407,13 @@ class Builder(object):
 		self.log.debug("Mounting environment")
 		for cmd, mountpoint in self.mountpoints:
 			cmd = "%s %s" % (cmd, self.chrootPath(mountpoint))
-			util.do(cmd, shell=True)
+			chroot.do(cmd, shell=True)
 
 	def _umountall(self):
 		self.log.debug("Umounting environment")
 		for cmd, mountpoint in self.mountpoints:
 			cmd = "umount -n %s" % self.chrootPath(mountpoint)
-			util.do(cmd, raiseExc=0, shell=True)
+			chroot.do(cmd, raiseExc=0, shell=True)
 
 	@property
 	def mountpoints(self):
@@ -466,7 +496,7 @@ class Builder(object):
 
 			# Update personality it none was set
 			if not personality:
-				personality = self.pakfire.distro.personality
+				personality = self.distro.personality
 
 			# Make every shell to a login shell because we set a lot of
 			# environment things there.
@@ -478,7 +508,7 @@ class Builder(object):
 			if not kwargs.has_key("chrootPath"):
 				kwargs["chrootPath"] = self.chrootPath()
 
-			ret = util.do(
+			ret = chroot.do(
 				command,
 				personality=personality,
 				shell=False,

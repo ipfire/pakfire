@@ -13,7 +13,7 @@ from base import RepositoryFactory
 from pakfire.constants import *
 
 class LocalRepository(RepositoryFactory):
-	def __init__(self, pakfire, name, description, path):
+	def __init__(self, pakfire, name, description, path, idx="db"):
 		RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Save location of the repository and create it if not existant.
@@ -21,7 +21,11 @@ class LocalRepository(RepositoryFactory):
 		if not os.path.exists(self.path):
 			os.makedirs(self.path)
 
-		self.index = index.LocalIndex(self.pakfire, self)
+		if idx == "db":
+			self.index = index.LocalIndex(self.pakfire, self)
+
+		elif idx == "directory":
+			self.index = index.DirectoryIndex(self.pakfire, self, self.path)
 
 	@property
 	def local(self):
@@ -45,7 +49,7 @@ class LocalRepository(RepositoryFactory):
 
 				file = os.path.join(dir, file)
 
-				pkg = packages.BinaryPackage(self.pakfire, self, file)
+				pkg = packages.open(self.pakfire, self, file)
 				self._add_package(pkg)
 
 	def _add_package(self, pkg):
@@ -67,7 +71,7 @@ class LocalRepository(RepositoryFactory):
 
 		pkg_exists = None
 		if os.path.exists(repo_filename):
-			pkg_exists = packages.BinaryPackage(self.pakfire, self, repo_filename)
+			pkg_exists = packages.open(self.pakfire, self, repo_filename)
 
 			# If package in the repo is equivalent to the given one, we can
 			# skip any further processing.
@@ -96,7 +100,7 @@ class LocalRepository(RepositoryFactory):
 
 		# Create new package object, that is connected to this repository
 		# and so we can do stuff.
-		pkg = packages.BinaryPackage(self.pakfire, self, repo_filename)
+		pkg = packages.open(self.pakfire, self, repo_filename)
 
 		logging.info("Adding package '%s' to repository." % pkg.friendly_name)
 		self.index.add_package(pkg)
@@ -108,7 +112,28 @@ class LocalRepository(RepositoryFactory):
 		self.index.save(path)
 
 
-class LocalBuildRepository(LocalRepository):
+class LocalBinaryRepository(LocalRepository):
+	@property
+	def packages(self):
+		for pkg in self.index.packages:
+			# XXX should be changed to "binary" if all packages do support this.
+			if pkg.type == "source":
+				continue
+
+			yield pkg
+
+
+class LocalSourceRepository(LocalRepository):
+	@property
+	def packages(self):
+		for pkg in self.index.packages:
+			if not pkg.type == "source":
+				continue
+
+			yield pkg
+
+
+class LocalBuildRepository(LocalBinaryRepository):
 	def __init__(self, pakfire):
 		RepositoryFactory.__init__(self, pakfire, "build", "Locally built packages")
 

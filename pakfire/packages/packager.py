@@ -15,6 +15,7 @@ import xattr
 import zlib
 
 import pakfire.compress
+from pakfire.util import rm
 import util
 
 from pakfire.constants import *
@@ -107,6 +108,8 @@ class Packager(object):
 			tar.add(self.archive_files[i], arcname=i)
 
 		tar.close()
+
+		rm(self.tempdir)
 
 	def create_tarball(self, compress=None):
 		tar = InnerTarFile(self.archive_files["data.img"], mode="w")

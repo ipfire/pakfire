@@ -21,8 +21,6 @@ pakfire/packages/packager.py
 pakfire/packages/source.py
 pakfire/packages/util.py
 pakfire/packages/virtual.py
-pakfire/plugins/base.py
-pakfire/plugins/__init__.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
 pakfire/repository/database.py

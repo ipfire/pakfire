@@ -3,7 +3,7 @@
 import logging
 
 from installed import InstalledRepository
-from local import LocalRepository, LocalBuildRepository
+from local import LocalRepository, LocalBuildRepository, LocalSourceRepository
 from oddments import DummyRepository, FileSystemRepository
 from remote import RemoteRepository
 
@@ -93,10 +93,10 @@ class Repositories(object):
 		for repo in self.enabled:
 			repo.update(force=force)
 
-	#def get_all(self):
-	#	for repo in self.enabled:
-	#		for pkg in repo.get_all():
-	#			yield pkg
+	def get_all(self):
+		for repo in self.enabled:
+			for pkg in repo.get_all():
+				yield pkg
 
 	def get_by_name(self, name):
 		for repo in self.enabled:

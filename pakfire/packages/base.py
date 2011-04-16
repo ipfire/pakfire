@@ -288,6 +288,10 @@ class Package(object):
 		return self.metadata.get("PKG_UUID", None)
 
 	@property
+	def supported_arches(self):
+		return self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
+
+	@property
 	def requires(self):
 		ret = ""
 

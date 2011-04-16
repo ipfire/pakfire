@@ -4,12 +4,14 @@ import logging
 import os
 import sys
 
-from pakfire.cli import Cli, CliBuilder, CliServer
+from pakfire.cli import *
 
 basename2cls = {
 	"pakfire" : Cli,
 	"pakfire-build" : CliBuilder,
-	"pakfire-server" : CliServer,
+	"pakfire-master" : CliMaster,
+	"pakfire-repo" : CliRepo,
+	"pakfire-slave" : CliSlave,
 }
 
 # Get the basename of the program

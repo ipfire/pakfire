@@ -5,9 +5,10 @@ import os
 import re
 
 from errors import ConfigError
+from repository import Repositories
 
 class Distribution(object):
-	def __init__(self, pakfire):
+	def __init__(self, pakfire, distro_config=None):
 		self.pakfire = pakfire
 
 		self._data = {
@@ -18,11 +19,11 @@ class Distribution(object):
 			"version" : "0.0",
 		}
 
-		if not self.pakfire.config._distro:
-			raise ConfigError, "No distribution data was provided in the configuration"
+		# Inherit configuration from Pakfire configuration.
+		self.update(self.pakfire.config._distro)
 
-		# Import settings from Config()
-		self._data.update(self.pakfire.config._distro)
+		# Update my configuration from the constructor.
+		self.update(distro_config)
 
 		# Dump all data
 		self.dump()
@@ -30,10 +31,22 @@ class Distribution(object):
 	def dump(self):
 		logging.debug("Distribution configuration:")
 
-		attrs = ("name", "version", "release", "sname", "dist", "vendor", "machine",)
+		attrs = ("name", "version", "release", "sname", "dist", "vendor",
+			"arch", "machine",)
 
 		for attr in attrs:
 			logging.debug(" %s : %s" % (attr, getattr(self, attr)))
+
+	def update(self, config):
+		if not config:
+			return
+
+		# Exceptional handling for arch.
+		if config.has_key("arch"):
+			self.arch = config["arch"]
+			del config["arch"]
+
+		self._data.update(config)
 
 	@property
 	def name(self):
@@ -62,11 +75,14 @@ class Distribution(object):
 		return self._data.get("vendor")
 
 	def get_arch(self):
-		return self._data.get("arch")
+		return self._data.get("arch") or self.host_arch
 	
 	def set_arch(self, arch):
 		# XXX check if we are allowed to set this arch
-		self._data.set("arch", arch)
+		if not arch:
+			return
+
+		self._data["arch"] = arch
 
 	arch = property(get_arch, set_arch)
 
@@ -76,7 +92,9 @@ class Distribution(object):
 
 	@property
 	def machine(self):
-		return "%s-%s-linux-gnu" % (self.arch, self.vendor)
+		vendor = self.vendor.split()[0]
+
+		return "%s-%s-linux-gnu" % (self.arch, vendor.lower())
 
 	@property
 	def host_arch(self):
