@@ -3,6 +3,7 @@
 import logging
 import os
 import socket
+import tempfile
 import xmlrpclib
 
 import pakfire.api
@@ -50,39 +51,44 @@ class Slave(MasterSlave):
 		if not build:
 			return
 
+		print build
+
 		build_id = build["id"]
 		filename = build["name"]
-		data     = build["data"].data
+		download = build["download"]
 		hash1    = build["hash1"]
 
-		# XXX need to find a better temp dir.
-		tempfile = os.path.join("/var/tmp", filename)
-		resultdir = os.path.join("/var/tmp", build_id)
+		# Create a temporary file and a directory for the resulting files.
+		tmpdir = tempfile.mkdtemp()
+		tmpfile = os.path.join(tmpdir, filename)
+
+		# Get a package grabber and add mirror download capabilities to it.
+		grabber = pakfire.downloader.PackageDownloader()
 
 		try:
+			# Download the source.
+			grabber.urlgrab(download, filename=tmpfile)
+
 			# Check if the download checksum matches.
-			if pakfire.util.calc_hash1(data=data) == hash1:
+			if pakfire.util.calc_hash1(tmpfile) == hash1:
 				print "Checksum matches: %s" % hash1
 			else:
 				raise DownloadError, "Download was corrupted"
-
-			# Save the data to a temporary directory.
-			f = open(tempfile, "wb")
-			f.write(data)
-			f.close()
 
 			# Update the build status on the server.
 			self.update_build_status(build_id, "running")
 
 			# Run the build.
-			pakfire.api.build(tempfile, build_id=build_id,
-				resultdirs=[resultdir,])
+			pakfire.api.build(tmpfile, build_id=build_id,
+				resultdirs=[tmpdir,])
 
 			self.update_build_status(build_id, "uploading")
 
-			for dir, subdirs, files in os.walk(resultdir):
+			for dir, subdirs, files in os.walk(tmpdir):
 				for file in files:
 					file = os.path.join(dir, file)
+					if file == tmpfile:
+						continue
 
 					pkg = pakfire.packages.open(self.pakfire, None, file)
 
@@ -101,5 +107,5 @@ class Slave(MasterSlave):
 			self.update_build_status(build_id, "finished")
 
 		finally:
-			#pakfire.util.rm(tempfile)
-			pass
+			# Cleanup the files we created.
+			pakfire.util.rm(tmpdir)
