@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-23 01:38+0200\n"
+"POT-Creation-Date: 2011-04-23 12:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../pakfire/cli.py:300 ../pakfire/cli.py:461
+#: ../pakfire/cli.py:300
 msgid "Build one or more packages."
 msgstr ""
 
@@ -179,43 +179,43 @@ msgstr ""
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:396
+#: ../pakfire/cli.py:395
 msgid "Pakfire repo command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:415
+#: ../pakfire/cli.py:414
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:423
+#: ../pakfire/cli.py:422
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:424
+#: ../pakfire/cli.py:423
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:425
+#: ../pakfire/cli.py:424
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/cli.py:437
+#: ../pakfire/cli.py:436
 msgid "Pakfire master command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:467
+#: ../pakfire/cli.py:458
 msgid "Update the sources."
 msgstr ""
 
-#: ../pakfire/cli.py:480
+#: ../pakfire/cli.py:468
 msgid "Pakfire slave command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:504
+#: ../pakfire/cli.py:492
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:510
+#: ../pakfire/cli.py:498
 msgid "Send a keepalive to the server."
 msgstr ""
 
