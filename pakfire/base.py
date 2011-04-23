@@ -214,8 +214,9 @@ class Pakfire(object):
 			b.destroy()
 
 	@staticmethod
-	def dist(pkg, resultdirs=None, **pakfire_args):
-		b = builder.Builder(pkg, **pakfire_args)
+	def dist(pkgs, resultdirs=None, **pakfire_args):
+		# Create a builder with empty package.
+		b = builder.Builder(None, **pakfire_args)
 		p = b.pakfire
 
 		if not resultdirs:
@@ -226,17 +227,24 @@ class Pakfire(object):
 
 		try:
 			b.prepare()
-			b.extract(build_deps=False)
 
-			# Run the actual dist.
-			b.dist()
+			for pkg in pkgs:
+				b.pkg = pkg
 
-			# Copy-out all resultfiles
-			for resultdir in resultdirs:
-				if not resultdir:
-					continue
+				b.extract(build_deps=False)
 
-				b.copy_result(resultdir)
+				# Run the actual dist.
+				b.dist()
+
+				# Copy-out all resultfiles
+				for resultdir in resultdirs:
+					if not resultdir:
+						continue
+
+					b.copy_result(resultdir)
+
+				# Cleanup the stuff that the package left.
+				b.cleanup()
 		finally:
 			b.destroy()
 

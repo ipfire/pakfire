@@ -29,7 +29,7 @@ class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pkg, distro_config=None, build_id=None, **pakfire_args):
+	def __init__(self, pkg=None, distro_config=None, build_id=None, **pakfire_args):
 		pakfire_args.update({
 			"builder" : True,
 		})
@@ -40,16 +40,7 @@ class Builder(object):
 		self.path = self.pakfire.path
 
 		# Open the package.
-		if pkg:
-			self.pkg = packages.open(self.pakfire, None, pkg)
-
-			# Log the package information.
-			if not isinstance(self.pkg, packages.Makefile):
-				dump = self.pkg.dump(long=True)
-				self.log.info(dump)
-		else:
-			# No package was given.
-			self.pkg = None
+		self.pkg = pkg
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -73,6 +64,25 @@ class Builder(object):
 			build_id = uuid.uuid4()
 
 		self.build_id = build_id
+
+	def get_pkg(self):
+		return getattr(self, "_pkg", None)
+
+	def set_pkg(self, pkg):
+		if pkg is None:
+			self.__pkg = None
+			return
+
+		self._pkg = packages.open(self.pakfire, None, pkg)
+
+		# Log the package information.
+		if not isinstance(self._pkg, packages.Makefile):
+			dump = self._pkg.dump(long=True)
+			self.log.info(dump)
+
+		assert self.pkg
+
+	pkg = property(get_pkg, set_pkg)
 
 	@property
 	def arch(self):
