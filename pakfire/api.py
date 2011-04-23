@@ -47,8 +47,8 @@ def build(pkg, **kwargs):
 def shell(pkg, **kwargs):
 	return Pakfire.shell(pkg, **kwargs)
 
-def dist(pkg, **kwargs):
-	return Pakfire.dist(pkg, **kwargs)
+def dist(pkgs, **kwargs):
+	return Pakfire.dist(pkgs, **kwargs)
 
 def provides(patterns, **pakfire_args):
 	# Create pakfire instance.
