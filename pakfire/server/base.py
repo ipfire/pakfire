@@ -85,3 +85,27 @@ class MasterSlave(object):
 
 	def upload_log_file(self):
 		pass # XXX TO BE DONE
+
+	def package_add(self, source, pkg):
+		logging.info("Adding package: %s" % pkg.friendly_name)
+
+		# Collect data that is sent to the database...
+		info = {
+			"name"             : pkg.name,
+			"epoch"            : pkg.epoch,
+			"version"          : pkg.version,
+			"release"          : pkg.release,
+			"groups"           : " ".join(pkg.groups),
+			"maintainer"       : pkg.maintainer,
+			"license"          : pkg.license,
+			"url"              : pkg.url,
+			"summary"          : pkg.summary,
+			"description"      : pkg.description,
+			"supported_arches" : pkg.supported_arches,
+			"source_id"        : source.id,
+		}
+
+		return self.conn.package_add(info)
+
+	def package_remove(self, source, pkg):
+		logging.info("Package '%s' has been removed." % pkg)

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import logging
+import hashlib
 import os
 import random
 import shutil
@@ -19,21 +20,46 @@ from pakfire.constants import *
 from base import MasterSlave
 
 class Source(object):
-	def __init__(self, master, id, name, path, targetpath, revision, branch):
+	def __init__(self, master, id, name, url, path, targetpath, revision, branch):
 		self.master = master
 		self.id = id
 		self.name = name
-		self.path = path
+		self.url = url
 		self.targetpath = targetpath
 		self.revision = revision
 		self.branch = branch
+
+		# If the repository is not yet checked out, we create a local clone
+		# from it to work with it.
+		if not os.path.exists(self.path):
+			dirname = os.path.dirname(self.path)
+			basename = os.path.basename(self.path)
+
+			if not os.path.exists(dirname):
+				os.makedirs(dirname)
+
+			self._git("clone %s %s" % (self.url, basename), path=dirname)
+
+		else:
+			# Always refresh the repository to have the recent commits.
+			self._git("fetch")
+
+	@property
+	def path(self):
+		h = hashlib.sha1(self.url)
+
+		# XXX path is to be changed
+		return "/var/cache/pakfire/sources/%s" % h.hexdigest()
 
 	@property
 	def pakfire(self):
 		return self.master.pakfire
 
-	def _git(self, cmd):
-		cmd = "cd %s; git %s" % (self.path, cmd)
+	def _git(self, cmd, path=None):
+		if not path:
+			path = self.path
+
+		cmd = "cd %s && git %s" % (path, cmd)
 
 		logging.debug("Running command: %s" % cmd)
 
@@ -78,7 +104,7 @@ class Source(object):
 				**pakfire_args)
 
 		# Send update to the server.
-		self.master.update_revision(self, revision)
+		#self.master.update_revision(self, revision)
 
 	def update_files(self, files, **pakfire_args):
 		rnd = random.randint(0, 1024**2)
@@ -98,8 +124,7 @@ class Source(object):
 			return
 
 		# XXX This totally ignores the local configuration.
-		for pkg in pkgs:
-			pakfire.api.dist(pkg, resultdirs=[tmpdir,], **pakfire_args)
+		pakfire.api.dist(pkgs, resultdirs=[tmpdir,], **pakfire_args)
 
 		# Create a kind of dummy repository to link the packages against it.
 		repo = repository.LocalSourceRepository(self.pakfire,
@@ -118,9 +143,6 @@ class Source(object):
 		util.rm(tmpdir)
 
 	def update(self):
-		# Update files from server.
-		self._git("fetch")
-
 		# If there has been no data, yet we need to import all packages
 		# that are currently checked out.
 		if not self.revision:
@@ -168,42 +190,5 @@ class Master(MasterSlave):
 
 			source.update()
 
-	def build(self):
-		build = self.conn.build_job(self.hostname)
-
-		if not build:
-			return
-
-		print build
-
-		source = Source(self, **build["source"])
-
-		source.update_revision((build["revision"], False), build_id=build["id"])
-
 	def update_revision(self, source, revision):
 		self.conn.sources_update_revision(source.id, revision)
-
-	def package_add(self, source, pkg):
-		logging.info("Adding package: %s" % pkg.friendly_name)
-
-		# Collect data that is sent to the database...
-		info = {
-			"name"             : pkg.name,
-			"epoch"            : pkg.epoch,
-			"version"          : pkg.version,
-			"release"          : pkg.release,
-			"groups"           : " ".join(pkg.groups),
-			"maintainer"       : pkg.maintainer,
-			"license"          : pkg.license,
-			"url"              : pkg.url,
-			"summary"          : pkg.summary,
-			"description"      : pkg.description,
-			"supported_arches" : pkg.supported_arches,
-			"source_id"        : source.id,
-		}
-
-		return self.conn.package_add(info)
-
-	def package_remove(self, source, pkg):
-		logging.info("Package '%s' has been removed." % pkg)
-

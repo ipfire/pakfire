@@ -15,6 +15,7 @@ import pakfire.util
 from pakfire.constants import *
 
 from base import MasterSlave
+from master import Source
 
 class Slave(MasterSlave):
 	def __init__(self, **pakfire_args):
@@ -53,7 +54,34 @@ class Slave(MasterSlave):
 
 		print build
 
-		build_id = build["id"]
+		job_types = {
+			"binary" : self.build_binary_job,
+			"source" : self.build_source_job,
+		}
+
+		build_id   = build["id"]
+		build_type = build["type"]
+
+		try:
+			func = job_types[build_type]
+		except KeyError:
+			raise Exception, "Build type not supported: %s" % type
+
+		# Call the function that processes the build and try to catch general
+		# exceptions and report them to the server.
+		# If everything goes okay, we tell this the server, too.
+		try:
+			func(build_id, build)
+
+		except Exception, e:
+			message = "%s: %s" % (e.__class__.__name__, e)
+			self.update_build_status(build_id, "failed", message)
+			raise
+
+		else:
+			self.update_build_status(build_id, "finished")
+
+	def build_binary_job(self, build_id, build):
 		filename = build["name"]
 		download = build["download"]
 		hash1    = build["hash1"]
@@ -98,14 +126,14 @@ class Slave(MasterSlave):
 			message = "%s: %s" % (e.__class__.__name__, e)
 			self.update_build_status(build_id, "dependency_error", message)
 
-		except Exception, e:
-			message = "%s: %s" % (e.__class__.__name__, e)
-			self.update_build_status(build_id, "failed", message)
-			raise
-
-		else:
-			self.update_build_status(build_id, "finished")
-
 		finally:
 			# Cleanup the files we created.
 			pakfire.util.rm(tmpdir)
+
+	def build_source_job(self, build_id, build):
+		# Update the build status on the server.
+		self.update_build_status(build_id, "running")
+
+		source = Source(self, **build["source"])
+
+		source.update_revision((build["revision"], False), build_id=build_id)
