@@ -15,6 +15,7 @@ import uuid
 import base
 import chroot
 import depsolve
+import logger
 import packages
 import repository
 import transaction
@@ -25,14 +26,61 @@ from i18n import _
 from errors import BuildError, BuildRootLocked, Error
 
 
+BUILD_LOG_HEADER = """
+ ____       _     __ _            _           _ _     _
+|  _ \ __ _| | __/ _(_)_ __ ___  | |__  _   _(_) | __| | ___ _ __
+| |_) / _` | |/ / |_| | '__/ _ \ | '_ \| | | | | |/ _` |/ _ \ '__|
+|  __/ (_| |   <|  _| | | |  __/ | |_) | |_| | | | (_| |  __/ |
+|_|   \__,_|_|\_\_| |_|_|  \___| |_.__/ \__,_|_|_|\__,_|\___|_|
+
+	Time    : %(time)s
+	Host    : %(host)s
+	Version : %(version)s
+
+"""
+
 class Builder(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pkg=None, distro_config=None, build_id=None, **pakfire_args):
+	def __init__(self, pkg=None, distro_config=None, build_id=None, logfile=None,
+			**pakfire_args):
 		pakfire_args.update({
 			"builder" : True,
 		})
+
+		# Save the build id and generate one if no build id was provided.
+		if not build_id:
+			build_id = "%s" % uuid.uuid4()
+
+		self.build_id = build_id
+
+		# Setup the logging.
+		if logfile:
+			self.log = logging.getLogger(self.build_id)
+			# Propage everything to the root logger that we will see something
+			# on the terminal.
+			self.log.propagate = 1
+			self.log.setLevel(logging.INFO)
+
+			# Add the given logfile to the logger.
+			h = logging.FileHandler(logfile)
+			self.log.addHandler(h)
+
+			# Format the log output for the file.
+			f = logger.BuildFormatter()
+			h.setFormatter(f)
+		else:
+			# If no logile was given, we use the root logger.
+			self.log = logging.getLogger()
+
+		logdata = {
+			"host"    : socket.gethostname(),
+			"time"    : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
+			"version" : "Pakfire %s" % PAKFIRE_VERSION,
+		}
+		for line in BUILD_LOG_HEADER.splitlines():
+			self.log.info(line % logdata)
 
 		# Create pakfire instance.
 		self.pakfire = base.Pakfire(distro_config=distro_config, **pakfire_args)
@@ -59,12 +107,6 @@ class Builder(object):
 		# Save the build time.
 		self.build_time = int(time.time())
 
-		# Save the build id and generate one if no build id was provided.
-		if not build_id:
-			build_id = uuid.uuid4()
-
-		self.build_id = build_id
-
 	def get_pkg(self):
 		return getattr(self, "_pkg", None)
 
@@ -77,8 +119,10 @@ class Builder(object):
 
 		# Log the package information.
 		if not isinstance(self._pkg, packages.Makefile):
-			dump = self._pkg.dump(long=True)
-			self.log.info(dump)
+			self.log.info("Package information:")
+			for line in self._pkg.dump(long=True).splitlines():
+				self.log.info("  %s" % line)
+			self.log.info("")
 
 		assert self.pkg
 
@@ -232,7 +276,7 @@ class Builder(object):
 			else:
 				ds.add_requires(r)
 		ds.resolve()
-		ds.dump()
+		ds.dump(logger=self.log)
 
 		ts = transaction.Transaction(self.pakfire, ds)
 		ts.run()
@@ -254,11 +298,6 @@ class Builder(object):
 				pkgs.append(p)
 
 		self.install(pkgs)
-
-	@property
-	def log(self):
-		# XXX for now, return the root logger
-		return logging.getLogger()
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes
@@ -491,7 +530,7 @@ class Builder(object):
 
 		return env
 
-	def do(self, command, shell=True, personality=None, *args, **kwargs):
+	def do(self, command, shell=True, personality=None, logger=None, *args, **kwargs):
 		ret = None
 		try:
 			# Environment variables
@@ -523,7 +562,7 @@ class Builder(object):
 				personality=personality,
 				shell=False,
 				env=env,
-				logger=self.log,
+				logger=logger,
 				*args,
 				**kwargs
 			)
@@ -616,7 +655,7 @@ class Builder(object):
 		self.create_icecream_toolchain()
 
 		try:
-			self.make("build")
+			self.make("build", logger=self.log)
 
 		except Error:
 			raise BuildError, "The build command failed."

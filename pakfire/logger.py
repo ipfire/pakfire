@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import logging
+import time
 
 def setup_logging(config):
 	"""
@@ -35,3 +36,26 @@ def setup_logging(config):
 	handler = logging.FileHandler(config.get("logfile"))
 	handler.setLevel(logging.DEBUG)
 	l.addHandler(handler)
+
+
+class BuildFormatter(logging.Formatter):
+	def __init__(self):
+		self._fmt = "[%(asctime)s] %(message)s"
+		self.datefmt = None
+
+		self.starttime = time.time()
+
+	def converter(self, recordtime):
+		"""
+			This returns a timestamp relatively to the time when we started
+			the build.
+		"""
+		recordtime -= self.starttime
+
+		return time.gmtime(recordtime)
+
+	def formatTime(self, record, datefmt=None):
+		ct = self.converter(record.created)
+		t = time.strftime("%H:%M:%S", ct)
+		s = "%s,%03d" % (t, record.msecs)
+		return s

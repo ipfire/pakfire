@@ -220,7 +220,11 @@ class DependencySet(object):
 		s.append("")
 		return s
 
-	def dump(self):
+	def dump(self, logger=None):
+		# If no logger was given, we use the root logger.
+		if not logger:
+			logger = logging.getLogger()
+
 		width = 80
 		line = "=" * width
 
@@ -261,4 +265,4 @@ class DependencySet(object):
 		s.append("")
 
 		for line in s:
-			logging.info(line)
+			logger.info(line)
