@@ -83,8 +83,10 @@ class MasterSlave(object):
 
 		return self.conn.package_add_file(pkg_id, file_id, info)
 
-	def upload_log_file(self):
-		pass # XXX TO BE DONE
+	def upload_log_file(self, build_id, logfile):
+		file_id = self._chunked_upload(logfile)
+
+		return self.conn.build_add_log(build_id, file_id)
 
 	def package_add(self, source, pkg):
 		logging.info("Adding package: %s" % pkg.friendly_name)
