@@ -82,6 +82,7 @@ class Slave(MasterSlave):
 			self.update_build_status(build_id, "finished")
 
 	def build_binary_job(self, build_id, build):
+		arch     = build["arch"]
 		filename = build["name"]
 		download = build["download"]
 		hash1    = build["hash1"]
@@ -89,6 +90,7 @@ class Slave(MasterSlave):
 		# Create a temporary file and a directory for the resulting files.
 		tmpdir = tempfile.mkdtemp()
 		tmpfile = os.path.join(tmpdir, filename)
+		logfile = os.path.join(tmpdir, "build.log")
 
 		# Get a package grabber and add mirror download capabilities to it.
 		grabber = pakfire.downloader.PackageDownloader()
@@ -108,14 +110,14 @@ class Slave(MasterSlave):
 
 			# Run the build.
 			pakfire.api.build(tmpfile, build_id=build_id,
-				resultdirs=[tmpdir,])
+				resultdirs=[tmpdir,], logfile=logfile)
 
 			self.update_build_status(build_id, "uploading")
 
 			for dir, subdirs, files in os.walk(tmpdir):
 				for file in files:
 					file = os.path.join(dir, file)
-					if file == tmpfile:
+					if file in (logfile, tmpfile,):
 						continue
 
 					pkg = pakfire.packages.open(self.pakfire, None, file)
@@ -127,6 +129,10 @@ class Slave(MasterSlave):
 			self.update_build_status(build_id, "dependency_error", message)
 
 		finally:
+			# Upload the logfile in any case and if it exists.
+			if os.path.exists(logfile):
+				self.upload_log_file(build_id, logfile)
+
 			# Cleanup the files we created.
 			pakfire.util.rm(tmpdir)
 
