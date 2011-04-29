@@ -14,11 +14,9 @@ import uuid
 
 import base
 import chroot
-import depsolve
 import logger
 import packages
 import repository
-import transaction
 import util
 
 from constants import *
@@ -134,6 +132,10 @@ class Builder(object):
 			Inherit architecture from distribution configuration.
 		"""
 		return self.distro.arch
+
+	@property
+	def solver(self):
+		return self.pakfire.solver
 
 	@property
 	def info(self):
@@ -269,19 +271,29 @@ class Builder(object):
 		if not requires:
 			return
 
-		ds = depsolve.DependencySet(self.pakfire)
-		for r in requires:
-			if isinstance(r, packages.BinaryPackage):
-				ds.add_package(r)
-			else:
-				ds.add_requires(r)
-		ds.resolve()
-		ds.dump(logger=self.log)
+		# Create a request and fill it with what we need.
+		request = self.solver.create_request()
 
-		ts = transaction.Transaction(self.pakfire, ds)
-		ts.run()
+		for req in requires:
+			if isinstance(req, packages.BinaryPackage):
+				req = req.friendly_name
+
+			req = self.solver.create_relation(req)
+
+			request.install(req)
+
+		# Do the solving.
+		transaction = self.solver.solve(request)
+
+		# Show the user what is going to be done.
+		transaction.dump(logger=self.log)
+
+		# Run the transaction.
+		transaction.run()
 
 	def install_test(self):
+		return # XXX currently disabled
+
 		pkgs = []
 
 		# Connect packages to the FS repository.

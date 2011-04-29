@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-23 12:44+0200\n"
+"POT-Creation-Date: 2011-04-29 21:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,152 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pakfire/base.py:106 ../pakfire/base.py:137
-msgid "Is this okay?"
+#: ../pakfire/packages/base.py:67
+msgid "Name"
 msgstr ""
 
-#: ../pakfire/builder.py:208
+#: ../pakfire/packages/base.py:68 ../pakfire/repository/transaction.py:278
+msgid "Arch"
+msgstr ""
+
+#: ../pakfire/packages/base.py:69 ../pakfire/repository/transaction.py:278
+msgid "Version"
+msgstr ""
+
+#: ../pakfire/packages/base.py:70
+msgid "Release"
+msgstr ""
+
+#: ../pakfire/packages/base.py:71 ../pakfire/repository/transaction.py:278
+msgid "Size"
+msgstr ""
+
+#: ../pakfire/packages/base.py:72
+msgid "Repo"
+msgstr ""
+
+#: ../pakfire/packages/base.py:73
+msgid "Summary"
+msgstr ""
+
+#: ../pakfire/packages/base.py:74
+msgid "Groups"
+msgstr ""
+
+#: ../pakfire/packages/base.py:75
+msgid "URL"
+msgstr ""
+
+#: ../pakfire/packages/base.py:76
+msgid "License"
+msgstr ""
+
+#: ../pakfire/packages/base.py:79
+msgid "Description"
+msgstr ""
+
+#: ../pakfire/packages/base.py:85
+msgid "UUID"
+msgstr ""
+
+#: ../pakfire/packages/base.py:86
+msgid "Build ID"
+msgstr ""
+
+#: ../pakfire/packages/base.py:87
+msgid "Build date"
+msgstr ""
+
+#: ../pakfire/packages/base.py:88
+msgid "Build host"
+msgstr ""
+
+#: ../pakfire/packages/base.py:90
+msgid "Provides"
+msgstr ""
+
+#: ../pakfire/packages/base.py:95
+msgid "Requires"
+msgstr ""
+
+#: ../pakfire/repository/solver.py:66
+#, python-format
+msgid "Loading %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:107
+#, python-format
+msgid "Cleanup: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:146
+#, python-format
+msgid "Installing: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:155
+#, python-format
+msgid "Updating: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:167
+#, python-format
+msgid "Removing: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:278
+msgid "Package"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:278 ../pakfire/cli.py:237
+msgid "Repository"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:281
+msgid "Installing:"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:282
+msgid "Updating:"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:283
+msgid "Removing:"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:285
+msgid "Transaction Summary"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:291
+msgid "Install"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:291
+#: ../pakfire/repository/transaction.py:294
+#: ../pakfire/repository/transaction.py:297
+msgid "Package(s)"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:294
+msgid "Updates"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:297
+msgid "Remove"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:303
+#, python-format
+msgid "Total download size: %s"
+msgstr ""
+
+#: ../pakfire/repository/index.py:335
+#, python-format
+msgid "%s: package database"
+msgstr ""
+
+#: ../pakfire/builder.py:254
 #, python-format
 msgid "Extracting: %s (source)"
 msgstr ""
@@ -123,10 +264,6 @@ msgstr ""
 msgid "List all currently enabled repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:237 ../pakfire/depsolve.py:229
-msgid "Repository"
-msgstr ""
-
 #: ../pakfire/cli.py:237
 msgid "Enabled"
 msgstr ""
@@ -217,151 +354,4 @@ msgstr ""
 
 #: ../pakfire/cli.py:498
 msgid "Send a keepalive to the server."
-msgstr ""
-
-#: ../pakfire/depsolve.py:229
-msgid "Package"
-msgstr ""
-
-#: ../pakfire/depsolve.py:229 ../pakfire/packages/base.py:72
-msgid "Arch"
-msgstr ""
-
-#: ../pakfire/depsolve.py:229 ../pakfire/packages/base.py:73
-msgid "Version"
-msgstr ""
-
-#: ../pakfire/depsolve.py:229 ../pakfire/packages/base.py:75
-msgid "Size"
-msgstr ""
-
-#: ../pakfire/depsolve.py:232
-msgid "Installing:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:233
-msgid "Installing for dependencies:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:234
-msgid "Updating:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:235
-msgid "Updating for dependencies:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:236
-msgid "Removing:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:237
-msgid "Removing for dependencies:"
-msgstr ""
-
-#: ../pakfire/depsolve.py:239
-msgid "Transaction Summary"
-msgstr ""
-
-#: ../pakfire/depsolve.py:245
-msgid "Install"
-msgstr ""
-
-#: ../pakfire/depsolve.py:246 ../pakfire/depsolve.py:250
-#: ../pakfire/depsolve.py:254
-msgid "Package(s)"
-msgstr ""
-
-#: ../pakfire/depsolve.py:249
-msgid "Updates"
-msgstr ""
-
-#: ../pakfire/depsolve.py:253
-msgid "Remove"
-msgstr ""
-
-#: ../pakfire/depsolve.py:260
-#, python-format
-msgid "Total download size: %s"
-msgstr ""
-
-#: ../pakfire/packages/base.py:71
-msgid "Name"
-msgstr ""
-
-#: ../pakfire/packages/base.py:74
-msgid "Release"
-msgstr ""
-
-#: ../pakfire/packages/base.py:76
-msgid "Repo"
-msgstr ""
-
-#: ../pakfire/packages/base.py:77
-msgid "Summary"
-msgstr ""
-
-#: ../pakfire/packages/base.py:78
-msgid "Groups"
-msgstr ""
-
-#: ../pakfire/packages/base.py:79
-msgid "URL"
-msgstr ""
-
-#: ../pakfire/packages/base.py:80
-msgid "License"
-msgstr ""
-
-#: ../pakfire/packages/base.py:83
-msgid "Description"
-msgstr ""
-
-#: ../pakfire/packages/base.py:89
-msgid "UUID"
-msgstr ""
-
-#: ../pakfire/packages/base.py:90
-msgid "Build ID"
-msgstr ""
-
-#: ../pakfire/packages/base.py:91
-msgid "Build date"
-msgstr ""
-
-#: ../pakfire/packages/base.py:92
-msgid "Build host"
-msgstr ""
-
-#: ../pakfire/packages/base.py:94
-msgid "Provides"
-msgstr ""
-
-#: ../pakfire/packages/base.py:99
-msgid "Requires"
-msgstr ""
-
-#: ../pakfire/repository/index.py:310
-#, python-format
-msgid "%s: package database"
-msgstr ""
-
-#: ../pakfire/transaction.py:107
-#, python-format
-msgid "Cleanup: %s"
-msgstr ""
-
-#: ../pakfire/transaction.py:144
-#, python-format
-msgid "Installing: %s"
-msgstr ""
-
-#: ../pakfire/transaction.py:149
-#, python-format
-msgid "Updating: %s"
-msgstr ""
-
-#: ../pakfire/transaction.py:159
-#, python-format
-msgid "Removing: %s"
 msgstr ""

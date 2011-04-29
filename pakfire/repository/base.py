@@ -105,6 +105,11 @@ class RepositoryFactory(object):
 			if group in pkg.groups:
 				yield pkg
 
+	def get_by_friendly_name(self, name):
+		for pkg in self.packages:
+			if pkg.friendly_name == name:
+				return pkg
+
 	def search(self, pattern):
 		"""
 			Returns a list of packages, that match the given pattern,
@@ -123,3 +128,17 @@ class RepositoryFactory(object):
 			Returns all packages.
 		"""
 		return self.index.packages
+
+	@property
+	def size(self):
+		"""
+			Return the number of packages.
+		"""
+		return self.index.size
+
+	@property
+	def filelist(self):
+		if hasattr(self.index, "filelist"):
+			return self.index.filelist
+
+		return {}

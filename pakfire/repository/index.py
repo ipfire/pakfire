@@ -64,6 +64,14 @@ class Index(object):
 		for pkg in self._packages:
 			yield pkg
 
+	@property
+	def size(self):
+		i = 0
+		for pkg in self.packages:
+			i += 1
+
+		return i
+
 	def update(self, force=False):
 		pass
 
@@ -180,6 +188,23 @@ class DatabaseIndexFactory(Index):
 
 		c.close()
 
+	@property
+	def filelist(self):
+		c = self.db.cursor()
+		c.execute("SELECT pkg, name FROM files")
+
+		files = {}
+
+		for entry in c:
+			file = entry["name"]
+			try:
+				files[pkg_id].append(file)
+			except KeyError:
+				files[pkg_id] = [file,]
+
+		c.close()
+
+		return files
 
 class InstalledIndex(DatabaseIndexFactory):
 	def open_database(self):

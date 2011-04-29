@@ -7,20 +7,18 @@ import string
 
 import builder
 import config
-import depsolve
 import distro
 import logger
-import packages
 import repository
-import transaction
+import packages
 import util
 
 from constants import *
 from i18n import _
 
 class Pakfire(object):
-	def __init__(self, builder=False, configs=[], disable_repos=None,
-			distro_config=None):
+	def __init__(self, builder=False, configs=[], enable_repos=None,
+			disable_repos=None, distro_config=None):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
@@ -46,16 +44,11 @@ class Pakfire(object):
 		# Get more information about the distribution we are running
 		# or building
 		self.distro = distro.Distribution(self, distro_config)
-		self.repos  = repository.Repositories(self)
+		self.repos  = repository.Repositories(self,
+			enable_repos=enable_repos, disable_repos=disable_repos)
 
-		# Disable repositories if passed on command line
-		if disable_repos:
-			for repo in disable_repos:
-				self.repos.disable_repo(repo)
-
-		# Update all indexes of the repositories (not force) so that we will
-		# always work with valid data.
-		self.repos.update()
+		# Create a short reference to the solver of this pakfire instance.
+		self.solver = self.repos.solver
 
 	def destroy(self):
 		if not self.path == "/":
@@ -92,54 +85,22 @@ class Pakfire(object):
 		raise BuildError, arch
 
 	def install(self, requires):
-		ds = depsolve.DependencySet(pakfire=self)
-
+		# Create a new request.
+		request = self.solver.create_request()
 		for req in requires:
-			if isinstance(req, packages.BinaryPackage):
-				ds.add_package(req)
-			else:
-				ds.add_requires(req)
+			request.install(req)
 
-		ds.resolve()
-		ds.dump()
+		# Do the solving.
+		t = self.solver.solve(request)
 
-		ret = cli.ask_user(_("Is this okay?"))
-		if not ret:
+		if not t:
 			return
 
-		ts = transaction.Transaction(self, ds)
-		ts.run()
+		t.run()
 
 	def update(self, pkgs):
-		ds = depsolve.DependencySet(pakfire=self)
-
-		for pkg in ds.packages:
-			# Skip unwanted packages (passed on command line)
-			if pkgs and not pkg.name in pkgs:
-				continue
-
-			updates = self.repos.get_by_name(pkg.name)
-			updates = packages.PackageListing(updates)
-
-			latest = updates.get_most_recent()
-
-			# If the current package is already the latest
-			# we skip it.
-			if latest == pkg:
-				continue
-
-			# Otherwise we want to update the package.
-			ds.add_package(latest)
-
-		ds.resolve()
-		ds.dump()
-
-		ret = cli.ask_user(_("Is this okay?"))
-		if not ret:
-			return
-
-		ts = transaction.Transaction(self, ds)
-		ts.run()
+		# XXX needs to be done
+		pass
 
 	def info(self, patterns):
 		pkgs = []
@@ -251,8 +212,7 @@ class Pakfire(object):
 	def provides(self, patterns):
 		pkgs = []
 		for pattern in patterns:
-			requires = depsolve.Requires(None, pattern)
-			pkgs += self.repos.get_by_provides(requires)
+			pkgs += self.repos.get_by_provides(pattern)
 
 		pkgs = packages.PackageListing(pkgs)
 		#pkgs.unique()
@@ -262,8 +222,7 @@ class Pakfire(object):
 	def requires(self, patterns):
 		pkgs = []
 		for pattern in patterns:
-			requires = depsolve.Requires(None, pattern)
-			pkgs += self.repos.get_by_requires(requires)
+			pkgs += self.repos.get_by_requires(pattern)
 
 		pkgs = packages.PackageListing(pkgs)
 		#pkgs.unique()

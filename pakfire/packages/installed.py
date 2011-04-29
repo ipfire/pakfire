@@ -110,35 +110,27 @@ class DatabasePackage(Package):
 
 	@property
 	def provides(self):
-		if not hasattr(self, "__provides"):
-			# Get automatic provides
-			provides = self._provides
+		provides = self.metadata.get("provides", "").split()
 
-			# Add other provides
-			for prov in self.metadata.get("provides", "").split():
-				provides.add(prov)
-
-			self.__provides = provides
-
-		return self.__provides
+		return set(provides)
 
 	@property
 	def requires(self):
-		requires = self.metadata.get("requires")
-		
-		if requires:
-			return requires.split()
+		requires = self.metadata.get("requires", "").split()
 
-		return []
+		return set(requires)
 
 	@property
 	def conflicts(self):
-		conflicts = self.metadata.get("conflicts")
+		conflicts = self.metadata.get("conflicts", "").split()
 
-		if conflicts:
-			return conflicts.split()
+		return set(conflicts)
 
-		return []
+	@property
+	def obsoletes(self):
+		obsoletes = self.metadata.get("obsoletes", "").split()
+
+		return set(obsoletes)
 
 	@property
 	def hash1(self):
@@ -154,17 +146,13 @@ class DatabasePackage(Package):
 
 	@property
 	def filelist(self):
-		if not hasattr(self, "__filelist"):
-			c = self.db.cursor()
+		c = self.db.cursor()
+		try:
 			c.execute("SELECT name FROM files WHERE pkg = ?", (self.id,))
 
-			self.__filelist = []
-			for f in c:
-				self.__filelist.append(f["name"])
-
+			return [f["name"] for f in c]
+		finally:
 			c.close()
-
-		return self.__filelist
 
 	def _does_provide_file(self, requires):
 		"""

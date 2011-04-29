@@ -1,13 +1,9 @@
 #!/usr/bin/python
 
-
-import fnmatch
 import logging
-import re
 
 import util
 
-import pakfire.depsolve
 from pakfire.i18n import _
 
 class Package(object):
@@ -292,6 +288,10 @@ class Package(object):
 		return self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
 
 	@property
+	def vendor(self):
+		return self.metadata.get("PKG_VENDOR", "")
+
+	@property
 	def requires(self):
 		ret = ""
 
@@ -310,101 +310,17 @@ class Package(object):
 		return set(ret.split())
 
 	@property
-	def _provides(self):
-		# Make package identifyable by its name and version/release tuples.
-		provides = [
-			self.name,
-			"%s=%s-%s" % (self.name, self.version, self.release),
-			"%s=%s:%s-%s" % (self.name, self.epoch, self.version, self.release),
-		]
+	def provides(self):
+		provides = self.metadata.get("PKG_PROVIDES", "").split()
 
 		return set(provides)
 
-	### methods ###
+	@property
+	def obsoletes(self):
+		obsoletes = self.metadata.get("PKG_OBSOLETES", "").split()
 
-	def _does_provide_file(self, requires):
-		for file in self.filelist:
-			if fnmatch.fnmatch(file, requires.requires):
-				return True
+		return set(obsoletes)
 
-		return False
-
-	def does_provide(self, requires):
-		if not isinstance(requires, pakfire.depsolve.Requires):
-			requires = pakfire.depsolve.Requires(self, requires)
-
-		# Get all provide strings from the package data
-		# and return true if requires is matched.
-		if requires.requires in self.provides:
-			return True
-
-		if requires.type == "file":
-			return self._does_provide_file(requires)
-
-		elif requires.type == "expr":
-			# Handle all expressions like "gcc>=4.0.0-1"
-			(e_expr, e_name, e_epoch, e_version, e_release) = \
-				util.parse_pkg_expr(requires.requires)
-
-			# If the package names do not match, we do not provide this:
-			if not self.name == e_name:
-				return False
-
-			ret = util.version_compare(self.version_tuple, (e_epoch, e_version, e_release))
-
-			# If we equal the version, we provide this
-			if "=" in e_expr and ret == 0:
-				return True
-
-			elif ">" in e_expr and ret > 0:
-				return True
-
-			elif "<" in e_expr and ret < 0:
-				return True
-
-			return False
-
-		elif requires.type == "virtual":
-			(r_type, r_expr, r_name, r_version) = \
-				util.parse_virtual_expr(requires.requires)
-
-			# If we get an invalid expression with no name, we
-			# do not provide this.
-			if not r_name:
-				return False
-
-			for provides in self.provides:
-				(p_type, p_expr, p_name, p_version) = \
-					util.parse_virtual_expr(provides)
-
-				# If name does not match, we have no match at all.
-				if not p_type == r_type or not p_name == r_name:
-					continue
-
-				# Check if the expression is fulfilled.
-				if r_expr == "=":
-					return p_version == r_version
-
-				elif r_expr == ">=":
-					return p_version >= r_version
-
-				elif r_expr == ">":
-					return p_version > r_version
-
-				elif r_expr == "<":
-					return p_version < r_version
-
-				elif r_expr == "<=":
-					return p_version <= r_version
-
-				elif not r_expr:
-					# If we get here, the name matches and there was no version
-					# required.
-					return True
-
-		# No match was found at all
-		return False
-
-	def extract(self, path):
-		raise NotImplementedError
+	def extract(self, path, prefix=None):
+		raise NotImplementedError, "%s" % type(self)
 

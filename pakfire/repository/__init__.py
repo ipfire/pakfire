@@ -2,6 +2,8 @@
 
 import logging
 
+import solver
+
 from installed import InstalledRepository
 from local import LocalRepository, LocalBuildRepository, LocalSourceRepository
 from oddments import DummyRepository, FileSystemRepository
@@ -14,7 +16,7 @@ class Repositories(object):
 		This is the place where repositories can be activated or deactivated.
 	"""
 
-	def __init__(self, pakfire):
+	def __init__(self, pakfire, enable_repos=None, disable_repos=None):
 		self.pakfire = pakfire
 
 		self.config = pakfire.config
@@ -37,6 +39,15 @@ class Repositories(object):
 
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
+
+		# XXX need to process enable_repos and disable_repos here
+
+		# Update all indexes of the repositories (not force) so that we will
+		# always work with valid data.
+		self.update()
+
+		# Initialize the solver.
+		self.solver = solver.Solver(self.pakfire, self)
 
 	def __len__(self):
 		"""
@@ -93,40 +104,48 @@ class Repositories(object):
 		for repo in self.enabled:
 			repo.update(force=force)
 
+	def get_repo_by_name(self, name):
+		for repo in self.enabled:
+			if repo.name == name:
+				return repo
+
 	def get_all(self):
 		for repo in self.enabled:
 			for pkg in repo.get_all():
 				yield pkg
 
 	def get_by_name(self, name):
-		for repo in self.enabled:
-			for pkg in repo.get_by_name(name):
-				yield pkg
+		#for repo in self.enabled:
+		#	for pkg in repo.get_by_name(name):
+		#		yield pkg
+		return self.solver.get_by_name(name)
 
 	def get_by_glob(self, pattern):
 		for repo in self.enabled:
 			for pkg in repo.get_by_glob(pattern):
 				yield pkg
 
-	def get_by_provides(self, requires):
-		if requires.type == "file":
-			for pkg in self.get_by_file(requires.requires):
-				yield pkg
-
-		else:
-			for repo in self.enabled:
-				for pkg in repo.get_by_provides(requires):
-					yield pkg
+	#def get_by_provides(self, requires):
+	#	if requires.type == "file":
+	#		for pkg in self.get_by_file(requires.requires):
+	#			yield pkg
+	#
+	#	else:
+	#		for repo in self.enabled:
+	#			for pkg in repo.get_by_provides(requires):
+	#				yield pkg
+	get_by_provides = get_by_name
 
 	def get_by_requires(self, requires):
 		for repo in self.enabled:
 			for pkg in repo.get_by_requires(requires):
 				yield pkg
 
-	def get_by_file(self, filename):
-		for repo in self.enabled:
-			for pkg in repo.get_by_file(filename):
-				yield pkg
+	#def get_by_file(self, filename):
+	#	for repo in self.enabled:
+	#		for pkg in repo.get_by_file(filename):
+	#			yield pkg
+	get_by_file = get_by_name
 
 	def get_by_group(self, group):
 		for repo in self.enabled:

@@ -13,8 +13,3 @@ class SourcePackage(FilePackage):
 			Return the requirements for the build.
 		"""
 		return self.metadata.get("PKG_REQUIRES", "").split()
-
-	@property
-	def provides(self):
-		# XXX just a dummy
-		return []
