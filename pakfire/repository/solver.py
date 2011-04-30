@@ -136,7 +136,7 @@ class Solver(object):
 	def create_request(self):
 		return self.pool.create_request()
 
-	def solve(self, request):
+	def solve(self, request, interactive=False):
 		solver = self.pool.create_solver()
 		solver.set_allow_uninstall(True)
 
@@ -159,13 +159,66 @@ class Solver(object):
 			# Solver had an error and we now see what we can do:
 			logging.info("The solver returned %s problems." % solver.problems_count())
 
-			for p in solver.problems(request):
-				logging.info("Problem: %s" % p)
-				for s in p.solutions():
-					s = "%s" % s
-					logging.info(s.strip())
+			# XXX everything after this line is totally broken and does not do its
+			# job correctly.
+			return
 
-			break
+			jobactions = {
+				satsolver.INSTALL_SOLVABLE : "install",
+				satsolver.UPDATE_SOLVABLE  : "update",
+				satsolver.REMOVE_SOLVABLE  : "remove",
+			}
+
+			problem_count = 0
+			for problem in solver.problems(request):
+				problem_count += 1
+
+				# A data structure to store the solution to the key that is
+				# the user supposed to press.
+				solutionmap = {}
+
+				logging.warning(" Problem %s: %s" % (problem_count, problem))
+
+				solution_count = 0
+				for solution in problem.solutions():
+					solution_count += 1
+					solutionmap[solution_count] = solution
+
+					logging.info("  [%2d]: %s" % (solution_count, solution))
+
+				if not interactive:
+					continue
+
+				logging.info("  - %s -" % _("Empty to abort."))
+
+				while True:
+					print _("Choose a solution:"),
+
+					ret = raw_input()
+					# If the user has entered nothing, we abort the operation.
+					if not ret:
+						return
+
+					try:
+						ret = int(ret)
+					except ValueError:
+						ret = None
+
+					# Get the selected solution from the map.
+					solution = solutionmap.get(ret, None)
+
+					if not solution:
+						print _("You have entered an invalid solution. Try again.")
+						continue
+
+					else:
+						jobs = [e.job() for e in solution.elements()]
+						for job in jobs:
+							try:
+								print jobactions[job.cmd()]
+							except KeyError:
+								raise Exception, "Unknown action called."
+						break
 
 	def solvables2packages(self, solvables):
 		pkgs = []
