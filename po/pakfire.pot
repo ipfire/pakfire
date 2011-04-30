@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-30 16:33+0000\n"
+"POT-Creation-Date: 2011-04-30 20:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,11 +21,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:68 ../pakfire/repository/transaction.py:278
+#: ../pakfire/packages/base.py:68 ../pakfire/repository/transaction.py:226
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:69 ../pakfire/repository/transaction.py:278
+#: ../pakfire/packages/base.py:69 ../pakfire/repository/transaction.py:226
 msgid "Version"
 msgstr ""
 
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:71 ../pakfire/repository/transaction.py:278
+#: ../pakfire/packages/base.py:71 ../pakfire/repository/transaction.py:226
 msgid "Size"
 msgstr ""
 
@@ -90,81 +90,76 @@ msgstr ""
 msgid "Loading %s"
 msgstr ""
 
-#: ../pakfire/repository/solver.py:188
+#: ../pakfire/repository/solver.py:197
 msgid "Empty to abort."
 msgstr ""
 
-#: ../pakfire/repository/solver.py:191
+#: ../pakfire/repository/solver.py:200
 msgid "Choose a solution:"
 msgstr ""
 
-#: ../pakfire/repository/solver.py:207
+#: ../pakfire/repository/solver.py:216
 msgid "You have entered an invalid solution. Try again."
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:107
-#, python-format
-msgid "Cleanup: %s"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:146
+#: ../pakfire/repository/transaction.py:95
 #, python-format
 msgid "Installing: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:155
+#: ../pakfire/repository/transaction.py:104
 #, python-format
 msgid "Updating: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:167
+#: ../pakfire/repository/transaction.py:116
 #, python-format
 msgid "Removing: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:278
+#: ../pakfire/repository/transaction.py:226
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:278 ../pakfire/cli.py:227
+#: ../pakfire/repository/transaction.py:226 ../pakfire/cli.py:227
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:281
+#: ../pakfire/repository/transaction.py:229
 msgid "Installing:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:282
+#: ../pakfire/repository/transaction.py:230
 msgid "Updating:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:283
+#: ../pakfire/repository/transaction.py:231
 msgid "Removing:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:285
+#: ../pakfire/repository/transaction.py:233
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:291
+#: ../pakfire/repository/transaction.py:239
 msgid "Install"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:291
-#: ../pakfire/repository/transaction.py:294
-#: ../pakfire/repository/transaction.py:297
+#: ../pakfire/repository/transaction.py:239
+#: ../pakfire/repository/transaction.py:242
+#: ../pakfire/repository/transaction.py:245
 msgid "Package(s)"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:294
+#: ../pakfire/repository/transaction.py:242
 msgid "Updates"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:297
+#: ../pakfire/repository/transaction.py:245
 msgid "Remove"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:303
+#: ../pakfire/repository/transaction.py:251
 #, python-format
 msgid "Total download size: %s"
 msgstr ""

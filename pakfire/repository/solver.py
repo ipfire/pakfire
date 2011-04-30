@@ -136,9 +136,14 @@ class Solver(object):
 	def create_request(self):
 		return self.pool.create_request()
 
-	def solve(self, request, interactive=False):
+	def solve(self, request, update=False, interactive=False):
 		solver = self.pool.create_solver()
-		solver.set_allow_uninstall(True)
+		#solver.set_allow_uninstall(True)
+
+		# Configure the solver for an update.
+		if update:
+			solver.set_update_system(True)
+			solver.set_do_split_provides(True)
 
 		while True:
 			# Save start time.

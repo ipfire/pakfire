@@ -138,8 +138,22 @@ class Pakfire(object):
 		t.run()
 
 	def update(self, pkgs):
-		# XXX needs to be done
-		pass
+		request = self.solver.create_request()
+
+		repo_installed = self.solver.get_repo("installed")
+		assert repo_installed
+
+		for solvable in repo_installed:
+			request.update(solvable)
+
+		t = self.solver.solve(request, update=True)
+
+		if not t:
+			return
+
+		t.dump()
+
+		t.run()
 
 	def info(self, patterns):
 		pkgs = []

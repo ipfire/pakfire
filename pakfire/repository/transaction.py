@@ -3,6 +3,7 @@
 import logging
 import os
 import progressbar
+import satsolver
 import sys
 
 import pakfire.packages as packages
@@ -49,62 +50,10 @@ class Action(object):
 
 
 class ActionCleanup(Action):
-	def gen_files(self):
-		"""
-			Return a list of all files that are not in the package anymore
-			and so to be removed.
-		"""
-		files = []
-
-		# Compare the filelist of the old and the new package and save the
-		# difference.
-
-		for f in self.pkg.old_package.filelist:
-			if f in self.pkg.filelist:
-				continue
-
-			# Save absolute path.
-			f = os.path.join(self.pakfire.path, f)
-			files.append(f)
-
-		return files
-
-	def remove_files(self, message, files):
-		if not files:
-			return
-
-		pb = util.make_progress(message, len(files))
-		i = 0
-
-		for f in self.gen_files():
-			# Update progress if any.
-			i += 1
-			if pb:
-				pb.update(i)
-
-			# Skip non-existant files (mabye the user removed it already?)
-			if not os.path.exists(f):
-				continue
-
-			logging.debug("Going to remove file: %s" % f)
-
-			try:
-				os.unlink(f)
-			except:
-				logging.critical("Could not remove file: %s. Do it manually." % f)
-
-			# XXX remove file from database
-
-		if pb:
-			pb.finish()
+	type = "ignore"
 
 	def run(self):
-		files = self.gen_files()
-
-		if not files:
-			return
-
-		self.remove_files(_("Cleanup: %s") % self.pkg.name, files)
+		print "XXX Cleanup: %s" % self.pkg
 
 
 class ActionScript(Action):
@@ -149,7 +98,7 @@ class ActionInstall(Action):
 
 
 class ActionUpdate(ActionInstall):
-	type = "update"
+	type = "upgrade"
 
 	def run(self):
 		self.extract(_("Updating: %s") % self.pkg.name)
@@ -167,19 +116,12 @@ class ActionRemove(ActionCleanup):
 		self.remove_files(_("Removing: %s") % self.pkg.name, files)
 
 
-class ActionIgnore(Action):
-	type = "ignore"
-
-	def run(self):
-		pass
-
-
 class Transaction(object):
 	action_classes = [
 		ActionInstall,
 		ActionUpdate,
 		ActionRemove,
-		ActionIgnore,
+		ActionCleanup,
 	]
 
 	def __init__(self, pakfire):
@@ -187,6 +129,10 @@ class Transaction(object):
 		self.actions = []
 
 		self.downloads = []
+
+		self.installs = []
+		self.updates = []
+		self.removes = []
 
 	@classmethod
 	def from_solver(cls, pakfire, solver1, solver2):
@@ -200,11 +146,17 @@ class Transaction(object):
 		# Create a new instance of our own transaction class.
 		transaction = cls(pakfire)
 
+		# Copy all information.
+		transaction.installs = solver1.solvables2packages(solver2.installs())
+		transaction.updates = \
+			[p for p in solver1.solvables2packages(solver2.updates()) if not p.repo.name == "installed"]
+		transaction.removes = solver1.solvables2packages(solver2.removes())
+
 		for step in _transaction.steps():
-			action = step.type_s()
+			action = step.type_s(satsolver.TRANSACTION_MODE_ACTIVE)
 			pkg = solver1.id2pkg[step.solvable().id()]
 
-			if not isinstance(pkg, packages.BinaryPackage):
+			if action in ("install", "upgrade") and not isinstance(pkg, packages.BinaryPackage):
 				transaction.downloads.append(pkg)
 
 			for action_cls in cls.action_classes:
@@ -238,18 +190,6 @@ class Transaction(object):
 		# Reset packages to be downloaded.
 		self.downloads = []
 		print
-
-	@property
-	def installs(self):
-		return [a for a in self.actions if a.type == "install"]
-
-	@property
-	def removes(self):
-		return [a for a in self.actions if a.type == "remove"]
-
-	@property
-	def updates(self):
-		return [a for a in self.actions if a.type == "update"]
 
 	def dump_pkg(self, pkg):
 		ret = []
@@ -286,9 +226,9 @@ class Transaction(object):
 		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"), _("Repository"), _("Size")))
 		s.append(line)
 
-		s += self.dump_pkgs(_("Installing:"), [a.pkg for a in self.installs])
-		s += self.dump_pkgs(_("Updating:"), [a.pkg for a in self.updates])
-		s += self.dump_pkgs(_("Removing:"), [a.pkg for a in self.removes])
+		s += self.dump_pkgs(_("Installing:"), self.installs)
+		s += self.dump_pkgs(_("Updating:"), self.updates)
+		s += self.dump_pkgs(_("Removing:"), self.removes)
 
 		s.append(_("Transaction Summary"))
 		s.append(line)
