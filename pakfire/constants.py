@@ -95,6 +95,7 @@ PKG_DESCRIPTION="%(description)s"
 # Dependency info
 PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
+PKG_OBSOLETES="%(obsoletes)s"
 
 PKG_PAYLOAD_COMP="%(payload_comp)s"
 PKG_PAYLOAD_HASH1="%(payload_hash1)s"

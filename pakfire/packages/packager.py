@@ -44,6 +44,7 @@ class Packager(object):
 
 			"requires" : "",
 			"provides" : "",
+			"obsoletes": "",
 		}
 		self.info.update(self.pkg.info)
 		self.info["groups"] = " ".join(self.info["groups"])
@@ -81,7 +82,7 @@ class Packager(object):
 
 				key, val = m.groups()
 
-				if not key in ("requires", "provides"):
+				if not key in ("requires", "provides", "obsoletes",):
 					continue
 
 				val = val.strip("\"")

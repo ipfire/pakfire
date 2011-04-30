@@ -292,24 +292,12 @@ class Builder(object):
 		transaction.run()
 
 	def install_test(self):
-		return # XXX currently disabled
-
 		pkgs = []
-
-		# Connect packages to the FS repository.
-		r = repository.FileSystemRepository(self.pakfire)
-
 		for dir, subdirs, files in os.walk(self.chrootPath("result")):
 			for file in files:
-				file = os.path.join(dir, file)
+				pkgs.append(os.path.join(dir, file))
 
-				if not file.endswith(PACKAGE_EXTENSION):
-					continue
-
-				p = packages.BinaryPackage(self.pakfire, r, file)
-				pkgs.append(p)
-
-		self.install(pkgs)
+		self.pakfire.localinstall(pkgs)
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes

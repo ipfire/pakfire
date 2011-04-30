@@ -167,11 +167,19 @@ class ActionRemove(ActionCleanup):
 		self.remove_files(_("Removing: %s") % self.pkg.name, files)
 
 
+class ActionIgnore(Action):
+	type = "ignore"
+
+	def run(self):
+		pass
+
+
 class Transaction(object):
 	action_classes = [
 		ActionInstall,
 		ActionUpdate,
 		ActionRemove,
+		ActionIgnore,
 	]
 
 	def __init__(self, pakfire):
