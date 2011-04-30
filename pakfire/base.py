@@ -98,6 +98,45 @@ class Pakfire(object):
 
 		t.run()
 
+	def localinstall(self, files):
+		repo_name = "localinstall"
+
+		# Create a new repository that holds all packages we passed on
+		# the commandline.
+		repo = self.solver.pool.create_repo(repo_name)
+
+		# Open all passed files and try to open them.
+		for file in files:
+			pkg = packages.open(self, None, file)
+
+			if not isinstance(pkg, packages.BinaryPackage):
+				logging.warning("Skipping package which is a wrong format: %s" % file)
+				continue
+
+			# Add the package information to the solver.
+			self.solver.add_package(pkg, repo_name)
+
+		# Break if no packages were added at all.
+		if not repo.size():
+			logging.critical("There are no packages to install.")
+			return
+
+		# Create a new request which contains all solvabled from the CLI and
+		# try to solve it.
+		request = self.solver.create_request()
+		for solvable in repo:
+			print solvable
+			request.install(solvable)
+
+		t = self.solver.solve(request)
+
+		# If solving was not possible, we exit here.
+		if not t:
+			return
+
+		# Otherwise we run the transcation.
+		t.run()
+
 	def update(self, pkgs):
 		# XXX needs to be done
 		pass

@@ -11,6 +11,11 @@ def install(requires, **pakfire_args):
 
 	return pakfire.install(requires)
 
+def localinstall(files, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.localinstall(files)
+
 def remove(**pakfire_args):
 	pass
 

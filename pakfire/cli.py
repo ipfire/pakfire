@@ -191,21 +191,11 @@ class Cli(object):
 	def handle_update(self):
 		pakfire.update(self.args.package, **self.pakfire_args)
 
-	def handle_install(self, local=False):
-		if local:
-			repo = repository.FileSystemRepository(self.pakfire)
-
-		pkgs = []
-		for pkg in self.args.package:
-			if local and os.path.exists(pkg):
-				pkg = packages.BinaryPackage(self.pakfire, repo, pkg)
-
-			pkgs.append(pkg)
-
-		pakfire.install(pkgs, **self.pakfire_args)
+	def handle_install(self):
+		pakfire.install(self.args.package, **self.pakfire_args)
 
 	def handle_localinstall(self):
-		return self.handle_install(local=True, **self.pakfire_args)
+		pakfire.localinstall(self.args.package, **self.pakfire_args)
 
 	def handle_provides(self):
 		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)
