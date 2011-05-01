@@ -96,6 +96,11 @@ class Pakfire(object):
 		if not t:
 			return
 
+		# Ask if the user acknowledges the transaction.
+		if not t.cli_yesno():
+			return
+
+		# Run the transaction.
 		t.run()
 
 	def localinstall(self, files):
@@ -134,7 +139,11 @@ class Pakfire(object):
 		if not t:
 			return
 
-		# Otherwise we run the transcation.
+		# Ask the user if this is okay.
+		if not t.cli_yesno():
+			return
+
+		# If okay, run the transcation.
 		t.run()
 
 	def update(self, pkgs):
@@ -151,8 +160,11 @@ class Pakfire(object):
 		if not t:
 			return
 
-		t.dump()
+		# Ask the user if the transaction is okay.
+		if not t.cli_yesno():
+			return
 
+		# Run the transaction.
 		t.run()
 
 	def remove(self, pkgs):
@@ -167,8 +179,11 @@ class Pakfire(object):
 		if not t:
 			return
 
-		# Process the transaction if any.
-		t.dump()
+		# Ask the user if okay.
+		if not t.cli_yesno():
+			return
+
+		# Process the transaction.
 		t.run()
 
 	def info(self, patterns):

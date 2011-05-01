@@ -10,6 +10,7 @@ import time
 
 from errors import Error
 from packages.util import calc_hash1, format_size
+from i18n import _
 
 def cli_is_interactive():
 	"""
@@ -19,6 +20,24 @@ def cli_is_interactive():
 		return True
 
 	return False
+
+def ask_user(question):
+	"""
+		Ask the user the question, he or she can answer with yes or no.
+
+		This function returns True for "yes" and False for "no".
+
+		If the software is running in a non-inteactive shell, no question
+		is asked at all and the answer is always "yes".
+	"""
+	if not cli_is_interactive():
+		return True
+
+	print _("%s [y/N]") % question,
+	ret = raw_input()
+	print # Just an empty line.
+
+	return ret in ("y", "Y", "z", "Z", "j", "J")
 
 def random_string(length=20):
 	s = ""

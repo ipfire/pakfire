@@ -254,6 +254,11 @@ class Transaction(object):
 		for line in s:
 			logger.info(line)
 
+	def cli_yesno(self, logger=None):
+		self.dump(logger)
+
+		return util.ask_user(_("Is this okay?"))
+
 	def run_action(self, action):
 		try:
 			action.run()

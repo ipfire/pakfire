@@ -12,23 +12,6 @@ import pakfire.api as pakfire
 from constants import *
 from i18n import _
 
-def ask_user(question):
-	"""
-		Ask the user the question, he or she can answer with yes or no.
-
-		This function returns True for "yes" and False for "no".
-		
-		If the software is running in a non-inteactive shell, no question
-		is asked at all and the answer is always "yes".
-	"""
-	if not util.cli_is_interactive():
-		return True
-
-	print _("%s [y/N]") % question,
-	ret = raw_input()
-
-	return ret in ("y", "Y", "z", "Z", "j", "J")
-
 class Cli(object):
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
