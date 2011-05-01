@@ -105,7 +105,7 @@ class ActionUpdate(ActionInstall):
 
 
 class ActionRemove(ActionCleanup):
-	type = "remove"
+	type = "erase"
 
 	def run(self):
 		files = self.pkg.filelist

@@ -46,6 +46,7 @@ class Cli(object):
 
 		self.parse_command_install()
 		self.parse_command_localinstall()
+		self.parse_command_remove()
 		self.parse_command_info()
 		self.parse_command_search()
 		self.parse_command_update()
@@ -61,6 +62,7 @@ class Cli(object):
 		self.action2func = {
 			"install"      : self.handle_install,
 			"localinstall" : self.handle_localinstall,
+			"remove"       : self.handle_remove,
 			"update"       : self.handle_update,
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
@@ -100,6 +102,14 @@ class Cli(object):
 		sub_install.add_argument("package", nargs="+",
 			help=_("Give filename of at least one package."))
 		sub_install.add_argument("action", action="store_const", const="localinstall")
+
+	def parse_command_remove(self):
+		# Implement the "remove" command.
+		sub_remove = self.sub_commands.add_parser("remove",
+			help=_("Remove one or more packages from the system."))
+		sub_remove.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to remove."))
+		sub_remove.add_argument("action", action="store_const", const="remove")
 
 	def parse_command_update(self):
 		# Implement the "update" command.
@@ -196,6 +206,9 @@ class Cli(object):
 
 	def handle_localinstall(self):
 		pakfire.localinstall(self.args.package, **self.pakfire_args)
+
+	def handle_remove(self):
+		pakfire.remove(self.args.package, **self.pakfire_args)
 
 	def handle_provides(self):
 		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)

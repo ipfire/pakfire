@@ -155,6 +155,22 @@ class Pakfire(object):
 
 		t.run()
 
+	def remove(self, pkgs):
+		# Create a new request.
+		request = self.solver.create_request()
+		for pkg in pkgs:
+			request.remove(pkg)
+
+		# Solve the request.
+		t = self.solver.solve(request)
+
+		if not t:
+			return
+
+		# Process the transaction if any.
+		t.dump()
+		t.run()
+
 	def info(self, patterns):
 		pkgs = []
 
