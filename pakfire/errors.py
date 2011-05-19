@@ -3,6 +3,9 @@
 class Error(Exception):
 	pass
 
+class BuildAbortedException(Error):
+	pass
+
 class BuildError(Error):
 	pass
 

@@ -12,7 +12,7 @@ class Distribution(object):
 		self.pakfire = pakfire
 
 		self._data = {
-			"arch" : self.host_arch,
+			"arch" : self.config.host_arch,
 			"name" : "unknown",
 			"slogan" : "---",
 			"vendor" : "unknown",
@@ -27,6 +27,10 @@ class Distribution(object):
 
 		# Dump all data
 		self.dump()
+
+	@property
+	def config(self):
+		return self.pakfire.config
 
 	def dump(self):
 		logging.debug("Distribution configuration:")
@@ -75,7 +79,7 @@ class Distribution(object):
 		return self._data.get("vendor")
 
 	def get_arch(self):
-		return self._data.get("arch") or self.host_arch
+		return self._data.get("arch") or self.config.host_arch
 	
 	def set_arch(self, arch):
 		# XXX check if we are allowed to set this arch
@@ -95,31 +99,6 @@ class Distribution(object):
 		vendor = self.vendor.split()[0]
 
 		return "%s-%s-linux-gnu" % (self.arch, vendor.lower())
-
-	@property
-	def host_arch(self):
-		"""
-			Return the architecture of the host we are running on.
-		"""
-		return os.uname()[4]
-
-	@property
-	def supported_arches(self):
-		host_arches = {
-			"i686" : [ "i686", "x86_64", ],
-			"i586" : [ "i586", "i686", "x86_64", ],
-			"i486" : [ "i486", "i586", "i686", "x86_64", ],
-		}
-
-		for host, can_be_built in host_arches.items():
-			if self.host_arch in can_be_built:
-				yield host
-
-	def host_supports_arch(self, arch):
-		"""
-			Check if this host can build for the target architecture "arch".
-		"""
-		return arch in self.supported_arches
 
 	@property
 	def environ(self):
@@ -159,7 +138,7 @@ class Distribution(object):
 			None to skip the setting of the personality in the build chroot.
 		"""
 
-		if self.arch == self.host_arch:
+		if self.arch == self.config.host_arch:
 			return None
 
 		arch2personality = {
@@ -170,4 +149,3 @@ class Distribution(object):
 		}
 
 		return arch2personality[self.arch]
-

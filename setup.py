@@ -21,9 +21,8 @@ setup(
 	scripts = [
 		"scripts/pakfire",
 		"scripts/pakfire-build",
-		"scripts/pakfire-master",
 		"scripts/pakfire-repo",
-		"scripts/pakfire-slave",
+		"scripts/pakfire-server",
 	],
 	cmdclass = { "build" : build_extra.build_extra,
 	             "build_i18n" :  build_i18n.build_i18n },

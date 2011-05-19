@@ -9,9 +9,8 @@ from pakfire.cli import *
 basename2cls = {
 	"pakfire" : Cli,
 	"pakfire-build" : CliBuilder,
-	"pakfire-master" : CliMaster,
+	"pakfire-server" : CliServer,
 	"pakfire-repo" : CliRepo,
-	"pakfire-slave" : CliSlave,
 }
 
 # Get the basename of the program

@@ -10,8 +10,8 @@ import base
 from constants import *
 
 class Config(object):
-	def __init__(self, pakfire):
-		self.pakfire = pakfire
+	def __init__(self, type=None):
+		self.type = type
 
 		self._config = {
 			"debug" : False,
@@ -105,7 +105,7 @@ class Config(object):
 	def config_files(self):
 		files = []
 
-		if self.pakfire.builder:
+		if self.type == "builder":
 			path = os.getcwd()
 
 			while not path == "/":
@@ -132,3 +132,28 @@ class Config(object):
 
 		return files
 
+	@property
+	def host_arch(self):
+		"""
+			Return the architecture of the host we are running on.
+		"""
+		return os.uname()[4]
+
+	@property
+	def supported_arches(self):
+		host_arches = {
+			"x86_64" : [ "x86_64", ],
+			"i686"   : [ "i686", "x86_64", ],
+			"i586"   : [ "i586", "i686", "x86_64", ],
+			"i486"   : [ "i486", "i586", "i686", "x86_64", ],
+		}
+
+		for host, can_be_built in host_arches.items():
+			if self.host_arch in can_be_built:
+				yield host
+
+	def host_supports_arch(self, arch):
+		"""
+			Check if this host can build for the target architecture "arch".
+		"""
+		return arch in self.supported_arches
