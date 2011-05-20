@@ -243,7 +243,7 @@ class Server(object):
 			except:
 				pass
 			else:
-				memory = int(b) * 1024
+				memory = int(b)
 
 		self.conn.update_host_info(loadavg, cpu_model, memory, arches)
 
