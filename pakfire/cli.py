@@ -58,7 +58,9 @@ class Cli(object):
 
 	@property
 	def pakfire_args(self):
-		return {}
+		return {
+			"path" : self.args.instroot,
+		}
 
 	def parse_common_arguments(self):
 		self.parser.add_argument("-v", "--verbose", action="store_true",
