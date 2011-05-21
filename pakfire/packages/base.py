@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import logging
+import xml.sax.saxutils
 
 import util
 
@@ -122,9 +123,19 @@ class Package(object):
 			"maintainer"  : self.maintainer,
 			"url"         : self.url,
 			"license"     : self.license,
+			"hash1"       : self.hash1,
+			"vendor"      : self.vendor,
+			"build_host"  : self.build_host,
+			"build_time"  : self.build_time,
+			"size"        : self.size,
+			"inst_size"   : self.inst_size,
 		}
 
 		return info
+
+	@property
+	def hash1(self):
+		return "0"*40
 
 	@property
 	def size(self):
@@ -134,6 +145,11 @@ class Package(object):
 			This should be overloaded by another class and returns 0 for
 			virtual packages.
 		"""
+		return 0
+
+	@property
+	def inst_size(self):
+		# XXX to be done
 		return 0
 
 	@property
@@ -267,7 +283,13 @@ class Package(object):
 
 	@property
 	def build_host(self):
-		return self.metadata.get("BUILD_HOST")
+		host = self.metadata.get("BUILD_HOST")
+
+		# XXX Workaround tripple X as hostname.
+		if host == "X"*3:
+			host = ""
+
+		return host
 
 	@property
 	def build_id(self):
@@ -290,6 +312,10 @@ class Package(object):
 	@property
 	def vendor(self):
 		return self.metadata.get("PKG_VENDOR", "")
+
+	@property
+	def pre_requires(self):
+		return set() # XXX to be done
 
 	@property
 	def requires(self):
@@ -316,11 +342,81 @@ class Package(object):
 		return set(provides)
 
 	@property
+	def conflicts(self):
+		conflicts = self.metadata.get("PKG_CONFLICTS", "").split()
+
+		return set(conflicts)
+
+	@property
 	def obsoletes(self):
 		obsoletes = self.metadata.get("PKG_OBSOLETES", "").split()
 
 		return set(obsoletes)
 
 	def extract(self, path, prefix=None):
-		raise NotImplementedError, "%s" % type(self)
+		raise NotImplementedError, "%s" % repr(self)
 
+	def export_xml_string(self):
+		info = self.info
+		info["groups"] = " ".join(info["groups"])
+
+		# Escape everything to conform to XML.
+		for key, value in info.items():
+			if not type(value) in (type(a) for a in ("a", u"a")):
+				continue
+
+			info[key] = xml.sax.saxutils.escape(value, {'"': "&quot;"})
+
+		s = """\
+			<package type="rpm">
+				<name>%(name)s</name>
+				<arch>%(arch)s</arch>
+				<version epoch="%(epoch)s" ver="%(version)s" rel="%(release)s"/>
+				<checksum type="sha" pkgid="YES">%(hash1)s</checksum>
+				<summary>%(summary)s</summary>
+				<description>%(description)s</description>
+				<packager>%(maintainer)s</packager>
+				<url>%(url)s</url>
+				<time file="0" build="%(build_time)s"/>
+				<size package="%(size)s" installed="%(inst_size)s" />
+				<format>
+					<rpm:license>%(license)s</rpm:license>
+					<rpm:vendor>%(vendor)s</rpm:vendor>
+					<rpm:group>%(groups)s</rpm:group>
+					<rpm:buildhost>%(build_host)s</rpm:buildhost>\n""" \
+			% info
+
+		if self.provides:
+			s += "<rpm:provides>"
+			for provides in self.provides:
+				s += "<rpm:entry name=\"%s\" />" % provides
+			s += "</rpm:provides>"
+
+		if self.requires or self.pre_requires:
+			s += "<rpm:requires>"
+			for requires in self.requires:
+				s += "<rpm:entry name=\"%s\" />" % requires
+
+			for requires in self.pre_requires:
+				s += "<rpm:entry name=\"%s\" pre=\"1\" />" % requires
+			s += "</rpm:requires>"
+
+		if self.conflicts:
+			s += "<rpm:conflicts>"
+			for conflict in self.conflicts:
+				s += "<rpm:entry name=\"%s\" />" % conflict
+			s += "</rpm:conflicts>"
+
+		if self.obsoletes:
+			s += "<rpm:obsoletes>"
+			for obsolete in self.obsoletes:
+				s += "<rpm:entry name=\"%s\" />" % obsolete
+			s += "</rpm:obsoletes>"
+
+		for file in self.filelist:
+			# XXX what about type="dir"?
+			s += "<file>%s</file>" % file
+
+		s += "</format></package>"
+
+		return s

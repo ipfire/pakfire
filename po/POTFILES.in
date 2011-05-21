@@ -18,10 +18,7 @@ pakfire/compress.py
 pakfire/base.py
 pakfire/i18n.py
 pakfire/__init__.py
-pakfire/server/base.py
-pakfire/server/slave.py
-pakfire/server/__init__.py
-pakfire/server/master.py
+pakfire/server.py
 pakfire/repository/base.py
 pakfire/repository/database.py
 pakfire/repository/__init__.py

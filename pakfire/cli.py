@@ -450,10 +450,10 @@ class CliMaster(Cli):
 		self.master.update_sources()
 
 
-class CliSlave(Cli):
+class CliServer(Cli):
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire slave command line interface."),
+			description = _("Pakfire server command line interface."),
 		)
 
 		self.parse_common_arguments()
@@ -467,7 +467,7 @@ class CliSlave(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		self.slave = server.slave.Slave()
+		self.server = server.Server()
 
 		self.action2func = {
 			"build"     : self.handle_build,
@@ -488,7 +488,7 @@ class CliSlave(Cli):
 			const="keepalive")
 
 	def handle_keepalive(self):
-		self.slave.keepalive()
+		self.server.update_info()
 
 	def handle_build(self):
-		self.slave.build_job()
+		self.server.build_job()

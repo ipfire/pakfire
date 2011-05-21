@@ -11,6 +11,8 @@ import pakfire.downloader as downloader
 from base import RepositoryFactory
 
 class RemoteRepository(RepositoryFactory):
+	cacheable = True
+
 	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled):
 		RepositoryFactory.__init__(self, pakfire, name, description)
 
@@ -76,9 +78,9 @@ class RemoteRepository(RepositoryFactory):
 
 		return priority
 
-	def update(self, force=False):
-		if self.index:
-			self.index.update(force=force)
+	#def update(self, force=False):
+	#	if self.index:
+	#		self.index.update(force=force)
 
 	def _replace_from_cache(self, pkg):
 		for _pkg in self.cache.packages:

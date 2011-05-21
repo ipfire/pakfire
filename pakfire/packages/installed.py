@@ -176,6 +176,11 @@ class DatabasePackage(Package):
 			Downloads the package from repository and returns a new instance
 			of BinaryPackage.
 		"""
+
+		# XXX a bit hacky, but InstalledRepository has no cache.
+		if self.repo.name == "installed":
+			return self
+
 		# Marker, if we need to download the package.
 		download = True
 

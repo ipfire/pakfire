@@ -278,12 +278,15 @@ class Builder(object):
 			if isinstance(req, packages.BinaryPackage):
 				req = req.friendly_name
 
-			req = self.solver.create_relation(req)
+			if "<" in req or ">" in req or "=" in req:
+				req = self.solver.create_relation(req)
 
 			request.install(req)
 
 		# Do the solving.
-		transaction = self.solver.solve(request)
+		transaction = self.solver.solve(request, allow_downgrade=True)
+
+		# XXX check for errors
 
 		# Show the user what is going to be done.
 		transaction.dump(logger=self.log)
@@ -292,6 +295,9 @@ class Builder(object):
 		transaction.run()
 
 	def install_test(self):
+		# XXX currently disabled
+		return
+
 		pkgs = []
 		for dir, subdirs, files in os.walk(self.chrootPath("result")):
 			for file in files:

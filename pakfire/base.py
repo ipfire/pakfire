@@ -23,8 +23,11 @@ class Pakfire(object):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
+		config_type = None
+
 		# The path where we are operating in.
 		if builder:
+			config_type = "builder"
 			self.builder = True
 			self.path = os.path.join(BUILD_ROOT, util.random_string())
 		else:
@@ -34,7 +37,7 @@ class Pakfire(object):
 			# XXX check if we are actually running on an ipfire system.
 
 		# Read configuration file(s)
-		self.config = config.Config(pakfire=self)
+		self.config = config.Config(type=config_type)
 		for filename in configs:
 			self.config.read(filename)
 
@@ -57,7 +60,7 @@ class Pakfire(object):
 
 	@property
 	def supported_arches(self):
-		return self.distro.supported_arches
+		return self.config.supported_arches
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:
@@ -80,7 +83,7 @@ class Pakfire(object):
 		if not arch:
 			return True
 
-		if not self.distro.host_supports_arch(arch):
+		if not self.config.host_supports_arch(arch):
 			raise BuildError, "Cannot build for the target architecture: %s" % arch
 
 		raise BuildError, arch
@@ -131,7 +134,6 @@ class Pakfire(object):
 		# try to solve it.
 		request = self.solver.create_request()
 		for solvable in repo:
-			print solvable
 			request.install(solvable)
 
 		t = self.solver.solve(request)
@@ -141,8 +143,8 @@ class Pakfire(object):
 			return
 
 		# Ask the user if this is okay.
-		if not t.cli_yesno():
-			return
+		#if not t.cli_yesno():
+		#	return
 
 		# If okay, run the transcation.
 		t.run()

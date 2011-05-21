@@ -35,9 +35,17 @@ class Solver(object):
 		self.pool.set_arch(arch)
 
 		# Initialize all repositories.
-		self.repos = self.init_repos()
+		for repo in self.repos.enabled:
+			self.init_repo(repo)
+
+#		self.init_repos()
 
 		self.pool.prepare()
+
+		logging.debug("Solver pool has %s solvables." % self.pool.size())
+
+	def create_repo(self, *args, **kwargs):
+		return self.pool.create_repo(*args, **kwargs)
 
 	def create_relation(self, s):
 		s = str(s)
@@ -55,17 +63,30 @@ class Solver(object):
 
 		return satsolver.Relation(self.pool, s)
 
-	def init_repos(self):
-		repos = []
+	def init_repo(self, repo):
+		solvrepo = self.pool.create_repo(repo.name)
+		if repo.name == "installed":
+			self.pool.set_installed(solvrepo)
 
-		for repo in self.repos.enabled:
-			solvrepo = self.pool.create_repo(repo.name)
-			if repo.name == "installed":
-				self.pool.set_installed(solvrepo)
+		repo.import_to_solver(self, solvrepo)
+		return
 
-			pb = util.make_progress(_("Loading %s") % repo.name, repo.size)
-			i = 0
+		# XXX dead code
 
+		solvrepo = self.pool.create_repo(repo.name)
+		if repo.name == "installed":
+			self.pool.set_installed(solvrepo)
+
+		pb = util.make_progress(_("Loading %s") % repo.name, repo.size)
+		i = 0
+
+		# Let's see if this repository has a cache and use it if possible.
+		cachefile = repo.metadata_cachefile
+		print cachefile
+		if cachefile and os.path.exists(cachefile):
+			solvrepo.add_solv(cachefile)
+
+		else:
 			for pkg in repo.get_all():
 				if pb:
 					i += 1
@@ -73,35 +94,19 @@ class Solver(object):
 
 				self.add_package(pkg)
 
-			logging.debug("Initialized new repo '%s' with %s packages." % \
-				(solvrepo.name(), solvrepo.size()))
+		logging.debug("Initialized new repo '%s' with %s packages." % \
+			(solvrepo.name(), solvrepo.size()))
 
-			if pb:
-				pb.finish()
+		if pb:
+			pb.finish()
 
-			repos.append(solvrepo)
+		repos.append(solvrepo)
 
-		return repos
+	def add_package(self, pkg, reponame):
+		repo = self.repos.get_repo_by_name(reponame)
 
-	def get_repo(self, name):
-		for repo in self.pool.repos():
-			if not repo.name() == name:
-				continue
-
-			return repo
-
-	def add_package(self, pkg, repo_name=None):
-		if not repo_name:
-			repo_name = pkg.repo.name
-
-		solvrepo = self.get_repo(repo_name)
-		assert solvrepo
-
-		solvable = satsolver.Solvable(solvrepo, str(pkg.name),
+		solvable = satsolver.Solvable(repo.solver_repo, str(pkg.name),
 			str(pkg.friendly_version), str(pkg.arch))
-
-		# Store the solver's ID.
-		self.id2pkg[solvable.id()] = pkg
 
 		# Set vendor.
 		solvable.set_vendor(pkg.vendor)
@@ -136,9 +141,11 @@ class Solver(object):
 	def create_request(self):
 		return self.pool.create_request()
 
-	def solve(self, request, update=False, interactive=False):
+	def solve(self, request, update=False, allow_downgrade=False, interactive=False):
 		solver = self.pool.create_solver()
 		#solver.set_allow_uninstall(True)
+
+		solver.set_allow_downgrade(allow_downgrade)
 
 		# Configure the solver for an update.
 		if update:
@@ -163,10 +170,6 @@ class Solver(object):
 
 			# Solver had an error and we now see what we can do:
 			logging.info("The solver returned %s problems." % solver.problems_count())
-
-			# XXX everything after this line is totally broken and does not do its
-			# job correctly.
-			return
 
 			jobactions = {
 				satsolver.INSTALL_SOLVABLE : "install",
@@ -193,6 +196,8 @@ class Solver(object):
 
 				if not interactive:
 					continue
+
+				continue # XXX
 
 				logging.info("  - %s -" % _("Empty to abort."))
 
@@ -225,17 +230,12 @@ class Solver(object):
 								raise Exception, "Unknown action called."
 						break
 
-	def solvables2packages(self, solvables):
-		pkgs = []
+	def solv2pkg(self, solv):
+		repo = self.repos.get_repo_by_name(solv.repo().name())
 
-		for solv in solvables:
-			pkg = self.id2pkg[solv.id()]
-			pkgs.append(pkg)
-
-		return pkgs
+		return repo.get_by_evr(solv.name(), solv.evr())
 
 	def get_by_provides(self, provides):
-		print provides
 		provides = self.create_relation(provides)
 
 		pkgs = self.solvables2packages(self.pool.providers(provides))

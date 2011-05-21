@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-01 13:43+0000\n"
+"POT-Creation-Date: 2011-05-21 17:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,94 +22,105 @@ msgstr ""
 msgid "%s [y/N]"
 msgstr ""
 
-#: ../pakfire/packages/base.py:67
+#: ../pakfire/packages/base.py:68
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:68 ../pakfire/repository/transaction.py:226
+#: ../pakfire/packages/base.py:69 ../pakfire/repository/transaction.py:242
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:69 ../pakfire/repository/transaction.py:226
+#: ../pakfire/packages/base.py:70 ../pakfire/repository/transaction.py:242
 msgid "Version"
 msgstr ""
 
-#: ../pakfire/packages/base.py:70
+#: ../pakfire/packages/base.py:71
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:71 ../pakfire/repository/transaction.py:226
+#: ../pakfire/packages/base.py:72 ../pakfire/repository/transaction.py:243
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/packages/base.py:72
+#: ../pakfire/packages/base.py:73
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73
+#: ../pakfire/packages/base.py:74
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:74
+#: ../pakfire/packages/base.py:75
 msgid "Groups"
 msgstr ""
 
-#: ../pakfire/packages/base.py:75
+#: ../pakfire/packages/base.py:76
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:76
+#: ../pakfire/packages/base.py:77
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:79
+#: ../pakfire/packages/base.py:80
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:85
+#: ../pakfire/packages/base.py:86
 msgid "UUID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:86
+#: ../pakfire/packages/base.py:87
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:87
+#: ../pakfire/packages/base.py:88
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:88
+#: ../pakfire/packages/base.py:89
 msgid "Build host"
 msgstr ""
 
-#: ../pakfire/packages/base.py:90
+#: ../pakfire/packages/base.py:91
 msgid "Provides"
 msgstr ""
 
-#: ../pakfire/packages/base.py:95
+#: ../pakfire/packages/base.py:96
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/solver.py:66
+#: ../pakfire/repository/solver.py:80
 #, python-format
 msgid "Loading %s"
 msgstr ""
 
-#: ../pakfire/repository/solver.py:197
+#. XXX
+#: ../pakfire/repository/solver.py:202
 msgid "Empty to abort."
 msgstr ""
 
-#: ../pakfire/repository/solver.py:200
+#: ../pakfire/repository/solver.py:205
 msgid "Choose a solution:"
 msgstr ""
 
-#: ../pakfire/repository/solver.py:216
+#: ../pakfire/repository/solver.py:221
 msgid "You have entered an invalid solution. Try again."
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:95
+#: ../pakfire/repository/transaction.py:97
+#, python-format
+msgid "Extracting: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:100
 #, python-format
 msgid "Installing: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:102
+#, python-format
+msgid "Reinstalling: %s"
 msgstr ""
 
 #: ../pakfire/repository/transaction.py:104
@@ -117,63 +128,62 @@ msgstr ""
 msgid "Updating: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:116
+#: ../pakfire/repository/transaction.py:106
+#, python-format
+msgid "Downgrading: %s"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:125
 #, python-format
 msgid "Removing: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:226
+#: ../pakfire/repository/transaction.py:242
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:226 ../pakfire/cli.py:223
+#: ../pakfire/repository/transaction.py:243 ../pakfire/cli.py:223
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:229
+#: ../pakfire/repository/transaction.py:247
 msgid "Installing:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:230
+#: ../pakfire/repository/transaction.py:248
+msgid "Reinstalling:"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:249
 msgid "Updating:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:231
-msgid "Removing:"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:233
-msgid "Transaction Summary"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:239
-msgid "Install"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:239
-#: ../pakfire/repository/transaction.py:242
-#: ../pakfire/repository/transaction.py:245
-msgid "Package(s)"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:242
-msgid "Updates"
-msgstr ""
-
-#: ../pakfire/repository/transaction.py:245
-msgid "Remove"
+#: ../pakfire/repository/transaction.py:250
+msgid "Downgrading:"
 msgstr ""
 
 #: ../pakfire/repository/transaction.py:251
+msgid "Removing:"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:257
+msgid "Transaction Summary"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:264
+msgid "package"
+msgstr ""
+
+#: ../pakfire/repository/transaction.py:270
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:260
+#: ../pakfire/repository/transaction.py:279
 msgid "Is this okay?"
 msgstr ""
 
-#: ../pakfire/repository/index.py:335
+#: ../pakfire/repository/index.py:397
 #, python-format
 msgid "%s: package database"
 msgstr ""
@@ -364,7 +374,7 @@ msgid "Update the sources."
 msgstr ""
 
 #: ../pakfire/cli.py:454
-msgid "Pakfire slave command line interface."
+msgid "Pakfire server command line interface."
 msgstr ""
 
 #: ../pakfire/cli.py:478

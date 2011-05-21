@@ -5,6 +5,7 @@ import os
 import shutil
 
 import pakfire.packages as packages
+import pakfire.util as util
 
 import index
 
@@ -26,6 +27,10 @@ class LocalRepository(RepositoryFactory):
 
 		elif idx == "directory":
 			self.index = index.DirectoryIndex(self.pakfire, self, self.path)
+
+	def remove(self):
+		if os.path.exists(self.path):
+			util.rm(self.path)
 
 	@property
 	def local(self):

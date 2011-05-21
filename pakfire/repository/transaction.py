@@ -18,10 +18,9 @@ class ActionError(Exception):
 
 
 class Action(object):
-	def __init__(self, pakfire, pkg, deps=None):
+	def __init__(self, pakfire, pkg):
 		self.pakfire = pakfire
 		self.pkg = pkg
-		self.deps = deps or []
 
 	def __cmp__(self, other):
 		# XXX ugly
@@ -30,13 +29,16 @@ class Action(object):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.pkg.friendly_name)
 
-	def remove_dep(self, dep):
-		if not self.deps:
+	@property
+	def needs_download(self):
+		return self.type in ("install", "reinstall", "upgrade", "downgrade",) \
+			and not isinstance(self.pkg, packages.BinaryPackage)
+
+	def download(self, text):
+		if not self.needs_download:
 			return
 
-		while dep in self.deps:
-			logging.debug("Removing dep %s from %s" % (dep, self))
-			self.deps.remove(dep)
+		self.pkg = self.pkg.download(text)
 
 	def run(self):
 		raise NotImplementedError
@@ -92,17 +94,24 @@ class ActionInstall(Action):
 		self.local.index.add_package(self.pkg)
 
 	def run(self):
-		self.extract(_("Installing: %s") % self.pkg.name)
+		msg = _("Extracting: %s")
+
+		if self.type == "install":
+			msg = _("Installing: %s")
+		elif self.type == "reinstall":
+			msg = _("Reinstalling: %s")
+		elif self.type == "upgrade":
+			msg = _("Updating: %s")
+		elif self.type == "downgrade":
+			msg = _("Downgrading: %s")
+
+		self.extract(msg % self.pkg.name)
 
 		self.pakfire.solver.add_package(self.pkg, "installed")
 
 
 class ActionUpdate(ActionInstall):
 	type = "upgrade"
-
-	def run(self):
-		self.extract(_("Updating: %s") % self.pkg.name)
-
 
 class ActionRemove(ActionCleanup):
 	type = "erase"
@@ -116,23 +125,27 @@ class ActionRemove(ActionCleanup):
 		self.remove_files(_("Removing: %s") % self.pkg.name, files)
 
 
+class ActionReinstall(ActionInstall):
+	type = "reinstall"
+
+
+class ActionDowngrade(ActionInstall):
+	type = "downgrade"
+
+
 class Transaction(object):
 	action_classes = [
 		ActionInstall,
 		ActionUpdate,
 		ActionRemove,
 		ActionCleanup,
+		ActionReinstall,
+		ActionDowngrade,
 	]
 
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
 		self.actions = []
-
-		self.downloads = []
-
-		self.installs = []
-		self.updates = []
-		self.removes = []
 
 	@classmethod
 	def from_solver(cls, pakfire, solver1, solver2):
@@ -146,18 +159,9 @@ class Transaction(object):
 		# Create a new instance of our own transaction class.
 		transaction = cls(pakfire)
 
-		# Copy all information.
-		transaction.installs = solver1.solvables2packages(solver2.installs())
-		transaction.updates = \
-			[p for p in solver1.solvables2packages(solver2.updates()) if not p.repo.name == "installed"]
-		transaction.removes = solver1.solvables2packages(solver2.removes())
-
 		for step in _transaction.steps():
 			action = step.type_s(satsolver.TRANSACTION_MODE_ACTIVE)
-			pkg = solver1.id2pkg[step.solvable().id()]
-
-			if action in ("install", "upgrade") and not isinstance(pkg, packages.BinaryPackage):
-				transaction.downloads.append(pkg)
+			pkg = solver1.solv2pkg(step.solvable())
 
 			for action_cls in cls.action_classes:
 				if action_cls.type == action:
@@ -166,30 +170,42 @@ class Transaction(object):
 			if not isinstance(action, Action):
 				raise Exception, "Unknown action required: %s" % action
 
-			transaction.add_action(action)
+			transaction.actions.append(action)
 
 		return transaction
 
+	@property
+	def installs(self):
+		return [a.pkg for a in self.actions if isinstance(a, ActionInstall)]
+
+	@property
+	def reinstalls(self):
+		return [a.pkg for a in self.actions if isinstance(a, ActionReinstall)]
+
+	@property
+	def removes(self):
+		return [a.pkg for a in self.actions if isinstance(a, ActionRemove)]
+
+	@property
+	def updates(self):
+		return [a.pkg for a in self.actions if isinstance(a, ActionUpdate)]
+
+	@property
+	def downgrades(self):
+		return [a.pkg for a in self.actions if isinstance(a, ActionDowngrade)]
+
+	@property
+	def downloads(self):
+		return [a for a in self.actions if a.needs_download]
+
 	def download(self):
-		if not self.downloads:
-			return
+		downloads = self.downloads
 
 		i = 0
-		for pkg in self.downloads:
+		for action in self.actions:
 			i += 1
 
-			# Actually download the package.
-			pkg_bin = pkg.download(text="(%2d/%02d): " % (i, len(self.downloads)))
-
-			# Replace the package in all actions where it matches.
-			actions = [a for a in self.actions if a.pkg == pkg]
-
-			for action in actions:
-				action.pkg = pkg_bin
-
-		# Reset packages to be downloaded.
-		self.downloads = []
-		print
+			action.download(text="(%02d/%02d): " % (i, len(downloads)))
 
 	def dump_pkg(self, pkg):
 		ret = []
@@ -221,32 +237,35 @@ class Transaction(object):
 		width = 80
 		line = "=" * width
 
-		s = []
+		s = [""]
 		s.append(line)
-		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"), _("Repository"), _("Size")))
+		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"),
+			_("Repository"), _("Size")))
 		s.append(line)
 
-		s += self.dump_pkgs(_("Installing:"), self.installs)
-		s += self.dump_pkgs(_("Updating:"), self.updates)
-		s += self.dump_pkgs(_("Removing:"), self.removes)
+		actions = (
+			(_("Installing:"),		self.installs),
+			(_("Reinstalling:"),	self.reinstalls),
+			(_("Updating:"),		self.updates),
+			(_("Downgrading:"),		self.downgrades),
+			(_("Removing:"),		self.removes),
+		)
+
+		for caption, pkgs in actions:
+			s += self.dump_pkgs(caption, pkgs)
 
 		s.append(_("Transaction Summary"))
 		s.append(line)
 
-		format = "%-20s %-4d %s"
-
-		if self.installs:
-			s.append(format % (_("Install"), len(self.installs), _("Package(s)")))
-		
-		if self.updates:
-			s.append(format % (_("Updates"), len(self.updates), _("Package(s)")))
-		
-		if self.removes:
-			s.append(format % (_("Remove"), len(self.removes), _("Package(s)")))
+		for caption, pkgs in actions:
+			if not len(pkgs):
+				continue
+			s.append("%-20s %-4d %s" % (caption, len(pkgs),
+				_("package", "packages", len(pkgs))))
 
 		# Calculate the size of all files that need to be downloaded this this
 		# transaction.
-		download_size = sum([p.size for p in self.downloads])
+		download_size = sum([a.pkg.size for a in self.downloads])
 		if download_size:
 			s.append(_("Total download size: %s") % util.format_size(download_size))
 		s.append("")
@@ -259,36 +278,13 @@ class Transaction(object):
 
 		return util.ask_user(_("Is this okay?"))
 
-	def run_action(self, action):
-		try:
-			action.run()
-		except ActionError, e:
-			logging.error("Action finished with an error: %s - %s" % (action, e))
-
-	def add_action(self, action):
-		logging.debug("New action added: %s" % action)
-
-		self.actions.append(action)
-
-	def remove_action(self, action):
-		logging.debug("Removing action: %s" % action)
-
-		self.actions.remove(action)
-		for action in self.actions:
-			action.remove_dep(action)
-
 	def run(self):
 		# Download all packages.
 		self.download()
 
-		while True:
-			if not [a for a in self.actions]:
-				break
-
-			for action in self.actions:
-				if action.deps:
-					#logging.debug("Skipping %s which cannot be run now." % action)
-					continue
-
-				self.run_action(action)
-				self.remove_action(action)
+		# Run all actions in order and catch all kinds of ActionError.
+		for action in self.actions:
+			try:
+				action.run()
+			except ActionError, e:
+				logging.error("Action finished with an error: %s - %s" % (action, e))
