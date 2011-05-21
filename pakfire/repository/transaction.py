@@ -18,10 +18,9 @@ class ActionError(Exception):
 
 
 class Action(object):
-	def __init__(self, pakfire, pkg, deps=None):
+	def __init__(self, pakfire, pkg):
 		self.pakfire = pakfire
 		self.pkg = pkg
-		self.deps = deps or []
 
 	def __cmp__(self, other):
 		# XXX ugly
@@ -30,17 +29,9 @@ class Action(object):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.pkg.friendly_name)
 
-	def remove_dep(self, dep):
-		if not self.deps:
-			return
-
-		while dep in self.deps:
-			logging.debug("Removing dep %s from %s" % (dep, self))
-			self.deps.remove(dep)
-
 	@property
 	def needs_download(self):
-		return self.type in ("install", "reinstall", "update", "downgrade",) \
+		return self.type in ("install", "reinstall", "upgrade", "downgrade",) \
 			and not isinstance(self.pkg, packages.BinaryPackage)
 
 	def download(self, text):
@@ -109,7 +100,7 @@ class ActionInstall(Action):
 			msg = _("Installing: %s")
 		elif self.type == "reinstall":
 			msg = _("Reinstalling: %s")
-		elif self.type == "update":
+		elif self.type == "upgrade":
 			msg = _("Updating: %s")
 		elif self.type == "downgrade":
 			msg = _("Downgrading: %s")
@@ -172,10 +163,6 @@ class Transaction(object):
 			action = step.type_s(satsolver.TRANSACTION_MODE_ACTIVE)
 			pkg = solver1.solv2pkg(step.solvable())
 
-			if action in ("install", "reinstall", "upgrade") and \
-					not isinstance(pkg, packages.BinaryPackage):
-				transaction.downloads.append(pkg)
-
 			for action_cls in cls.action_classes:
 				if action_cls.type == action:
 					action = action_cls(pakfire, pkg)
@@ -183,9 +170,8 @@ class Transaction(object):
 			if not isinstance(action, Action):
 				raise Exception, "Unknown action required: %s" % action
 
-			transaction.add_action(action)
+			transaction.actions.append(action)
 
-		print transaction.actions
 		return transaction
 
 	@property
@@ -253,7 +239,8 @@ class Transaction(object):
 
 		s = [""]
 		s.append(line)
-		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"), _("Repository"), _("Size")))
+		s.append(PKG_DUMP_FORMAT % (_("Package"), _("Arch"), _("Version"),
+			_("Repository"), _("Size")))
 		s.append(line)
 
 		actions = (
@@ -270,12 +257,11 @@ class Transaction(object):
 		s.append(_("Transaction Summary"))
 		s.append(line)
 
-		format = "%-20s %-4d %s"
-
 		for caption, pkgs in actions:
 			if not len(pkgs):
 				continue
-			s.append(format % (caption, len(pkgs), _("package", "packages", len(pkgs))))
+			s.append("%-20s %-4d %s" % (caption, len(pkgs),
+				_("package", "packages", len(pkgs))))
 
 		# Calculate the size of all files that need to be downloaded this this
 		# transaction.
@@ -292,36 +278,13 @@ class Transaction(object):
 
 		return util.ask_user(_("Is this okay?"))
 
-	def run_action(self, action):
-		try:
-			action.run()
-		except ActionError, e:
-			logging.error("Action finished with an error: %s - %s" % (action, e))
-
-	def add_action(self, action):
-		logging.debug("New action added: %s" % action)
-
-		self.actions.append(action)
-
-	def remove_action(self, action):
-		logging.debug("Removing action: %s" % action)
-
-		self.actions.remove(action)
-		for action in self.actions:
-			action.remove_dep(action)
-
 	def run(self):
 		# Download all packages.
 		self.download()
 
-		while True:
-			if not [a for a in self.actions]:
-				break
-
-			for action in self.actions:
-				if action.deps:
-					#logging.debug("Skipping %s which cannot be run now." % action)
-					continue
-
-				self.run_action(action)
-				self.remove_action(action)
+		# Run all actions in order and catch all kinds of ActionError.
+		for action in self.actions:
+			try:
+				action.run()
+			except ActionError, e:
+				logging.error("Action finished with an error: %s - %s" % (action, e))
