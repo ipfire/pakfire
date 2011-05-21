@@ -11,14 +11,14 @@ import  gettext
 """
 N_ = lambda x: x
 
+def _(singular, plural=None, n=None):
+	"""
+		A function that returnes the translation of a string if available.
 
-"""
-	A function that returnes the translation of a string if available.
+		The language is taken from the system environment.
+	"""
+	if not plural is None:
+		assert n is not None
+		return gettext.ldngettext("pakfire", singular, plural, n)
 
-	The language is taken from the system environment.
-"""
-# Enable this to have translation in the development environment.
-# gettext.bindtextdomain("pakfire", "build/mo")
-
-_ = lambda x: gettext.ldgettext("pakfire", x)
-
+	return gettext.ldgettext("pakfire", singular)
