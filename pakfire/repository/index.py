@@ -6,6 +6,7 @@ import logging
 import os
 import random
 import shutil
+import subprocess
 import time
 
 import database
@@ -46,6 +47,20 @@ class Index(object):
 			if match:
 				yield pkg
 
+	def get_by_evr(self, name, epoch, version, release):
+		try:
+			epoch = int(epoch)
+		except TypeError:
+			epoch = 0
+
+		for pkg in self.packages:
+			if pkg.type == "source":
+				continue
+
+			if pkg.name == name and pkg.epoch == epoch \
+					and pkg.version == version and pkg.release == release:
+				yield pkg
+
 	def get_by_id(self, id):
 		raise NotImplementedError
 
@@ -77,6 +92,52 @@ class Index(object):
 
 	def add_package(self, pkg):
 		raise NotImplementedError
+
+	@property
+	def cachefile(self):
+		return None
+
+	def import_to_solver(self, solver, repo):
+		if self.cachefile:
+			if not os.path.exists(self.cachefile):
+				self.create_solver_cache()
+
+			logging.debug("Importing repository cache data from %s" % self.cachefile)
+			repo.add_solv(self.cachefile)
+
+		else:
+			for pkg in self.packages:
+				solver.add_package(pkg, repo.name())
+
+		logging.debug("Initialized new repo '%s' with %s packages." % \
+			(repo.name(), repo.size()))
+
+	def create_solver_cache(self):
+		cachedir = os.path.dirname(self.cachefile)
+		if not os.path.exists(cachedir):
+			os.makedirs(cachedir)
+
+		f = open(self.cachefile, "w")
+
+		# Write metadata header.
+		xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		xml += "<metadata xmlns=\"http://linux.duke.edu/metadata/common\""
+		xml += " xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\">\n"
+
+		# We dump an XML string for every package in this repository and
+		# write it to the XML file.
+		for pkg in self.packages:
+			xml += pkg.export_xml_string()
+
+		# Write footer.
+		xml += "</metadata>"
+
+		p = subprocess.Popen("rpmmd2solv", stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE)
+		stdout, stderr = p.communicate(xml)
+
+		f.write(stdout)
+		f.close()
 
 
 class DirectoryIndex(Index):
@@ -205,6 +266,7 @@ class DatabaseIndexFactory(Index):
 		c.close()
 
 		return files
+
 
 class InstalledIndex(DatabaseIndexFactory):
 	def open_database(self):
@@ -380,3 +442,7 @@ class RemoteIndex(DatabaseIndexFactory):
 
 		# XXX this code needs lots of work:
 		# XXX   * check the metadata content
+
+	@property
+	def cachefile(self):
+		return "%s.cache" % self.db.filename

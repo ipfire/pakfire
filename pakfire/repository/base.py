@@ -2,6 +2,8 @@
 
 import fnmatch
 import glob
+import logging
+import re
 
 class RepositoryFactory(object):
 	def __init__(self, pakfire, name, description):
@@ -11,6 +13,9 @@ class RepositoryFactory(object):
 
 		# All repositories are enabled by default
 		self.enabled = True
+
+		# Reference to corresponding Repo object in the solver.
+		self.solver_repo = None
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
@@ -58,6 +63,26 @@ class RepositoryFactory(object):
 		for pkg in self.packages:
 			if pkg.name == name:
 				yield pkg
+
+	def get_by_evr(self, name, evr):
+		m = re.match(r"([0-9]+\:)?([0-9A-Za-z\.\-]+)-([0-9]+\.?[a-z0-9]+|[0-9]+)", evr)
+
+		if not m:
+			raise Exception, "Invalid input: %s" % evr
+
+		(epoch, version, release) = m.groups()
+		if epoch and epoch.endswith(":"):
+			epoch = epoch[:-1]
+
+		pkgs = [p for p in self.index.get_by_evr(name, epoch, version, release)]
+
+		if not pkgs:
+			return
+
+		if not len(pkgs) == 1:
+			raise Exception
+
+		return pkgs[0]
 
 	def get_by_glob(self, pattern):
 		"""
@@ -142,3 +167,9 @@ class RepositoryFactory(object):
 			return self.index.filelist
 
 		return {}
+
+	def import_to_solver(self, solver, repo):
+		if hasattr(self, "index"):
+			self.solver_repo = repo
+
+			self.index.import_to_solver(solver, repo)

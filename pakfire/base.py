@@ -133,7 +133,6 @@ class Pakfire(object):
 		# try to solve it.
 		request = self.solver.create_request()
 		for solvable in repo:
-			print solvable
 			request.install(solvable)
 
 		t = self.solver.solve(request)

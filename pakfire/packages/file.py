@@ -313,9 +313,9 @@ class FilePackage(Package):
 
 		# Remove triple X placeholder that was used some time.
 		if comp == "X"*3:
-			comp = None
+			return None
 
-		return comp
+		return comp or "xz"
 
 	@property
 	def signature(self):
