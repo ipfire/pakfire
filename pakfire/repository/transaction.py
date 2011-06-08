@@ -133,6 +133,13 @@ class ActionDowngrade(ActionInstall):
 	type = "downgrade"
 
 
+class ActionChange(Action):
+	type = "change"
+
+	def run(self):
+		print "XXX Change: %s" % self.pkg
+
+
 class Transaction(object):
 	action_classes = [
 		ActionInstall,
@@ -141,6 +148,7 @@ class Transaction(object):
 		ActionCleanup,
 		ActionReinstall,
 		ActionDowngrade,
+		ActionChange,
 	]
 
 	def __init__(self, pakfire):
