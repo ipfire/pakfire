@@ -98,7 +98,8 @@ class Index(object):
 		return None
 
 	def import_to_solver(self, solver, repo):
-		if self.cachefile:
+		# XXX Disabled because it's broken.
+		if False:
 			if not os.path.exists(self.cachefile):
 				self.create_solver_cache()
 
