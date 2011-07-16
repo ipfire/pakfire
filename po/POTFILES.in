@@ -38,7 +38,7 @@ pakfire/repository/local.py
 pakfire/repository/metadata.py
 pakfire/repository/remote_old.py
 pakfire/repository/remote.py
-pakfire/repository/transaction.py
 pakfire/satsolver.py
 pakfire/server.py
+pakfire/transaction.py
 pakfire/util.py

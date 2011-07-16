@@ -5,8 +5,7 @@ import logging
 import _pakfire
 from _pakfire import *
 
-# XXX maybe we can move this to the root
-import pakfire.repository.transaction
+import transaction
 
 class Request(_pakfire.Request):
 	def install(self, what):
@@ -48,9 +47,8 @@ class Solver(object):
 		# If the solver succeeded, we return the transaction and return.
 		if res:
 			# Return a resulting Transaction.
-			transaction = Transaction(self._solver)
+			t = Transaction(self._solver)
 
-			return pakfire.repository.transaction.Transaction.from_solver(self.pakfire,
-				self, transaction)
+			return transaction.Transaction.from_solver(self.pakfire, self, t)
 
 		return res

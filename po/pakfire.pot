@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-16 16:56+0200\n"
+"POT-Creation-Date: 2011-07-16 20:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgstr ""
 msgid "List all currently enabled repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:222 ../pakfire/repository/transaction.py:248
+#: ../pakfire/cli.py:222 ../pakfire/transaction.py:248
 msgid "Repository"
 msgstr ""
 
@@ -226,11 +226,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:70 ../pakfire/repository/transaction.py:247
+#: ../pakfire/packages/base.py:70 ../pakfire/transaction.py:247
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:71 ../pakfire/repository/transaction.py:247
+#: ../pakfire/packages/base.py:71 ../pakfire/transaction.py:247
 msgid "Version"
 msgstr ""
 
@@ -238,7 +238,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73 ../pakfire/repository/transaction.py:248
+#: ../pakfire/packages/base.py:73 ../pakfire/transaction.py:248
 msgid "Size"
 msgstr ""
 
@@ -300,74 +300,74 @@ msgstr ""
 msgid "Loading installed packages"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:103
+#: ../pakfire/transaction.py:103
 #, python-format
 msgid "Extracting: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:106
+#: ../pakfire/transaction.py:106
 #, python-format
 msgid "Installing: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:108
+#: ../pakfire/transaction.py:108
 #, python-format
 msgid "Reinstalling: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:110
+#: ../pakfire/transaction.py:110
 #, python-format
 msgid "Updating: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:112
+#: ../pakfire/transaction.py:112
 #, python-format
 msgid "Downgrading: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:129
+#: ../pakfire/transaction.py:129
 #, python-format
 msgid "Removing: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:247
+#: ../pakfire/transaction.py:247
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:252
+#: ../pakfire/transaction.py:252
 msgid "Installing:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:253
+#: ../pakfire/transaction.py:253
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:254
+#: ../pakfire/transaction.py:254
 msgid "Updating:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:255
+#: ../pakfire/transaction.py:255
 msgid "Downgrading:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:256
+#: ../pakfire/transaction.py:256
 msgid "Removing:"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:262
+#: ../pakfire/transaction.py:262
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:269
+#: ../pakfire/transaction.py:269
 msgid "package"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:275
+#: ../pakfire/transaction.py:275
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/repository/transaction.py:284
+#: ../pakfire/transaction.py:284
 msgid "Is this okay?"
 msgstr ""
 

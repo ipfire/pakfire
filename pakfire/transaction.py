@@ -3,13 +3,13 @@
 import logging
 import os
 import progressbar
-import satsolver
 import sys
 
-import pakfire.packages as packages
-import pakfire.util as util
+import packages
+import satsolver
+import util
 
-from pakfire.i18n import _
+from i18n import _
 
 PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-19s %5s "
 
