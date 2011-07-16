@@ -184,3 +184,12 @@ class RepositoryFactory(object):
 				if pattern.lower() in item.lower() or \
 						fnmatch.fnmatch(item, pattern):
 					yield pkg
+
+
+class RepositoryDummy(RepositoryFactory):
+	"""
+		Just a dummy repository that actually does nothing.
+	"""
+	def __init__(self, pakfire):
+		RepositoryFactory.__init__(self, pakfire, "dummy",
+			"This is a dummy repository.")

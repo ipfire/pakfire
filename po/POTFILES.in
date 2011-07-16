@@ -36,7 +36,6 @@ pakfire/repository/installed.py
 pakfire/repository/local_old.py
 pakfire/repository/local.py
 pakfire/repository/metadata.py
-pakfire/repository/oddments.py
 pakfire/repository/remote_old.py
 pakfire/repository/remote.py
 pakfire/repository/transaction.py
