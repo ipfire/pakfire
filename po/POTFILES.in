@@ -27,16 +27,12 @@ pakfire/packages/virtual.py
 pakfire/repository/actions.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
-pakfire/repository/database_old.py
 pakfire/repository/database.py
-pakfire/repository/index_old.py
 pakfire/repository/index.py
 pakfire/repository/__init__.py
 pakfire/repository/installed.py
-pakfire/repository/local_old.py
 pakfire/repository/local.py
 pakfire/repository/metadata.py
-pakfire/repository/remote_old.py
 pakfire/repository/remote.py
 pakfire/satsolver.py
 pakfire/server.py
