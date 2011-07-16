@@ -23,6 +23,51 @@ class Request(_pakfire.Request):
 
 		raise Exception, "Unknown type"
 
+	def remove(self, what):
+		if isinstance(what, Solvable):
+			self.remove_solvable(what)
+			return
+
+		elif isinstance(what, Relation):
+			self.remove_relation(what)
+			return
+
+		elif type(what) == type("string"):
+			self.remove_name(what)
+			return
+
+		raise Exception, "Unknown type"
+
+	def update(self, what):
+		if isinstance(what, Solvable):
+			self.update_solvable(what)
+			return
+
+		elif isinstance(what, Relation):
+			self.update_relation(what)
+			return
+
+		elif type(what) == type("string"):
+			self.update_name(what)
+			return
+
+		raise Exception, "Unknown type"
+
+	def lock(self, what):
+		if isinstance(what, Solvable):
+			self.lock_solvable(what)
+			return
+
+		elif isinstance(what, Relation):
+			self.lock_relation(what)
+			return
+
+		elif type(what) == type("string"):
+			self.lock_name(what)
+			return
+
+		raise Exception, "Unknown type"
+
 
 class Solver(object):
 	def __init__(self, pakfire, pool):

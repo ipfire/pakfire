@@ -42,6 +42,21 @@ PyObject *Request_dealloc(RequestObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
 }
 
+void _Request_solvable(RequestObject *self, Id what, Id solvable) {
+	queue_push(&self->_queue, what|SOLVER_SOLVABLE);
+	queue_push(&self->_queue, solvable);
+}
+
+void _Request_relation(RequestObject *self, Id what, Id relation) {
+	queue_push(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES);
+	queue_push(&self->_queue, relation);
+}
+
+void _Request_name(RequestObject *self, Id what, Id provides) {
+	queue_push(&self->_queue, what|SOLVER_SOLVABLE_NAME);
+	queue_push(&self->_queue, provides);
+}
+
 PyObject *Request_install_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
@@ -49,8 +64,7 @@ PyObject *Request_install_solvable(RequestObject *self, PyObject *args) {
 		/* XXX raise exception */
 	}
 
-	queue_push(&self->_queue, SOLVER_INSTALL|SOLVER_SOLVABLE);
-	queue_push(&self->_queue, solv->_id);
+	_Request_solvable(self, SOLVER_INSTALL, solv->_id);
 
 	Py_RETURN_NONE;
 }
@@ -62,8 +76,7 @@ PyObject *Request_install_relation(RequestObject *self, PyObject *args) {
 		/* XXX raise exception */
 	}
 
-	queue_push(&self->_queue, SOLVER_INSTALL|SOLVER_SOLVABLE_PROVIDES);
-	queue_push(&self->_queue, rel->_id);
+	_Request_relation(self, SOLVER_INSTALL, rel->_id);
 
 	Py_RETURN_NONE;
 }
@@ -75,8 +88,119 @@ PyObject *Request_install_name(RequestObject *self, PyObject *args) {
 		/* XXX raise exception */
 	}
 
-	queue_push(&self->_queue, SOLVER_INSTALL|SOLVER_SOLVABLE_NAME);
-	queue_push(&self->_queue, pool_str2id(self->_pool, name, 1));
+	Id _name = pool_str2id(self->_pool, name, 1);
+	_Request_name(self, SOLVER_INSTALL, _name);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_remove_solvable(RequestObject *self, PyObject *args) {
+	SolvableObject *solv;
+
+	if (!PyArg_ParseTuple(args, "O", &solv)) {
+		/* XXX raise exception */
+	}
+
+	_Request_solvable(self, SOLVER_ERASE, solv->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_remove_relation(RequestObject *self, PyObject *args) {
+	RelationObject *rel;
+
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		/* XXX raise exception */
+	}
+
+	_Request_relation(self, SOLVER_ERASE, rel->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_remove_name(RequestObject *self, PyObject *args) {
+	const char *name;
+
+	if (!PyArg_ParseTuple(args, "s", &name)) {
+		/* XXX raise exception */
+	}
+
+	Id _name = pool_str2id(self->_pool, name, 1);
+	_Request_name(self, SOLVER_ERASE, _name);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_update_solvable(RequestObject *self, PyObject *args) {
+	SolvableObject *solv;
+
+	if (!PyArg_ParseTuple(args, "O", &solv)) {
+		/* XXX raise exception */
+	}
+
+	_Request_solvable(self, SOLVER_UPDATE, solv->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_update_relation(RequestObject *self, PyObject *args) {
+	RelationObject *rel;
+
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		/* XXX raise exception */
+	}
+
+	_Request_relation(self, SOLVER_UPDATE, rel->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_update_name(RequestObject *self, PyObject *args) {
+	const char *name;
+
+	if (!PyArg_ParseTuple(args, "s", &name)) {
+		/* XXX raise exception */
+	}
+
+	Id _name = pool_str2id(self->_pool, name, 1);
+	_Request_name(self, SOLVER_UPDATE, _name);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_lock_solvable(RequestObject *self, PyObject *args) {
+	SolvableObject *solv;
+
+	if (!PyArg_ParseTuple(args, "O", &solv)) {
+		/* XXX raise exception */
+	}
+
+	_Request_solvable(self, SOLVER_LOCK, solv->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_lock_relation(RequestObject *self, PyObject *args) {
+	RelationObject *rel;
+
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		/* XXX raise exception */
+	}
+
+	_Request_relation(self, SOLVER_LOCK, rel->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_lock_name(RequestObject *self, PyObject *args) {
+	const char *name;
+
+	if (!PyArg_ParseTuple(args, "s", &name)) {
+		/* XXX raise exception */
+	}
+
+	Id _name = pool_str2id(self->_pool, name, 1);
+	_Request_name(self, SOLVER_LOCK, _name);
 
 	Py_RETURN_NONE;
 }

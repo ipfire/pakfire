@@ -31,6 +31,15 @@ static PyMethodDef Request_methods[] = {
 	{"install_solvable", (PyCFunction)Request_install_solvable, METH_VARARGS, NULL},
 	{"install_relation", (PyCFunction)Request_install_relation, METH_VARARGS, NULL},
 	{"install_name", (PyCFunction)Request_install_name, METH_VARARGS, NULL},
+	{"remove_solvable", (PyCFunction)Request_remove_solvable, METH_VARARGS, NULL},
+	{"remove_relation", (PyCFunction)Request_remove_relation, METH_VARARGS, NULL},
+	{"remove_name", (PyCFunction)Request_remove_name, METH_VARARGS, NULL},
+	{"update_solvable", (PyCFunction)Request_update_solvable, METH_VARARGS, NULL},
+	{"update_relation", (PyCFunction)Request_update_relation, METH_VARARGS, NULL},
+	{"update_name", (PyCFunction)Request_update_name, METH_VARARGS, NULL},
+	{"lock_solvable", (PyCFunction)Request_lock_solvable, METH_VARARGS, NULL},
+	{"lock_relation", (PyCFunction)Request_lock_relation, METH_VARARGS, NULL},
+	{"lock_name", (PyCFunction)Request_lock_name, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
