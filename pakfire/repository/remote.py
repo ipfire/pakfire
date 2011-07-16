@@ -3,64 +3,33 @@
 import logging
 import os
 
-import cache
+import base
 import index
 
 import pakfire.downloader as downloader
 
-from base import RepositoryFactory
+from pakfire.constants import *
 
-class RemoteRepository(RepositoryFactory):
-	cacheable = True
-
-	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled):
-		RepositoryFactory.__init__(self, pakfire, name, description)
+class RepositorySolv(base.RepositoryFactory):
+	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled=True):
+		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Parse arguments.
 		self.url = url
 		self.gpgkey = gpgkey
 		self.mirrorlist = mirrorlist
 
-		if enabled:
-			self.enabled = True
-		else:
-			self.enabled = False
-
-		# Create a cache for the repository where we can keep all temporary data.
-		self.cache = cache.RepositoryCache(self.pakfire, self)
-
 		# Initialize mirror servers.
 		self.mirrors = downloader.MirrorList(self.pakfire, self)
 
-		# Initialize index.
-		self.index = index.RemoteIndex(self.pakfire, self)
+		# Create index, which is always SOLV.
+		self.index = index.IndexSolv(self.pakfire, self)
 
-		logging.debug("Created new repository(name='%s', url='%s', enabled='%s')" % \
-			(self.name, self.url, self.enabled))
-
-	def __repr__(self):
-		return "<%s %s>" % (self.__class__.__name__, self.url)
-
-	@property
-	def local(self):
-		# If files are located somewhere in the filesystem we assume it is
-		# local.
-		if self.url.startswith("file://"):
-			return True
-
-		# Otherwise not.
-		return False
-
-	@property
-	def arch(self):
-		return self.pakfire.distro.arch
-
-	@property
-	def path(self):
-		if self.local:
-			return self.url[7:]
-
-		return self.cache.path
+		# Save enabled/disabled flag at the end.
+		if enabled in ("1", "yes", "on", True, 1):
+			self.enabled = True
+		else:
+			self.enabled = False
 
 	@property
 	def priority(self):
@@ -78,26 +47,62 @@ class RemoteRepository(RepositoryFactory):
 
 		return priority
 
-	#def update(self, force=False):
-	#	if self.index:
-	#		self.index.update(force=force)
+	def download(self, filename, hash1=None, text=""):
+		"""
+			Downloads 'filename' from repository and returns the local filename.
+		"""
+		# Marker, if we need to download the package.
+		download = True
 
-	def _replace_from_cache(self, pkg):
-		for _pkg in self.cache.packages:
-			if pkg == _pkg:
-				pkg = _pkg
-				break
+		cache_prefix = ""
+		if filename.endswith(PACKAGE_EXTENSION):
+			cache_prefix = "packages"
+		elif filename == METADATA_DOWNLOAD_FILE:
+			cache_prefix = "repodata"
+		elif filename.endswith(METADATA_DATABASE_FILE):
+			cache_prefix = "repodata"
 
-		return pkg
+		cache_filename = os.path.join(cache_prefix, os.path.basename(filename))
 
-	@property
-	def packages(self):
-		for pkg in self.index.packages:
-			yield self._replace_from_cache(pkg)
+		# Check if file already exists in cache.
+		if self.cache.exists(cache_filename):
+			logging.debug("File exists in cache: %s" % filename)
 
-	def get_by_provides(self, requires):
-		for pkg in self.index.get_by_provides(requires):
-			yield self._replace_from_cache(pkg)
+			# If the file does already exist, we check if the hash1 matches.
+			if hash1 and self.cache.verify(cache_filename, hash1):
+				# We already got the right file. Skip download.
+				download = False
+			else:
+				# The file in cache has a wrong hash. Remove it and repeat download.
+				cache.remove(cache_filename)
 
-	def get_by_file(self, filename):
-		return self.index.get_by_file(filename)
+		if download:
+			logging.debug("Going to download %s" % filename)
+
+			# Make sure filename is of type string (and not unicode)
+			filename = str(filename)
+
+			# Get a package grabber and add mirror download capabilities to it.
+			grabber = downloader.PackageDownloader(
+				text=text + os.path.basename(filename),
+			)
+			grabber = self.mirrors.group(grabber)
+
+			i = grabber.urlopen(filename)
+
+			# Open input and output files and download the file.
+			o = self.cache.open(cache_filename, "w")
+
+			buf = i.read(BUFFER_SIZE)
+			while buf:
+				o.write(buf)
+				buf = i.read(BUFFER_SIZE)
+
+			i.close()
+			o.close()
+
+			# Verify if the download was okay.
+			if hash1 and not self.cache.verify(cache_filename, hash1):
+				raise Exception, "XXX this should never happen..."
+
+		return os.path.join(self.cache.path, cache_filename)

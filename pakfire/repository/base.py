@@ -5,17 +5,25 @@ import glob
 import logging
 import re
 
+import cache
+import satsolver
+
 class RepositoryFactory(object):
 	def __init__(self, pakfire, name, description):
 		self.pakfire = pakfire
-
-		self.name, self.description = name, description
-
-		# All repositories are enabled by default
-		self.enabled = True
+		self.name = name
+		self.description = description
 
 		# Reference to corresponding Repo object in the solver.
-		self.solver_repo = None
+		self.solver_repo = satsolver.Repo(self.pool, self.name)
+
+		logging.debug("Initialized new repository: %s" % self)
+
+		# Create an cache object
+		self.cache = cache.RepositoryCache(self.pakfire, self)
+
+		# The index MUST be set by an inheriting class.
+		self.index = None
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
@@ -23,6 +31,30 @@ class RepositoryFactory(object):
 	def __cmp__(self, other):
 		return cmp(self.priority * -1, other.priority * -1) or \
 			cmp(self.name, other.name)
+
+	def __len__(self):
+		return self.solver_repo.size()
+
+	@property
+	def pool(self):
+		return self.pakfire.pool
+
+	def get_enabled(self):
+		return self.solver_repo.get_enabled()
+
+	def set_enabled(self, val):
+		self.solver_repo.set_enabled(val)
+
+		if val:
+			logging.debug("Enabled repository '%s'." % self.name)
+		else:
+			logging.debug("Disabled repository '%s'." % self.name)
+
+	enabled = property(get_enabled, set_enabled)
+
+	@property
+	def arch(self):
+		return self.pakfire.distro.arch
 
 	@property
 	def distro(self):
@@ -49,91 +81,97 @@ class RepositoryFactory(object):
 			A function that is called to update the local data of
 			the repository.
 		"""
-		if hasattr(self, "index"):
-			self.index.update(force)
+		assert self.index
 
-	def get_all(self):
-		"""
-			Simply returns an instance of every package in this repository.
-		"""
-		for pkg in self.packages:
-			yield pkg
+		self.index.update(force)
 
-	def get_by_name(self, name):
-		for pkg in self.packages:
-			if pkg.name == name:
-				yield pkg
+	#def get_all(self):
+	#	"""
+	#		Simply returns an instance of every package in this repository.
+	#	"""
+	#	for pkg in self.packages:
+	#		yield pkg
 
-	def get_by_evr(self, name, evr):
-		m = re.match(r"([0-9]+\:)?([0-9A-Za-z\.\-]+)-([0-9]+\.?[a-z0-9]+|[0-9]+)", evr)
+	#def get_by_name(self, name):
+	#	for pkg in self.packages:
+	#		if pkg.name == name:
+	#			yield pkg
 
-		if not m:
-			raise Exception, "Invalid input: %s" % evr
+	#def get_by_uuid(self, uuid):
+	#	for pkg in self.packages:
+	#		if pkg.uuid == uuid:
+	#			return pkg
 
-		(epoch, version, release) = m.groups()
-		if epoch and epoch.endswith(":"):
-			epoch = epoch[:-1]
+	#def get_by_evr(self, name, evr):
+	#	m = re.match(r"([0-9]+\:)?([0-9A-Za-z\.\-]+)-([0-9]+\.?[a-z0-9]+|[0-9]+)", evr)
 
-		pkgs = [p for p in self.index.get_by_evr(name, epoch, version, release)]
+	#	if not m:
+	#		raise Exception, "Invalid input: %s" % evr
 
-		if not pkgs:
-			return
+	#	(epoch, version, release) = m.groups()
+	#	if epoch and epoch.endswith(":"):
+	#		epoch = epoch[:-1]
 
-		if not len(pkgs) == 1:
-			raise Exception
+	#	pkgs = [p for p in self.index.get_by_evr(name, epoch, version, release)]
 
-		return pkgs[0]
+	#	if not pkgs:
+	#		return
 
-	def get_by_glob(self, pattern):
-		"""
-			Returns a list of all packages that names match the glob pattern
-			that is provided.
-		"""
-		for pkg in self.packages:
-			if fnmatch.fnmatch(pkg.name, pattern):
-				yield pkg
+	#	if not len(pkgs) == 1:
+	#		raise Exception
 
-	def get_by_provides(self, requires):
-		"""
-			Returns a list of all packages that offer a matching "provides"
-			of the given "requires".
-		"""
-		for pkg in self.packages:
-			if pkg.does_provide(requires):
-				yield pkg
+	#	return pkgs[0]
 
-	def get_by_requires(self, requires):
-		"""
-			Returns a list of all packages that require the given requirement.
-		"""
-		for pkg in self.packages:
-			# XXX does not use the cmp() function of Requires.
-			if requires.requires in pkg.requires:
-				yield pkg
+	#def get_by_glob(self, pattern):
+	#	"""
+	#		Returns a list of all packages that names match the glob pattern
+	#		that is provided.
+	#	"""
+	#	for pkg in self.packages:
+	#		if fnmatch.fnmatch(pkg.name, pattern):
+	#			yield pkg
 
-	def get_by_file(self, filename):
-		for pkg in self.packages:
-			match = False
-			for pkg_filename in pkg.filelist:
-				if fnmatch.fnmatch(pkg_filename, filename):
-					match = True
-					break
+	#def get_by_provides(self, requires):
+	#	"""
+	#		Returns a list of all packages that offer a matching "provides"
+	#		of the given "requires".
+	#	"""
+	#	for pkg in self.packages:
+	#		if pkg.does_provide(requires):
+	#			yield pkg
 
-			if match:
-				yield pkg
+	#def get_by_requires(self, requires):
+	#	"""
+	#		Returns a list of all packages that require the given requirement.
+	#	"""
+	#	for pkg in self.packages:
+	#		# XXX does not use the cmp() function of Requires.
+	#		if requires.requires in pkg.requires:
+	#			yield pkg
 
-	def get_by_group(self, group):
-		"""
-			Get all packages that belong to a specific group.
-		"""
-		for pkg in self.packages:
-			if group in pkg.groups:
-				yield pkg
+	#def get_by_file(self, filename):
+	#	for pkg in self.packages:
+	#		match = False
+	#		for pkg_filename in pkg.filelist:
+	#			if fnmatch.fnmatch(pkg_filename, filename):
+	#				match = True
+	#				break
 
-	def get_by_friendly_name(self, name):
-		for pkg in self.packages:
-			if pkg.friendly_name == name:
-				return pkg
+	#		if match:
+	#			yield pkg
+
+	#def get_by_group(self, group):
+	#	"""
+	#		Get all packages that belong to a specific group.
+	#	"""
+	#	for pkg in self.packages:
+	#		if group in pkg.groups:
+	#			yield pkg
+
+	#def get_by_friendly_name(self, name):
+	#	for pkg in self.packages:
+	#		if pkg.friendly_name == name:
+	#			return pkg
 
 	def search(self, pattern):
 		"""
@@ -146,30 +184,3 @@ class RepositoryFactory(object):
 				if pattern.lower() in item.lower() or \
 						fnmatch.fnmatch(item, pattern):
 					yield pkg
-
-	@property
-	def packages(self):
-		"""
-			Returns all packages.
-		"""
-		return self.index.packages
-
-	@property
-	def size(self):
-		"""
-			Return the number of packages.
-		"""
-		return self.index.size
-
-	@property
-	def filelist(self):
-		if hasattr(self.index, "filelist"):
-			return self.index.filelist
-
-		return {}
-
-	def import_to_solver(self, solver, repo):
-		if hasattr(self, "index"):
-			self.solver_repo = repo
-
-			self.index.import_to_solver(solver, repo)

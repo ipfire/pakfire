@@ -11,6 +11,7 @@ import distro
 import logger
 import repository
 import packages
+import satsolver
 import util
 
 from constants import *
@@ -47,11 +48,19 @@ class Pakfire(object):
 		# Get more information about the distribution we are running
 		# or building
 		self.distro = distro.Distribution(self, distro_config)
+		self.pool   = satsolver.Pool(self.distro.arch)
 		self.repos  = repository.Repositories(self,
 			enable_repos=enable_repos, disable_repos=disable_repos)
 
-		# Create a short reference to the solver of this pakfire instance.
-		self.solver = self.repos.solver
+		# Create the solver of this pakfire instance.
+		# XXX maybe we can only create it when we need it?
+		#self.solver = satsolver.Solver(self, self.pool)
+
+	def create_solver(self):
+		return satsolver.Solver(self, self.pool)
+
+	def create_request(self):
+		return satsolver.Request(self.pool)
 
 	def destroy(self):
 		if not self.path == "/":
@@ -298,7 +307,7 @@ class Pakfire(object):
 	def provides(self, patterns):
 		pkgs = []
 		for pattern in patterns:
-			pkgs += self.repos.get_by_provides(pattern)
+			pkgs += self.repos.whatprovides(pattern)
 
 		pkgs = packages.PackageListing(pkgs)
 		#pkgs.unique()
@@ -316,7 +325,7 @@ class Pakfire(object):
 		return pkgs
 
 	def repo_create(self, path, input_paths):
-		repo = repository.LocalBinaryRepository(
+		repo = repository.RepositoryDir(
 			self,
 			name="new",
 			description="New repository.",
@@ -324,9 +333,9 @@ class Pakfire(object):
 		)
 
 		for input_path in input_paths:
-			repo._collect_packages(input_path)
+			repo.collect_packages(input_path)
 
 		repo.save()
 
 	def repo_list(self):
-		return self.repos.all
+		return [r for r in self.repos]

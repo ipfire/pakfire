@@ -272,7 +272,7 @@ class Builder(object):
 			return
 
 		# Create a request and fill it with what we need.
-		request = self.solver.create_request()
+		request = self.pakfire.create_request()
 
 		for req in requires:
 			if isinstance(req, packages.BinaryPackage):
@@ -283,10 +283,15 @@ class Builder(object):
 
 			request.install(req)
 
+		# Create a new solver instance.
+		solver = self.pakfire.create_solver()
+
 		# Do the solving.
-		transaction = self.solver.solve(request, allow_downgrade=True)
+		transaction = solver.solve(request, allow_downgrade=True)
 
 		# XXX check for errors
+		if not transaction:
+			raise DependencyError, "Could not resolve dependencies"
 
 		# Show the user what is going to be done.
 		transaction.dump(logger=self.log)
@@ -630,12 +635,9 @@ class Builder(object):
 			k, v = m.groups()
 			pkg[k] = v.strip("\"")
 
-		# Create a dummy repository to link the virtual packages to
-		repo = repository.DummyRepository(self.pakfire)
-
 		self._packages = []
 		for pkg in pkgs:
-			pkg = packages.VirtualPackage(self.pakfire, pkg) # XXX had to remove repo here?!
+			pkg = packages.VirtualPackage(self.pakfire, pkg)
 			self._packages.append(pkg)
 
 		return self._packages

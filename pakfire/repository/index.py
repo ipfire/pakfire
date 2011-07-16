@@ -1,16 +1,11 @@
 #!/usr/bin/python
 
-import fnmatch
-import json
 import logging
 import os
-import random
-import shutil
-import subprocess
-import time
 
 import database
 import metadata
+import satsolver
 
 import pakfire.compress as compress
 import pakfire.downloader as downloader
@@ -21,324 +16,151 @@ from pakfire.constants import *
 from pakfire.i18n import _
 
 class Index(object):
+	RELATIONS = (
+		(">=", satsolver.REL_GE,),
+		("<=", satsolver.REL_LE,),
+		("=" , satsolver.REL_EQ,),
+		("<" , satsolver.REL_LT,),
+		(">" , satsolver.REL_GT,),
+	)
+
 	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
+
+		# Create reference to repository and the solver repo.
 		self.repo = repo
+		self.solver_repo = repo.solver_repo
 
-		self._packages = []
+		self.init()
 
-	@property
-	def arch(self):
-		return self.pakfire.distro.arch
+		# Check, if initialization was okay.
+		self.check()
 
-	def get_all_by_name(self, name):
-		for package in self.packages:
-			if package.name == name:
-				yield package
+	def __repr__(self):
+		return "<%s %s>" % (self.__class__.__name__, self.repo)
 
-	def get_by_file(self, filename):
-		for pkg in self.packages:
-			match = False
-			for pkg_filename in pkg.filelist:
-				if fnmatch.fnmatch(pkg_filename, filename):
-					match = True
-					break
-
-			if match:
-				yield pkg
-
-	def get_by_evr(self, name, epoch, version, release):
-		try:
-			epoch = int(epoch)
-		except TypeError:
-			epoch = 0
-
-		for pkg in self.packages:
-			if pkg.type == "source":
-				continue
-
-			if pkg.name == name and pkg.epoch == epoch \
-					and pkg.version == version and pkg.release == release:
-				yield pkg
-
-	def get_by_id(self, id):
-		raise NotImplementedError
-
-	def get_by_uuid(self, uuid):
-		for pkg in self.packages:
-			if pkg.uuid == uuid:
-				return pkg
-
-	def get_by_provides(self, requires):
-		for pkg in self.packages:
-			if pkg.does_provide(requires):
-				yield pkg
+	def __len(self):
+		return len(self.repo)
 
 	@property
-	def packages(self):
-		for pkg in self._packages:
-			yield pkg
+	def cache(self):
+		return self.repo.cache
 
-	@property
-	def size(self):
-		i = 0
-		for pkg in self.packages:
-			i += 1
-
-		return i
-
-	def update(self, force=False):
+	def init(self):
 		pass
 
-	def add_package(self, pkg):
+	def check(self):
+		"""
+			Check if everything was correctly initialized.
+		"""
 		raise NotImplementedError
-
-	@property
-	def cachefile(self):
-		return None
-
-	def import_to_solver(self, solver, repo):
-		if self.cachefile:
-			if not os.path.exists(self.cachefile):
-				self.create_solver_cache()
-
-			logging.debug("Importing repository cache data from %s" % self.cachefile)
-			repo.add_solv(self.cachefile)
-
-		else:
-			for pkg in self.packages:
-				solver.add_package(pkg, repo.name())
-
-		logging.debug("Initialized new repo '%s' with %s packages." % \
-			(repo.name(), repo.size()))
-
-	def create_solver_cache(self):
-		cachedir = os.path.dirname(self.cachefile)
-		if not os.path.exists(cachedir):
-			os.makedirs(cachedir)
-
-		f = open(self.cachefile, "w")
-
-		# Write metadata header.
-		xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-		xml += "<metadata xmlns=\"http://linux.duke.edu/metadata/common\""
-		xml += " xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\">\n"
-
-		# We dump an XML string for every package in this repository and
-		# write it to the XML file.
-		for pkg in self.packages:
-			xml += pkg.export_xml_string()
-
-		# Write footer.
-		xml += "</metadata>"
-
-		p = subprocess.Popen("rpmmd2solv", stdin=subprocess.PIPE,
-			stdout=subprocess.PIPE)
-		stdout, stderr = p.communicate(xml)
-
-		f.write(stdout)
-		f.close()
-
-
-class DirectoryIndex(Index):
-	def __init__(self, pakfire, repo, path):
-		if path.startswith("file://"):
-			path = path[7:]
-		self.path = path
-
-		Index.__init__(self, pakfire, repo)
-
-		# Always update this because it will otherwise contain no data
-		self.update(force=True)
 
 	def update(self, force=False):
-		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
-
-		# Do nothing if the update is not forced but populate the database
-		# if no packages are present.
-		if not force and self._packages:
-			return
-
-		# If we update the cache, we clear it first.
-		self._packages = []
-
-		for dir, subdirs, files in os.walk(self.path):
-			for file in files:
-				# Skip files that do not have the right extension
-				if not file.endswith(".%s" % PACKAGE_EXTENSION):
-					continue
-
-				file = os.path.join(dir, file)
-
-				package = packages.open(self.pakfire, self.repo, file)
-
-				logging.debug("Found package: %s" % package)
-
-				if isinstance(package, packages.BinaryPackage):
-					if not package.arch in (self.arch, "noarch"):
-						logging.warning("Skipped package with wrong architecture: %s (%s)" \
-							% (package.filename, package.arch))
-						print package.type
-						continue
-
-				# XXX this is disabled because we could also have source
-				# repositories. But we should not mix them.	
-				#if package.type == "source":
-				#	# Silently skip source packages.
-				#	continue
-
-				self._packages.append(package)
-
-	def save(self, path=None):
-		if not path:
-			path = self.path
-
-		path = os.path.join(path, "index.db")
-
-		db = database.PackageDatabase(self.pakfire, path)
-
-		for pkg in self.packages:
-			db.add_package(pkg)
-
-		db.close()
-
-
-class DatabaseIndexFactory(Index):
-	def __init__(self, pakfire, repo):
-		Index.__init__(self, pakfire, repo)
-
-		# Add empty reference to a fictional database.
-		self.db = None
-
-		self.open_database()
-
-	def open_database(self):
 		raise NotImplementedError
 
-	@property
-	def packages(self):
-		c = self.db.cursor()
-		c.execute("SELECT * FROM packages")
-
-		for pkg in c:
-			yield packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
-
-		c.close()
-
-	def add_package(self, pkg, reason=None):
-		return self.db.add_package(pkg, reason)
-
-	def get_by_id(self, id):
-		c = self.db.cursor()
-		c.execute("SELECT * FROM packages WHERE id = ? LIMIT 1", (id,))
-
-		ret = None
-		for pkg in c:
-			ret = packages.DatabasePackage(self.pakfire, self.repo, self.db, pkg)
-
-		c.close()
-
-		return ret
-
-	def get_by_file(self, filename):
-		c = self.db.cursor()
-		c.execute("SELECT pkg FROM files WHERE name GLOB ?", (filename,))
-
-		for pkg in c:
-			yield self.get_by_id(pkg["pkg"])
-
-		c.close()
-
-	@property
-	def filelist(self):
-		c = self.db.cursor()
-		c.execute("SELECT pkg, name FROM files")
-
-		files = {}
-
-		for entry in c:
-			file = entry["name"]
-			try:
-				files[pkg_id].append(file)
-			except KeyError:
-				files[pkg_id] = [file,]
-
-		c.close()
-
-		return files
-
-
-class InstalledIndex(DatabaseIndexFactory):
-	def open_database(self):
-		# Open the local package database.
-		self.db = database.LocalPackageDatabase(self.pakfire)
-
-
-class LocalIndex(DatabaseIndexFactory):
-	def open_database(self):
-		self.db = database.RemotePackageDatabase(self.pakfire, ":memory:")
-
-	def save(self, path=None, algo="xz"):
+	def read(self, filename):
 		"""
-			This function saves the database and metadata to path so it can
-			be exported to a remote repository.
+			Read file in SOLV format from filename.
 		"""
-		if not path:
-			path = self.repo.path
+		self.solver_repo.read(filename)
 
-		# Create filenames
-		metapath = os.path.join(path, METADATA_DOWNLOAD_PATH)
-		db_path  = os.path.join(metapath, METADATA_DATABASE_FILE)
-		md_path  = os.path.join(metapath, METADATA_DOWNLOAD_FILE)
+	def write(self, filename):
+		"""
+			Write content to filename in SOLV format.
+		"""
+		self.solver_repo.write(filename)
 
-		if not os.path.exists(metapath):
-			os.makedirs(metapath)
+	def create_relation(self, s):
+		assert s
 
-		else:
-			# If a database is present, we remove it because we want to start
-			# with a clean environment.
-			if os.path.exists(db_path):
-				os.unlink(db_path)
+		pool = self.pakfire.pool
 
-		# Save the database to path and get the filename.
-		self.db.save(db_path)
+		if s.startswith("/"):
+			return satsolver.Relation(pool, s)
 
-		# Make a reference to the database file that it will get a unique name
-		# so we won't get into any trouble with caching proxies.
-		db_hash = util.calc_hash1(db_path)
+		for pattern, type in self.RELATIONS:
+			if not pattern in s:
+				continue
 
-		db_path2 = os.path.join(os.path.dirname(db_path),
-			"%s-%s" % (db_hash, os.path.basename(db_path)))
+			name, version = s.split(pattern, 1)
 
-		# Compress the database.
-		if algo:
-			compress.compress(db_path, algo=algo, progress=True)
+			return satsolver.Relation(pool, name, version, type)
 
-		if not os.path.exists(db_path2):
-			shutil.move(db_path, db_path2)
-		else:
-			os.unlink(db_path)
+		return satsolver.Relation(pool, s)
 
-		# Create a new metadata object and add out information to it.
-		md = metadata.Metadata(self.pakfire, self)
+	def add_package(self, pkg):
+		# XXX Skip packages without a UUID
+		#if not pkg.uuid:
+		#	logging.warning("Skipping package which lacks UUID: %s" % pkg)
+		#	return
+		if not pkg.build_time:
+			return
 
-		# Save name of the hashed database to the metadata.
-		md.database = os.path.basename(db_path2)
-		md.database_hash1 = db_hash
-		md.database_compression = algo
+		logging.debug("Adding package to index %s: %s" % (self, pkg))
 
-		# Save metdata to repository.
-		md.save(md_path)
+		solvable = satsolver.Solvable(self.solver_repo, pkg.name,
+			pkg.friendly_version, pkg.arch)
+
+		# Save metadata.
+		solvable.set_vendor(pkg.vendor)
+		solvable.set_hash1(pkg.hash1)
+		solvable.set_uuid(pkg.uuid)
+		solvable.set_maintainer(pkg.maintainer)
+		solvable.set_groups(" ".join(pkg.groups))
+
+		# Save upstream information (summary, description, license, url).
+		solvable.set_summary(pkg.summary)
+		solvable.set_description(pkg.description)
+		solvable.set_license(pkg.license)
+		solvable.set_url(pkg.url)
+
+		# Save build information.
+		solvable.set_buildhost(pkg.build_host)
+		solvable.set_buildtime(pkg.build_time)
+
+		# Save filename.
+		filename = os.path.basename(pkg.filename)
+		solvable.set_filename(filename)
+		solvable.set_downloadsize(pkg.size)
+		solvable.set_installsize(pkg.inst_size)
+
+		# Import all requires.
+		for req in pkg.requires:
+			rel = self.create_relation(req)
+			solvable.add_requires(rel)
+
+		# Import all provides.
+		for prov in pkg.provides:
+			rel = self.create_relation(prov)
+			solvable.add_provides(rel)
+
+		# Import all conflicts.
+		for conf in pkg.conflicts:
+			rel = self.create_relation(conf)
+			solvable.add_conflicts(rel)
+
+		# Import all obsoletes.
+		for obso in pkg.obsoletes:
+			rel = self.create_relation(obso)
+			solvable.add_obsoletes(rel)
+
+		# Import all files that are in the package.
+		rel = self.create_relation("solvable:filemarker")
+		solvable.add_provides(rel)
+		for file in pkg.filelist:
+			rel = self.create_relation(file)
+			solvable.add_provides(rel)
 
 
-class RemoteIndex(DatabaseIndexFactory):
-	def open_database(self):
-		self.update(force=False)
+class IndexSolv(Index):
+	def check(self):
+		pass # XXX to be done
+
+	def update(self, force=False):
+		self._update_metadata(force)
+		self._update_database(force)
 
 	def _update_metadata(self, force):
-		# Shortcut to repository cache.
-		cache = self.repo.cache
-
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
 
 		# Marker if we need to do the download.
@@ -349,15 +171,15 @@ class RemoteIndex(DatabaseIndexFactory):
 
 		if not force:
 			# Check if file does exists and is not too old.
-			if cache.exists(filename):
-				age = cache.age(filename)
+			if self.cache.exists(filename):
+				age = self.cache.age(filename)
 				if age and age < TIME_10M:
 					download = False
 					logging.debug("Metadata is recent enough. I don't download it again.")
 
 				# Open old metadata for comparison.
 				old_metadata = metadata.Metadata(self.pakfire, self,
-					cache.abspath(filename))
+					self.cache.abspath(filename))
 
 		if download:
 			logging.debug("Going to (re-)download the repository metadata.")
@@ -377,21 +199,18 @@ class RemoteIndex(DatabaseIndexFactory):
 			else:
 				# We explicitely rewrite the metadata if it is equal to have
 				# a new timestamp and do not download it over and over again.
-				with cache.open(filename, "w") as o:
+				with self.cache.open(filename, "w") as o:
 					o.write(data)
 
 		# Parse the metadata that we just downloaded or load it from cache.
 		self.metadata = metadata.Metadata(self.pakfire, self,
-			cache.abspath(filename))
+			self.cache.abspath(filename))
 
 	def _update_database(self, force):
-		# Shortcut to repository cache.
-		cache = self.repo.cache
-
 		# Construct cache and download filename.
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
 
-		if not cache.exists(filename):
+		if not self.cache.exists(filename):
 			# Initialize a grabber for download.
 			grabber = downloader.DatabaseDownloader(
 				text = _("%s: package database") % self.repo.name,
@@ -400,7 +219,7 @@ class RemoteIndex(DatabaseIndexFactory):
 
 			data = grabber.urlread(filename)
 
-			with cache.open(filename, "w") as o:
+			with self.cache.open(filename, "w") as o:
 				o.write(data)
 
 			# decompress the database
@@ -408,41 +227,103 @@ class RemoteIndex(DatabaseIndexFactory):
 				# Open input file and remove the file immediately.
 				# The fileobj is still open and the data will be removed
 				# when it is closed.
-				compress.decompress(cache.abspath(filename),
+				compress.decompress(self.cache.abspath(filename),
 					algo=self.metadata.database_compression)
 
 			# check the hashsum of the downloaded file
-			if not util.calc_hash1(cache.abspath(filename)) == self.metadata.database_hash1:
+			if not util.calc_hash1(self.cache.abspath(filename)) == self.metadata.database_hash1:
 				# XXX an exception is not a very good idea because this file could
 				# be downloaded from another mirror. need a better way to handle this.
 
 				# Remove bad file from cache.
-				cache.remove(filename)
+				self.cache.remove(filename)
 
 				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
 
 		# (Re-)open the database.
-		self.db = database.RemotePackageDatabase(self.pakfire,
-			cache.abspath(filename))
+		self.read(self.cache.abspath(filename))
 
-	def update(self, force=False):
-		"""
-			Download the repository metadata and the package database.
-		"""
 
-		# Skip the download for local repositories.
-		if self.repo.local:
-			return
-
-		# At first, update the metadata.
-		self._update_metadata(force)
-
-		# Then, we download the database eventually.
-		self._update_database(force)
-
-		# XXX this code needs lots of work:
-		# XXX   * check the metadata content
+class IndexDir(Index):
+	def check(self):
+		pass # XXX to be done
 
 	@property
-	def cachefile(self):
-		return "%s.cache" % self.db.filename
+	def path(self):
+		path = self.repo.path
+
+		if path.startswith("file://"):
+			path = path[7:]
+
+		return path
+
+	def update(self, force=False):
+		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
+
+		# Do nothing if the update is not forced but populate the database
+		# if no packages are present.
+		if not force and len(self.repo):
+			return
+
+		# Collect all packages from default path.
+		self.collect_packages(self.path)
+
+	def collect_packages(self, path):
+		# XXX make progress bar for that
+		for dir, subdirs, files in os.walk(path):
+			for file in sorted(files):
+				# Skip files that do not have the right extension
+				if not file.endswith(".%s" % PACKAGE_EXTENSION):
+					continue
+
+				package = packages.open(self.pakfire, self.repo, os.path.join(dir, file))
+
+				if isinstance(package, packages.BinaryPackage):
+					if not package.arch in (self.repo.arch, "noarch"):
+						logging.warning("Skipped package with wrong architecture: %s (%s)" \
+							% (package.filename, package.arch))
+						print package.type
+						continue
+
+				# Skip all source packages.
+				elif isinstance(package, packages.SourcePackage):
+					continue
+
+				self.add_package(package)
+
+				yield package
+
+
+class IndexLocal(Index):
+	def init(self):
+		self.db = database.DatabaseLocal(self.pakfire, self.repo)
+
+	def check(self):
+		# XXX Create the database and lock it or something.
+		pass
+
+	def update(self, force=True):
+		if self.solver_repo.size() == 0:
+			force = True
+
+		if force:
+			package_count = len(self.db)
+
+			# Nothing to do here, if there are no packages in the database.
+			if not package_count:
+				return
+
+			# Add all packages from the database to the index.
+			pb = util.make_progress(_("Loading installed packages"), package_count)
+
+			i = 0
+			for pkg in self.db.packages:
+				if pb:
+					i += 1
+					pb.update(i)
+
+				# XXX currently broken
+				#self.add_package(pkg)
+
+			if pb:
+				pb.finish()

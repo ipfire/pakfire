@@ -1,9 +1,14 @@
 
-from distutils.core import setup
+import os
+
+from distutils.core import Extension, setup
 
 from DistUtilsExtra.command import *
 
-from pakfire.constants import PAKFIRE_VERSION
+#from pakfire.constants import PAKFIRE_VERSION
+PAKFIRE_VERSION = "0.9.2"
+
+_pakfire_module_files = [os.path.join("src", f) for f in os.listdir("src") if f.endswith(".c")]
 
 setup(
 	name = "pakfire",
@@ -22,6 +27,10 @@ setup(
 		"scripts/pakfire-build",
 		"scripts/pakfire-repo",
 		"scripts/pakfire-server",
+	],
+	ext_modules = [
+		Extension("_pakfire", _pakfire_module_files,
+			extra_link_args = ["-lsatsolver", "-lsatsolverext"])
 	],
 	cmdclass = { "build" : build_extra.build_extra,
 	             "build_i18n" :  build_i18n.build_i18n },

@@ -30,7 +30,7 @@ METADATA_FORMAT = 0
 METADATA_DOWNLOAD_LIMIT = 1024**2
 METADATA_DOWNLOAD_PATH  = "repodata"
 METADATA_DOWNLOAD_FILE  = "repomd.json"
-METADATA_DATABASE_FILE  = "packages.db"
+METADATA_DATABASE_FILE  = "packages.solv"
 
 PACKAGE_FORMAT = 0
 PACKAGE_EXTENSION = "pfm"
@@ -39,7 +39,7 @@ MAKEFILE_EXTENSION = "nm"
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
 BUILD_PACKAGES = ["build-essentials",]
-SHELL_PACKAGES = ["elinks", "less", "pakfire", "vim",]
+SHELL_PACKAGES = ["elinks", "less", "vim",]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"

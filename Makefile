@@ -10,6 +10,7 @@ build:
 .PHONY: clean
 clean:
 	python setup.py clean
+	-rm -rfv build
 
 .PHONY: dist
 dist:

@@ -22,6 +22,12 @@ class Action(object):
 		self.pakfire = pakfire
 		self.pkg = pkg
 
+		# Try to get the binary version of the package from the cache if
+		# any.
+		binary_package = self.pkg.get_from_cache()
+		if binary_package:
+			self.pkg = binary_package
+
 	def __cmp__(self, other):
 		# XXX ugly
 		return cmp(self.__repr__(), other.__repr__())
@@ -85,13 +91,13 @@ class ActionInstall(Action):
 	def extract(self, message, prefix=None):
 		logging.debug("Extracting package %s" % self.pkg.friendly_name)
 
+		# Create package in the database
+		self.local.add_package(self.pkg)
+
 		if prefix is None:
 			prefix = self.pakfire.path
 
 		self.pkg.extract(message, prefix=prefix)
-
-		# Create package in the database
-		self.local.index.add_package(self.pkg)
 
 	def run(self):
 		msg = _("Extracting: %s")
@@ -106,8 +112,6 @@ class ActionInstall(Action):
 			msg = _("Downgrading: %s")
 
 		self.extract(msg % self.pkg.name)
-
-		self.pakfire.solver.add_package(self.pkg, "installed")
 
 
 class ActionUpdate(ActionInstall):
@@ -156,20 +160,13 @@ class Transaction(object):
 		self.actions = []
 
 	@classmethod
-	def from_solver(cls, pakfire, solver1, solver2):
-		# Grab the original transaction object from the solver.
-		_transaction = solver2.transaction()
-
-		# Order the objects in the transaction in that way we will run the
-		# installation.
-		_transaction.order()
-
+	def from_solver(cls, pakfire, solver, _transaction):
 		# Create a new instance of our own transaction class.
 		transaction = cls(pakfire)
 
 		for step in _transaction.steps():
-			action = step.type_s(satsolver.TRANSACTION_MODE_ACTIVE)
-			pkg = solver1.solv2pkg(step.solvable())
+			action = step.get_type()
+			pkg = packages.SolvPackage(pakfire, step.get_solvable())
 
 			for action_cls in cls.action_classes:
 				if action_cls.type == action:

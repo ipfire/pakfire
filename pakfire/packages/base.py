@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import datetime
 import logging
 import xml.sax.saxutils
 
@@ -279,17 +280,15 @@ class Package(object):
 
 	@property
 	def build_date(self):
-		return self.metadata.get("BUILD_DATE")
+		"""
+			Automatically convert the UNIX timestamp from self.build_time to
+			a humanly readable format.
+		"""
+		return "%s UTC" % datetime.datetime.utcfromtimestamp(self.build_time)
 
 	@property
 	def build_host(self):
-		host = self.metadata.get("BUILD_HOST")
-
-		# XXX Workaround tripple X as hostname.
-		if host == "X"*3:
-			host = ""
-
-		return host
+		return self.metadata.get("BUILD_HOST")
 
 	@property
 	def build_id(self):
@@ -355,68 +354,3 @@ class Package(object):
 
 	def extract(self, path, prefix=None):
 		raise NotImplementedError, "%s" % repr(self)
-
-	def export_xml_string(self):
-		info = self.info
-		info["groups"] = " ".join(info["groups"])
-
-		# Escape everything to conform to XML.
-		for key, value in info.items():
-			if not type(value) in (type(a) for a in ("a", u"a")):
-				continue
-
-			info[key] = xml.sax.saxutils.escape(value, {'"': "&quot;"})
-
-		s = """\
-			<package type="rpm">
-				<name>%(name)s</name>
-				<arch>%(arch)s</arch>
-				<version epoch="%(epoch)s" ver="%(version)s" rel="%(release)s"/>
-				<checksum type="sha" pkgid="YES">%(hash1)s</checksum>
-				<summary>%(summary)s</summary>
-				<description>%(description)s</description>
-				<packager>%(maintainer)s</packager>
-				<url>%(url)s</url>
-				<time file="0" build="%(build_time)s"/>
-				<size package="%(size)s" installed="%(inst_size)s" />
-				<format>
-					<rpm:license>%(license)s</rpm:license>
-					<rpm:vendor>%(vendor)s</rpm:vendor>
-					<rpm:group>%(groups)s</rpm:group>
-					<rpm:buildhost>%(build_host)s</rpm:buildhost>\n""" \
-			% info
-
-		if self.provides:
-			s += "<rpm:provides>"
-			for provides in self.provides:
-				s += "<rpm:entry name=\"%s\" />" % provides
-			s += "</rpm:provides>"
-
-		if self.requires or self.pre_requires:
-			s += "<rpm:requires>"
-			for requires in self.requires:
-				s += "<rpm:entry name=\"%s\" />" % requires
-
-			for requires in self.pre_requires:
-				s += "<rpm:entry name=\"%s\" pre=\"1\" />" % requires
-			s += "</rpm:requires>"
-
-		if self.conflicts:
-			s += "<rpm:conflicts>"
-			for conflict in self.conflicts:
-				s += "<rpm:entry name=\"%s\" />" % conflict
-			s += "</rpm:conflicts>"
-
-		if self.obsoletes:
-			s += "<rpm:obsoletes>"
-			for obsolete in self.obsoletes:
-				s += "<rpm:entry name=\"%s\" />" % obsolete
-			s += "</rpm:obsoletes>"
-
-		for file in self.filelist:
-			# XXX what about type="dir"?
-			s += "<file>%s</file>" % file
-
-		s += "</format></package>"
-
-		return s

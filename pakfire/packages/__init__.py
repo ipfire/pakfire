@@ -3,6 +3,7 @@
 from binary import BinaryPackage
 from file import InnerTarFile
 from installed import DatabasePackage, InstalledPackage
+from solv import SolvPackage
 from source import SourcePackage
 from virtual import VirtualPackage
 

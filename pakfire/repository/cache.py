@@ -4,8 +4,6 @@ import os
 import stat
 import time
 
-import index
-
 import pakfire.util as util
 from pakfire.constants import *
 
@@ -19,33 +17,44 @@ class RepositoryCache(object):
 		self.pakfire = pakfire
 		self.repo = repo
 
-		self.create()
-
-		# Initialize index of cache.
-		self.index = index.DirectoryIndex(self.pakfire, self.repo,
-			os.path.join(self.path, "packages"))
+		self.__created = None
 
 	@property
-	def packages(self):
-		return self.index.packages
+	def created(self):
+		"""
+			Tells us, if the cache was already created.
+		"""
+		if self.__created is None:
+			self.__created = os.path.exists(self.path)
+
+		return self.__created
 
 	@property
 	def path(self):
 		return os.path.join(REPO_CACHE_DIR, self.pakfire.distro.release, \
 			self.repo.name, self.repo.arch)
 
-	def abspath(self, path):
+	def abspath(self, path, create=True):
+		if create:
+			self.create()
+
 		return os.path.join(self.path, path)
 
 	def create(self):
 		"""
 			Create all necessary directories.
 		"""
+		# Do nothing, if the cache has already been created.
+		if self.created:
+			return
+
 		for path in ("mirrors", "packages", "repodata"):
-			path = self.abspath(path)
+			path = self.abspath(path, create=False)
 
 			if not os.path.exists(path):
 				os.makedirs(path)
+
+		self.__created = True
 
 	def exists(self, filename):
 		"""

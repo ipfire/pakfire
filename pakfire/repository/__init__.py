@@ -3,11 +3,13 @@
 import logging
 
 import solver
+import satsolver
 
-from installed import InstalledRepository
-from local import LocalRepository, LocalBuildRepository, LocalSourceRepository
-from oddments import DummyRepository, FileSystemRepository
-from remote import RemoteRepository
+import pakfire.packages as packages
+
+from local import RepositoryDir, RepositoryBuild, RepositoryLocal
+from oddments import RepositoryDummy
+from remote import RepositorySolv
 
 class Repositories(object):
 	"""
@@ -23,41 +25,52 @@ class Repositories(object):
 		self.distro = pakfire.distro
 
 		# Place to store the repositories
-		self._repos = []
+		self.__repos = {}
 
 		# Create a dummy repository
-		self.dummy = DummyRepository(self.pakfire)
+		self.dummy = RepositoryDummy(self.pakfire)
 
 		# Create the local repository
-		self.local = InstalledRepository(self.pakfire)
+		self.local = RepositoryLocal(self.pakfire)
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
 		if self.pakfire.builder:
-			self.local_build = LocalBuildRepository(self.pakfire)
+			self.local_build = RepositoryBuild(self.pakfire)
 			self.add_repo(self.local_build)
 
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
 
-		# XXX need to process enable_repos and disable_repos here
+		# Enable all repositories here as demanded on commandline
+		if enable_repos:
+			for repo in enable_repos:
+				self.enable_repo(repo)
+
+		# Disable all repositories here as demanded on commandline
+		if disable_repos:
+			for repo in disable_repos:
+				self.disable_repo(repo)
 
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
 		self.update()
 
-		# Initialize the solver.
-		self.solver = solver.Solver(self.pakfire, self)
+	def __iter__(self):
+		repositories = self.__repos.values()
+		repositories.sort()
+
+		return iter(repositories)
 
 	def __len__(self):
 		"""
 			Return the count of enabled repositories.
 		"""
-		i = 0
-		for repo in self.enabled:
-			i += 1
+		return len([r for r in self if r.enabled])
 
-		return i
+	@property
+	def pool(self):
+		return self.pakfire.pool
 
 	def _parse(self, name, args):
 		# XXX need to make variable expansion
@@ -70,95 +83,49 @@ class Repositories(object):
 		}
 		_args.update(args)
 
-		repo = RemoteRepository(self.pakfire, **_args)
+		repo = RepositorySolv(self.pakfire, **_args)
 
 		self.add_repo(repo)
 
 	def add_repo(self, repo):
-		self._repos.append(repo)
-		self._repos.sort()
+		if self.__repos.has_key(repo.name):
+			raise Exception, "Repository with that name does already exist."
 
-	@property
-	def all(self):
-		return self._repos[:]
+		self.__repos[repo.name] = repo
 
-	@property
-	def enabled(self):
-		for repo in self._repos:
-			if not repo.enabled:
-				continue
+	def get_repo(self, name):
+		"""
+			Get the repository with the given name, if not available, return
+			the dummy repository.
+		"""
+		try:
+			return self.__repos[name]
+		except KeyError:
+			return self.dummy
 
-			yield repo
+	def enable_repo(self, name):
+		try:
+			self.__repo[name].enabled = True
+		except KeyError:
+			pass
 
 	def disable_repo(self, name):
-		for repo in self.enabled:
-			if repo.name == name:
-				logging.debug("Disabled repository '%s'" % repo.name)
-				repo.enabled = False
-				continue
+		try:
+			self.__repo[name].enabled = False
+		except KeyError:
+			pass
 
 	def update(self, force=False):
 		logging.debug("Updating all repository indexes (force=%s)" % force)
 
-		# XXX update all indexes if necessary or forced
-		for repo in self.enabled:
+		# update all indexes if necessary or forced
+		for repo in self:
 			repo.update(force=force)
 
-	def get_repo_by_name(self, name):
-		for repo in self.enabled:
-			if repo.name == name:
-				return repo
+	def whatprovides(self, what):
+		for solv in self.pool.providers(what):
+			yield packages.SolvPackage(self.pakfire, solv)
 
-	def get_all(self):
-		for repo in self.enabled:
-			for pkg in repo.get_all():
-				yield pkg
+	def search(self, what):
+		raise NotImplementedError
 
-	def get_by_name(self, name):
-		#for repo in self.enabled:
-		#	for pkg in repo.get_by_name(name):
-		#		yield pkg
-		return self.solver.get_by_name(name)
-
-	def get_by_glob(self, pattern):
-		for repo in self.enabled:
-			for pkg in repo.get_by_glob(pattern):
-				yield pkg
-
-	#def get_by_provides(self, requires):
-	#	if requires.type == "file":
-	#		for pkg in self.get_by_file(requires.requires):
-	#			yield pkg
-	#
-	#	else:
-	#		for repo in self.enabled:
-	#			for pkg in repo.get_by_provides(requires):
-	#				yield pkg
-	get_by_provides = get_by_name
-
-	def get_by_requires(self, requires):
-		for repo in self.enabled:
-			for pkg in repo.get_by_requires(requires):
-				yield pkg
-
-	#def get_by_file(self, filename):
-	#	for repo in self.enabled:
-	#		for pkg in repo.get_by_file(filename):
-	#			yield pkg
-	get_by_file = get_by_name
-
-	def get_by_group(self, group):
-		for repo in self.enabled:
-			for pkg in repo.get_by_group(group):
-				yield pkg
-
-	def search(self, pattern):
-		pkg_names = []
-
-		for repo in self.enabled:
-			for pkg in repo.search(pattern):
-				if pkg.name in pkg_names:
-					continue
-
-				pkg_names.append(pkg.name)
-				yield pkg

@@ -2,7 +2,7 @@
 
 from base import RepositoryFactory
 
-class DummyRepository(RepositoryFactory):
+class RepositoryDummy(RepositoryFactory):
 	"""
 		Just a dummy repository that actually does nothing.
 	"""

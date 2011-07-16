@@ -216,11 +216,10 @@ class Cli(object):
 
 	def handle_repolist(self):
 		repos = pakfire.repo_list(**self.pakfire_args)
-		repos.sort()
 
-		FORMAT = " %-20s %8s %12s "
+		FORMAT = " %-20s %8s %12s %12s "
 
-		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"))
+		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
 		print title
 		print "=" * len(title) # spacing line
 
@@ -229,7 +228,7 @@ class Cli(object):
 			if repo.name == "installed":
 				continue
 
-			print FORMAT % (repo.name, repo.enabled, repo.priority)
+			print FORMAT % (repo.name, repo.enabled, repo.priority, len(repo))
 
 
 class CliBuilder(Cli):
@@ -373,6 +372,12 @@ class CliBuilder(Cli):
 
 		pakfire.dist(pkgs, resultdirs=[self.args.resultdir,],
 			**self.pakfire_args)
+
+	def handle_provides(self):
+		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)
+
+		for pkg in pkgs:
+			print pkg.dump(long=True)
 
 
 class CliRepo(Cli):
