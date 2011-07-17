@@ -47,10 +47,12 @@ class RepositorySolv(base.RepositoryFactory):
 
 		return priority
 
-	def download(self, filename, hash1=None, text=""):
+	def download(self, pkg, text=""):
 		"""
 			Downloads 'filename' from repository and returns the local filename.
 		"""
+		filename, hash1 = pkg.filename, pkg.hash1
+
 		# Marker, if we need to download the package.
 		download = True
 

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import re
 
 import base
@@ -131,15 +132,29 @@ class SolvPackage(base.Package):
 
 	@property
 	def is_in_cache(self):
+		# Local files are always kinda cached.
+		if self.repo.local:
+			return True
+
 		return self.repo.cache.exists("package/%s" % self.filename)
 
 	def get_from_cache(self):
-		filename = "packages/%s" % self.filename
+		path = None
 
-		if self.repo.cache.exists(filename):
-			return binary.BinaryPackage(self.pakfire, self.repo, self.repo.cache.abspath(filename))
+		if self.repo.local:
+			path = os.path.join(self.repo.path, self.arch, self.filename)
+			return binary.BinaryPackage(self.pakfire, self.repo, path)
+		else:
+			filename = "packages/%s" % self.filename
+
+			if self.repo.cache.exists(filename):
+				path = self.repo.cache.abspath(filename)
+
+		if path:
+			return binary.BinaryPackage(self.pakfire, self.repo, path)
 
 	def download(self, text=""):
-		self.repo.download(self.filename, text=text, hash1=self.hash1)
+		if not self.repo.local:
+			self.repo.download(self, text=text)
 
 		return self.get_from_cache()

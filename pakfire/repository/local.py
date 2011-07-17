@@ -137,6 +137,13 @@ class RepositoryBuild(RepositoryDir):
 		RepositoryDir.__init__(self, pakfire, "build", "Locally built packages", path)
 
 	@property
+	def local(self):
+		"""
+			Yes, this is local.
+		"""
+		return True
+
+	@property
 	def priority(self):
 		return 20000
 
