@@ -206,4 +206,14 @@ void init_pakfire(void) {
 	PyDict_SetItemString(d, "REL_GT", Py_BuildValue("i", REL_GT));
 	PyDict_SetItemString(d, "REL_LE", Py_BuildValue("i", REL_LT|REL_EQ));
 	PyDict_SetItemString(d, "REL_GE", Py_BuildValue("i", REL_GT|REL_EQ));
+
+	// Add constants for search
+	PyDict_SetItemString(d, "SEARCH_STRING",		Py_BuildValue("i", SEARCH_STRING));
+	PyDict_SetItemString(d, "SEARCH_STRINGSTART",	Py_BuildValue("i", SEARCH_STRINGSTART));
+	PyDict_SetItemString(d, "SEARCH_STRINGEND",		Py_BuildValue("i", SEARCH_STRINGEND));
+	PyDict_SetItemString(d, "SEARCH_SUBSTRING",		Py_BuildValue("i", SEARCH_SUBSTRING));
+	PyDict_SetItemString(d, "SEARCH_GLOB",			Py_BuildValue("i", SEARCH_GLOB));
+	PyDict_SetItemString(d, "SEARCH_REGEX",			Py_BuildValue("i", SEARCH_REGEX));
+	PyDict_SetItemString(d, "SEARCH_FILES",			Py_BuildValue("i", SEARCH_FILES));
+	PyDict_SetItemString(d, "SEARCH_CHECKSUMS",		Py_BuildValue("i", SEARCH_CHECKSUMS));
 }
