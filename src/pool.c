@@ -88,8 +88,39 @@ PyObject *Pool_size(PoolObject *self) {
 	return Py_BuildValue("i", pool->nsolvables);
 }
 
+PyObject *_Pool_search(Pool *pool, Repo *repo, const char *match, int option) {
+	// Prepare the pool, so we can search in it.
+	_Pool_prepare(pool);
+
+	Dataiterator d;
+	dataiterator_init(&d, pool, repo, 0, 0, match, option);
+
+	PyObject *list = PyList_New(0);
+
+	SolvableObject *solvable;
+	while (dataiterator_step(&d)) {
+		solvable = PyObject_New(SolvableObject, &SolvableType);
+		solvable->_pool = pool;
+		solvable->_id = d.solvid;
+
+		PyList_Append(list, (PyObject *)solvable);
+	}
+
+	dataiterator_free(&d);
+
+	Py_INCREF(list);
+	return list;
+}
+
 PyObject *Pool_search(PoolObject *self, PyObject *args) {
-	Py_RETURN_NONE; /* XXX to be done */
+	const char *match = NULL;
+	int option = SEARCH_SUBSTRING;
+
+	if (!PyArg_ParseTuple(args, "s|i", &match, &option)) {
+		/* XXX raise exception */
+	}
+
+	return _Pool_search(self->_pool, NULL, match, option);
 }
 
 PyObject *Pool_set_installed(PoolObject *self, PyObject *args) {

@@ -20,6 +20,7 @@ static PyMethodDef Pool_methods[] = {
 	{"size", (PyCFunction)Pool_size, METH_NOARGS, NULL},
 	{"set_installed", (PyCFunction)Pool_set_installed, METH_VARARGS, NULL},
 	{"providers", (PyCFunction)Pool_providers, METH_VARARGS, NULL},
+	{"search", (PyCFunction)Pool_search, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 

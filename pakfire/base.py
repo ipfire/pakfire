@@ -207,7 +207,9 @@ class Pakfire(object):
 
 	def search(self, pattern):
 		# Do the search.
-		pkgs = self.repos.search(pattern)
+		pkgs = []
+		for solv in self.pool.search(pattern):
+			pkgs.append(packages.SolvPackage(self, solv))
 
 		# Return the output as a package listing.
 		return packages.PackageListing(pkgs)
