@@ -16,14 +16,6 @@ from pakfire.constants import *
 from pakfire.i18n import _
 
 class Index(object):
-	RELATIONS = (
-		(">=", satsolver.REL_GE,),
-		("<=", satsolver.REL_LE,),
-		("=" , satsolver.REL_EQ,),
-		("<" , satsolver.REL_LT,),
-		(">" , satsolver.REL_GT,),
-	)
-
 	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
 
@@ -70,23 +62,8 @@ class Index(object):
 		"""
 		self.solver_repo.write(filename)
 
-	def create_relation(self, s):
-		assert s
-
-		pool = self.pakfire.pool
-
-		if s.startswith("/"):
-			return satsolver.Relation(pool, s)
-
-		for pattern, type in self.RELATIONS:
-			if not pattern in s:
-				continue
-
-			name, version = s.split(pattern, 1)
-
-			return satsolver.Relation(pool, name, version, type)
-
-		return satsolver.Relation(pool, s)
+	def create_relation(self, *args, **kwargs):
+		return self.pakfire.create_relation(*args, **kwargs)
 
 	def add_package(self, pkg):
 		# XXX Skip packages without a UUID

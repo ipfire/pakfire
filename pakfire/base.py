@@ -18,6 +18,14 @@ from constants import *
 from i18n import _
 
 class Pakfire(object):
+	RELATIONS = (
+		(">=", satsolver.REL_GE,),
+		("<=", satsolver.REL_LE,),
+		("=" , satsolver.REL_EQ,),
+		("<" , satsolver.REL_LT,),
+		(">" , satsolver.REL_GT,),
+	)
+
 	def __init__(self, builder=False, configs=[], enable_repos=None,
 			disable_repos=None, distro_config=None):
 		# Check if we are operating as the root user.
@@ -61,6 +69,22 @@ class Pakfire(object):
 
 	def create_request(self):
 		return satsolver.Request(self.pool)
+
+	def create_relation(self, s):
+		assert s
+
+		if s.startswith("/"):
+			return satsolver.Relation(self.pool, s)
+
+		for pattern, type in self.RELATIONS:
+			if not pattern in s:
+				continue
+
+			name, version = s.split(pattern, 1)
+
+			return satsolver.Relation(self.pool, name, version, type)
+
+		return satsolver.Relation(self.pool, s)
 
 	def destroy(self):
 		if not self.path == "/":

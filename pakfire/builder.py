@@ -279,7 +279,7 @@ class Builder(object):
 				req = req.friendly_name
 
 			if "<" in req or ">" in req or "=" in req:
-				req = self.solver.create_relation(req)
+				req = self.pakfire.create_relation(req)
 
 			request.install(req)
 
