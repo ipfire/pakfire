@@ -278,7 +278,7 @@ class Builder(object):
 			if isinstance(req, packages.BinaryPackage):
 				req = req.friendly_name
 
-			if "<" in req or ">" in req or "=" in req:
+			if "<" in req or ">" in req or "=" in req or req.startswith("/"):
 				req = self.pakfire.create_relation(req)
 
 			request.install(req)
