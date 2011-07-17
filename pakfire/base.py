@@ -122,12 +122,13 @@ class Pakfire(object):
 
 	def install(self, requires):
 		# Create a new request.
-		request = self.solver.create_request()
+		request = self.create_request()
 		for req in requires:
 			request.install(req)
 
 		# Do the solving.
-		t = self.solver.solve(request)
+		solver = self.create_solver()
+		t = solver.solve(request)
 
 		if not t:
 			return
@@ -168,7 +169,8 @@ class Pakfire(object):
 		for solvable in repo:
 			request.install(solvable)
 
-		t = self.solver.solve(request)
+		solver = self.create_solver()
+		t = solver.solve(request)
 
 		# If solving was not possible, we exit here.
 		if not t:
@@ -182,7 +184,7 @@ class Pakfire(object):
 		t.run()
 
 	def update(self, pkgs):
-		request = self.solver.create_request()
+		request = self.create_request()
 
 		repo_installed = self.solver.get_repo("installed")
 		assert repo_installed
@@ -190,7 +192,8 @@ class Pakfire(object):
 		for solvable in repo_installed:
 			request.update(solvable)
 
-		t = self.solver.solve(request, update=True)
+		solver = self.create_solver()
+		t = solver.solve(request, update=True)
 
 		if not t:
 			return
@@ -204,12 +207,13 @@ class Pakfire(object):
 
 	def remove(self, pkgs):
 		# Create a new request.
-		request = self.solver.create_request()
+		request = self.create_request()
 		for pkg in pkgs:
 			request.remove(pkg)
 
 		# Solve the request.
-		t = self.solver.solve(request)
+		solver = self.create_solver()
+		t = solver.solve(request)
 
 		if not t:
 			return
