@@ -1,3 +1,4 @@
 /build
+/pakfire/__version__.py
 /tmp
 *.py[co]

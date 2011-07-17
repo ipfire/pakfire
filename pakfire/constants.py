@@ -4,7 +4,7 @@ import os.path
 
 from errors import *
 
-PAKFIRE_VERSION = "0.9.2"
+from __version__ import PAKFIRE_VERSION
 
 SYSCONFDIR = "/etc"
 

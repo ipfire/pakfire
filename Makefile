@@ -1,7 +1,7 @@
 
 DESTDIR ?= /
 
-all: build
+all: po build
 
 .PHONY: build
 build:
@@ -27,3 +27,7 @@ install:
 .PHONY: check
 check:
 	./runpychecker.sh
+
+.PHONY: po
+po:
+	find pakfire -name "*.py" | grep -v "__version__.py" | sort > po/POTFILES.in
