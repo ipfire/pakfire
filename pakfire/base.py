@@ -224,8 +224,13 @@ class Pakfire(object):
 	def info(self, patterns):
 		pkgs = []
 
+		# For all patterns we run a single search which returns us a bunch
+		# of solvables which are transformed into Package objects.
 		for pattern in patterns:
-			pkgs += self.repos.get_by_glob(pattern)
+			solvs = self.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
+
+			for solv in solvs:
+				pkgs.append(packages.SolvPackage(self, solv))
 
 		return packages.PackageListing(pkgs)
 
