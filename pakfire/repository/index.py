@@ -5,11 +5,11 @@ import os
 
 import database
 import metadata
-import satsolver
 
 import pakfire.compress as compress
 import pakfire.downloader as downloader
 import pakfire.packages as packages
+import pakfire.satsolver as satsolver
 import pakfire.util as util
 
 from pakfire.constants import *

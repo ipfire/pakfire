@@ -6,7 +6,7 @@ import logging
 import re
 
 import cache
-import satsolver
+import pakfire.satsolver as satsolver
 
 class RepositoryFactory(object):
 	def __init__(self, pakfire, name, description):

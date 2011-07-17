@@ -2,13 +2,10 @@
 
 import logging
 
-import solver
-import satsolver
-
 import pakfire.packages as packages
 
+from base import RepositoryDummy
 from local import RepositoryDir, RepositoryBuild, RepositoryLocal
-from oddments import RepositoryDummy
 from remote import RepositorySolv
 
 class Repositories(object):
