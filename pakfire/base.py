@@ -249,12 +249,15 @@ class Pakfire(object):
 		self.install(pkgs)
 
 	def grouplist(self, group):
-		pkgs = self.repos.get_by_group(group)
+		pkgs = []
 
-		pkgs = packages.PackageListing(pkgs)
-		pkgs.unique()
+		for solv in self.pool.search(group, satsolver.SEARCH_SUBSTRING, "solvable:group"):
+			pkg = packages.SolvPackage(self, solv)
 
-		return [p.name for p in pkgs]
+			if group in pkg.groups and not pkg.name in pkgs:
+				pkgs.append(pkg.name)
+
+		return sorted(pkgs)
 
 	@staticmethod
 	def build(pkg, resultdirs=None, shell=False, **kwargs):
