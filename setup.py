@@ -34,7 +34,7 @@ setup(
 		"scripts/pakfire-server",
 	],
 	ext_modules = [
-		Extension("_pakfire", _pakfire_module_files,
+		Extension("pakfire._pakfire", _pakfire_module_files,
 			extra_link_args = ["-lsatsolver", "-lsatsolverext"])
 	],
 	cmdclass = { "build" : build_extra.build_extra,
