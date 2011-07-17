@@ -122,7 +122,3 @@ class Repositories(object):
 	def whatprovides(self, what):
 		for solv in self.pool.providers(what):
 			yield packages.SolvPackage(self.pakfire, solv)
-
-	def search(self, what):
-		raise NotImplementedError
-
