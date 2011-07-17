@@ -246,14 +246,33 @@ class IndexDir(Index):
 		self.collect_packages(self.path)
 
 	def collect_packages(self, path):
-		# XXX make progress bar for that
-		for dir, subdirs, files in os.walk(path):
-			for file in sorted(files):
+		logging.debug("Collecting all packages from %s" % path)
+		pkgs = []
+
+		# Get a filelist of all files that could possibly be packages.
+		files = []
+		for dir, subdirs, _files in os.walk(path):
+			for file in sorted(_files):
 				# Skip files that do not have the right extension
 				if not file.endswith(".%s" % PACKAGE_EXTENSION):
 					continue
 
-				package = packages.open(self.pakfire, self.repo, os.path.join(dir, file))
+				file = os.path.join(dir, file)
+				files.append(file)
+
+		if not files:
+			return pkgs
+
+		# Create progress bar.
+		pb = util.make_progress(_("Loading from %s") % path, len(files))
+		i = 0
+
+		for file in files:
+				if pb:
+					i += 1
+					pb.update(i)
+
+				package = packages.open(self.pakfire, self.repo, file)
 
 				if isinstance(package, packages.BinaryPackage):
 					if not package.arch in (self.repo.arch, "noarch"):
@@ -267,8 +286,12 @@ class IndexDir(Index):
 					continue
 
 				self.add_package(package)
+				pkgs.append(package)
 
-				yield package
+		if pb:
+			pb.finish()
+
+		return pkgs
 
 
 class IndexLocal(Index):
