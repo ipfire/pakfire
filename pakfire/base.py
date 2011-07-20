@@ -26,8 +26,9 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, builder=False, configs=[], enable_repos=None,
-			disable_repos=None, distro_config=None):
+	def __init__(self, path="/", builder=False, configs=[],
+			enable_repos=None, disable_repos=None,
+			distro_config=None):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
@@ -40,7 +41,7 @@ class Pakfire(object):
 			self.path = os.path.join(BUILD_ROOT, util.random_string())
 		else:
 			self.builder = False
-			self.path = "/"
+			self.path = path
 
 			# XXX check if we are actually running on an ipfire system.
 
