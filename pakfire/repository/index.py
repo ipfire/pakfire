@@ -79,25 +79,47 @@ class Index(object):
 			pkg.friendly_version, pkg.arch)
 
 		# Save metadata.
-		solvable.set_vendor(pkg.vendor)
-		solvable.set_hash1(pkg.hash1)
+		if pkg.vendor:
+			solvable.set_vendor(pkg.vendor)
+
+		hash1 = pkg.hash1
+		assert hash1
+		solvable.set_hash1(hash1)
+
+		assert pkg.uuid
 		solvable.set_uuid(pkg.uuid)
-		solvable.set_maintainer(pkg.maintainer)
-		solvable.set_groups(" ".join(pkg.groups))
+
+		if pkg.maintainer:
+			solvable.set_maintainer(pkg.maintainer)
+
+		if pkg.groups:
+			solvable.set_groups(" ".join(pkg.groups))
 
 		# Save upstream information (summary, description, license, url).
-		solvable.set_summary(pkg.summary)
-		solvable.set_description(pkg.description)
-		solvable.set_license(pkg.license)
-		solvable.set_url(pkg.url)
+		if pkg.summary:
+			solvable.set_summary(pkg.summary)
+
+		if pkg.description:
+			solvable.set_description(pkg.description)
+
+		if pkg.license:
+			solvable.set_license(pkg.license)
+
+		if pkg.url:
+			solvable.set_url(pkg.url)
 
 		# Save build information.
-		solvable.set_buildhost(pkg.build_host)
-		solvable.set_buildtime(pkg.build_time)
+		if pkg.build_host:
+			solvable.set_buildhost(pkg.build_host)
+
+		if pkg.build_time:
+			solvable.set_buildtime(pkg.build_time)
 
 		# Save filename.
 		filename = os.path.basename(pkg.filename)
+		assert filename
 		solvable.set_filename(filename)
+
 		solvable.set_downloadsize(pkg.size)
 		solvable.set_installsize(pkg.inst_size)
 
@@ -322,8 +344,7 @@ class IndexLocal(Index):
 					i += 1
 					pb.update(i)
 
-				# XXX currently broken
-				#self.add_package(pkg)
+				self.add_package(pkg)
 
 			if pb:
 				pb.finish()

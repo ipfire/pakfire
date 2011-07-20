@@ -24,6 +24,7 @@ PyObject* Solvable_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 	if (!PyArg_ParseTuple(args, "Oss|s", &repo, &name, &evr, &arch)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	self = (SolvableObject *)type->tp_alloc(type, 0);
@@ -48,6 +49,8 @@ PyObject* Solvable_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Solvable_dealloc(SolvableObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Solvable_get_name(SolvableObject *self) {
@@ -88,6 +91,7 @@ PyObject *Solvable_set_vendor(SolvableObject *self, PyObject *args) {
 	const char *vendor;
 	if (!PyArg_ParseTuple(args, "s", &vendor)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	solvable->vendor = pool_str2id(self->_pool, vendor, 1);
@@ -107,6 +111,7 @@ PyObject *Solvable_add_provides(SolvableObject *self, PyObject *args) {
 	RelationObject *rel;
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	solv->provides = repo_addid_dep(solv->repo, solv->provides, rel->_id, 0);
@@ -152,6 +157,7 @@ PyObject *Solvable_add_requires(SolvableObject *self, PyObject *args) {
 	RelationObject *rel;
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	solv->requires = repo_addid_dep(solv->repo, solv->requires, rel->_id, 0);
@@ -171,6 +177,7 @@ PyObject *Solvable_add_obsoletes(SolvableObject *self, PyObject *args) {
 	RelationObject *rel;
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	solv->obsoletes = repo_addid_dep(solv->repo, solv->obsoletes, rel->_id, 0);
@@ -190,6 +197,7 @@ PyObject *Solvable_add_conflicts(SolvableObject *self, PyObject *args) {
 	RelationObject *rel;
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	solv->conflicts = repo_addid_dep(solv->repo, solv->conflicts, rel->_id, 0);
@@ -210,6 +218,7 @@ PyObject *Solvable_set_uuid(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &uuid)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_PKGID, uuid);
@@ -232,6 +241,7 @@ PyObject *Solvable_set_hash1(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &hash1)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_CHECKSUM, hash1);
@@ -254,6 +264,7 @@ PyObject *Solvable_set_summary(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &summary)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_SUMMARY, summary);
@@ -276,6 +287,7 @@ PyObject *Solvable_set_description(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &desc)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_DESCRIPTION, desc);
@@ -299,6 +311,7 @@ PyObject *Solvable_set_url(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &url)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_URL, url);
@@ -321,6 +334,7 @@ PyObject *Solvable_set_groups(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &groups)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_GROUP, groups);
@@ -343,6 +357,7 @@ PyObject *Solvable_set_filename(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &filename)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_MEDIAFILE, filename);
@@ -366,6 +381,7 @@ PyObject *Solvable_set_license(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &license)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_LICENSE, license);
@@ -389,6 +405,7 @@ PyObject *Solvable_set_buildhost(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &buildhost)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_BUILDHOST, buildhost);
@@ -412,6 +429,7 @@ PyObject *Solvable_set_maintainer(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &maintainer)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_str(solv->repo, self->_id, SOLVABLE_PACKAGER, maintainer);
@@ -435,6 +453,7 @@ PyObject *Solvable_set_downloadsize(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "i", &downloadsize)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_num(solv->repo, self->_id, SOLVABLE_DOWNLOADSIZE, downloadsize);
@@ -458,6 +477,7 @@ PyObject *Solvable_set_installsize(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "i", &installedsize)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_num(solv->repo, self->_id, SOLVABLE_INSTALLSIZE, installedsize);
@@ -481,6 +501,7 @@ PyObject *Solvable_set_buildtime(SolvableObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "i", &buildtime)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	repo_set_num(solv->repo, self->_id, SOLVABLE_BUILDTIME, buildtime);

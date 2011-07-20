@@ -46,7 +46,7 @@ PyObject* Pool_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Pool_dealloc(PoolObject *self) {
-	// pool_free(self->_pool);
+	pool_free(self->_pool);
 	self->ob_type->tp_free((PyObject *)self);
 }
 
@@ -120,6 +120,7 @@ PyObject *Pool_search(PoolObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s|is", &match, &option, &keyname)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	return _Pool_search(self->_pool, NULL, match, option, keyname);
@@ -142,6 +143,7 @@ PyObject *Pool_providers(PoolObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id id = pool_str2id(self->_pool, name, 0);

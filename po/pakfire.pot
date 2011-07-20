@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-17 12:07+0200\n"
+"POT-Creation-Date: 2011-07-20 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -290,13 +290,19 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/index.py:216
+#: ../pakfire/repository/index.py:215
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
+#. Create progress bar.
+#: ../pakfire/repository/index.py:289
+#, python-format
+msgid "Loading from %s"
+msgstr ""
+
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:317
+#: ../pakfire/repository/index.py:339
 msgid "Loading installed packages"
 msgstr ""
 

@@ -38,7 +38,7 @@ MAKEFILE_EXTENSION = "nm"
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
-BUILD_PACKAGES = ["build-essentials",]
+BUILD_PACKAGES = ["build-essentials=1:3.0-alpha2-19.ip3",]
 SHELL_PACKAGES = ["elinks", "less", "pakfire", "vim",]
 BUILD_ROOT = "/var/lib/pakfire/build"
 

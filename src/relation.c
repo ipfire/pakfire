@@ -18,11 +18,12 @@ PyObject* Relation_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 	RelationObject *self;
 	PoolObject *pool;
 	const char *name;
-	const char *evr;
+	const char *evr = NULL;
 	int flags = 0;
 
 	if (!PyArg_ParseTuple(args, "Os|si", &pool, &name, &evr, &flags)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(pool->_pool, name, 1);
@@ -44,4 +45,6 @@ PyObject* Relation_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Relation_dealloc(RelationObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
