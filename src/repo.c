@@ -83,6 +83,23 @@ PyObject *Repo_set_enabled(RepoObject *self, PyObject *args) {
 	Py_RETURN_NONE;
 }
 
+PyObject *Repo_get_priority(RepoObject *self) {
+	Py_BuildValue("i", self->_repo->priority);
+}
+
+PyObject *Repo_set_priority(RepoObject *self, PyObject *args) {
+	int priority;
+
+	if (!PyArg_ParseTuple(args, "i", &priority)) {
+		/* XXX raise exception */
+		return NULL;
+	}
+
+	self->_repo->priority = priority;
+
+	Py_RETURN_NONE;
+}
+
 PyObject *Repo_write(RepoObject *self, PyObject *args) {
 	const char *filename;
 

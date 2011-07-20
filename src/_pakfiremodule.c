@@ -53,6 +53,8 @@ static PyMethodDef Repo_methods[] = {
 	{"size", (PyCFunction)Repo_size, METH_NOARGS, NULL},
 	{"get_enabled", (PyCFunction)Repo_get_enabled, METH_NOARGS, NULL},
 	{"set_enabled", (PyCFunction)Repo_set_enabled, METH_VARARGS, NULL},
+	{"get_priority", (PyCFunction)Repo_get_priority, METH_NOARGS, NULL},
+	{"set_priority", (PyCFunction)Repo_set_priority, METH_VARARGS, NULL},
 	{"write", (PyCFunction)Repo_write, METH_VARARGS, NULL},
 	{"read", (PyCFunction)Repo_read, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }

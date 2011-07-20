@@ -16,6 +16,7 @@ class RepositoryFactory(object):
 
 		# Reference to corresponding Repo object in the solver.
 		self.solver_repo = satsolver.Repo(self.pool, self.name)
+		self.solver_repo.set_priority(self.priority)
 
 		logging.debug("Initialized new repository: %s" % self)
 
@@ -93,3 +94,9 @@ class RepositoryDummy(RepositoryFactory):
 	def __init__(self, pakfire):
 		RepositoryFactory.__init__(self, pakfire, "dummy",
 			"This is a dummy repository.")
+
+	@property
+	def priority(self):
+		# This will never be used in the solving process, but still it needs
+		# a value.
+		return 0

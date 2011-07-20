@@ -12,12 +12,12 @@ from pakfire.constants import *
 
 class RepositorySolv(base.RepositoryFactory):
 	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled=True):
-		base.RepositoryFactory.__init__(self, pakfire, name, description)
-
 		# Parse arguments.
 		self.url = url
 		self.gpgkey = gpgkey
 		self.mirrorlist = mirrorlist
+
+		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Initialize mirror servers.
 		self.mirrors = downloader.MirrorList(self.pakfire, self)

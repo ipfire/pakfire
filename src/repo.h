@@ -18,6 +18,8 @@ extern PyObject *Repo_name(RepoObject *self);
 extern PyObject *Repo_size(RepoObject *self);
 extern PyObject *Repo_get_enabled(RepoObject *self);
 extern PyObject *Repo_set_enabled(RepoObject *self, PyObject *args);
+extern PyObject *Repo_get_priority(RepoObject *self);
+extern PyObject *Repo_set_priority(RepoObject *self, PyObject *args);
 extern PyObject *Repo_write(RepoObject *self, PyObject *args);
 extern PyObject *Repo_read(RepoObject *self, PyObject *args);
 
