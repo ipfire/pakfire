@@ -76,8 +76,8 @@ class Solver(object):
 
 		self._solver = _pakfire.Solver(self.pool)
 
-	def solve(self, request, update=False, allow_downgrade=False):
-		#self._solver.set_allow_uninstall(True)
+	def solve(self, request, update=False, uninstall=False, allow_downgrade=False):
+		self._solver.set_allow_uninstall(uninstall)
 		self._solver.set_allow_downgrade(allow_downgrade)
 
 		# Configure the solver for an update.

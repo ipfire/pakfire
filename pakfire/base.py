@@ -224,7 +224,7 @@ class Pakfire(object):
 
 		# Solve the request.
 		solver = self.create_solver()
-		t = solver.solve(request)
+		t = solver.solve(request, uninstall=True)
 
 		if not t:
 			return
