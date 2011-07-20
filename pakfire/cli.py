@@ -34,7 +34,6 @@ class Cli(object):
 		self.parse_command_search()
 		self.parse_command_update()
 		self.parse_command_provides()
-		self.parse_command_requires()
 		self.parse_command_grouplist()
 		self.parse_command_groupinstall()
 		self.parse_command_repolist()
@@ -50,7 +49,6 @@ class Cli(object):
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
 			"provides"     : self.handle_provides,
-			"requires"     : self.handle_requires,
 			"grouplist"    : self.handle_grouplist,
 			"groupinstall" : self.handle_groupinstall,
 			"repolist"     : self.handle_repolist,
@@ -128,14 +126,6 @@ class Cli(object):
 			help=_("File or feature to search for."))
 		sub_provides.add_argument("action", action="store_const", const="provides")
 
-	def parse_command_requires(self):
-		# Implement the "requires" command
-		sub_requires = self.sub_commands.add_parser("requires",
-			help=_("Get a list of packages that require a given file or feature."))
-		sub_requires.add_argument("pattern", nargs="+",
-			help=_("File or feature to search for."))
-		sub_requires.add_argument("action", action="store_const", const="requires")
-
 	def parse_command_grouplist(self):
 		# Implement the "grouplist" command
 		sub_grouplist = self.sub_commands.add_parser("grouplist",
@@ -201,12 +191,6 @@ class Cli(object):
 		for pkg in pkgs:
 			print pkg.dump()
 
-	def handle_requires(self):
-		pkgs = pakfire.requires(self.args.pattern, **self.pakfire_args)
-
-		for pkg in pkgs:
-			print pkg.dump()
-
 	def handle_grouplist(self):
 		pkgs = pakfire.grouplist(self.args.group[0], **self.pakfire_args)
 
@@ -251,7 +235,6 @@ class CliBuilder(Cli):
 		self.parse_command_shell()
 		self.parse_command_update()
 		self.parse_command_provides()
-		self.parse_command_requires()
 		self.parse_command_grouplist()
 		self.parse_command_repolist()
 
@@ -266,7 +249,6 @@ class CliBuilder(Cli):
 			"search"      : self.handle_search,
 			"shell"       : self.handle_shell,
 			"provides"    : self.handle_provides,
-			"requires"    : self.handle_requires,
 			"grouplist"   : self.handle_grouplist,
 			"repolist"    : self.handle_repolist,
 		}
