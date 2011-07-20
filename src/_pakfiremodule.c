@@ -116,6 +116,8 @@ static PyMethodDef Solver_methods[] = {
 	{"set_allow_uninstall", (PyCFunction)Solver_set_allow_uninstall, METH_VARARGS, NULL},
 	{"get_updatesystem", (PyCFunction)Solver_get_updatesystem, METH_NOARGS, NULL},
 	{"set_updatesystem", (PyCFunction)Solver_set_updatesystem, METH_VARARGS, NULL},
+	{"get_do_split_provides", (PyCFunction)Solver_get_do_split_provides, METH_NOARGS, NULL},
+	{"set_do_split_provides", (PyCFunction)Solver_set_do_split_provides, METH_VARARGS, NULL},
 	{"get_problems", (PyCFunction)Solver_get_problems, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };

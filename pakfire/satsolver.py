@@ -82,7 +82,7 @@ class Solver(object):
 
 		# Configure the solver for an update.
 		if update:
-			self._solver.set_update_system(True)
+			self._solver.set_updatesystem(True)
 			self._solver.set_do_split_provides(True)
 
 		res = self._solver.solve(request)

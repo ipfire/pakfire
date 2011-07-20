@@ -194,14 +194,17 @@ class Pakfire(object):
 	def update(self, pkgs):
 		request = self.create_request()
 
-		repo_installed = self.solver.get_repo("installed")
-		assert repo_installed
-
-		for solvable in repo_installed:
-			request.update(solvable)
+		# If there are given any packets on the command line, we will
+		# only update them. Otherwise, we update the whole system.
+		if pkgs:
+			update = False
+			for pkg in pkgs:
+				request.update(pkg)
+		else:
+			update = True
 
 		solver = self.create_solver()
-		t = solver.solve(request, update=True)
+		t = solver.solve(request, update=update)
 
 		if not t:
 			return

@@ -122,6 +122,22 @@ PyObject *Solver_set_updatesystem(SolverObject *self, PyObject *args) {
 	Py_RETURN_NONE;
 }
 
+PyObject *Solver_get_do_split_provides(SolverObject *self, PyObject *args) {
+	return Py_BuildValue("i", self->_solver->dosplitprovides);
+}
+
+PyObject *Solver_set_do_split_provides(SolverObject *self, PyObject *args) {
+	int val;
+
+	if (!PyArg_ParseTuple(args, "i", &val)) {
+		/* XXX raise exception */
+	}
+
+	self->_solver->dosplitprovides = val;
+
+	Py_RETURN_NONE;
+}
+
 PyObject *Solver_solve(SolverObject *self, PyObject *args) {
 	RequestObject *request;
 

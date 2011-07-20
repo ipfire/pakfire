@@ -25,6 +25,8 @@ extern PyObject *Solver_get_allow_uninstall(SolverObject *self, PyObject *args);
 extern PyObject *Solver_set_allow_uninstall(SolverObject *self, PyObject *args);
 extern PyObject *Solver_get_updatesystem(SolverObject *self, PyObject *args);
 extern PyObject *Solver_set_updatesystem(SolverObject *self, PyObject *args);
+extern PyObject *Solver_get_do_split_provides(SolverObject *self, PyObject *args);
+extern PyObject *Solver_set_do_split_provides(SolverObject *self, PyObject *args);
 
 extern PyObject *Solver_solve(SolverObject *self, PyObject *args);
 extern PyObject *Solver_get_problems(SolverObject *self, PyObject *args);
