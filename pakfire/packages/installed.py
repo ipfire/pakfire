@@ -77,7 +77,12 @@ class DatabasePackage(Package):
 
 	@property
 	def groups(self):
-		return self.metadata.get("groups", "").split()
+		groups = self.metadata.get("groups", "")
+
+		if groups:
+			return groups.split()
+
+		return []
 
 	@property
 	def build_date(self):
