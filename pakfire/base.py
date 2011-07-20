@@ -43,7 +43,8 @@ class Pakfire(object):
 			self.builder = False
 			self.path = path
 
-			# XXX check if we are actually running on an ipfire system.
+			# check if we are actually running on an ipfire system.
+			self.check_is_ipfire()
 
 		# Read configuration file(s)
 		self.config = config.Config(type=config_type)
@@ -120,6 +121,12 @@ class Pakfire(object):
 			raise BuildError, "Cannot build for the target architecture: %s" % arch
 
 		raise BuildError, arch
+
+	def check_is_ipfire(self):
+		ret = os.path.exists("/etc/ipfire-release")
+
+		if not ret:
+			raise NotAnIPFireSystemError, "You can run pakfire only on an IPFire system"
 
 	def install(self, requires):
 		# Create a new request.

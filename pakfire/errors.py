@@ -27,6 +27,9 @@ class FileError(Error):
 class FileNotFoundError(Error):
 	pass
 
+class NotAnIPFireSystemError(Error):
+	pass
+
 class PakfireError(Error):
 	pass
 
