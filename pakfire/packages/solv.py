@@ -76,7 +76,12 @@ class SolvPackage(base.Package):
 
 	@property
 	def groups(self):
-		return self.solvable.get_groups().split()
+		groups = self.solvable.get_groups()
+
+		if groups:
+			return groups.split()
+
+		return []
 
 	@property
 	def license(self):
