@@ -102,13 +102,13 @@ class Repositories(object):
 
 	def enable_repo(self, name):
 		try:
-			self.__repo[name].enabled = True
+			self.__repos[name].enabled = True
 		except KeyError:
 			pass
 
 	def disable_repo(self, name):
 		try:
-			self.__repo[name].enabled = False
+			self.__repos[name].enabled = False
 		except KeyError:
 			pass
 

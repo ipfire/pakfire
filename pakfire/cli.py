@@ -56,9 +56,15 @@ class Cli(object):
 
 	@property
 	def pakfire_args(self):
-		return {
-			"path" : self.args.instroot,
-		}
+		ret = { "path" : self.args.instroot }
+
+		if hasattr(self.args, "disable_repo"):
+			ret["disable_repos"] = self.args.disable_repo
+
+		if hasattr(self.args, "enable_repo"):
+			ret["enable_repos"] = self.args.enable_repo
+
+		return ret
 
 	def parse_common_arguments(self):
 		self.parser.add_argument("-v", "--verbose", action="store_true",
@@ -69,6 +75,9 @@ class Cli(object):
 
 		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
 			help=_("Disable a repository temporarily."))
+
+		self.parser.add_argument("--enabled-repo", nargs="*", metavar="REPO",
+			help=_("Enable a repository temporarily."))
 
 	def parse_command_install(self):
 		# Implement the "install" command.
@@ -255,7 +264,15 @@ class CliBuilder(Cli):
 
 	@property
 	def pakfire_args(self):
-		return { "builder" : 1 }
+		ret = { "builder" : 1 }
+
+		if hasattr(self.args, "disable_repo"):
+			ret["disable_repos"] = self.args.disable_repo
+
+		if hasattr(self.args, "enable_repo"):
+			ret["enable_repos"] = self.args.enable_repo
+
+		return ret
 
 	def parse_command_update(self):
 		# Implement the "update" command.
