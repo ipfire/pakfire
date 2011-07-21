@@ -139,3 +139,9 @@ PyObject *Repo_read(RepoObject *self, PyObject *args) {
 
 	Py_RETURN_NONE;
 }
+
+PyObject *Repo_clear(RepoObject *self) {
+	repo_empty(self->_repo, 1);
+
+	Py_RETURN_NONE;
+}

@@ -98,3 +98,9 @@ class RepositoryCache(object):
 		filename = self.abspath(filename)
 		os.unlink(filename)
 
+	def destroy(self):
+		"""
+			Remove all files from this cache.
+		"""
+		if self.created:
+			util.rm(self.path)

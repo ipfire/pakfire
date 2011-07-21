@@ -78,3 +78,8 @@ def repo_list(**pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
 	return pakfire.repo_list()
+
+def clean_all(**pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.clean_all()

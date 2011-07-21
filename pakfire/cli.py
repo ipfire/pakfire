@@ -37,6 +37,7 @@ class Cli(object):
 		self.parse_command_grouplist()
 		self.parse_command_groupinstall()
 		self.parse_command_repolist()
+		self.parse_command_clean()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -52,6 +53,7 @@ class Cli(object):
 			"grouplist"    : self.handle_grouplist,
 			"groupinstall" : self.handle_groupinstall,
 			"repolist"     : self.handle_repolist,
+			"clean_all"    : self.handle_clean_all,
 		}
 
 	@property
@@ -160,6 +162,18 @@ class Cli(object):
 			help=_("List all currently enabled repositories."))
 		sub_repolist.add_argument("action", action="store_const", const="repolist")
 
+	def parse_command_clean(self):
+		sub_clean = self.sub_commands.add_parser("clean", help=_("Cleanup commands."))
+
+		sub_clean_commands = sub_clean.add_subparsers()
+
+		self.parse_command_clean_all(sub_clean_commands)
+
+	def parse_command_clean_all(self, sub_commands):
+		sub_create = sub_commands.add_parser("all",
+			help=_("Cleanup all temporary files."))
+		sub_create.add_argument("action", action="store_const", const="clean_all")
+
 	def run(self):
 		action = self.args.action
 
@@ -228,6 +242,11 @@ class Cli(object):
 
 			print FORMAT % (repo.name, repo.enabled, repo.priority, len(repo))
 
+	def handle_clean_all(self):
+		print _("Cleaning up everything...")
+
+		pakfire.clean_all(**self.pakfire_args)
+
 
 class CliBuilder(Cli):
 	def __init__(self):
@@ -249,6 +268,7 @@ class CliBuilder(Cli):
 		self.parse_command_provides()
 		self.parse_command_grouplist()
 		self.parse_command_repolist()
+		self.parse_command_clean()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -263,6 +283,7 @@ class CliBuilder(Cli):
 			"provides"    : self.handle_provides,
 			"grouplist"   : self.handle_grouplist,
 			"repolist"    : self.handle_repolist,
+			"clean_all"   : self.handle_clean_all,
 		}
 
 	@property

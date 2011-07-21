@@ -123,10 +123,8 @@ PyObject *_Solvable_get_dependencies(Solvable *solv, Offset deps) {
 	Repo *repo = solv->repo;
 	Pool *pool = repo->pool;
 
-	PyObject *dep;
-	const char *dep_str;
-
 	Id id, *ids;
+	const char *dep_str;
 
 	PyObject *list = PyList_New(0);
 

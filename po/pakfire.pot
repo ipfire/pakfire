@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-21 14:14+0200\n"
+"POT-Creation-Date: 2011-07-21 14:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,195 +30,207 @@ msgstr ""
 msgid "The path where pakfire should operate in."
 msgstr ""
 
-#: ../pakfire/cli.py:74
+#: ../pakfire/cli.py:76
 msgid "Enable verbose output."
 msgstr ""
 
-#: ../pakfire/cli.py:77
+#: ../pakfire/cli.py:79
 msgid "Path to a configuration file to load."
 msgstr ""
 
-#: ../pakfire/cli.py:80
+#: ../pakfire/cli.py:82
 msgid "Disable a repository temporarily."
 msgstr ""
 
-#: ../pakfire/cli.py:83
+#: ../pakfire/cli.py:85
 msgid "Enable a repository temporarily."
 msgstr ""
 
-#: ../pakfire/cli.py:88
+#: ../pakfire/cli.py:90
 msgid "Install one or more packages to the system."
 msgstr ""
 
-#: ../pakfire/cli.py:90
+#: ../pakfire/cli.py:92
 msgid "Give name of at least one package to install."
 msgstr ""
 
-#: ../pakfire/cli.py:96
+#: ../pakfire/cli.py:98
 msgid "Install one or more packages from the filesystem."
 msgstr ""
 
-#: ../pakfire/cli.py:98
+#: ../pakfire/cli.py:100
 msgid "Give filename of at least one package."
 msgstr ""
 
-#: ../pakfire/cli.py:104
+#: ../pakfire/cli.py:106
 msgid "Remove one or more packages from the system."
 msgstr ""
 
-#: ../pakfire/cli.py:106
+#: ../pakfire/cli.py:108
 msgid "Give name of at least one package to remove."
 msgstr ""
 
-#: ../pakfire/cli.py:112
+#: ../pakfire/cli.py:114
 msgid "Update the whole system or one specific package."
 msgstr ""
 
-#: ../pakfire/cli.py:114
+#: ../pakfire/cli.py:116
 msgid "Give a name of a package to update or leave emtpy for all."
 msgstr ""
 
-#: ../pakfire/cli.py:120
+#: ../pakfire/cli.py:122
 msgid "Print some information about the given package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:122
+#: ../pakfire/cli.py:124
 msgid "Give at least the name of one package."
 msgstr ""
 
-#: ../pakfire/cli.py:128
+#: ../pakfire/cli.py:130
 msgid "Search for a given pattern."
 msgstr ""
 
-#: ../pakfire/cli.py:130
+#: ../pakfire/cli.py:132
 msgid "A pattern to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:136
+#: ../pakfire/cli.py:138
 msgid "Get a list of packages that provide a given file or feature."
 msgstr ""
 
-#: ../pakfire/cli.py:138
+#: ../pakfire/cli.py:140
 msgid "File or feature to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:144
+#: ../pakfire/cli.py:146
 msgid "Get list of packages that belong to the given group."
 msgstr ""
 
-#: ../pakfire/cli.py:146
+#: ../pakfire/cli.py:148
 msgid "Group name to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:152
+#: ../pakfire/cli.py:154
 msgid "Install all packages that belong to the given group."
 msgstr ""
 
-#: ../pakfire/cli.py:154
+#: ../pakfire/cli.py:156
 msgid "Group name."
 msgstr ""
 
-#: ../pakfire/cli.py:160
+#: ../pakfire/cli.py:162
 msgid "List all currently enabled repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:220 ../pakfire/transaction.py:248
+#: ../pakfire/cli.py:166
+msgid "Cleanup commands."
+msgstr ""
+
+#: ../pakfire/cli.py:174
+msgid "Cleanup all temporary files."
+msgstr ""
+
+#: ../pakfire/cli.py:234 ../pakfire/transaction.py:248
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/cli.py:220
+#: ../pakfire/cli.py:234
 msgid "Enabled"
 msgstr ""
 
-#: ../pakfire/cli.py:220
+#: ../pakfire/cli.py:234
 msgid "Priority"
 msgstr ""
 
-#: ../pakfire/cli.py:220
+#: ../pakfire/cli.py:234
 msgid "Packages"
 msgstr ""
 
-#: ../pakfire/cli.py:235
+#: ../pakfire/cli.py:246
+msgid "Cleaning up everything..."
+msgstr ""
+
+#: ../pakfire/cli.py:254
 msgid "Pakfire builder command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:283
+#: ../pakfire/cli.py:304
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../pakfire/cli.py:289
+#: ../pakfire/cli.py:310
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../pakfire/cli.py:291
+#: ../pakfire/cli.py:312
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../pakfire/cli.py:295
+#: ../pakfire/cli.py:316
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:297 ../pakfire/cli.py:319
+#: ../pakfire/cli.py:318 ../pakfire/cli.py:340
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:302
+#: ../pakfire/cli.py:323
 msgid "Go into a shell."
 msgstr ""
 
-#: ../pakfire/cli.py:304
+#: ../pakfire/cli.py:325
 msgid "Give name of a package."
 msgstr ""
 
-#: ../pakfire/cli.py:308
+#: ../pakfire/cli.py:329
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:313
+#: ../pakfire/cli.py:334
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:315
+#: ../pakfire/cli.py:336
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:390
+#: ../pakfire/cli.py:411
 msgid "Pakfire repo command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:415
+#: ../pakfire/cli.py:436
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:423
+#: ../pakfire/cli.py:444
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:424
+#: ../pakfire/cli.py:445
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:425
+#: ../pakfire/cli.py:446
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/cli.py:437
+#: ../pakfire/cli.py:458
 msgid "Pakfire master command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:465
+#: ../pakfire/cli.py:486
 msgid "Update the sources."
 msgstr ""
 
-#: ../pakfire/cli.py:475
+#: ../pakfire/cli.py:496
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:505
+#: ../pakfire/cli.py:526
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:511
+#: ../pakfire/cli.py:532
 msgid "Send a keepalive to the server."
 msgstr ""
 
@@ -290,19 +302,19 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/index.py:215
+#: ../pakfire/repository/index.py:221
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:289
+#: ../pakfire/repository/index.py:295
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:339
+#: ../pakfire/repository/index.py:345
 msgid "Loading installed packages"
 msgstr ""
 

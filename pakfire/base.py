@@ -391,3 +391,9 @@ class Pakfire(object):
 
 	def repo_list(self):
 		return [r for r in self.repos]
+
+	def clean_all(self):
+		logging.debug("Cleaning up everything...")
+
+		# Clean up repository caches.
+		self.repos.clean()

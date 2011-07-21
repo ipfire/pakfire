@@ -150,6 +150,12 @@ class Index(object):
 			rel = self.create_relation(file)
 			solvable.add_provides(rel)
 
+	def clear(self):
+		"""
+			Forget all packages from memory.
+		"""
+		self.solver_repo.clear()
+
 
 class IndexSolv(Index):
 	def check(self):

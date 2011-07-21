@@ -86,6 +86,16 @@ class RepositoryFactory(object):
 
 		self.index.update(force)
 
+	def clean(self):
+		"""
+			Cleanup all temporary files of this repository.
+		"""
+		logging.info("Cleaning up repository '%s'..." % self.name)
+		self.cache.destroy()
+
+		assert self.index
+		self.index.clear()
+
 
 class RepositoryDummy(RepositoryFactory):
 	"""
