@@ -62,10 +62,6 @@ class Pakfire(object):
 		self.repos  = repository.Repositories(self,
 			enable_repos=enable_repos, disable_repos=disable_repos)
 
-		# Create the solver of this pakfire instance.
-		# XXX maybe we can only create it when we need it?
-		#self.solver = satsolver.Solver(self, self.pool)
-
 	def create_solver(self):
 		return satsolver.Solver(self, self.pool)
 
