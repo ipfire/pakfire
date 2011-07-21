@@ -36,4 +36,6 @@ PyObject* Problem_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Problem_dealloc(ProblemObject *self) {
 	//self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }

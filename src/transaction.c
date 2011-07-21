@@ -44,6 +44,8 @@ PyObject* Transaction_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 PyObject *Transaction_dealloc(TransactionObject *self) {
 	/* XXX need to free self->_transaction */
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Transaction_steps(TransactionObject *self, PyObject *args) {

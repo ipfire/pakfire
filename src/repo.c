@@ -1,5 +1,6 @@
 
 #include <stdbool.h>
+#include <satsolver/repo_solv.h>
 #include <satsolver/repo_write.h>
 
 #include "pool.h"
@@ -44,6 +45,8 @@ PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 PyObject *Repo_dealloc(RepoObject *self) {
 	// repo_free(self->_repo, 0);
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Repo_name(RepoObject *self) {
@@ -84,7 +87,7 @@ PyObject *Repo_set_enabled(RepoObject *self, PyObject *args) {
 }
 
 PyObject *Repo_get_priority(RepoObject *self) {
-	Py_BuildValue("i", self->_repo->priority);
+	return Py_BuildValue("i", self->_repo->priority);
 }
 
 PyObject *Repo_set_priority(RepoObject *self, PyObject *args) {

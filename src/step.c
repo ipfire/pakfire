@@ -39,6 +39,8 @@ PyObject* Step_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Step_dealloc(StepObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Step_get_solvable(StepObject *self, PyObject *args) {

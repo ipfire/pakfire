@@ -40,6 +40,8 @@ PyObject* Request_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Request_dealloc(RequestObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 void _Request_solvable(RequestObject *self, Id what, Id solvable) {

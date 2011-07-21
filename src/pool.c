@@ -48,6 +48,8 @@ PyObject* Pool_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 PyObject *Pool_dealloc(PoolObject *self) {
 	pool_free(self->_pool);
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Pool_add_repo(PoolObject *self, PyObject *args) {
@@ -75,7 +77,7 @@ void _Pool_prepare(Pool *pool) {
 	pool_addfileprovides(pool);
 	pool_createwhatprovides(pool);
 
-	Id r;
+	Repo *r;
 	int idx;
 	FOR_REPOS(idx, r) {
 		repo_internalize(r);

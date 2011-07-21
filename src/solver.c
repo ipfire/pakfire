@@ -40,6 +40,8 @@ PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 PyObject *Solver_dealloc(SolverObject *self) {
 	solver_free(self->_solver);
 	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args) {
