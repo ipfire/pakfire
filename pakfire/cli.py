@@ -56,7 +56,10 @@ class Cli(object):
 
 	@property
 	def pakfire_args(self):
-		ret = { "path" : self.args.instroot }
+		ret = { "mode" : "normal" }
+
+		if hasattr(self.args, "instroot"):
+			ret["path"] = self.args.instroot
 
 		if hasattr(self.args, "disable_repo"):
 			ret["disable_repos"] = self.args.disable_repo
@@ -264,7 +267,7 @@ class CliBuilder(Cli):
 
 	@property
 	def pakfire_args(self):
-		ret = { "builder" : 1 }
+		ret = { "mode" : "builder" }
 
 		if hasattr(self.args, "disable_repo"):
 			ret["disable_repos"] = self.args.disable_repo
@@ -401,6 +404,12 @@ class CliRepo(Cli):
 			"repo_create" : self.handle_repo_create,
 		}
 
+	@property
+	def pakfire_args(self):
+		ret = { "mode" : "repo" }
+
+		return ret
+
 	def parse_command_repo(self):
 		sub_repo = self.sub_commands.add_parser("repo",
 			help=_("Repository management commands."))
@@ -444,6 +453,12 @@ class CliMaster(Cli):
 			"update"      : self.handle_update,
 		}
 
+	@property
+	def pakfire_args(self):
+		ret = { "mode" : "master" }
+
+		return ret
+
 	def parse_command_update(self):
 		# Implement the "update" command.
 		sub_update = self.sub_commands.add_parser("update",
@@ -477,6 +492,12 @@ class CliServer(Cli):
 			"build"     : self.handle_build,
 			"keepalive" : self.handle_keepalive,
 		}
+
+	@property
+	def pakfire_args(self):
+		ret = { "mode" : "server" }
+
+		return ret
 
 	def parse_command_build(self):
 		# Implement the "build" command.

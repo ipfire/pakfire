@@ -43,10 +43,6 @@ class Builder(object):
 
 	def __init__(self, pkg=None, distro_config=None, build_id=None, logfile=None,
 			**pakfire_args):
-		pakfire_args.update({
-			"builder" : True,
-		})
-
 		# Save the build id and generate one if no build id was provided.
 		if not build_id:
 			build_id = "%s" % uuid.uuid4()
@@ -81,7 +77,8 @@ class Builder(object):
 			self.log.info(line % logdata)
 
 		# Create pakfire instance.
-		self.pakfire = base.Pakfire(distro_config=distro_config, **pakfire_args)
+		self.pakfire = base.Pakfire("builder", distro_config=distro_config,
+			**pakfire_args)
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
@@ -132,10 +129,6 @@ class Builder(object):
 			Inherit architecture from distribution configuration.
 		"""
 		return self.distro.arch
-
-	@property
-	def solver(self):
-		return self.pakfire.solver
 
 	@property
 	def info(self):

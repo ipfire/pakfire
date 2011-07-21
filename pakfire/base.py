@@ -26,28 +26,30 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, path="/", builder=False, configs=[],
+	def __init__(self, mode, path="/", configs=[],
 			enable_repos=None, disable_repos=None,
 			distro_config=None):
+
+		# Set the mode.
+		assert mode in ("normal", "builder", "repo", "server", "master")
+		self.mode = mode
+
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
-		config_type = None
-
 		# The path where we are operating in.
-		if builder:
-			config_type = "builder"
-			self.builder = True
-			self.path = os.path.join(BUILD_ROOT, util.random_string())
-		else:
-			self.builder = False
-			self.path = path
+		self.path = path
 
+		# Configure the instance of Pakfire we just started.
+		if mode == "builder":
+			self.path = os.path.join(BUILD_ROOT, util.random_string())
+
+		elif mode == "normal":
 			# check if we are actually running on an ipfire system.
 			self.check_is_ipfire()
 
 		# Read configuration file(s)
-		self.config = config.Config(type=config_type)
+		self.config = config.Config(type=mode)
 		for filename in configs:
 			self.config.read(filename)
 
@@ -101,7 +103,7 @@ class Pakfire(object):
 			Check if we are running in build mode.
 			Otherwise, raise an exception.
 		"""
-		if not self.builder:
+		if not self.mode == "builder":
 			raise BuildError, "Cannot build when not in build mode."
 
 	def check_host_arch(self, arch):
@@ -123,6 +125,11 @@ class Pakfire(object):
 
 		if not ret:
 			raise NotAnIPFireSystemError, "You can run pakfire only on an IPFire system"
+
+	@property
+	def builder(self):
+		# XXX just backwards compatibility
+		return self.mode == "builder"
 
 	def install(self, requires):
 		# Create a new request.
