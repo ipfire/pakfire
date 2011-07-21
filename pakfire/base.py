@@ -46,7 +46,8 @@ class Pakfire(object):
 
 		elif mode == "normal":
 			# check if we are actually running on an ipfire system.
-			self.check_is_ipfire()
+			if self.path == "/":
+				self.check_is_ipfire()
 
 		# Read configuration file(s)
 		self.config = config.Config(type=mode)
