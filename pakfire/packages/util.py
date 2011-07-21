@@ -71,14 +71,20 @@ def text_wrap(s, length=65):
 	return [" ".join(l) for l in t]
 
 def format_size(s):
-	units = ("B", "k", "M", "G", "T")
+	units = (" ", "k", "M", "G", "T")
 	unit = 0
 
 	while s >= 1024 and unit < len(units):
 		s /= 1024
 		unit += 1
 
-	return "%d%s" % (int(s), units[unit])
+	return "%d %s" % (int(s), units[unit])
+
+def format_time(s):
+	return "%02d:%02d" % (s // 60, s % 60)
+
+def format_speed(s):
+	return "%sB/s" % format_size(s)
 
 def calc_hash1(filename=None, data=None):
 	h = hashlib.sha1()

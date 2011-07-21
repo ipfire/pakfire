@@ -1,15 +1,18 @@
 #!/usr/bin/python
 
+import fcntl
 import os
 import progressbar
 import random
 import shutil
 import string
+import struct
 import sys
+import termios
 import time
 
 from errors import Error
-from packages.util import calc_hash1, format_size
+from packages.util import calc_hash1, format_size, format_speed, format_time
 from i18n import _
 
 def cli_is_interactive():
@@ -92,3 +95,30 @@ def rm(path, *args, **kargs):
 				os.system("chattr -R -i %s" % path)
 			else:
 				raise
+
+def ioctl_GWINSZ(fd):
+	try:
+		cr = struct.unpack("hh", fcntl.ioctl(fd, termios.TIOCGWINSZ, "1234"))
+	except:
+		return None
+
+	return cr
+
+def terminal_size():
+	cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
+
+	if not cr:
+		try:
+			fd = os.open(os.ctermid(), os.O_RDONLY)
+			cr = ioctl_GWINSZ(fd)
+			os.close(fd)
+		except:
+			pass
+
+	if not cr:
+		try:
+			cr = (os.environ['LINES'], os.environ['COLUMNS'])
+		except:
+			cr = (25, 80)
+
+	return int(cr[1]), int(cr[0])

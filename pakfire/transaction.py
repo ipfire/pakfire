@@ -4,6 +4,7 @@ import logging
 import os
 import progressbar
 import sys
+import time
 
 import packages
 import satsolver
@@ -204,13 +205,46 @@ class Transaction(object):
 		return [a for a in self.actions if a.needs_download]
 
 	def download(self):
-		downloads = self.downloads
+		# Get all download actions as a list.
+		downloads = [d for d in self.downloads]
+		downloads.sort()
+
+		# If there are no downloads, we can just stop here.
+		if not downloads:
+			return
+
+		logging.info(_("Downloading packages:"))
+		time_start = time.time()
+
+		# Calculate downloadsize.
+		download_size = 0
+		for action in downloads:
+			download_size += action.pkg.size
 
 		i = 0
-		for action in self.actions:
+		for action in downloads:
 			i += 1
+			action.download(text="(%d/%d): " % (i, len(downloads)))
 
-			action.download(text="(%02d/%02d): " % (i, len(downloads)))
+		# Write an empty line to the console when there have been any downloads.
+		width, height = util.terminal_size()
+
+		# Print a nice line.
+		logging.info("-" * width)
+
+		# Format and calculate download information.
+		time_stop = time.time()
+		download_time = time_stop - time_start
+		download_speed = download_size / download_time
+		download_speed = util.format_speed(download_speed)
+		download_size = util.format_size(download_size)
+		download_time = util.format_time(download_time)
+
+		line = _("%s | %-5sB     %s     ") % \
+			(download_speed, download_size, download_time)
+		line = " " * (width - len(line)) + line
+		logging.info(line)
+		logging.info("")
 
 	def dump_pkg(self, pkg):
 		ret = []
