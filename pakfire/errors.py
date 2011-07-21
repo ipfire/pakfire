@@ -2,6 +2,9 @@
 
 class Error(Exception):
 	pass
+	
+class ActionError(Error):
+	pass
 
 class BuildAbortedException(Error):
 	pass

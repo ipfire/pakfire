@@ -1,3 +1,4 @@
+pakfire/actions.py
 pakfire/api.py
 pakfire/base.py
 pakfire/builder.py
@@ -24,7 +25,6 @@ pakfire/packages/solv.py
 pakfire/packages/source.py
 pakfire/packages/util.py
 pakfire/packages/virtual.py
-pakfire/repository/actions.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
 pakfire/repository/database.py

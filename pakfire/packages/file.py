@@ -169,7 +169,8 @@ class FilePackage(Package):
 		# Load progressbar.
 		pb = None
 		if message:
-			pb = util.make_progress("%-40s" % message, len(members))
+			message = "%-10s : %s" % (message, self.friendly_name)
+			pb = util.make_progress(message, len(members), eta=False)
 
 		i = 0
 		for member in members:
