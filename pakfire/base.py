@@ -26,7 +26,7 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, mode, path="/", configs=[],
+	def __init__(self, mode=None, path="/", configs=[],
 			enable_repos=None, disable_repos=None,
 			distro_config=None):
 
