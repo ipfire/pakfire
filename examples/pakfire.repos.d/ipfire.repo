@@ -14,13 +14,9 @@
 
 ;gpgkey = /not/yet/existant
 
-[testingbay2]
+[testingbay]
 description = IPFire Testing Repository
-
-;mirrorlist = http://people.ipfire.org/~ms/testingbay/mirrors
-mirrorlist = file:///build/pakfire/testingbay/mirrors
-
-;url = http://people.ipfire.org/~ms/testingbay
-url = file:///build/pakfire/testingbay
-
 enabled = 1
+
+mirrorlist = http://people.ipfire.org/~ms/testingbay/mirrors
+url = http://people.ipfire.org/~ms/testingbay
