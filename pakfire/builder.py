@@ -77,6 +77,8 @@ class Builder(object):
 			self.log.info(line % logdata)
 
 		# Create pakfire instance.
+		if pakfire_args.has_key("mode"):
+			del pakfire_args["mode"]
 		self.pakfire = base.Pakfire(mode="builder", distro_config=distro_config, **pakfire_args)
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
