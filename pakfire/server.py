@@ -318,6 +318,10 @@ class Server(object):
 		try:
 			func(build_id, build)
 
+		except DependencyError:
+			# This has already been reported by func.
+			raise
+
 		except Exception, e:
 			# Format the exception and send it to the server.
 			message = "%s: %s" % (e.__class__.__name__, e)
@@ -373,6 +377,7 @@ class Server(object):
 		except DependencyError, e:
 			message = "%s: %s" % (e.__class__.__name__, e)
 			self.update_build_status(build_id, "dependency_error", message)
+			raise
 
 		finally:
 			# Upload the logfile in any case and if it exists.
