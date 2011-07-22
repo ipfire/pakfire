@@ -50,7 +50,7 @@ class RepositoryDir(base.RepositoryFactory):
 
 				# Check UUID at first (faster) and check the file hash to be
 				# absolutely sure.
-				if pkg.uuid == pkg_exists.uuid and pkg.hash1 and pkg_exists.hash1:
+				if pkg.uuid == pkg_exists.uuid and pkg.hash1 == pkg_exists.hash1:
 					# Do not copy the file if it is already okay.
 					copy = False
 
@@ -59,8 +59,10 @@ class RepositoryDir(base.RepositoryFactory):
 				else:
 					os.unlink(repo_filename)
 
+				del pkg_exists
+
 			if copy:
-				logging.debug("Copying package '%s' to repository." % pkg.friendly_name)
+				logging.debug("Copying package '%s' to repository." % pkg)
 				repo_dirname = os.path.dirname(repo_filename)
 				if not os.path.exists(repo_dirname):
 					os.makedirs(repo_dirname)
