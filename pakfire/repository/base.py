@@ -6,6 +6,7 @@ import logging
 import re
 
 import cache
+import pakfire.packages as packages
 import pakfire.satsolver as satsolver
 
 class RepositoryFactory(object):
@@ -35,6 +36,15 @@ class RepositoryFactory(object):
 
 	def __len__(self):
 		return self.solver_repo.size()
+
+	def __iter__(self):
+		pkgs = []
+
+		for solv in self.solver_repo.get_all():
+			pkg = packages.SolvPackage(self.pakfire, solv, self)
+			pkgs.append(pkg)
+
+		return iter(pkgs)
 
 	@property
 	def pool(self):

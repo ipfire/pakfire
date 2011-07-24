@@ -58,6 +58,7 @@ static PyMethodDef Repo_methods[] = {
 	{"write", (PyCFunction)Repo_write, METH_VARARGS, NULL},
 	{"read", (PyCFunction)Repo_read, METH_VARARGS, NULL},
 	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
+	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 

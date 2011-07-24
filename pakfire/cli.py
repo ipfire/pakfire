@@ -503,6 +503,7 @@ class CliServer(Cli):
 
 		self.parse_command_build()
 		self.parse_command_keepalive()
+		self.parse_command_repoupdate()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -510,8 +511,9 @@ class CliServer(Cli):
 		self.server = server.Server()
 
 		self.action2func = {
-			"build"     : self.handle_build,
-			"keepalive" : self.handle_keepalive,
+			"build"      : self.handle_build,
+			"keepalive"  : self.handle_keepalive,
+			"repoupdate" : self.handle_repoupdate,
 		}
 
 	@property
@@ -533,8 +535,18 @@ class CliServer(Cli):
 		sub_keepalive.add_argument("action", action="store_const",
 			const="keepalive")
 
+	def parse_command_repoupdate(self):
+		# Implement the "repoupdate" command.
+		sub_repoupdate = self.sub_commands.add_parser("repoupdate",
+			help=_("Update all repositories."))
+		sub_repoupdate.add_argument("action", action="store_const",
+			const="repoupdate")
+
 	def handle_keepalive(self):
 		self.server.update_info()
 
 	def handle_build(self):
 		self.server.build_job()
+
+	def handle_repoupdate(self):
+		self.server.update_repositories()

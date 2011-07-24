@@ -7,8 +7,8 @@ import base
 import binary
 
 class SolvPackage(base.Package):
-	def __init__(self, pakfire, solvable):
-		base.Package.__init__(self, pakfire)
+	def __init__(self, pakfire, solvable, repo=None):
+		base.Package.__init__(self, pakfire, repo)
 
 		# Save solvable object
 		self.solvable = solvable
@@ -63,8 +63,10 @@ class SolvPackage(base.Package):
 
 	@property
 	def repo(self):
-		repo_name = self.solvable.get_repo_name()
+		if self._repo:
+			return self._repo
 
+		repo_name = self.solvable.get_repo_name()
 		return self.pakfire.repos.get_repo(repo_name)
 
 	@property

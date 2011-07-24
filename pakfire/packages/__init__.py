@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import tarfile
+
 from binary import BinaryPackage
 from file import InnerTarFile
 from installed import DatabasePackage, InstalledPackage
@@ -21,10 +23,13 @@ def open(pakfire, repo, filename):
 		not.
 	"""
 	# XXX We should make this check much better...
-	if filename.endswith(".src.%s" % PACKAGE_EXTENSION):
-		return SourcePackage(pakfire, repo, filename)
+
+	# Simply check if the given file is a tarfile.
+	if tarfile.is_tarfile(filename):
+		if filename.endswith(".src.%s" % PACKAGE_EXTENSION):
+			return SourcePackage(pakfire, repo, filename)
+
+		return BinaryPackage(pakfire, repo, filename)
 
 	elif filename.endswith(".%s" % MAKEFILE_EXTENSION):
 		return Makefile(pakfire, filename)
-
-	return BinaryPackage(pakfire, repo, filename)

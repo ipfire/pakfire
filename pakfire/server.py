@@ -2,6 +2,7 @@
 
 import hashlib
 import logging
+import os
 import random
 import socket
 import subprocess
@@ -116,13 +117,14 @@ class Source(object):
 		pakfire.api.dist(pkgs, resultdirs=[tmpdir,], **pakfire_args)
 
 		# Create a kind of dummy repository to link the packages against it.
-		repo = pakfire.repository.LocalSourceRepository(self.pakfire,
-			"source-%s" % rnd, "Source packages", tmpdir, idx="directory")
-		repo.update(force=True)
+		if pakfire_args.has_key("build_id"):
+			del pakfire_args["build_id"]
+		pakfire_args["mode"] = "server"
+
+		repo = pakfire.api.repo_create("source-%s" % rnd, [tmpdir,], type="source",
+			**pakfire_args)
 
 		return repo
-
-		# XXX don't forget to remove the repository.
 
 	def update_all(self):
 		_files = []
@@ -395,8 +397,22 @@ class Server(object):
 
 		repo = source.update_revision(build["revision"], build_id=build_id)
 
-		# Upload all files in the repository.
-		for pkg in repo.get_all():
-			self.upload_file(pkg.filename, build_id)
+		try:
+			# Upload all files in the repository.
+			for pkg in repo:
+				path = os.path.join(pkg.repo.path, pkg.filename)
+				self.upload_file(path, build_id)
+		finally:
+			repo.remove()
 
-		repo.remove()
+	def update_repositories(self, limit=2):
+		repos = self.conn.get_repos(limit)
+
+		for repo in repos:
+			files = self.conn.get_repo_packages(repo["id"])
+
+			for arch in repo["arches"]:
+				path = "/pakfire/repositories/%s/%s/%s" % \
+					(repo["distro"]["sname"], repo["name"], arch)
+
+				pakfire.api.repo_create(path, files)
