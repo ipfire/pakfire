@@ -38,7 +38,7 @@ MAKEFILE_EXTENSION = "nm"
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
-BUILD_PACKAGES = ["build-essentials=1:3.0-alpha2-19.ip3",]
+BUILD_PACKAGES = ["build-essentials=2:1.0-1.ip3",]
 SHELL_PACKAGES = ["elinks", "less", "pakfire", "vim",]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
@@ -93,8 +93,10 @@ PKG_SUMMARY="%(summary)s"
 PKG_DESCRIPTION="%(description)s"
 
 # Dependency info
+PKG_PREREQUIRES="%(prerequires)s"
 PKG_REQUIRES="%(requires)s"
 PKG_PROVIDES="%(provides)s"
+PKG_CONFLICTS="%(conflicts)s"
 PKG_OBSOLETES="%(obsoletes)s"
 
 PKG_PAYLOAD_COMP="%(payload_comp)s"

@@ -123,8 +123,27 @@ class SolvPackage(base.Package):
 		return self.solvable.get_provides()
 
 	@property
+	def _requires(self):
+		requires = self.solvable.get_requires()
+
+		try:
+			i = requires.index("solvable:prereqmarker")
+
+			return (requires[:i], requires[i:],)
+		except ValueError:
+			return ([], requires,)
+
+	@property
+	def prerequires(self):
+		prereqs, reqs = self._requires
+
+		return prereqs
+
+	@property
 	def requires(self):
-		return self.solvable.get_requires()
+		prereqs, reqs = self._requires
+
+		return reqs
 
 	@property
 	def obsoletes(self):

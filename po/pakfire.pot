@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-22 17:04+0200\n"
+"POT-Creation-Date: 2011-07-24 18:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -247,12 +247,16 @@ msgstr ""
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:528
+#: ../pakfire/cli.py:530
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:534
+#: ../pakfire/cli.py:536
 msgid "Send a keepalive to the server."
+msgstr ""
+
+#: ../pakfire/cli.py:543
+msgid "Update all repositories."
 msgstr ""
 
 #: ../pakfire/packages/base.py:69
@@ -323,19 +327,19 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/index.py:221
+#: ../pakfire/repository/index.py:227
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:295
+#: ../pakfire/repository/index.py:311
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:345
+#: ../pakfire/repository/index.py:364
 msgid "Loading installed packages"
 msgstr ""
 

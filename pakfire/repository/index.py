@@ -124,6 +124,12 @@ class Index(object):
 		solvable.set_installsize(pkg.inst_size)
 
 		# Import all requires.
+		requires = pkg.requires
+		prerequires = pkg.prerequires
+		if prerequires:
+			requires.append("solvable:prereqmarker")
+			requires += prerequires
+
 		for req in pkg.requires:
 			rel = self.create_relation(req)
 			solvable.add_requires(rel)
