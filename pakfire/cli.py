@@ -316,6 +316,8 @@ class CliBuilder(Cli):
 			help=_("Build the package for the given architecture."))
 		sub_build.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
+		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -358,8 +360,8 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.build(pkg, distro_config=distro_config, resultdirs=[self.args.resultdir,],
-			shell=True, **self.pakfire_args)
+		pakfire.build(pkg, builder_mode=self.args.mode, distro_config=distro_config,
+			resultdirs=[self.args.resultdir,], shell=True, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None

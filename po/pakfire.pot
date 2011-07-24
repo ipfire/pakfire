@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-21 16:26+0200\n"
+"POT-Creation-Date: 2011-07-22 17:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr ""
 msgid "Downgrading"
 msgstr ""
 
-#: ../pakfire/builder.py:246
+#: ../pakfire/builder.py:259
 #, python-format
 msgid "Extracting: %s (source)"
 msgstr ""
@@ -187,67 +187,71 @@ msgstr ""
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:318 ../pakfire/cli.py:340
+#: ../pakfire/cli.py:318 ../pakfire/cli.py:342
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:323
-msgid "Go into a shell."
+#: ../pakfire/cli.py:320
+msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
 #: ../pakfire/cli.py:325
+msgid "Go into a shell."
+msgstr ""
+
+#: ../pakfire/cli.py:327
 msgid "Give name of a package."
 msgstr ""
 
-#: ../pakfire/cli.py:329
+#: ../pakfire/cli.py:331
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:334
+#: ../pakfire/cli.py:336
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:336
+#: ../pakfire/cli.py:338
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:411
+#: ../pakfire/cli.py:413
 msgid "Pakfire repo command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:436
+#: ../pakfire/cli.py:438
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:444
+#: ../pakfire/cli.py:446
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:445
+#: ../pakfire/cli.py:447
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:446
+#: ../pakfire/cli.py:448
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/cli.py:458
+#: ../pakfire/cli.py:460
 msgid "Pakfire master command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:486
+#: ../pakfire/cli.py:488
 msgid "Update the sources."
 msgstr ""
 
-#: ../pakfire/cli.py:496
+#: ../pakfire/cli.py:498
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:526
+#: ../pakfire/cli.py:528
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:532
+#: ../pakfire/cli.py:534
 msgid "Send a keepalive to the server."
 msgstr ""
 
