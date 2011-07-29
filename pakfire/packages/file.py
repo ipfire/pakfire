@@ -310,13 +310,7 @@ class FilePackage(Package):
 		"""
 			Return the compression type of the payload.
 		"""
-		comp = self.metadata.get("PKG_PAYLOAD_COMP", None)
-
-		# Remove triple X placeholder that was used some time.
-		if comp == "X"*3:
-			return None
-
-		return comp or "xz"
+		return self.metadata.get("PKG_PAYLOAD_COMP", None)
 
 	@property
 	def signature(self):
