@@ -30,4 +30,4 @@ check:
 
 .PHONY: po
 po:
-	find pakfire -name "*.py" | grep -v "__version__.py" | sort > po/POTFILES.in
+	find pakfire src -name "*.py" -or -name "*.c" | grep -v "__version__.py" | sort > po/POTFILES.in

@@ -12,6 +12,7 @@ PyTypeObject RelationType = {
 	tp_new : Relation_new,
 	tp_dealloc: (destructor) Relation_dealloc,
 	tp_doc: "Sat Relation objects",
+	tp_str: (reprfunc)Relation_string,
 };
 
 PyObject* Relation_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
@@ -47,4 +48,8 @@ PyObject *Relation_dealloc(RelationObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
+}
+
+PyObject *Relation_string(RelationObject *self) {
+	return Py_BuildValue("s", pool_dep2str(self->_pool, self->_id));
 }

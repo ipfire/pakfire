@@ -1,6 +1,7 @@
 
 #include <Python.h>
 
+#include "config.h"
 #include "pool.h"
 #include "problem.h"
 #include "relation.h"
@@ -25,6 +26,10 @@ static PyMethodDef Pool_methods[] = {
 };
 
 static PyMethodDef Problem_methods[] = {
+	{"get_rule", (PyCFunction)Problem_get_rule, METH_NOARGS, NULL},
+	{"get_source", (PyCFunction)Problem_get_source, METH_NOARGS, NULL},
+	{"get_target", (PyCFunction)Problem_get_target, METH_NOARGS, NULL},
+	{"get_dep", (PyCFunction)Problem_get_dep, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -136,6 +141,12 @@ static PyMethodDef Transaction_methods[] = {
 };
 
 void init_pakfire(void) {
+	/* Initialize locale */
+	setlocale(LC_ALL, "");
+	bindtextdomain(TEXTDOMAIN, "/usr/share/locale");
+	textdomain(TEXTDOMAIN);
+
+	/* Load the python module */
 	PyObject *m, *d;
 
 	m = Py_InitModule("_pakfire", pakfireModuleMethods);
@@ -214,12 +225,33 @@ void init_pakfire(void) {
 	PyDict_SetItemString(d, "REL_GE", Py_BuildValue("i", REL_GT|REL_EQ));
 
 	// Add constants for search
-	PyDict_SetItemString(d, "SEARCH_STRING",		Py_BuildValue("i", SEARCH_STRING));
+	PyDict_SetItemString(d, "SEARCH_STRING",	Py_BuildValue("i", SEARCH_STRING));
 	PyDict_SetItemString(d, "SEARCH_STRINGSTART",	Py_BuildValue("i", SEARCH_STRINGSTART));
-	PyDict_SetItemString(d, "SEARCH_STRINGEND",		Py_BuildValue("i", SEARCH_STRINGEND));
-	PyDict_SetItemString(d, "SEARCH_SUBSTRING",		Py_BuildValue("i", SEARCH_SUBSTRING));
-	PyDict_SetItemString(d, "SEARCH_GLOB",			Py_BuildValue("i", SEARCH_GLOB));
-	PyDict_SetItemString(d, "SEARCH_REGEX",			Py_BuildValue("i", SEARCH_REGEX));
-	PyDict_SetItemString(d, "SEARCH_FILES",			Py_BuildValue("i", SEARCH_FILES));
-	PyDict_SetItemString(d, "SEARCH_CHECKSUMS",		Py_BuildValue("i", SEARCH_CHECKSUMS));
+	PyDict_SetItemString(d, "SEARCH_STRINGEND",	Py_BuildValue("i", SEARCH_STRINGEND));
+	PyDict_SetItemString(d, "SEARCH_SUBSTRING",	Py_BuildValue("i", SEARCH_SUBSTRING));
+	PyDict_SetItemString(d, "SEARCH_GLOB",		Py_BuildValue("i", SEARCH_GLOB));
+	PyDict_SetItemString(d, "SEARCH_REGEX",		Py_BuildValue("i", SEARCH_REGEX));
+	PyDict_SetItemString(d, "SEARCH_FILES",		Py_BuildValue("i", SEARCH_FILES));
+	PyDict_SetItemString(d, "SEARCH_CHECKSUMS",	Py_BuildValue("i", SEARCH_CHECKSUMS));
+
+	// Add constants for rules
+	PyDict_SetItemString(d, "SOLVER_RULE_DISTUPGRADE",			Py_BuildValue("i", SOLVER_RULE_DISTUPGRADE));
+	PyDict_SetItemString(d, "SOLVER_RULE_INFARCH",				Py_BuildValue("i", SOLVER_RULE_INFARCH));
+	PyDict_SetItemString(d, "SOLVER_RULE_UPDATE",				Py_BuildValue("i", SOLVER_RULE_UPDATE));
+	PyDict_SetItemString(d, "SOLVER_RULE_JOB",				Py_BuildValue("i", SOLVER_RULE_JOB));
+	PyDict_SetItemString(d, "SOLVER_RULE_JOB_NOTHING_PROVIDES_DEP",		Py_BuildValue("i", SOLVER_RULE_JOB_NOTHING_PROVIDES_DEP));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM",				Py_BuildValue("i", SOLVER_RULE_RPM));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_NOT_INSTALLABLE",		Py_BuildValue("i", SOLVER_RULE_RPM_NOT_INSTALLABLE));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_NOTHING_PROVIDES_DEP",		Py_BuildValue("i", SOLVER_RULE_RPM_NOTHING_PROVIDES_DEP));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_SAME_NAME",			Py_BuildValue("i", SOLVER_RULE_RPM_SAME_NAME));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_PACKAGE_CONFLICT",		Py_BuildValue("i", SOLVER_RULE_RPM_PACKAGE_CONFLICT));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_PACKAGE_OBSOLETES",		Py_BuildValue("i", SOLVER_RULE_RPM_PACKAGE_OBSOLETES));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_INSTALLEDPKG_OBSOLETES",	Py_BuildValue("i", SOLVER_RULE_RPM_INSTALLEDPKG_OBSOLETES));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_IMPLICIT_OBSOLETES",		Py_BuildValue("i", SOLVER_RULE_RPM_IMPLICIT_OBSOLETES));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_PACKAGE_REQUIRES",		Py_BuildValue("i", SOLVER_RULE_RPM_PACKAGE_REQUIRES));
+	PyDict_SetItemString(d, "SOLVER_RULE_RPM_SELF_CONFLICT",		Py_BuildValue("i", SOLVER_RULE_RPM_SELF_CONFLICT));
+	PyDict_SetItemString(d, "SOLVER_RULE_UNKNOWN",				Py_BuildValue("i", SOLVER_RULE_UNKNOWN));
+	PyDict_SetItemString(d, "SOLVER_RULE_FEATURE",				Py_BuildValue("i", SOLVER_RULE_FEATURE));
+	PyDict_SetItemString(d, "SOLVER_RULE_LEARNT",				Py_BuildValue("i", SOLVER_RULE_LEARNT));
+	PyDict_SetItemString(d, "SOLVER_RULE_CHOICE",				Py_BuildValue("i", SOLVER_RULE_CHOICE));
 }

@@ -7,6 +7,8 @@ from _pakfire import *
 
 import transaction
 
+from i18n import _
+
 class Request(_pakfire.Request):
 	def install(self, what):
 		if isinstance(what, Solvable):
@@ -95,5 +97,21 @@ class Solver(object):
 			t = Transaction(self._solver)
 
 			return transaction.Transaction.from_solver(self.pakfire, self, t)
+
+		# Do the problem handling...
+		problems = self._solver.get_problems(request)
+
+		logging.info("")
+		logging.info(_("The solver returned %s problems:") % len(problems))
+		logging.info("")
+
+		i = 0
+		for p in self._solver.get_problems(request):
+			i += 1
+
+			# Print information about the problem to the user.
+			logging.info(_("  Problem #%d:") % i)
+			logging.info("    %s" % p)
+			logging.info("")
 
 		return res

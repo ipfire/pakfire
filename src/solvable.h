@@ -15,6 +15,8 @@ typedef struct {
 
 extern PyObject* Solvable_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 extern PyObject *Solvable_dealloc(SolvableObject *self);
+extern PyObject *Solvable_string(SolvableObject *self);
+
 extern PyObject *Solvable_get_name(SolvableObject *self);
 extern PyObject *Solvable_get_evr(SolvableObject *self);
 extern PyObject *Solvable_get_arch(SolvableObject *self);

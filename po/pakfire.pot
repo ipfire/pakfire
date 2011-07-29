@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-24 18:12+0200\n"
+"POT-Creation-Date: 2011-07-29 15:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,11 +187,11 @@ msgstr ""
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:318 ../pakfire/cli.py:342
+#: ../pakfire/cli.py:318 ../pakfire/cli.py:344
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:320
+#: ../pakfire/cli.py:320 ../pakfire/cli.py:333
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
@@ -207,55 +207,55 @@ msgstr ""
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:336
+#: ../pakfire/cli.py:338
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:338
+#: ../pakfire/cli.py:340
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:413
+#: ../pakfire/cli.py:416
 msgid "Pakfire repo command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:438
+#: ../pakfire/cli.py:441
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:446
+#: ../pakfire/cli.py:449
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:447
+#: ../pakfire/cli.py:450
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:448
+#: ../pakfire/cli.py:451
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/cli.py:460
+#: ../pakfire/cli.py:463
 msgid "Pakfire master command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:488
+#: ../pakfire/cli.py:491
 msgid "Update the sources."
 msgstr ""
 
-#: ../pakfire/cli.py:498
+#: ../pakfire/cli.py:501
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:530
+#: ../pakfire/cli.py:533
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:536
+#: ../pakfire/cli.py:539
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../pakfire/cli.py:543
+#: ../pakfire/cli.py:546
 msgid "Update all repositories."
 msgstr ""
 
@@ -343,6 +343,17 @@ msgstr ""
 msgid "Loading installed packages"
 msgstr ""
 
+#: ../pakfire/satsolver.py:105
+#, python-format
+msgid "The solver returned %s problems:"
+msgstr ""
+
+#. Print information about the problem to the user.
+#: ../pakfire/satsolver.py:113
+#, python-format
+msgid "  Problem #%d:"
+msgstr ""
+
 #: ../pakfire/transaction.py:89
 msgid "Downloading packages:"
 msgstr ""
@@ -396,4 +407,84 @@ msgstr ""
 #: ../pakfire/util.py:39
 #, python-format
 msgid "%s [y/N]"
+msgstr ""
+
+#: ../src/problem.c:126
+#, c-format
+msgid "%s does not belong to a distupgrade repository"
+msgstr ""
+
+#: ../src/problem.c:133
+#, c-format
+msgid "%s has inferior architecture"
+msgstr ""
+
+#: ../src/problem.c:140
+#, c-format
+msgid "problem with installed package %s"
+msgstr ""
+
+#: ../src/problem.c:146
+#, c-format
+msgid "conflicting requests"
+msgstr ""
+
+#: ../src/problem.c:151
+#, c-format
+msgid "nothing provides requested %s"
+msgstr ""
+
+#: ../src/problem.c:157
+#, c-format
+msgid "some dependency problem"
+msgstr ""
+
+#: ../src/problem.c:162
+#, c-format
+msgid "package %s is not installable"
+msgstr ""
+
+#: ../src/problem.c:169
+#, c-format
+msgid "nothing provides %s needed by %s"
+msgstr ""
+
+#: ../src/problem.c:176
+#, c-format
+msgid "cannot install both %s and %s"
+msgstr ""
+
+#: ../src/problem.c:183
+#, c-format
+msgid "package %s conflicts with %s provided by %s"
+msgstr ""
+
+#: ../src/problem.c:191
+#, c-format
+msgid "package %s obsoletes %s provided by %s"
+msgstr ""
+
+#: ../src/problem.c:199
+#, c-format
+msgid "installed package %s obsoletes %s provided by %s"
+msgstr ""
+
+#: ../src/problem.c:207
+#, c-format
+msgid "package %s implicitely obsoletes %s provided by %s"
+msgstr ""
+
+#: ../src/problem.c:215
+#, c-format
+msgid "package %s requires %s, but none of the providers can be installed"
+msgstr ""
+
+#: ../src/problem.c:222
+#, c-format
+msgid "package %s conflicts with %s provided by itself"
+msgstr ""
+
+#: ../src/problem.c:231
+#, c-format
+msgid "bad rule type"
 msgstr ""
