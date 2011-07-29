@@ -32,6 +32,8 @@ extern PyObject *Problem_get_source(ProblemObject *self);
 extern PyObject *Problem_get_target(ProblemObject *self);
 extern PyObject *Problem_get_dep(ProblemObject *self);
 
+extern PyObject *Problem_get_solutions(ProblemObject *self);
+
 extern PyTypeObject ProblemType;
 
 #endif

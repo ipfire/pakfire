@@ -7,6 +7,7 @@
 #include "relation.h"
 #include "repo.h"
 #include "request.h"
+#include "solution.h"
 #include "solvable.h"
 #include "solver.h"
 #include "step.h"
@@ -30,6 +31,7 @@ static PyMethodDef Problem_methods[] = {
 	{"get_source", (PyCFunction)Problem_get_source, METH_NOARGS, NULL},
 	{"get_target", (PyCFunction)Problem_get_target, METH_NOARGS, NULL},
 	{"get_dep", (PyCFunction)Problem_get_dep, METH_NOARGS, NULL},
+	{"get_solutions", (PyCFunction)Problem_get_solutions, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -108,6 +110,10 @@ static PyMethodDef Solvable_methods[] = {
 	{"get_obsoletes", (PyCFunction)Solvable_get_obsoletes, METH_NOARGS, NULL},
 	{"add_conflicts", (PyCFunction)Solvable_add_conflicts, METH_VARARGS, NULL},
 	{"get_conflicts", (PyCFunction)Solvable_get_conflicts, METH_NOARGS, NULL},
+	{ NULL, NULL, 0, NULL }
+};
+
+static PyMethodDef Solution_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -192,6 +198,13 @@ void init_pakfire(void) {
 		return;
 	Py_INCREF(&RequestType);
 	PyModule_AddObject(m, "Request", (PyObject *)&RequestType);
+
+	// Solution
+	SolutionType.tp_methods = Solution_methods;
+	if (PyType_Ready(&SolutionType) < 0)
+		return;
+	Py_INCREF(&SolutionType);
+	PyModule_AddObject(m, "Solution", (PyObject *)&SolutionType);
 
 	// Solver
 	SolverType.tp_methods = Solver_methods;

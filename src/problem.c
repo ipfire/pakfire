@@ -5,6 +5,7 @@
 #include "problem.h"
 #include "relation.h"
 #include "request.h"
+#include "solution.h"
 #include "solvable.h"
 #include "solver.h"
 
@@ -111,7 +112,20 @@ PyObject *Problem_get_dep(ProblemObject *self) {
 }
 
 PyObject *Problem_get_solutions(ProblemObject *self) {
+	SolutionObject *solution;
+	Id s = 0;
+
 	PyObject *list = PyList_New(0);
+
+	while ((s = solver_next_solution(self->_solver, self->_id, s)) != 0) {
+		solution = PyObject_New(SolutionObject, &SolutionType);
+
+		solution->_solver = self->_solver;
+		solution->problem_id = self->_id;
+		solution->id = s;
+
+		PyList_Append(list, (PyObject *)solution);
+	}
 
 	return list;
 }

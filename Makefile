@@ -17,7 +17,7 @@ dist:
 	python setup.py sdist
 
 .PHONY: install
-install:
+install: po
 	python setup.py install  --root $(DESTDIR)
 
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d

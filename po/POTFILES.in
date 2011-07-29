@@ -44,6 +44,7 @@ src/problem.c
 src/relation.c
 src/repo.c
 src/request.c
+src/solution.c
 src/solvable.c
 src/solver.c
 src/step.c

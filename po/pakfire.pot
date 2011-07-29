@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-29 15:04+0200\n"
+"POT-Creation-Date: 2011-07-29 17:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -343,15 +343,40 @@ msgstr ""
 msgid "Loading installed packages"
 msgstr ""
 
-#: ../pakfire/satsolver.py:105
-#, python-format
-msgid "The solver returned %s problems:"
+#: ../pakfire/satsolver.py:110
+msgid "The solver returned one problem:"
 msgstr ""
 
 #. Print information about the problem to the user.
-#: ../pakfire/satsolver.py:113
+#: ../pakfire/satsolver.py:118
 #, python-format
-msgid "  Problem #%d:"
+msgid "  #%d: %s"
+msgstr ""
+
+#. Ask the user if he or she want to modify the request. If not, just exit.
+#: ../pakfire/satsolver.py:126
+msgid "Do you want to manually alter the request?"
+msgstr ""
+
+#: ../pakfire/satsolver.py:129
+msgid "You can now try to satisfy the solver by modifying your request."
+msgstr ""
+
+#: ../pakfire/satsolver.py:134
+msgid "Which problem to you want to resolve?"
+msgstr ""
+
+#: ../pakfire/satsolver.py:136
+msgid "Press enter to try to re-solve the request."
+msgstr ""
+
+#: ../pakfire/satsolver.py:167
+#, python-format
+msgid "    Solution: %s"
+msgstr ""
+
+#: ../pakfire/satsolver.py:176
+msgid "    Solutions:"
 msgstr ""
 
 #: ../pakfire/transaction.py:89
@@ -409,82 +434,172 @@ msgstr ""
 msgid "%s [y/N]"
 msgstr ""
 
-#: ../src/problem.c:126
+#: ../src/problem.c:140
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
 msgstr ""
 
-#: ../src/problem.c:133
+#: ../src/problem.c:147
 #, c-format
 msgid "%s has inferior architecture"
 msgstr ""
 
-#: ../src/problem.c:140
+#: ../src/problem.c:154
 #, c-format
 msgid "problem with installed package %s"
 msgstr ""
 
-#: ../src/problem.c:146
+#: ../src/problem.c:160
 #, c-format
 msgid "conflicting requests"
 msgstr ""
 
-#: ../src/problem.c:151
+#: ../src/problem.c:165
 #, c-format
 msgid "nothing provides requested %s"
 msgstr ""
 
-#: ../src/problem.c:157
+#: ../src/problem.c:171
 #, c-format
 msgid "some dependency problem"
 msgstr ""
 
-#: ../src/problem.c:162
+#: ../src/problem.c:176
 #, c-format
 msgid "package %s is not installable"
 msgstr ""
 
-#: ../src/problem.c:169
+#: ../src/problem.c:183
 #, c-format
 msgid "nothing provides %s needed by %s"
 msgstr ""
 
-#: ../src/problem.c:176
+#: ../src/problem.c:190
 #, c-format
 msgid "cannot install both %s and %s"
 msgstr ""
 
-#: ../src/problem.c:183
+#: ../src/problem.c:197
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
 msgstr ""
 
-#: ../src/problem.c:191
+#: ../src/problem.c:205
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
 msgstr ""
 
-#: ../src/problem.c:199
+#: ../src/problem.c:213
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
 msgstr ""
 
-#: ../src/problem.c:207
+#: ../src/problem.c:221
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
 msgstr ""
 
-#: ../src/problem.c:215
+#: ../src/problem.c:229
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
 msgstr ""
 
-#: ../src/problem.c:222
+#: ../src/problem.c:236
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
 msgstr ""
 
-#: ../src/problem.c:231
+#: ../src/problem.c:245
 #, c-format
 msgid "bad rule type"
+msgstr ""
+
+#: ../src/solution.c:67
+#, c-format
+msgid "do not keep %s installed"
+msgstr ""
+
+#: ../src/solution.c:70
+#, c-format
+msgid "do not install a solvable %s"
+msgstr ""
+
+#: ../src/solution.c:73
+#, c-format
+msgid "do not install %s"
+msgstr ""
+
+#: ../src/solution.c:79
+#, c-format
+msgid "do not forbid installation of %s"
+msgstr ""
+
+#: ../src/solution.c:82
+#, c-format
+msgid "do not deinstall all solvables %s"
+msgstr ""
+
+#: ../src/solution.c:85
+#, c-format
+msgid "do not deinstall %s"
+msgstr ""
+
+#: ../src/solution.c:90
+#, c-format
+msgid "do not install most recent version of %s"
+msgstr ""
+
+#: ../src/solution.c:95
+#, c-format
+msgid "do not lock %s"
+msgstr ""
+
+#: ../src/solution.c:100
+#, c-format
+msgid "do something different"
+msgstr ""
+
+#: ../src/solution.c:107
+#, c-format
+msgid "keep %s despite the inferior architecture"
+msgstr ""
+
+#: ../src/solution.c:110
+#, c-format
+msgid "install %s despite the inferior architecture"
+msgstr ""
+
+#: ../src/solution.c:116
+#, c-format
+msgid "keep obsolete %s"
+msgstr ""
+
+#: ../src/solution.c:119
+#, c-format
+msgid "install %s from excluded repository"
+msgstr ""
+
+#: ../src/solution.c:131
+#, c-format
+msgid "allow downgrade of %s to %s"
+msgstr ""
+
+#: ../src/solution.c:135
+#, c-format
+msgid "allow architecture change of %s to %s"
+msgstr ""
+
+#: ../src/solution.c:140
+#, c-format
+msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
+msgstr ""
+
+#: ../src/solution.c:144
+#, c-format
+msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
+msgstr ""
+
+#: ../src/solution.c:150
+#, c-format
+msgid "allow replacement of %s with %s"
 msgstr ""
