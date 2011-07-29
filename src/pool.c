@@ -1,4 +1,5 @@
 
+#include <Python.h>
 #include <satsolver/poolarch.h>
 
 #include "config.h"

@@ -377,18 +377,23 @@ class Pakfire(object):
 
 		return pkgs
 
-	def repo_create(self, path, input_paths):
+	def repo_create(self, path, input_paths, type="binary"):
+		assert type in ("binary", "source",)
+
 		repo = repository.RepositoryDir(
 			self,
 			name="new",
 			description="New repository.",
 			path=path,
+			type=type,
 		)
 
 		for input_path in input_paths:
 			repo.collect_packages(input_path)
 
 		repo.save()
+
+		return repo
 
 	def repo_list(self):
 		return [r for r in self.repos]

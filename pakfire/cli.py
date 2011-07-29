@@ -316,6 +316,8 @@ class CliBuilder(Cli):
 			help=_("Build the package for the given architecture."))
 		sub_build.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
+		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -358,8 +360,8 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.build(pkg, distro_config=distro_config, resultdirs=[self.args.resultdir,],
-			shell=True, **self.pakfire_args)
+		pakfire.build(pkg, builder_mode=self.args.mode, distro_config=distro_config,
+			resultdirs=[self.args.resultdir,], shell=True, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None
@@ -503,6 +505,7 @@ class CliServer(Cli):
 
 		self.parse_command_build()
 		self.parse_command_keepalive()
+		self.parse_command_repoupdate()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -510,8 +513,9 @@ class CliServer(Cli):
 		self.server = server.Server()
 
 		self.action2func = {
-			"build"     : self.handle_build,
-			"keepalive" : self.handle_keepalive,
+			"build"      : self.handle_build,
+			"keepalive"  : self.handle_keepalive,
+			"repoupdate" : self.handle_repoupdate,
 		}
 
 	@property
@@ -533,8 +537,18 @@ class CliServer(Cli):
 		sub_keepalive.add_argument("action", action="store_const",
 			const="keepalive")
 
+	def parse_command_repoupdate(self):
+		# Implement the "repoupdate" command.
+		sub_repoupdate = self.sub_commands.add_parser("repoupdate",
+			help=_("Update all repositories."))
+		sub_repoupdate.add_argument("action", action="store_const",
+			const="repoupdate")
+
 	def handle_keepalive(self):
 		self.server.update_info()
 
 	def handle_build(self):
 		self.server.build_job()
+
+	def handle_repoupdate(self):
+		self.server.update_repositories()

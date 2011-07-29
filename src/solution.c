@@ -1,0 +1,157 @@
+
+#include <Python.h>
+
+#include <satsolver/policy.h>
+#include <satsolver/solverdebug.h>
+
+#include "config.h"
+#include "problem.h"
+#include "solution.h"
+
+PyTypeObject SolutionType = {
+	PyObject_HEAD_INIT(NULL)
+	tp_name: "_pakfire.Solution",
+	tp_basicsize: sizeof(SolutionObject),
+	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+	tp_new: Solution_new,
+	tp_dealloc: (destructor)Solution_dealloc,
+	tp_doc: "Sat Solution objects",
+	tp_str: (reprfunc)Solution_string,
+};
+
+PyObject *Solution_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+	SolutionObject *self;
+	ProblemObject *problem;
+	Id id;
+
+	if (!PyArg_ParseTuple(args, "Oi", &problem, &id)) {
+		/* XXX raise exception */
+		return NULL;
+	}
+
+	self = (SolutionObject *)type->tp_alloc(type, 0);
+	if (self != NULL) {
+		self->_solver = problem->_solver;
+		self->problem_id = problem->_id;
+		self->id = id;
+	}
+
+	return (PyObject *)self;
+}
+
+PyObject *Solution_dealloc(SolutionObject *self) {
+	self->ob_type->tp_free((PyObject *)self);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Solution_string(SolutionObject *self) {
+	Pool *pool = self->_solver->pool;
+	Solver *solver = self->_solver;
+	char str[STRING_SIZE];
+
+	Solvable *s, *sd;
+	Id p, rp;
+	Id how, what, select;
+
+	Id element = 0;
+	while ((element = solver_next_solutionelement(solver, self->problem_id, self->id, element, &p, &rp)) != 0) {
+		if (p == SOLVER_SOLUTION_JOB) {
+			how = solver->job.elements[rp - 1];
+			what = solver->job.elements[rp];
+			select = how & SOLVER_SELECTMASK;
+
+			switch (how & SOLVER_JOBMASK) {
+				case SOLVER_INSTALL:
+					if (select == SOLVER_SOLVABLE && solver->installed && pool->solvables[what].repo == solver->installed)
+						snprintf(str, STRING_SIZE - 1, _("do not keep %s installed"),
+							pool_solvid2str(pool, what));
+					else if (select == SOLVER_SOLVABLE_PROVIDES)
+						snprintf(str, STRING_SIZE - 1, _("do not install a solvable %s"),
+							solver_select2str(pool, select, what));
+					else
+						snprintf(str, STRING_SIZE - 1, _("do not install %s"),
+							solver_select2str(pool, select, what));
+					break;
+
+				case SOLVER_ERASE:
+					if (select == SOLVER_SOLVABLE && !(solver->installed && pool->solvables[what].repo == solver->installed))
+						snprintf(str, STRING_SIZE - 1, _("do not forbid installation of %s"),
+							pool_solvid2str(pool, what));
+					else if (select == SOLVER_SOLVABLE_PROVIDES)
+						snprintf(str, STRING_SIZE - 1, _("do not deinstall all solvables %s"),
+							solver_select2str(pool, select, what));
+					else
+						snprintf(str, STRING_SIZE - 1, _("do not deinstall %s"),
+							solver_select2str(pool, select, what));
+					break;
+
+				case SOLVER_UPDATE:
+					snprintf(str, STRING_SIZE - 1, _("do not install most recent version of %s"),
+						solver_select2str(pool, select, what));
+					break;
+
+				case SOLVER_LOCK:
+					snprintf(str, STRING_SIZE - 1, _("do not lock %s"),
+						solver_select2str(pool, select, what));
+					break;
+
+				default:
+					snprintf(str, STRING_SIZE - 1, _("do something different"));
+					break;
+			}
+
+		} else if (p == SOLVER_SOLUTION_INFARCH) {
+			s = pool->solvables + rp;
+			if (solver->installed && s->repo == solver->installed)
+				snprintf(str, STRING_SIZE - 1, _("keep %s despite the inferior architecture"),
+					pool_solvable2str(pool, s));
+			else
+				snprintf(str, STRING_SIZE - 1, _("install %s despite the inferior architecture"),
+					pool_solvable2str(pool, s));
+
+		} else if (p == SOLVER_SOLUTION_DISTUPGRADE) {
+			s = pool->solvables + rp;
+			if (solver->installed && s->repo == solver->installed)
+				snprintf(str, STRING_SIZE - 1, _("keep obsolete %s"),
+					pool_solvable2str(pool, s));
+			else
+				snprintf(str, STRING_SIZE - 1, _("install %s from excluded repository"),
+					pool_solvable2str(pool, s));
+
+		} else {
+			s = pool->solvables + p;
+			sd = rp ? pool->solvables + rp : 0;
+
+			if (sd) {
+				int illegal = policy_is_illegal(solver, s, sd, 0);
+
+				// XXX multiple if clauses can match here
+				if ((illegal & POLICY_ILLEGAL_DOWNGRADE) != 0)
+					snprintf(str, STRING_SIZE - 1, _("allow downgrade of %s to %s"),
+						pool_solvable2str(pool, s), pool_solvable2str(pool, sd));
+
+				if ((illegal & POLICY_ILLEGAL_ARCHCHANGE) != 0)
+					snprintf(str, STRING_SIZE - 1, _("allow architecture change of %s to %s"),
+						pool_solvable2str(pool, s), pool_solvable2str(pool, sd));
+
+				if ((illegal & POLICY_ILLEGAL_VENDORCHANGE) != 0) {
+					if (sd->vendor)
+						snprintf(str, STRING_SIZE - 1, _("allow vendor change from '%s' (%s) to '%s' (%s)"),
+							pool_id2str(pool, s->vendor), pool_solvable2str(pool, s),
+							pool_id2str(pool, sd->vendor), pool_solvable2str(pool, sd));
+					else
+						snprintf(str, STRING_SIZE - 1, _("allow vendor change from '%s' (%s) to no vendor (%s)"),
+							pool_id2str(pool, s->vendor), pool_solvable2str(pool, s),
+							pool_solvable2str(pool, sd));
+				}
+
+				if (!illegal)
+					snprintf(str, STRING_SIZE - 1, _("allow replacement of %s with %s"),
+						pool_solvable2str(pool, s), pool_solvable2str(pool, sd));
+			}
+		}
+	}
+
+	return Py_BuildValue("s", &str);
+}

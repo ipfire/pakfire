@@ -1,10 +1,13 @@
 
+#include <Python.h>
 #include <stdbool.h>
+#include <satsolver/repo.h>
 #include <satsolver/repo_solv.h>
 #include <satsolver/repo_write.h>
 
 #include "pool.h"
 #include "repo.h"
+#include "solvable.h"
 
 PyTypeObject RepoType = {
 	PyObject_HEAD_INIT(NULL)
@@ -144,4 +147,28 @@ PyObject *Repo_clear(RepoObject *self) {
 	repo_empty(self->_repo, 1);
 
 	Py_RETURN_NONE;
+}
+
+PyObject *Repo_get_all(RepoObject *self) {
+	Solvable *s;
+	Id p;
+	Repo *r = self->_repo;
+
+	PyObject *list = PyList_New(0);
+
+	FOR_REPO_SOLVABLES(r, p, s) {
+		SolvableObject *solv;
+
+		solv = PyObject_New(SolvableObject, &SolvableType);
+		if (solv == NULL)
+			return NULL;
+
+		solv->_pool = self->_repo->pool;
+		solv->_id = p;
+
+		PyList_Append(list, (PyObject *)solv);
+	}
+
+	Py_INCREF(list);
+	return list;
 }

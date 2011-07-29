@@ -15,14 +15,22 @@ import pakfire.util as util
 from pakfire.constants import *
 
 class RepositoryDir(base.RepositoryFactory):
-	def __init__(self, pakfire, name, description, path):
+	def __init__(self, pakfire, name, description, path, type="binary"):
 		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Path to files.
 		self.path = path
 
+		# Save type.
+		assert type in ("binary", "source",)
+		self.type = type
+
 		# Create index
 		self.index = index.IndexDir(self.pakfire, self)
+
+	def remove(self):
+		self.index.clear()
+		util.rm(self.path)
 
 	@property
 	def priority(self):

@@ -42,7 +42,18 @@ class Builder(object):
 	kernel_version = os.uname()[2]
 
 	def __init__(self, pkg=None, distro_config=None, build_id=None, logfile=None,
-			**pakfire_args):
+			builder_mode="release", **pakfire_args):
+		# Set mode.
+		assert builder_mode in ("development", "release",)
+		self.mode = builder_mode
+
+		# Disable the build repository in release mode.
+		if self.mode == "release":
+			if pakfire_args.has_key("disable_repos") and pakfire_args["disable_repos"]:
+				pakfire_args["disable_repos"] += ["build",]
+			else:
+				pakfire_args["disable_repos"] = ["build",]
+
 		# Save the build id and generate one if no build id was provided.
 		if not build_id:
 			build_id = "%s" % uuid.uuid4()

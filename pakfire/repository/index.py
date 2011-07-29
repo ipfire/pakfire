@@ -124,6 +124,12 @@ class Index(object):
 		solvable.set_installsize(pkg.inst_size)
 
 		# Import all requires.
+		requires = pkg.requires
+		prerequires = pkg.prerequires
+		if prerequires:
+			requires.append("solvable:prereqmarker")
+			requires += prerequires
+
 		for req in pkg.requires:
 			rel = self.create_relation(req)
 			solvable.add_requires(rel)
@@ -250,6 +256,16 @@ class IndexSolv(Index):
 
 
 class IndexDir(Index):
+	def init(self):
+		self.pkg_type = None
+
+		if self.repo.type == "binary":
+			self.pkg_type = packages.BinaryPackage
+		elif self.repo.type == "source":
+			self.pkg_type = packages.SourcePackage
+
+		assert self.pkg_type
+
 	def check(self):
 		pass # XXX to be done
 
@@ -302,15 +318,18 @@ class IndexDir(Index):
 
 				package = packages.open(self.pakfire, self.repo, file)
 
-				if isinstance(package, packages.BinaryPackage):
-					if not package.arch in (self.repo.arch, "noarch"):
+				# Find all packages with the given type and skip those of
+				# the other type.
+				if isinstance(package, self.pkg_type):
+					# Check for binary packages if the architecture matches.
+					if isinstance(package, packages.BinaryPackage) and \
+							not package.arch in (self.repo.arch, "noarch"):
 						logging.warning("Skipped package with wrong architecture: %s (%s)" \
 							% (package.filename, package.arch))
-						print package.type
 						continue
 
 				# Skip all source packages.
-				elif isinstance(package, packages.SourcePackage):
+				else:
 					continue
 
 				self.add_package(package)

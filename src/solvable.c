@@ -1,4 +1,7 @@
 
+#include <Python.h>
+
+#include "config.h"
 #include "relation.h"
 #include "repo.h"
 #include "solvable.h"
@@ -11,6 +14,7 @@ PyTypeObject SolvableType = {
 	tp_new : Solvable_new,
 	tp_dealloc: (destructor) Solvable_dealloc,
 	tp_doc: "Sat Solvable objects",
+	tp_str: (reprfunc)Solvable_string,
 };
 
 // Solvable
@@ -51,6 +55,14 @@ PyObject *Solvable_dealloc(SolvableObject *self) {
 	self->ob_type->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
+}
+
+PyObject *Solvable_string(SolvableObject *self) {
+	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
+
+	const char *str = pool_solvable2str(self->_pool, solvable);
+
+	return Py_BuildValue("s", str);
 }
 
 PyObject *Solvable_get_name(SolvableObject *self) {

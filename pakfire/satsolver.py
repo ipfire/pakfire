@@ -6,6 +6,9 @@ import _pakfire
 from _pakfire import *
 
 import transaction
+import util
+
+from i18n import _
 
 class Request(_pakfire.Request):
 	def install(self, what):
@@ -74,26 +77,114 @@ class Solver(object):
 		self.pakfire = pakfire
 		self.pool = pool
 
-		self._solver = _pakfire.Solver(self.pool)
+	def solve(self, request, update=False, uninstall=False, allow_downgrade=False,
+			interactive=False):
 
-	def solve(self, request, update=False, uninstall=False, allow_downgrade=False):
-		self._solver.set_allow_uninstall(uninstall)
-		self._solver.set_allow_downgrade(allow_downgrade)
+		# Create a new solver.
+		solver = _pakfire.Solver(self.pool)
+
+		solver.set_allow_uninstall(uninstall)
+		solver.set_allow_downgrade(allow_downgrade)
 
 		# Configure the solver for an update.
 		if update:
-			self._solver.set_updatesystem(True)
-			self._solver.set_do_split_provides(True)
+			solver.set_updatesystem(True)
+			solver.set_do_split_provides(True)
 
-		res = self._solver.solve(request)
+		# Actually solve the request.
+		res = solver.solve(request)
 
 		logging.debug("Solver status: %s" % res)
 
 		# If the solver succeeded, we return the transaction and return.
 		if res:
 			# Return a resulting Transaction.
-			t = Transaction(self._solver)
+			t = Transaction(solver)
 
 			return transaction.Transaction.from_solver(self.pakfire, self, t)
 
-		return res
+		# Do the problem handling...
+		problems = solver.get_problems(request)
+
+		logging.info("")
+		logging.info(_("The solver returned one problem:", "The solver returned %(num)s problems:",
+			len(problems)) % { "num" : len(problems) })
+
+		i = 0
+		for problem in problems:
+			i += 1
+
+			# Print information about the problem to the user.
+			logging.info("  #%d: %s" % (i, problem))
+
+		logging.info("")
+
+		if not interactive:
+			return False
+
+		# Ask the user if he or she want to modify the request. If not, just exit.
+		if not util.ask_user(_("Do you want to manually alter the request?")):
+			return False
+
+		print _("You can now try to satisfy the solver by modifying your request.")
+
+		altered = False
+		while True:
+			if len(problems) > 1:
+				print _("Which problem to you want to resolve?")
+				if altered:
+					print _("Press enter to try to re-solve the request.")
+				print "[1-%s]:" % len(problems),
+
+				answer = raw_input()
+
+				# If the user did not enter anything, we abort immediately.
+				if not answer:
+					break
+
+				# If the user did type anything else than an integer, we ask
+				# again.
+				try:
+					answer = int(answer)
+				except ValueError:
+					continue
+
+				# If the user entered an integer outside of range, we ask
+				# again.
+				try:
+					problem = problems[answer - 1]
+				except KeyError:
+					continue
+
+			else:
+				problem = problem[0]
+
+			# Get all solutions.
+			solutions = problem.get_solutions()
+
+			if len(solutions) == 1:
+				solution = solutions[0]
+				print _("    Solution: %s") % solution
+				print
+
+				if util.ask_user("Do you accept the solution above?"):
+					altered = True
+					print "XXX do something"
+
+				continue
+			else:
+				print _("    Solutions:")
+				i = 0
+				for solution in solutions:
+					i += 1
+					print "      #%d: %s" % (i, solution)
+
+				print
+
+		if not altered:
+			return False
+
+		# If the request was altered by the user, we try to solve it again
+		# and see what happens.
+		return self.solve(request, update=update, uninstall=uninstall,
+			allow_downgrade=allow_downgrade, interactive=interactive)

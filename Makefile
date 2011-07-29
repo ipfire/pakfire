@@ -17,7 +17,7 @@ dist:
 	python setup.py sdist
 
 .PHONY: install
-install:
+install: po
 	python setup.py install  --root $(DESTDIR)
 
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
@@ -30,4 +30,4 @@ check:
 
 .PHONY: po
 po:
-	find pakfire -name "*.py" | grep -v "__version__.py" | sort > po/POTFILES.in
+	find pakfire src -name "*.py" -or -name "*.c" | grep -v "__version__.py" | sort > po/POTFILES.in

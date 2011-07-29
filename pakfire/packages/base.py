@@ -313,8 +313,10 @@ class Package(object):
 		return self.metadata.get("PKG_VENDOR", "")
 
 	@property
-	def pre_requires(self):
-		return set() # XXX to be done
+	def prerequires(self):
+		requires = self.metadata.get("PKG_PREREQUIRES", "")
+
+		return requires.split()
 
 	@property
 	def requires(self):
@@ -332,25 +334,19 @@ class Package(object):
 			if ret:
 				break
 
-		return set(ret.split())
+		return ret.split()
 
 	@property
 	def provides(self):
-		provides = self.metadata.get("PKG_PROVIDES", "").split()
-
-		return set(provides)
+		return self.metadata.get("PKG_PROVIDES", "").split()
 
 	@property
 	def conflicts(self):
-		conflicts = self.metadata.get("PKG_CONFLICTS", "").split()
-
-		return set(conflicts)
+		return self.metadata.get("PKG_CONFLICTS", "").split()
 
 	@property
 	def obsoletes(self):
-		obsoletes = self.metadata.get("PKG_OBSOLETES", "").split()
-
-		return set(obsoletes)
+		return self.metadata.get("PKG_OBSOLETES", "").split()
 
 	def extract(self, path, prefix=None):
 		raise NotImplementedError, "%s" % repr(self)

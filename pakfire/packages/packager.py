@@ -42,8 +42,10 @@ class Packager(object):
 			"package_uuid" : uuid.uuid4(),
 			"payload_comp" : "",
 
+			"prerequires" : "",
 			"requires" : "",
 			"provides" : "",
+			"conflicts" : "",
 			"obsoletes": "",
 		}
 		self.info.update(self.pkg.info)
@@ -82,7 +84,7 @@ class Packager(object):
 
 				key, val = m.groups()
 
-				if not key in ("requires", "provides", "obsoletes",):
+				if not key in ("prerequires", "requires", "provides", "conflicts", "obsoletes",):
 					continue
 
 				val = val.strip("\"")

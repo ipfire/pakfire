@@ -38,3 +38,15 @@ pakfire/satsolver.py
 pakfire/server.py
 pakfire/transaction.py
 pakfire/util.py
+src/_pakfiremodule.c
+src/pool.c
+src/problem.c
+src/relation.c
+src/repo.c
+src/request.c
+src/solution.c
+src/solvable.c
+src/solver.c
+src/step.c
+src/test.py
+src/transaction.c

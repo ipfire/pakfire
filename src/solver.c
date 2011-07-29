@@ -152,7 +152,9 @@ PyObject *Solver_solve(SolverObject *self, PyObject *args) {
 
 	solver_solve(self->_solver, &request->_queue);
 
+#ifdef DEBUG
 	solver_printallsolutions(self->_solver);
+#endif
 
 	if (self->_solver->problems.count == 0) {
 		Py_RETURN_TRUE;
@@ -166,21 +168,23 @@ PyObject *Solver_get_problems(SolverObject *self, PyObject *args) {
 
 	if (!PyArg_ParseTuple(args, "O", &request)) {
 		/* XXX raise exception */
+		return NULL;
 	}
 
 	PyObject *list = PyList_New(0);
 
 	ProblemObject *problem;
-	int i = 0;
-	for(; i < self->_solver->problems.count; i++) {
+	Id p = 0;
+	while ((p = solver_next_problem(self->_solver, p)) != 0) {
 		problem = PyObject_New(ProblemObject, &ProblemType);
+
+		problem->_pool = self->_solver->pool;
 		problem->_solver = self->_solver;
-		//problem->_request = request->_request;
-		problem->_id = self->_solver->problems.elements[i];
+		problem->_id = p;
+		Problem_init(problem);
 
 		PyList_Append(list, (PyObject *)problem);
 	}
 
-	Py_INCREF(list); // XXX do we need this here?
-	return (PyObject *)list;
+	return list;
 }
