@@ -295,14 +295,18 @@ class IndexDir(Index):
 
 		# Get a filelist of all files that could possibly be packages.
 		files = []
-		for dir, subdirs, _files in os.walk(path):
-			for file in sorted(_files):
-				# Skip files that do not have the right extension
-				if not file.endswith(".%s" % PACKAGE_EXTENSION):
-					continue
 
-				file = os.path.join(dir, file)
-				files.append(file)
+		if os.path.isdir(path):
+			for dir, subdirs, _files in os.walk(path):
+				for file in sorted(_files):
+					# Skip files that do not have the right extension
+					if not file.endswith(".%s" % PACKAGE_EXTENSION):
+						continue
+
+					file = os.path.join(dir, file)
+					files.append(file)
+		elif os.path.isfile(path) and path.endswith(".%s" % PACKAGE_EXTENSION):
+			files.append(path)
 
 		if not files:
 			return pkgs

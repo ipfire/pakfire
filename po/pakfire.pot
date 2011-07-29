@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-29 17:32+0200\n"
+"POT-Creation-Date: 2011-07-29 18:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,11 +187,11 @@ msgstr ""
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:318 ../pakfire/cli.py:344
+#: ../pakfire/cli.py:318 ../pakfire/cli.py:342
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:320 ../pakfire/cli.py:333
+#: ../pakfire/cli.py:320
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
@@ -207,55 +207,55 @@ msgstr ""
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:338
+#: ../pakfire/cli.py:336
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:340
+#: ../pakfire/cli.py:338
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:416
+#: ../pakfire/cli.py:413
 msgid "Pakfire repo command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:441
+#: ../pakfire/cli.py:438
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:449
+#: ../pakfire/cli.py:446
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:450
+#: ../pakfire/cli.py:447
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:451
+#: ../pakfire/cli.py:448
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/cli.py:463
+#: ../pakfire/cli.py:460
 msgid "Pakfire master command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:491
+#: ../pakfire/cli.py:488
 msgid "Update the sources."
 msgstr ""
 
-#: ../pakfire/cli.py:501
+#: ../pakfire/cli.py:498
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:533
+#: ../pakfire/cli.py:530
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:539
+#: ../pakfire/cli.py:536
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../pakfire/cli.py:546
+#: ../pakfire/cli.py:543
 msgid "Update all repositories."
 msgstr ""
 
@@ -333,24 +333,18 @@ msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:311
+#: ../pakfire/repository/index.py:315
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:364
+#: ../pakfire/repository/index.py:368
 msgid "Loading installed packages"
 msgstr ""
 
 #: ../pakfire/satsolver.py:110
 msgid "The solver returned one problem:"
-msgstr ""
-
-#. Print information about the problem to the user.
-#: ../pakfire/satsolver.py:118
-#, python-format
-msgid "  #%d: %s"
 msgstr ""
 
 #. Ask the user if he or she want to modify the request. If not, just exit.
