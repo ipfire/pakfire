@@ -47,16 +47,15 @@ class RepositoryDir(base.RepositoryFactory):
 			# files are really equal.
 			if os.path.exists(repo_filename):
 				pkg_exists = packages.open(self.pakfire, self, repo_filename)
+				copy = False
 
 				# Check UUID at first (faster) and check the file hash to be
 				# absolutely sure.
-				if pkg.uuid == pkg_exists.uuid and pkg.hash1 == pkg_exists.hash1:
-					# Do not copy the file if it is already okay.
-					copy = False
-
 				# Otherwise, unlink the existing file and replace it with the
 				# new one.
-				else:
+				if pkg.uuid != pkg_exists.uuid and pkg.hash1 != pkg_exists.hash1:
+					# Do not copy the file if it is already okay.
+					copy = True
 					os.unlink(repo_filename)
 
 				del pkg_exists
