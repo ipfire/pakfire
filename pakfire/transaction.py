@@ -113,7 +113,7 @@ class Transaction(object):
 		download_size = util.format_size(download_size)
 		download_time = util.format_time(download_time)
 
-		line = _("%s | %-5sB     %s     ") % \
+		line = "%s | %5sB     %s     " % \
 			(download_speed, download_size, download_time)
 		line = " " * (width - len(line)) + line
 		logging.info(line)
@@ -194,6 +194,7 @@ class Transaction(object):
 		# Download all packages.
 		self.download()
 
+		logging.info(_("Running transaction"))
 		# Run all actions in order and catch all kinds of ActionError.
 		for action in self.actions:
 			try:
