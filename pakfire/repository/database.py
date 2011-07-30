@@ -227,3 +227,14 @@ class DatabaseLocal(Database):
 			yield packages.DatabasePackage(self.pakfire, self.repo, self, row)
 
 		c.close()
+
+	def get_package_from_solv(self, solv_pkg):
+		c = self.cursor()
+		c.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
+
+		try:
+			for row in c:
+				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+
+		finally:
+			c.close()

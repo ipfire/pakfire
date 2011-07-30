@@ -2,11 +2,14 @@
 
 import datetime
 import logging
+import os
 import xml.sax.saxutils
 
 import util
 
 from pakfire.i18n import _
+
+from pakfire.util import make_progress
 
 class Package(object):
 	def __init__(self, pakfire, repo=None):
@@ -350,3 +353,75 @@ class Package(object):
 
 	def extract(self, path, prefix=None):
 		raise NotImplementedError, "%s" % repr(self)
+
+	def remove(self, message=None, prefix=None):
+		if prefix in ("/", None):
+			prefix = ""
+
+		# Make two filelists. One contains all binary files that need to be
+		# removed, the other one contains the configuration files which are
+		# kept. files and configfiles are disjunct.
+		files = []
+		configfiles = self.configfiles
+
+		for file in self.filelist:
+			if file in configfiles:
+				continue
+
+			assert file.startswith("/")
+			files.append(file)
+
+		# Load progressbar.
+		pb = None
+		if message:
+			message = "%-10s : %s" % (message, self.friendly_name)
+			pb = make_progress(message, len(files), eta=False)
+
+		# Sort files by the length of their name to remove all files in
+		# a directory first and then check, if there are any files left.
+		files.sort(cmp=lambda x,y: cmp(len(x), len(y)), reverse=True)
+
+		i = 0
+		for _file in files:
+			# Update progress.
+			if pb:
+				i += 1
+				pb.update(i)
+
+			logging.debug("Removing file: %s" % _file)
+
+			if prefix:
+				file = os.path.join(prefix, file[1:])
+				assert file.startswith("%s/" % prefix)
+			else:
+				file = _file
+
+			# If the file was removed by the user, we can skip it.
+			if not os.path.exists(file):
+				continue
+
+			# Handle regular files and symlinks.
+			if os.path.isfile(file) or os.path.islink(file):
+				try:
+					os.remove(file)
+				except OSError:
+					logging.error("Cannot remove file: %s. Remove manually." % _file)
+
+			# Handle directories.
+			# Skip removal if the directory is a mountpoint.
+			elif os.path.isdir(file) and not os.path.ismount(file):
+				# Try to remove the directory. If it is not empty, OSError is raised,
+				# but we are okay with that.
+				try:
+					os.rmdir(file)
+				except OSError:
+					pass
+
+			# Log all unhandled types.
+			else:
+				logging.warning("Cannot remove file: %s. Filetype is unhandled." % _file)
+
+		if pb:
+			pb.finish()
+
+		# XXX Rename config files

@@ -151,6 +151,10 @@ class DatabasePackage(Package):
 		finally:
 			c.close()
 
+	@property
+	def configfiles(self):
+		return [] # XXX to be done
+
 	def _does_provide_file(self, requires):
 		"""
 			A faster version to find a file in the database.

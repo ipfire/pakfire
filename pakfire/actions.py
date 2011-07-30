@@ -10,17 +10,13 @@ from i18n import _
 class Action(object):
 	def __init__(self, pakfire, pkg):
 		self.pakfire = pakfire
-		self.pkg = pkg
+		self.pkg_solv = self.pkg = pkg
 
 		# Try to get the binary version of the package from the cache if
 		# any.
 		binary_package = self.pkg.get_from_cache()
 		if binary_package:
 			self.pkg = binary_package
-
-	def __cmp__(self, other):
-		# XXX ugly
-		return cmp(self.__repr__(), other.__repr__())
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.pkg.friendly_name)
@@ -98,16 +94,20 @@ class ActionUpdate(Action):
 		self._extract(_("Updating"))
 
 
-class ActionRemove(ActionCleanup):
+class ActionRemove(Action):
 	type = "erase"
 
+	def __init__(self, *args, **kwargs):
+		Action.__init__(self, *args, **kwargs)
+
+		# XXX This is ugly, but works for the moment.
+		self.pkg = self.local.index.db.get_package_from_solv(self.pkg_solv)
+		assert self.pkg
+
 	def run(self):
-		files = self.pkg.filelist
+		self.pkg.remove(_("Removing"), prefix=self.pakfire.path)
 
-		if not files:
-			return
-
-		self.remove_files(_("Removing: %s") % self.pkg.name, files)
+		# XXX Remove package from database
 
 
 class ActionReinstall(Action):

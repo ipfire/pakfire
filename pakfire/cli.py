@@ -329,6 +329,8 @@ class CliBuilder(Cli):
 
 		sub_shell.add_argument("-a", "--arch",
 			help=_("Emulated architecture in the shell."))
+		sub_shell.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 
 	def parse_command_dist(self):
 		# Implement the "dist" command.
@@ -382,7 +384,8 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.shell(pkg, distro_config=distro_config, **self.pakfire_args)
+		pakfire.shell(pkg, builder_mode=self.args.mode,
+			distro_config=distro_config, **self.pakfire_args)
 
 	def handle_dist(self):
 		# Get the packages from the command line options

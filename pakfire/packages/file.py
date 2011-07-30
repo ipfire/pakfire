@@ -306,6 +306,10 @@ class FilePackage(Package):
 		return self.__filelist
 
 	@property
+	def configfiles(self):
+		return [] # XXX to be done
+
+	@property
 	def payload_compression(self):
 		"""
 			Return the compression type of the payload.

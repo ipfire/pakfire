@@ -200,3 +200,5 @@ class Transaction(object):
 				action.run()
 			except ActionError, e:
 				logging.error("Action finished with an error: %s - %s" % (action, e))
+
+		logging.info("")
