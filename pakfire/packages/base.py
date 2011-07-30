@@ -328,10 +328,6 @@ class Package(object):
 		# The default attributes, that are process for the requires.
 		attrs = ("PKG_REQUIRES", "PKG_DEPS")
 
-		# Source packages do depend on their build dependencies.
-		if self.arch == "src":
-			attrs = ("PKG_BUILD_DEPS",)
-
 		for i in attrs:
 			ret = self.metadata.get(i, ret)
 			if ret:
