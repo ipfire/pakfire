@@ -5,7 +5,7 @@ from distutils.core import Extension, setup
 
 from DistUtilsExtra.command import *
 
-PAKFIRE_VERSION = "0.9.3"
+PAKFIRE_VERSION = "0.9.4"
 
 _pakfire_module_files = [os.path.join("src", f) for f in os.listdir("src") if f.endswith(".c")]
 
