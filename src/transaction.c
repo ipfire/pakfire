@@ -1,4 +1,8 @@
 
+#include <Python.h>
+
+#include <satsolver/transaction.h>
+
 #include "solver.h"
 #include "step.h"
 #include "transaction.h"
@@ -63,4 +67,10 @@ PyObject *Transaction_steps(TransactionObject *self, PyObject *args) {
 
 	Py_INCREF(list); // XXX do we need this here?
 	return list;
+}
+
+PyObject *Transaction_get_installsizechange(TransactionObject *self) {
+	int installsizechange = transaction_calc_installsizechange(self->_transaction);
+
+	return Py_BuildValue("i", installsizechange);
 }

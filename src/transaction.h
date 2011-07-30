@@ -16,6 +16,7 @@ typedef struct {
 extern PyObject* Transaction_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 extern PyObject *Transaction_dealloc(TransactionObject *self);
 extern PyObject *Transaction_steps(TransactionObject *self, PyObject *args);
+extern PyObject *Transaction_get_installsizechange(TransactionObject *self);
 
 extern PyTypeObject TransactionType;
 

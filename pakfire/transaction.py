@@ -33,10 +33,15 @@ class Transaction(object):
 		self.pakfire = pakfire
 		self.actions = []
 
+		self.installsizechange = 0
+
 	@classmethod
 	def from_solver(cls, pakfire, solver, _transaction):
 		# Create a new instance of our own transaction class.
 		transaction = cls(pakfire)
+
+		# Save installsizechange.
+		transaction.installsizechange = _transaction.get_installsizechange()
 
 		for step in _transaction.steps():
 			action = step.get_type()
@@ -180,6 +185,12 @@ class Transaction(object):
 		download_size = sum([a.pkg.size for a in self.downloads])
 		if download_size:
 			s.append(_("Total download size: %s") % util.format_size(download_size))
+
+		# Show the size that is consumed by the new packages.
+		if self.installsizechange > 0:
+			s.append(_("Installed size: %s") % util.format_size(self.installsizechange))
+		elif self.installsizechange < 0:
+			s.append(_("Freed size: %s") % util.format_size(self.installsizechange))
 		s.append("")
 
 		for line in s:

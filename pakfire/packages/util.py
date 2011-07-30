@@ -71,6 +71,14 @@ def text_wrap(s, length=65):
 	return [" ".join(l) for l in t]
 
 def format_size(s):
+	sign = 1
+
+	# If s is negative, we save the sign and run the calculation with the
+	# absolute value of s.
+	if s < 0:
+		sign = -1
+		s = -1 * s
+
 	units = (" ", "k", "M", "G", "T")
 	unit = 0
 
@@ -78,7 +86,7 @@ def format_size(s):
 		s /= 1024
 		unit += 1
 
-	return "%d %s" % (int(s), units[unit])
+	return "%d %s" % (int(s) * sign, units[unit])
 
 def format_time(s):
 	return "%02d:%02d" % (s // 60, s % 60)

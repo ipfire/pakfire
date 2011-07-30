@@ -143,6 +143,7 @@ static PyMethodDef Step_methods[] = {
 
 static PyMethodDef Transaction_methods[] = {
 	{"steps", (PyCFunction)Transaction_steps, METH_NOARGS, NULL},
+	{"get_installsizechange", (PyCFunction)Transaction_get_installsizechange, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
