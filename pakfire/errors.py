@@ -1,8 +1,13 @@
 #!/usr/bin/python
 
+from i18n import _
+
 class Error(Exception):
-	pass
-	
+	exit_code = 1
+
+	message = _("An unhandled error occured.")
+
+
 class ActionError(Error):
 	pass
 
@@ -19,7 +24,9 @@ class ConfigError(Error):
 	pass
 
 class DependencyError(Error):
-	pass
+	exit_code = 4
+
+	message = _("One or more dependencies could not been resolved.")
 
 class DownloadError(Error):
 	pass

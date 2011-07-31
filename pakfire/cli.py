@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+import logger
 import packages
 import repository
 import server
@@ -11,6 +12,10 @@ import util
 import pakfire.api as pakfire
 from constants import *
 from i18n import _
+
+# Initialize a very simple logging that is removed when a Pakfire instance
+# is started.
+logger.setup_logging()
 
 class Cli(object):
 	def __init__(self):

@@ -3,7 +3,7 @@
 import logging
 import time
 
-def setup_logging(config):
+def setup_logging(config=None):
 	"""
 		This function initialized the logger that is enabled immediately.
 	"""
@@ -25,7 +25,7 @@ def setup_logging(config):
 	# we are running in debugging mode.
 	handler = logging.StreamHandler()
 
-	if config.get("debug"):
+	if config and config.get("debug"):
 		handler.setLevel(logging.DEBUG)
 	else:
 		handler.setLevel(logging.INFO)
@@ -33,9 +33,10 @@ def setup_logging(config):
 	l.addHandler(handler)
 
 	# The configuration file always logs all messages.
-	handler = logging.FileHandler(config.get("logfile"))
-	handler.setLevel(logging.DEBUG)
-	l.addHandler(handler)
+	if config:
+		handler = logging.FileHandler(config.get("logfile"))
+		handler.setLevel(logging.DEBUG)
+		l.addHandler(handler)
 
 
 class BuildFormatter(logging.Formatter):

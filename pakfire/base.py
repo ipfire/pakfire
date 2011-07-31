@@ -65,6 +65,10 @@ class Pakfire(object):
 		self.repos  = repository.Repositories(self,
 			enable_repos=enable_repos, disable_repos=disable_repos)
 
+	def __del__(self):
+		# Reset logging.
+		logger.setup_logging()
+
 	def create_solver(self):
 		return satsolver.Solver(self, self.pool)
 
