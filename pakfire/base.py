@@ -161,36 +161,45 @@ class Pakfire(object):
 
 		# Create a new repository that holds all packages we passed on
 		# the commandline.
-		repo = repository.RepositoryDir(self, repo_name, repo_desc, ".")
+		repo = repository.RepositoryDir(self, repo_name, repo_desc,
+			os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
 
-		# Add all packages to the repository index.
-		for file in files:
-			repo.collect_packages(file)
+		# Register the repository.
+		self.repos.add_repo(repo)
 
-		# Break if no packages were added at all.
-		if not len(repo):
-			logging.critical("There are no packages to install.")
-			return
+		try:
+			# Add all packages to the repository index.
+			for file in files:
+				repo.collect_packages(file)
 
-		# Create a new request that installs all solvables from the
-		# repository.
-		request = self.create_request()
-		for solv in [p.solvable for p in repo]:
-			request.install(solv)
+			# Break if no packages were added at all.
+			if not len(repo):
+				logging.critical(_("There are no packages to install."))
+				return
 
-		solver = self.create_solver()
-		t = solver.solve(request)
+			# Create a new request that installs all solvables from the
+			# repository.
+			request = self.create_request()
+			for solv in [p.solvable for p in repo]:
+				request.install(solv)
 
-		# If solving was not possible, we exit here.
-		if not t:
-			return
+			solver = self.create_solver()
+			t = solver.solve(request)
 
-		# Ask the user if this is okay.
-		if not t.cli_yesno():
-			return
+			# If solving was not possible, we exit here.
+			if not t:
+				return
 
-		# If okay, run the transcation.
-		t.run()
+			# Ask the user if this is okay.
+			if not t.cli_yesno():
+				return
+
+			# If okay, run the transcation.
+			t.run()
+
+		finally:
+			# Remove the temporary copy of the repository we have created earlier.
+			repo.remove()
 
 	def update(self, pkgs):
 		request = self.create_request()

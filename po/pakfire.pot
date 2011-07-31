@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-31 13:37+0200\n"
+"POT-Creation-Date: 2011-07-31 15:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,10 @@ msgstr ""
 
 #: ../pakfire/actions.py:124
 msgid "Downgrading"
+msgstr ""
+
+#: ../pakfire/base.py:177
+msgid "There are no packages to install."
 msgstr ""
 
 #: ../pakfire/builder.py:259
@@ -350,33 +354,33 @@ msgstr ""
 msgid "Loading installed packages"
 msgstr ""
 
-#: ../pakfire/satsolver.py:110
+#: ../pakfire/satsolver.py:113
 msgid "The solver returned one problem:"
 msgstr ""
 
 #. Ask the user if he or she want to modify the request. If not, just exit.
-#: ../pakfire/satsolver.py:126
+#: ../pakfire/satsolver.py:129
 msgid "Do you want to manually alter the request?"
 msgstr ""
 
-#: ../pakfire/satsolver.py:129
+#: ../pakfire/satsolver.py:132
 msgid "You can now try to satisfy the solver by modifying your request."
 msgstr ""
 
-#: ../pakfire/satsolver.py:134
+#: ../pakfire/satsolver.py:137
 msgid "Which problem to you want to resolve?"
 msgstr ""
 
-#: ../pakfire/satsolver.py:136
+#: ../pakfire/satsolver.py:139
 msgid "Press enter to try to re-solve the request."
 msgstr ""
 
-#: ../pakfire/satsolver.py:167
+#: ../pakfire/satsolver.py:170
 #, python-format
 msgid "    Solution: %s"
 msgstr ""
 
-#: ../pakfire/satsolver.py:176
+#: ../pakfire/satsolver.py:179
 msgid "    Solutions:"
 msgstr ""
 

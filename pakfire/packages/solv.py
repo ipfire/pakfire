@@ -169,8 +169,14 @@ class SolvPackage(base.Package):
 		path = None
 
 		if self.repo.local:
-			path = os.path.join(self.repo.path, self.arch, self.filename)
-			return binary.BinaryPackage(self.pakfire, self.repo, path)
+			# Search for a file in the local repository. It can be either in
+			# the root directory of the repository or in a subdirectory that
+			# is named by the architecture.
+			for i in ("", self.arch,):
+				path = os.path.join(self.repo.path, i, self.filename)
+
+				if os.path.exists(path):
+					return binary.BinaryPackage(self.pakfire, self.repo, path)
 		else:
 			filename = "packages/%s" % self.filename
 

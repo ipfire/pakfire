@@ -13,7 +13,7 @@ import util
 from constants import *
 from i18n import _
 
-PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-19s %5s "
+PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
 
 # Import all actions directly.
 from actions import *

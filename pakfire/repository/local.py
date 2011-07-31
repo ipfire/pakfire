@@ -39,6 +39,11 @@ class RepositoryDir(base.RepositoryFactory):
 		"""
 		return 10
 
+	@property
+	def local(self):
+		# Yes, this is local.
+		return True
+
 	def collect_packages(self, *args, **kwargs):
 		"""
 			Proxy function to add packages to the index.
