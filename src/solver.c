@@ -44,6 +44,22 @@ PyObject *Solver_dealloc(SolverObject *self) {
 	Py_RETURN_NONE;
 }
 
+PyObject *Solver_get_fix_system(SolverObject *self, PyObject *args) {
+	return Py_BuildValue("i", self->_solver->fixsystem);
+}
+
+PyObject *Solver_set_fix_system(SolverObject *self, PyObject *args) {
+	int val;
+
+	if (!PyArg_ParseTuple(args, "i", &val)) {
+		/* XXX raise exception */
+	}
+
+	self->_solver->fixsystem = val;
+
+	Py_RETURN_NONE;
+}
+
 PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args) {
 	return Py_BuildValue("i", self->_solver->allowdowngrade);
 }

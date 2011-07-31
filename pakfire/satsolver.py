@@ -78,7 +78,7 @@ class Solver(object):
 		self.pool = pool
 
 	def solve(self, request, update=False, uninstall=False, allow_downgrade=False,
-			interactive=False, logger=None):
+			fix_system=False, interactive=False, logger=None):
 		# If no logger was provided, we use the root logger.
 		if logger is None:
 			logger = logging.getLogger()
@@ -86,6 +86,7 @@ class Solver(object):
 		# Create a new solver.
 		solver = _pakfire.Solver(self.pool)
 
+		solver.set_fix_system(fix_system)
 		solver.set_allow_uninstall(uninstall)
 		solver.set_allow_downgrade(allow_downgrade)
 

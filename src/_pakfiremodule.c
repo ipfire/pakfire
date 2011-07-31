@@ -119,6 +119,8 @@ static PyMethodDef Solution_methods[] = {
 
 static PyMethodDef Solver_methods[] = {
 	{"solve", (PyCFunction)Solver_solve, METH_VARARGS, NULL},
+	{"get_fix_system", (PyCFunction)Solver_get_fix_system, METH_NOARGS, NULL},
+	{"set_fix_system", (PyCFunction)Solver_set_fix_system, METH_VARARGS, NULL},
 	{"get_allow_downgrade", (PyCFunction)Solver_get_allow_downgrade, METH_NOARGS, NULL},
 	{"set_allow_downgrade", (PyCFunction)Solver_set_allow_downgrade, METH_VARARGS, NULL},
 	{"get_allow_archchange", (PyCFunction)Solver_get_allow_archchange, METH_NOARGS, NULL},

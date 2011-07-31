@@ -15,6 +15,8 @@ typedef struct {
 extern PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 extern PyObject *Solver_dealloc(SolverObject *self);
 
+extern PyObject *Solver_get_fix_system(SolverObject *self, PyObject *args);
+extern PyObject *Solver_set_fix_system(SolverObject *self, PyObject *args);
 extern PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args);
 extern PyObject *Solver_set_allow_downgrade(SolverObject *self, PyObject *args);
 extern PyObject *Solver_get_allow_archchange(SolverObject *self, PyObject *args);

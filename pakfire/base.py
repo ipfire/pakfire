@@ -416,3 +416,32 @@ class Pakfire(object):
 
 		# Clean up repository caches.
 		self.repos.clean()
+
+	def check(self, downgrade=True, uninstall=True):
+		"""
+			Try to fix any errors in the system.
+		"""
+		# Detect any errors in the dependency tree.
+		# For that we create an empty request and solver and try to solve
+		# something.
+		request = self.create_request()
+		solver = self.create_solver()
+
+		# XXX the solver does crash if we call it with fix_system=1,
+		# allow_downgrade=1 and uninstall=1. Need to fix this.
+		allow_downgrade = False
+		uninstall = False
+
+		t = solver.solve(request, fix_system=True, allow_downgrade=downgrade,
+			uninstall=uninstall)
+
+		if not t:
+			logging.info(_("Everything is fine."))
+			return
+
+		# Ask the user if okay.
+		if not t.cli_yesno():
+			return
+
+		# Process the transaction.
+		t.run()

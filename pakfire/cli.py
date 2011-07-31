@@ -43,6 +43,7 @@ class Cli(object):
 		self.parse_command_groupinstall()
 		self.parse_command_repolist()
 		self.parse_command_clean()
+		self.parse_command_check()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -59,6 +60,7 @@ class Cli(object):
 			"groupinstall" : self.handle_groupinstall,
 			"repolist"     : self.handle_repolist,
 			"clean_all"    : self.handle_clean_all,
+			"check"        : self.handle_check,
 		}
 
 	@property
@@ -179,6 +181,12 @@ class Cli(object):
 			help=_("Cleanup all temporary files."))
 		sub_create.add_argument("action", action="store_const", const="clean_all")
 
+	def parse_command_check(self):
+		# Implement the "check" command
+		sub_check = self.sub_commands.add_parser("check",
+			help=_("Check the system for any errors."))
+		sub_check.add_argument("action", action="store_const", const="check")
+
 	def run(self):
 		action = self.args.action
 
@@ -251,6 +259,9 @@ class Cli(object):
 		print _("Cleaning up everything...")
 
 		pakfire.clean_all(**self.pakfire_args)
+
+	def handle_check(self):
+		pakfire.check(**self.pakfire_args)
 
 
 class CliBuilder(Cli):
