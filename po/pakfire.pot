@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-31 17:38+0000\n"
+"POT-Creation-Date: 2011-07-31 18:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,12 @@ msgstr ""
 msgid "Downgrading"
 msgstr ""
 
-#: ../pakfire/base.py:177
+#: ../pakfire/base.py:150 ../pakfire/base.py:192 ../pakfire/base.py:222
+#: ../pakfire/base.py:243
+msgid "Nothing to do"
+msgstr ""
+
+#: ../pakfire/base.py:178
 msgid "There are no packages to install."
 msgstr ""
 
@@ -155,7 +160,7 @@ msgstr ""
 msgid "Cleanup all temporary files."
 msgstr ""
 
-#: ../pakfire/cli.py:239 ../pakfire/transaction.py:160
+#: ../pakfire/cli.py:239 ../pakfire/transaction.py:165
 msgid "Repository"
 msgstr ""
 
@@ -279,11 +284,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73 ../pakfire/transaction.py:159
+#: ../pakfire/packages/base.py:73 ../pakfire/transaction.py:164
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:74 ../pakfire/transaction.py:159
+#: ../pakfire/packages/base.py:74 ../pakfire/transaction.py:164
 msgid "Version"
 msgstr ""
 
@@ -291,7 +296,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:76 ../pakfire/transaction.py:160
+#: ../pakfire/packages/base.py:76 ../pakfire/transaction.py:165
 msgid "Size"
 msgstr ""
 
@@ -389,62 +394,62 @@ msgstr ""
 msgid "    Solutions:"
 msgstr ""
 
-#: ../pakfire/transaction.py:94
+#: ../pakfire/transaction.py:99
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../pakfire/transaction.py:159
+#: ../pakfire/transaction.py:164
 msgid "Package"
 msgstr ""
 
-#: ../pakfire/transaction.py:164
+#: ../pakfire/transaction.py:169
 msgid "Installing:"
 msgstr ""
 
-#: ../pakfire/transaction.py:165
+#: ../pakfire/transaction.py:170
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../pakfire/transaction.py:166
+#: ../pakfire/transaction.py:171
 msgid "Updating:"
 msgstr ""
 
-#: ../pakfire/transaction.py:167
+#: ../pakfire/transaction.py:172
 msgid "Downgrading:"
 msgstr ""
 
-#: ../pakfire/transaction.py:168
+#: ../pakfire/transaction.py:173
 msgid "Removing:"
 msgstr ""
 
-#: ../pakfire/transaction.py:174
+#: ../pakfire/transaction.py:179
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../pakfire/transaction.py:181
+#: ../pakfire/transaction.py:186
 msgid "package"
 msgstr ""
 
-#: ../pakfire/transaction.py:187
+#: ../pakfire/transaction.py:192
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../pakfire/transaction.py:191
+#: ../pakfire/transaction.py:196
 #, python-format
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../pakfire/transaction.py:193
+#: ../pakfire/transaction.py:198
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../pakfire/transaction.py:202
+#: ../pakfire/transaction.py:207
 msgid "Is this okay?"
 msgstr ""
 
-#: ../pakfire/transaction.py:208
+#: ../pakfire/transaction.py:213
 msgid "Running transaction"
 msgstr ""
 

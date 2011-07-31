@@ -43,7 +43,12 @@ class Transaction(object):
 		# Save installsizechange.
 		transaction.installsizechange = _transaction.get_installsizechange()
 
-		for step in _transaction.steps():
+		# Get all steps that need to be done from the solver.
+		steps = _transaction.steps()
+		if not steps:
+			return
+
+		for step in steps:
 			action = step.get_type()
 			pkg = packages.SolvPackage(pakfire, step.get_solvable())
 

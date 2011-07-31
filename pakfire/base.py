@@ -147,6 +147,7 @@ class Pakfire(object):
 		t = solver.solve(request)
 
 		if not t:
+			logging.info(_("Nothing to do"))
 			return
 
 		# Ask if the user acknowledges the transaction.
@@ -188,6 +189,7 @@ class Pakfire(object):
 
 			# If solving was not possible, we exit here.
 			if not t:
+				logging.info(_("Nothing to do"))
 				return
 
 			# Ask the user if this is okay.
@@ -217,6 +219,7 @@ class Pakfire(object):
 		t = solver.solve(request, update=update)
 
 		if not t:
+			logging.info(_("Nothing to do"))
 			return
 
 		# Ask the user if the transaction is okay.
@@ -237,6 +240,7 @@ class Pakfire(object):
 		t = solver.solve(request, uninstall=True)
 
 		if not t:
+			logging.info(_("Nothing to do"))
 			return
 
 		# Ask the user if okay.
