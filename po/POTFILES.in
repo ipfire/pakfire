@@ -18,7 +18,6 @@ pakfire/packages/binary.py
 pakfire/packages/file.py
 pakfire/packages/__init__.py
 pakfire/packages/installed.py
-pakfire/packages/listing.py
 pakfire/packages/make.py
 pakfire/packages/packager.py
 pakfire/packages/solv.py

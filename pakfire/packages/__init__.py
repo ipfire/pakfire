@@ -9,7 +9,6 @@ from solv import SolvPackage
 from source import SourcePackage
 from virtual import VirtualPackage
 
-from listing import PackageListing
 from make import Makefile
 from packager import BinaryPackager
 

@@ -255,9 +255,13 @@ class Pakfire(object):
 			solvs = self.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
 
 			for solv in solvs:
-				pkgs.append(packages.SolvPackage(self, solv))
+				pkg = packages.SolvPackage(self, solv)
+				if pkg in pkgs:
+					continue
 
-		return packages.PackageListing(pkgs)
+				pkgs.append(pkg)
+
+		return sorted(pkgs)
 
 	def search(self, pattern):
 		# Do the search.
@@ -374,22 +378,13 @@ class Pakfire(object):
 	def provides(self, patterns):
 		pkgs = []
 		for pattern in patterns:
-			pkgs += self.repos.whatprovides(pattern)
+			for pkg in self.repos.whatprovides(pattern):
+				if pkg in pkgs:
+					continue
 
-		pkgs = packages.PackageListing(pkgs)
-		#pkgs.unique()
+				pkgs.append(pkg)
 
-		return pkgs
-
-	def requires(self, patterns):
-		pkgs = []
-		for pattern in patterns:
-			pkgs += self.repos.get_by_requires(pattern)
-
-		pkgs = packages.PackageListing(pkgs)
-		#pkgs.unique()
-
-		return pkgs
+		return sorted(pkgs)
 
 	def repo_create(self, path, input_paths, type="binary"):
 		assert type in ("binary", "source",)
