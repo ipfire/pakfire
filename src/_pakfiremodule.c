@@ -48,6 +48,9 @@ static PyMethodDef Request_methods[] = {
 	{"lock_solvable", (PyCFunction)Request_lock_solvable, METH_VARARGS, NULL},
 	{"lock_relation", (PyCFunction)Request_lock_relation, METH_VARARGS, NULL},
 	{"lock_name", (PyCFunction)Request_lock_name, METH_VARARGS, NULL},
+	{"noobsoletes_solvable", (PyCFunction)Request_noobsoletes_solvable, METH_VARARGS, NULL},
+	{"noobsoletes_relation", (PyCFunction)Request_noobsoletes_relation, METH_VARARGS, NULL},
+	{"noobsoletes_name", (PyCFunction)Request_noobsoletes_name, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 

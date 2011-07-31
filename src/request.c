@@ -206,3 +206,40 @@ PyObject *Request_lock_name(RequestObject *self, PyObject *args) {
 
 	Py_RETURN_NONE;
 }
+
+PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *args) {
+	SolvableObject *solv;
+
+	if (!PyArg_ParseTuple(args, "O", &solv)) {
+		/* XXX raise exception */
+	}
+
+	_Request_solvable(self, SOLVER_NOOBSOLETES, solv->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args) {
+	RelationObject *rel;
+
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		/* XXX raise exception */
+	}
+
+	_Request_relation(self, SOLVER_NOOBSOLETES, rel->_id);
+
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args) {
+	const char *name;
+
+	if (!PyArg_ParseTuple(args, "s", &name)) {
+		/* XXX raise exception */
+	}
+
+	Id _name = pool_str2id(self->_pool, name, 1);
+	_Request_name(self, SOLVER_NOOBSOLETES, _name);
+
+	Py_RETURN_NONE;
+}

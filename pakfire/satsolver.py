@@ -71,6 +71,21 @@ class Request(_pakfire.Request):
 
 		raise Exception, "Unknown type"
 
+	def noobsoletes(self, what):
+		if isinstance(what, Solvable):
+			self.noobsoletes_solvable(what)
+			return
+
+		elif isinstance(what, Relation):
+			self.noobsoletes_relation(what)
+			return
+
+		elif type(what) == type("string"):
+			self.noobsoletes_name(what)
+			return
+
+		raise Exception, "Unknown type"
+
 
 class Solver(object):
 	def __init__(self, pakfire, pool):

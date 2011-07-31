@@ -72,8 +72,14 @@ class Pakfire(object):
 	def create_solver(self):
 		return satsolver.Solver(self, self.pool)
 
-	def create_request(self):
-		return satsolver.Request(self.pool)
+	def create_request(self, builder=False):
+		request = satsolver.Request(self.pool)
+
+		# Add multiinstall information.
+		for solv in PAKFIRE_MULTIINSTALL:
+			request.noobsoletes(solv)
+
+		return request
 
 	def create_relation(self, s):
 		assert s

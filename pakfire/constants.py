@@ -103,3 +103,6 @@ PKG_PAYLOAD_COMP="%(payload_comp)s"
 PKG_PAYLOAD_HASH1="%(payload_hash1)s"
 
 """
+
+# XXX make this configurable in pakfire.conf
+PAKFIRE_MULTIINSTALL = ["kernel",]

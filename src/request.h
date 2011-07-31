@@ -36,6 +36,10 @@ extern PyObject *Request_lock_solvable(RequestObject *self, PyObject *args);
 extern PyObject *Request_lock_relation(RequestObject *self, PyObject *args);
 extern PyObject *Request_lock_name(RequestObject *self, PyObject *args);
 
+extern PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *args);
+extern PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args);
+extern PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args);
+
 extern PyTypeObject RequestType;
 
 #endif
