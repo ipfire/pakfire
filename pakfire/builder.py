@@ -292,7 +292,7 @@ class Builder(object):
 		solver = self.pakfire.create_solver()
 
 		# Do the solving.
-		transaction = solver.solve(request, allow_downgrade=True)
+		transaction = solver.solve(request, allow_downgrade=True, logger=self.log)
 
 		# XXX check for errors
 		if not transaction:

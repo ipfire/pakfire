@@ -78,7 +78,10 @@ class Solver(object):
 		self.pool = pool
 
 	def solve(self, request, update=False, uninstall=False, allow_downgrade=False,
-			interactive=False):
+			interactive=False, logger=None):
+		# If no logger was provided, we use the root logger.
+		if logger is None:
+			logger = logging.getLogger()
 
 		# Create a new solver.
 		solver = _pakfire.Solver(self.pool)
@@ -94,7 +97,7 @@ class Solver(object):
 		# Actually solve the request.
 		res = solver.solve(request)
 
-		logging.debug("Solver status: %s" % res)
+		logger.debug("Solver status: %s" % res)
 
 		# If the solver succeeded, we return the transaction and return.
 		if res:
@@ -106,8 +109,8 @@ class Solver(object):
 		# Do the problem handling...
 		problems = solver.get_problems(request)
 
-		logging.info("")
-		logging.info(_("The solver returned one problem:", "The solver returned %(num)s problems:",
+		logger.info("")
+		logger.info(_("The solver returned one problem:", "The solver returned %(num)s problems:",
 			len(problems)) % { "num" : len(problems) })
 
 		i = 0
@@ -115,9 +118,9 @@ class Solver(object):
 			i += 1
 
 			# Print information about the problem to the user.
-			logging.info("  #%d: %s" % (i, problem))
+			logger.info("  #%d: %s" % (i, problem))
 
-		logging.info("")
+		logger.info("")
 
 		if not interactive:
 			return False
