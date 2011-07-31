@@ -217,6 +217,28 @@ class DatabaseLocal(Database):
 
 		c.close()
 
+	def rem_package(self, pkg):
+		logging.debug("Removing package from database: %s" % pkg.friendly_name)
+
+		assert pkg.uuid
+
+		# Get the ID of the package in the database.
+		c = self.cursor()
+		c.execute("SELECT id FROM packages WHERE uuid = ? LIMIT 1", (pkg.uuid,))
+
+		id = None
+		for row in c:
+			id = row["id"]
+			break
+		assert id
+
+		# First, delete all files from the database and then delete the pkg itself.
+		c.execute("DELETE FROM files WHERE pkg = ?", (id,))
+		c.execute("DELETE FROM packages WHERE id = ?", (id,))
+
+		c.close()
+		self.commit()
+
 	@property
 	def packages(self):
 		c = self.cursor()

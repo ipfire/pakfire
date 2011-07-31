@@ -354,9 +354,6 @@ class Package(object):
 		raise NotImplementedError, "%s" % repr(self)
 
 	def remove(self, message=None, prefix=None):
-		if prefix in ("/", None):
-			prefix = ""
-
 		# Make two filelists. One contains all binary files that need to be
 		# removed, the other one contains the configuration files which are
 		# kept. files and configfiles are disjunct.
@@ -369,6 +366,12 @@ class Package(object):
 
 			assert file.startswith("/")
 			files.append(file)
+
+		self._remove_files(files, message, prefix)
+
+	def _remove_files(self, files, message, prefix):
+		if prefix in ("/", None):
+			prefix = ""
 
 		# Load progressbar.
 		pb = None

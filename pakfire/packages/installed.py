@@ -7,6 +7,7 @@ import pakfire.downloader
 from base import Package
 from binary import BinaryPackage
 
+import pakfire.util as util
 from pakfire.constants import *
 
 class DatabasePackage(Package):
@@ -229,6 +230,27 @@ class DatabasePackage(Package):
 
 		filename = os.path.join(cache.path, cache_filename)
 		return BinaryPackage(self.pakfire, self.repo, filename)
+
+	def cleanup(self, message, prefix):
+		c = self.db.cursor()
+
+		# Get all files, that are in this package and check for all of
+		# them if they need to be removed.
+		files = self.filelist
+
+		# Fetch the whole filelist of the system from the database and create
+		# a diff. Exclude files from this package - of course.
+		c.execute("SELECT name FROM files WHERE pkg != ?", (self.id,))
+
+		for row in c:
+			# Check if file in filelist.
+			if row["name"] in files:
+				files.remove(row["name"])
+
+		c.close()
+
+		self._remove_files(files, message, prefix)
+
 
 # XXX maybe we can remove this later?
 class InstalledPackage(DatabasePackage):

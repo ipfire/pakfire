@@ -156,6 +156,10 @@ class Index(object):
 			rel = self.create_relation(file)
 			solvable.add_provides(rel)
 
+	def rem_package(self, pkg):
+		# XXX delete the solvable from the index.
+		self.db.rem_package(pkg)
+
 	def clear(self):
 		"""
 			Forget all packages from memory.

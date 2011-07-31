@@ -42,22 +42,6 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
-	def _extract(self, message, prefix=None):
-		# Add package to the database.
-		self.local.add_package(self.pkg)
-
-		if prefix is None:
-			prefix = self.pakfire.path
-
-		self.pkg.extract(message, prefix=prefix)
-
-
-class ActionCleanup(Action):
-	type = "ignore"
-
-	def run(self):
-		print "XXX Cleanup: %s" % self.pkg
-
 
 class ActionScript(Action):
 	def run(self):
@@ -84,14 +68,20 @@ class ActionInstall(Action):
 	type = "install"
 
 	def run(self):
-		self._extract(_("Installing"))
+		# Add package to the database.
+		self.local.add_package(self.pkg)
+
+		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
 
 
 class ActionUpdate(Action):
 	type = "upgrade"
 
 	def run(self):
-		self._extract(_("Updating"))
+		# Add new package to the database.
+		self.local.add_package(self.pkg)
+
+		self.pkg.extract(_("Updating"), prefix=self.pakfire.path)
 
 
 class ActionRemove(Action):
@@ -107,25 +97,54 @@ class ActionRemove(Action):
 	def run(self):
 		self.pkg.remove(_("Removing"), prefix=self.pakfire.path)
 
-		# XXX Remove package from database
+		# Remove package from the database.
+		self.local.rem_package(self.pkg)
+
+
+class ActionCleanup(Action):
+	type = "ignore"
+
+	def __init__(self, *args, **kwargs):
+		Action.__init__(self, *args, **kwargs)
+
+		# XXX This is ugly, but works for the moment.
+		self.pkg = self.local.index.db.get_package_from_solv(self.pkg_solv)
+		assert self.pkg
+
+	def run(self):
+		# Cleaning up leftover files and stuff.
+		self.pkg.cleanup(_("Cleanup"), prefix=self.pakfire.path)
+
+		# Remove package from the database.
+		self.local.rem_package(self.pkg)
 
 
 class ActionReinstall(Action):
 	type = "reinstall"
 
 	def run(self):
-		self._extract(_("Installing"))
+		# Remove package from the database and add it afterwards.
+		# Sounds weird, but fixes broken entries in the database.
+		self.local.rem_package(self.pkg)
+		self.local.add_package(self.pkg)
+
+		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
 
 
 class ActionDowngrade(Action):
 	type = "downgrade"
 
 	def run(self):
-		self._extract(_("Downgrading"))
+		# Add new package to database.
+		self.local.add_package(self.pkg)
+
+		self.pkg.extract(_("Downgrading"), prefix=self.pakfire.path)
 
 
 class ActionChange(Action):
 	type = "change"
+
+	# XXX still need to find out what this should be doing
 
 	def run(self):
 		print "XXX Change: %s" % self.pkg

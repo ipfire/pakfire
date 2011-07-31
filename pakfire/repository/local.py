@@ -183,3 +183,7 @@ class RepositoryLocal(base.RepositoryFactory):
 		self.index.db.add_package(pkg)
 
 		self.index.add_package(pkg)
+
+	def rem_package(self, pkg):
+		# Remove package from the database.
+		self.index.rem_package(pkg)

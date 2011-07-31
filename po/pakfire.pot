@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-31 15:33+0000\n"
+"POT-Creation-Date: 2011-07-31 17:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pakfire/actions.py:87 ../pakfire/actions.py:117
+#: ../pakfire/actions.py:74 ../pakfire/actions.py:131
 msgid "Installing"
 msgstr ""
 
-#: ../pakfire/actions.py:94
+#: ../pakfire/actions.py:84
 msgid "Updating"
 msgstr ""
 
-#: ../pakfire/actions.py:108
+#: ../pakfire/actions.py:98
 msgid "Removing"
 msgstr ""
 
-#: ../pakfire/actions.py:124
+#. Cleaning up leftover files and stuff.
+#: ../pakfire/actions.py:116
+msgid "Cleanup"
+msgstr ""
+
+#: ../pakfire/actions.py:141
 msgid "Downgrading"
 msgstr ""
 
@@ -338,19 +343,19 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/index.py:227
+#: ../pakfire/repository/index.py:231
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:315
+#: ../pakfire/repository/index.py:319
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:368
+#: ../pakfire/repository/index.py:372
 msgid "Loading installed packages"
 msgstr ""
 
