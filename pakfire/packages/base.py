@@ -326,7 +326,10 @@ class Package(object):
 		ret = ""
 
 		# The default attributes, that are process for the requires.
-		attrs = ("PKG_REQUIRES", "PKG_DEPS")
+		attrs = ["PKG_REQUIRES", "PKG_DEPS",]
+
+		if self.arch == "src":
+			attrs += ["PKG_BUILD_DEPS",]
 
 		for i in attrs:
 			ret = self.metadata.get(i, ret)
