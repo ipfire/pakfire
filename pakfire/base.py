@@ -261,12 +261,20 @@ class Pakfire(object):
 
 	def search(self, pattern):
 		# Do the search.
-		pkgs = []
+		pkgs = {}
 		for solv in self.pool.search(pattern, satsolver.SEARCH_STRING|satsolver.SEARCH_FILES):
-			pkgs.append(packages.SolvPackage(self, solv))
+			pkg = packages.SolvPackage(self, solv)
 
-		# Return the output as a package listing.
-		return packages.PackageListing(pkgs)
+			# Check, if a package with the name is already in the resultset
+			# and always replace older ones by more recent ones.
+			if pkgs.has_key(pkg.name):
+				if pkgs[pkg.name] < pkg:
+					pkgs[pkg.name] = pkg
+			else:
+				pkgs[pkg.name] = pkg
+
+		# Return a list of the packages, alphabetically sorted.
+		return sorted(pkgs.values())
 
 	def groupinstall(self, group):
 		pkgs = self.grouplist(group)
