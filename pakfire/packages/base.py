@@ -393,7 +393,7 @@ class Package(object):
 			logging.debug("Removing file: %s" % _file)
 
 			if prefix:
-				file = os.path.join(prefix, file[1:])
+				file = os.path.join(prefix, _file[1:])
 				assert file.startswith("%s/" % prefix)
 			else:
 				file = _file
