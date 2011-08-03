@@ -4,6 +4,7 @@
 
 #include "config.h"
 #include "pool.h"
+#include "relation.h"
 #include "repo.h"
 #include "solvable.h"
 
@@ -142,14 +143,14 @@ PyObject *Pool_set_installed(PoolObject *self, PyObject *args) {
 }
 
 PyObject *Pool_providers(PoolObject *self, PyObject *args) {
-	const char *name;
+	RelationObject *relation;
 
-	if (!PyArg_ParseTuple(args, "s", &name)) {
+	if (!PyArg_ParseTuple(args, "O", &relation)) {
 		/* XXX raise exception */
 		return NULL;
 	}
 
-	Id id = pool_str2id(self->_pool, name, 0);
+	Id id = relation->_id;
 
 	Pool *pool = self->_pool;
 	_Pool_prepare(pool);

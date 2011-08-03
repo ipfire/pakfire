@@ -120,6 +120,8 @@ class Repositories(object):
 			repo.update(force=force)
 
 	def whatprovides(self, what):
+		what = self.pakfire.create_relation(what)
+
 		for solv in self.pool.providers(what):
 			yield packages.SolvPackage(self.pakfire, solv)
 
