@@ -146,6 +146,7 @@ class Pakfire(object):
 		# Create a new request.
 		request = self.create_request()
 		for req in requires:
+			req = self.create_relation(req)
 			request.install(req)
 
 		# Do the solving.
@@ -217,6 +218,7 @@ class Pakfire(object):
 		if pkgs:
 			update = False
 			for pkg in pkgs:
+				pkg = self.create_relation(pkg)
 				request.update(pkg)
 		else:
 			update = True
@@ -239,6 +241,7 @@ class Pakfire(object):
 		# Create a new request.
 		request = self.create_request()
 		for pkg in pkgs:
+			pkg = self.create_relation(pkg)
 			request.remove(pkg)
 
 		# Solve the request.
