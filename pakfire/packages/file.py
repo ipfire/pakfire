@@ -314,7 +314,12 @@ class FilePackage(Package):
 		"""
 			Return the compression type of the payload.
 		"""
-		return self.metadata.get("PKG_PAYLOAD_COMP", None)
+		comp = self.metadata.get("PKG_PAYLOAD_COMP", None)
+
+		if comp == "XXX":
+			return
+
+		return comp
 
 	@property
 	def signature(self):
