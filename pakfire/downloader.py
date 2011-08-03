@@ -16,40 +16,51 @@ class PakfireGrabber(URLGrabber):
 	"""
 	# XXX add proxy, throttle things here
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
 			"quote" : 0,
 			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
 		})
 
+		# Get Pakfire configuration
+		bandwidth_throttle = pakfire.config.get("bandwidth_throttle")
+		if bandwidth_throttle:
+			try:
+				bandwidth_throttle = int(bandwidth_throttle)
+			except ValueError:
+				logging.error("Configuration value for bandwidth_throttle is invalid.")
+				bandwidth_throttle = 0
+
+			kwargs.update({ "throttle" : bandwidth_throttle })
+
 		URLGrabber.__init__(self, *args, **kwargs)
 
 
 class PackageDownloader(PakfireGrabber):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
 				"progress_obj" : TextMeter(),
 		})
 
-		PakfireGrabber.__init__(self, *args, **kwargs)
+		PakfireGrabber.__init__(self, pakfire, *args, **kwargs)
 
 
 class MetadataDownloader(PakfireGrabber):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
 			"http_headers" : (('Pragma', 'no-cache'),),
 		})
 
-		PakfireGrabber.__init__(self, *args, **kwargs)
+		PakfireGrabber.__init__(self, pakfire, *args, **kwargs)
 
 
 class DatabaseDownloader(PackageDownloader):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
 			"http_headers" : (('Pragma', 'no-cache'),),
 		})
 
-		PackageDownloader.__init__(self, *args, **kwargs)
+		PackageDownloader.__init__(self, pakfire, *args, **kwargs)
 
 
 class Mirror(object):
@@ -105,7 +116,7 @@ class MirrorList(object):
 				force = True
 
 		if force:
-			g = MetadataDownloader()
+			g = MetadataDownloader(self.pakfire)
 
 			try:
 				mirrordata = g.urlread(self.mirrorlist, limit=MIRRORLIST_MAXSIZE)

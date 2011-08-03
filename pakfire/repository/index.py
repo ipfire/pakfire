@@ -200,7 +200,7 @@ class IndexSolv(Index):
 			logging.debug("Going to (re-)download the repository metadata.")
 
 			# Initialize a grabber for download.
-			grabber = downloader.MetadataDownloader()
+			grabber = downloader.MetadataDownloader(self.pakfire)
 			grabber = self.repo.mirrors.group(grabber)
 
 			data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
@@ -228,6 +228,7 @@ class IndexSolv(Index):
 		if not self.cache.exists(filename):
 			# Initialize a grabber for download.
 			grabber = downloader.DatabaseDownloader(
+				self.pakfire,
 				text = _("%s: package database") % self.repo.name,
 			)
 			grabber = self.repo.mirrors.group(grabber)

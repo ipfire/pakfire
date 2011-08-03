@@ -18,6 +18,7 @@ class SourceDownloader(object):
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
 
+		# XXX need to use downloader.py
 		self.grabber = URLGrabber(
 			prefix = self.pakfire.config.get("source_download_url"),
 			progress_obj = TextMeter(),
