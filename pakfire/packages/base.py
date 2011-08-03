@@ -5,11 +5,8 @@ import logging
 import os
 import xml.sax.saxutils
 
-import util
-
+import pakfire.util as util
 from pakfire.i18n import _
-
-from pakfire.util import make_progress
 
 class Package(object):
 	def __init__(self, pakfire, repo=None):
@@ -27,7 +24,8 @@ class Package(object):
 		if not self.name == other.name:
 			return cmp(self.name, other.name)
 
-		ret = util.version_compare(self.version_tuple, other.version_tuple)
+		ret = util.version_compare(self.pakfire.pool,
+			self.friendly_version, other.friendly_version)
 
 		# XXX this is to move packages that have been built a while ago and
 		# do not have all the meta information that they won't be evaluated
@@ -217,14 +215,6 @@ class Package(object):
 		return int(epoch)
 
 	@property
-	def version_tuple(self):
-		"""
-			Returns a tuple like (epoch, version, release) that can
-			be used to compare versions of packages.
-		"""
-		return (self.epoch, self.version, self.release)
-
-	@property
 	def arch(self):
 		raise NotImplementedError
 
@@ -393,7 +383,7 @@ class Package(object):
 			logging.debug("Removing file: %s" % _file)
 
 			if prefix:
-				file = os.path.join(prefix, file[1:])
+				file = os.path.join(prefix, _file[1:])
 				assert file.startswith("%s/" % prefix)
 			else:
 				file = _file

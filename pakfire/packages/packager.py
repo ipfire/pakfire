@@ -15,8 +15,8 @@ import xattr
 import zlib
 
 import pakfire.compress
+import pakfire.util as util
 from pakfire.util import rm
-import util
 
 from pakfire.constants import *
 from pakfire.i18n import _

@@ -25,7 +25,7 @@ class Cli(object):
 
 		self.parse_common_arguments()
 
-		self.parser.add_argument("--instroot", metavar="PATH",
+		self.parser.add_argument("--root", metavar="PATH",
 			default="/",
 			help=_("The path where pakfire should operate in."))
 
@@ -67,8 +67,8 @@ class Cli(object):
 	def pakfire_args(self):
 		ret = { "mode" : "normal" }
 
-		if hasattr(self.args, "instroot"):
-			ret["path"] = self.args.instroot
+		if hasattr(self.args, "root"):
+			ret["path"] = self.args.root
 
 		if hasattr(self.args, "disable_repo"):
 			ret["disable_repos"] = self.args.disable_repo

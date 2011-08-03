@@ -22,7 +22,6 @@ pakfire/packages/make.py
 pakfire/packages/packager.py
 pakfire/packages/solv.py
 pakfire/packages/source.py
-pakfire/packages/util.py
 pakfire/packages/virtual.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
@@ -49,3 +48,4 @@ src/solver.c
 src/step.c
 src/test.py
 src/transaction.c
+src/util.c

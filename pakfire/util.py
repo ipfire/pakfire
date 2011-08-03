@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
+from __future__ import division
+
 import fcntl
+import hashlib
 import os
 import progressbar
 import random
@@ -11,9 +14,11 @@ import sys
 import termios
 import time
 
-from errors import Error
-from packages.util import calc_hash1, format_size, format_speed, format_time
+from constants import *
 from i18n import _
+
+# Import binary version of version_compare
+from _pakfire import version_compare
 
 def cli_is_interactive():
 	"""
@@ -136,3 +141,61 @@ def terminal_size():
 			cr = (25, 80)
 
 	return int(cr[1]), int(cr[0])
+
+def format_size(s):
+	sign = 1
+
+	# If s is negative, we save the sign and run the calculation with the
+	# absolute value of s.
+	if s < 0:
+		sign = -1
+		s = -1 * s
+
+	units = (" ", "k", "M", "G", "T")
+	unit = 0
+
+	while s >= 1024 and unit < len(units):
+		s /= 1024
+		unit += 1
+
+	return "%d %s" % (int(s) * sign, units[unit])
+
+def format_time(s):
+	return "%02d:%02d" % (s // 60, s % 60)
+
+def format_speed(s):
+	return "%sB/s" % format_size(s)
+
+def calc_hash1(filename=None, data=None):
+	h = hashlib.sha1()
+
+	if filename:
+		f = open(filename)
+		buf = f.read(BUFFER_SIZE)
+		while buf:
+			h.update(buf)
+			buf = f.read(BUFFER_SIZE)
+
+		f.close()
+
+	elif data:
+		h.update(data)
+
+	return h.hexdigest()
+
+def text_wrap(s, length=65):
+	t = []
+	s = s.split()
+
+	l = []
+	for word in s:
+		l.append(word)
+
+		if len(" ".join(l)) >= length:
+			t.append(l)
+			l = []
+
+	if l:
+		t.append(l)
+
+	return [" ".join(l) for l in t]
