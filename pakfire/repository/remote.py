@@ -86,6 +86,7 @@ class RepositorySolv(base.RepositoryFactory):
 
 			# Get a package grabber and add mirror download capabilities to it.
 			grabber = downloader.PackageDownloader(
+				self.pakfire,
 				text=text + os.path.basename(filename),
 			)
 			grabber = self.mirrors.group(grabber)

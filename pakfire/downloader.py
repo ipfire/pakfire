@@ -14,15 +14,13 @@ class PakfireGrabber(URLGrabber):
 	"""
 		Class to make some modifications on the urlgrabber configuration.
 	"""
-	# XXX add proxy, throttle things here
-
 	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
 			"quote" : 0,
 			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
 		})
 
-		# Get Pakfire configuration
+		# Set throttle setting.
 		bandwidth_throttle = pakfire.config.get("bandwidth_throttle")
 		if bandwidth_throttle:
 			try:
@@ -32,6 +30,11 @@ class PakfireGrabber(URLGrabber):
 				bandwidth_throttle = 0
 
 			kwargs.update({ "throttle" : bandwidth_throttle })
+
+		# Configure HTTP proxy.
+		http_proxy = pakfire.config.get("http_proxy")
+		if http_proxy:
+			kwargs.update({ "proxies" : { "http" : http_proxy }})
 
 		URLGrabber.__init__(self, *args, **kwargs)
 
