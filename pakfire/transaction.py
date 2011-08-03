@@ -19,15 +19,15 @@ PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
 from actions import *
 
 class Transaction(object):
-	action_classes = [
-		ActionInstall,
-		ActionUpdate,
-		ActionRemove,
-		ActionCleanup,
-		ActionReinstall,
-		ActionDowngrade,
-		ActionChange,
-	]
+	action_classes = {
+		"install"   : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
+		"reinstall" : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
+		"remove"    : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
+		"update"    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
+		"cleanup"   : [ActionCleanup,],
+		"downgrade" : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
+		"change"    : [ActionChange,],
+	}
 
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
@@ -48,18 +48,28 @@ class Transaction(object):
 		if not steps:
 			return
 
+		actions = []
+		actions_post = []
+
 		for step in steps:
-			action = step.get_type()
+			action_name = step.get_type()
 			pkg = packages.SolvPackage(pakfire, step.get_solvable())
 
-			for action_cls in cls.action_classes:
-				if action_cls.type == action:
-					action = action_cls(pakfire, pkg)
+			try:
+				classes = transaction.action_classes[action_name]
+			except KeyError:
+				raise Exception, "Unknown action required: %s" % action_name
 
-			if not isinstance(action, Action):
-				raise Exception, "Unknown action required: %s" % action
+			for action_cls in classes:
+				action = action_cls(pakfire, pkg)
+				assert isinstance(action, Action), action
 
-			transaction.actions.append(action)
+				if isinstance(action, ActionScriptPostTrans):
+					actions_post.append(action)
+				else:
+					actions.append(action)
+
+		transaction.actions += actions + actions_post
 
 		return transaction
 

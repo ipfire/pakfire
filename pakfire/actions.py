@@ -44,7 +44,10 @@ class Action(object):
 
 
 class ActionScript(Action):
+	type = "script"
+
 	def run(self):
+		#print "Pretending to run script: %s" % self.__class__.__name__
 		pass
 
 
@@ -61,6 +64,30 @@ class ActionScriptPreUn(ActionScript):
 
 
 class ActionScriptPostUn(ActionScript):
+	pass
+
+
+class ActionScriptPreUp(ActionScript):
+	pass
+
+
+class ActionScriptPostUp(ActionScript):
+	pass
+
+
+class ActionScriptPostTrans(ActionScript):
+	pass
+
+
+class ActionScriptPostTransIn(ActionScriptPostTrans):
+	pass
+
+
+class ActionScriptPostTransUn(ActionScriptPostTrans):
+	pass
+
+
+class ActionScriptPostTransUp(ActionScriptPostTrans):
 	pass
 
 
