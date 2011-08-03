@@ -367,7 +367,7 @@ class Package(object):
 		pb = None
 		if message:
 			message = "%-10s : %s" % (message, self.friendly_name)
-			pb = make_progress(message, len(files), eta=False)
+			pb = util.make_progress(message, len(files), eta=False)
 
 		# Sort files by the length of their name to remove all files in
 		# a directory first and then check, if there are any files left.
