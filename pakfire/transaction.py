@@ -22,7 +22,7 @@ class Transaction(object):
 	action_classes = {
 		"install"   : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
 		"reinstall" : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
-		"remove"    : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
+		"erase"     : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
 		"update"    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
 		"cleanup"   : [ActionCleanup,],
 		"downgrade" : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
