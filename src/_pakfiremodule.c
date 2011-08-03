@@ -12,8 +12,10 @@
 #include "solver.h"
 #include "step.h"
 #include "transaction.h"
+#include "util.h"
 
 static PyMethodDef pakfireModuleMethods[] = {
+	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 

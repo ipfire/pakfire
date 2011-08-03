@@ -7,8 +7,6 @@ import tarfile
 import tempfile
 import xattr
 
-import util
-
 import pakfire.util as util
 import pakfire.compress as compress
 from pakfire.errors import FileError

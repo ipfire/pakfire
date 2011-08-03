@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-31 19:32+0000\n"
+"POT-Creation-Date: 2011-08-03 13:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -288,71 +288,71 @@ msgstr ""
 msgid "One or more dependencies could not been resolved."
 msgstr ""
 
-#: ../pakfire/packages/base.py:72
+#: ../pakfire/packages/base.py:70
 msgid "Name"
 msgstr ""
 
-#: ../pakfire/packages/base.py:73 ../pakfire/transaction.py:164
+#: ../pakfire/packages/base.py:71 ../pakfire/transaction.py:164
 msgid "Arch"
 msgstr ""
 
-#: ../pakfire/packages/base.py:74 ../pakfire/transaction.py:164
+#: ../pakfire/packages/base.py:72 ../pakfire/transaction.py:164
 msgid "Version"
 msgstr ""
 
-#: ../pakfire/packages/base.py:75
+#: ../pakfire/packages/base.py:73
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:76 ../pakfire/transaction.py:165
+#: ../pakfire/packages/base.py:74 ../pakfire/transaction.py:165
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/packages/base.py:77
+#: ../pakfire/packages/base.py:75
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:78
+#: ../pakfire/packages/base.py:76
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:79
+#: ../pakfire/packages/base.py:77
 msgid "Groups"
 msgstr ""
 
-#: ../pakfire/packages/base.py:80
+#: ../pakfire/packages/base.py:78
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:81
+#: ../pakfire/packages/base.py:79
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:84
+#: ../pakfire/packages/base.py:82
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:90
+#: ../pakfire/packages/base.py:88
 msgid "UUID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:91
+#: ../pakfire/packages/base.py:89
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:92
+#: ../pakfire/packages/base.py:90
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:93
+#: ../pakfire/packages/base.py:91
 msgid "Build host"
 msgstr ""
 
-#: ../pakfire/packages/base.py:95
+#: ../pakfire/packages/base.py:93
 msgid "Provides"
 msgstr ""
 
-#: ../pakfire/packages/base.py:100
+#: ../pakfire/packages/base.py:98
 msgid "Requires"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Running transaction"
 msgstr ""
 
-#: ../pakfire/util.py:39
+#: ../pakfire/util.py:44
 #, python-format
 msgid "%s [y/N]"
 msgstr ""
