@@ -4,6 +4,8 @@ import json
 import logging
 import random
 
+from config import Config
+
 from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.mirror import MirrorGroup
 from urlgrabber.progress import TextMeter
@@ -20,8 +22,13 @@ class PakfireGrabber(URLGrabber):
 			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
 		})
 
+		if isinstance(pakfire, Config):
+			config = pakfire
+		else:
+			config = pakfire.config
+
 		# Set throttle setting.
-		bandwidth_throttle = pakfire.config.get("bandwidth_throttle")
+		bandwidth_throttle = config.get("bandwidth_throttle")
 		if bandwidth_throttle:
 			try:
 				bandwidth_throttle = int(bandwidth_throttle)
@@ -32,7 +39,7 @@ class PakfireGrabber(URLGrabber):
 			kwargs.update({ "throttle" : bandwidth_throttle })
 
 		# Configure HTTP proxy.
-		http_proxy = pakfire.config.get("http_proxy")
+		http_proxy = config.get("http_proxy")
 		if http_proxy:
 			kwargs.update({ "proxies" : { "http" : http_proxy }})
 
