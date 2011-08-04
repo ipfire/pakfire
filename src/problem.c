@@ -188,7 +188,7 @@ PyObject *Problem_string(ProblemObject *self) {
 		case SOLVER_RULE_RPM_SAME_NAME:
 			snprintf(s, STRING_SIZE - 1,
 				_("cannot install both %s and %s"),
-				pool_dep2str(pool, self->source),  pool_solvid2str(pool, self->target)
+				pool_solvid2str(pool, self->source),  pool_solvid2str(pool, self->target)
 			);
 			break;
 
