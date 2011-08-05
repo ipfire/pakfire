@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/pool.h>
+#include <solv/pool.h>
 
 // Sat Pool object
 typedef struct {

@@ -1,6 +1,6 @@
 
 #include <Python.h>
-#include <satsolver/poolarch.h>
+#include <solv/poolarch.h>
 
 #include "config.h"
 #include "pool.h"

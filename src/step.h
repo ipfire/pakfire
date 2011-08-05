@@ -4,8 +4,8 @@
 
 #include <Python.h>
 
-#include <satsolver/pool.h>
-#include <satsolver/transaction.h>
+#include <solv/pool.h>
+#include <solv/transaction.h>
 
 // Sat Step object
 typedef struct {

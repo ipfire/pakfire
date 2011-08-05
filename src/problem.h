@@ -4,8 +4,8 @@
 
 #include <Python.h>
 
-#include <satsolver/pool.h>
-#include <satsolver/solver.h>
+#include <solv/pool.h>
+#include <solv/solver.h>
 
 // Sat Problem object
 typedef struct {

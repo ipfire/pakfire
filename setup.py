@@ -35,7 +35,7 @@ setup(
 	],
 	ext_modules = [
 		Extension("pakfire._pakfire", _pakfire_module_files,
-			extra_link_args = ["-lsatsolver", "-lsatsolverext"])
+			extra_link_args = ["-lsolv", "-lsolvext"])
 	],
 	cmdclass = { "build" : build_extra.build_extra,
 	             "build_i18n" :  build_i18n.build_i18n },

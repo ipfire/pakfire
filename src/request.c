@@ -4,7 +4,7 @@
 #include "request.h"
 #include "solvable.h"
 
-#include <satsolver/solver.h>
+#include <solv/solver.h>
 
 PyTypeObject RequestType = {
 	PyObject_HEAD_INIT(NULL)

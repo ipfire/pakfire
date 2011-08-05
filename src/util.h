@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/evr.h>
+#include <solv/evr.h>
 
 extern PyObject *version_compare(PyObject *self, PyObject *args);
 

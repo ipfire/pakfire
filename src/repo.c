@@ -1,9 +1,9 @@
 
 #include <Python.h>
 #include <stdbool.h>
-#include <satsolver/repo.h>
-#include <satsolver/repo_solv.h>
-#include <satsolver/repo_write.h>
+#include <solv/repo.h>
+#include <solv/repo_solv.h>
+#include <solv/repo_write.h>
 
 #include "pool.h"
 #include "repo.h"

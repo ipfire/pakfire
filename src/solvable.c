@@ -44,7 +44,7 @@ PyObject* Solvable_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 		solv->arch = pool_str2id(self->_pool, arch, 1);
 
 		/* add self-provides */
-		Id rel = rel2id(self->_pool, solv->name, solv->evr, REL_EQ, 1);
+		Id rel = pool_rel2id(self->_pool, solv->name, solv->evr, REL_EQ, 1);
 		solv->provides = repo_addid_dep(repo->_repo, solv->provides, rel, 0);
 	}
 

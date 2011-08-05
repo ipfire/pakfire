@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/queue.h>
+#include <solv/queue.h>
 
 // Sat Request object
 typedef struct {

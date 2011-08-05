@@ -1,8 +1,8 @@
 
 #include <Python.h>
 
-#include <satsolver/policy.h>
-#include <satsolver/solverdebug.h>
+#include <solv/policy.h>
+#include <solv/solverdebug.h>
 
 #include "config.h"
 #include "problem.h"

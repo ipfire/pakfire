@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/repo.h>
+#include <solv/repo.h>
 
 // Sat Repo object
 typedef struct {

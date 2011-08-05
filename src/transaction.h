@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/transaction.h>
+#include <solv/transaction.h>
 
 // Sat Transaction object
 typedef struct {

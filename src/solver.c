@@ -4,7 +4,7 @@
 #include "request.h"
 #include "solver.h"
 
-#include <satsolver/solverdebug.h>
+#include <solv/solverdebug.h>
 
 PyTypeObject SolverType = {
 	PyObject_HEAD_INIT(NULL)

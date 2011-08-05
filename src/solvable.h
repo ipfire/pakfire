@@ -4,7 +4,7 @@
 
 #include <Python.h>
 
-#include <satsolver/solvable.h>
+#include <solv/solvable.h>
 
 // Sat Solvable object
 typedef struct {

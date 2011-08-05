@@ -1,7 +1,7 @@
 
 #include <Python.h>
 
-#include <satsolver/transaction.h>
+#include <solv/transaction.h>
 
 #include "solver.h"
 #include "step.h"
@@ -33,12 +33,8 @@ PyObject* Transaction_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 			return NULL;
 		}
 
-		/* When the solver is freed we still need the transaction. For that,
-		   we copy it to be independent. */
-		self->_transaction = malloc(sizeof(Transaction));
-		memcpy(self->_transaction, &solver->_solver->trans, sizeof(Transaction));
-
-		// order the transaction right from the start.
+		// Create a new transaction from the solver and order it.
+		self->_transaction = solver_create_transaction(solver->_solver);
 		transaction_order(self->_transaction, 0);
 	}
 
