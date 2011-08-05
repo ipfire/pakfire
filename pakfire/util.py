@@ -4,10 +4,12 @@ from __future__ import division
 
 import fcntl
 import hashlib
+import logging
 import os
 import progressbar
 import random
 import shutil
+import signal
 import string
 import struct
 import sys
@@ -199,3 +201,21 @@ def text_wrap(s, length=65):
 		t.append(l)
 
 	return [" ".join(l) for l in t]
+
+def orphans_kill(root, killsig=signal.SIGTERM):
+	"""
+		kill off anything that is still chrooted.
+	"""
+	logging.debug("Killing orphans...")
+
+	for fn in [d for d in os.listdir("/proc") if d.isdigit()]:
+		try:
+			r = os.readlink("/proc/%s/root" % fn)
+			if os.path.realpath(root) == os.path.realpath(r):
+				logging.warning("Process ID %s is still running in chroot. Killing..." % fn)
+
+				pid = int(fn, 10)
+				os.kill(pid, killsig)
+				os.waitpid(pid, 0)
+		except OSError, e:
+			pass

@@ -442,6 +442,8 @@ class Builder(object):
 		os.mknod(filename, mode, device)
 
 	def destroy(self):
+		util.orphans_kill(self.path)
+
 		logging.debug("Destroying environment %s" % self.path)
 
 		if os.path.exists(self.path):

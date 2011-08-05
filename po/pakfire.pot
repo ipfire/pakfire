@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 00:03+0200\n"
+"POT-Creation-Date: 2011-08-05 18:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,16 +38,16 @@ msgstr ""
 msgid "Downgrading"
 msgstr ""
 
-#: ../pakfire/base.py:156 ../pakfire/base.py:198 ../pakfire/base.py:228
-#: ../pakfire/base.py:249
+#: ../pakfire/base.py:157 ../pakfire/base.py:199 ../pakfire/base.py:230
+#: ../pakfire/base.py:252
 msgid "Nothing to do"
 msgstr ""
 
-#: ../pakfire/base.py:184
+#: ../pakfire/base.py:185
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../pakfire/base.py:445
+#: ../pakfire/base.py:448
 msgid "Everything is fine."
 msgstr ""
 
@@ -461,7 +461,7 @@ msgstr ""
 msgid "Running transaction"
 msgstr ""
 
-#: ../pakfire/util.py:44
+#: ../pakfire/util.py:46
 #, python-format
 msgid "%s [y/N]"
 msgstr ""
