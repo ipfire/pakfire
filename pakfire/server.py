@@ -346,7 +346,7 @@ class Server(object):
 		logfile = os.path.join(tmpdir, "build.log")
 
 		# Get a package grabber and add mirror download capabilities to it.
-		grabber = pakfire.downloader.PackageDownloader(self.pakfire)
+		grabber = pakfire.downloader.PackageDownloader(self.config)
 
 		try:
 			# Download the source.
