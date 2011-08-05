@@ -20,13 +20,13 @@ from actions import *
 
 class Transaction(object):
 	action_classes = {
-		"install"   : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
-		"reinstall" : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
-		"erase"     : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
-		"update"    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
-		"cleanup"   : [ActionCleanup,],
-		"downgrade" : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
-		"change"    : [ActionChange,],
+		ActionInstall.type   : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
+		ActionReinstall.type : [ActionScriptPreIn, ActionReinstall, ActionScriptPostIn, ActionScriptPostTransIn],
+		ActionRemove.type    : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
+		ActionUpdate.type    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
+		ActionCleanup.type   : [ActionCleanup,],
+		ActionDowngrade.type : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
+		ActionChange.type    : [ActionChange,],
 	}
 
 	def __init__(self, pakfire):
