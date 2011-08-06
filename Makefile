@@ -18,7 +18,7 @@ dist:
 
 .PHONY: install
 install: po
-	python setup.py install  --root $(DESTDIR)
+	python setup.py install --root=$(DESTDIR) --prefix=/usr
 
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
 	cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
