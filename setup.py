@@ -30,7 +30,6 @@ setup(
 	scripts = [
 		"scripts/pakfire",
 		"scripts/pakfire-build",
-		"scripts/pakfire-repo",
 		"scripts/pakfire-server",
 	],
 	ext_modules = [

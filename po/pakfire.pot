@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-05 19:13+0200\n"
+"POT-Creation-Date: 2011-08-06 14:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -237,47 +237,35 @@ msgid "Give name(s) of a package(s)."
 msgstr ""
 
 #: ../pakfire/cli.py:432
-msgid "Pakfire repo command line interface."
-msgstr ""
-
-#: ../pakfire/cli.py:457
-msgid "Repository management commands."
-msgstr ""
-
-#: ../pakfire/cli.py:465
-msgid "Create a new repository index."
-msgstr ""
-
-#: ../pakfire/cli.py:466
-msgid "Path to the packages."
-msgstr ""
-
-#: ../pakfire/cli.py:467
-msgid "Path to input packages."
-msgstr ""
-
-#: ../pakfire/cli.py:479
-msgid "Pakfire master command line interface."
-msgstr ""
-
-#: ../pakfire/cli.py:507
-msgid "Update the sources."
-msgstr ""
-
-#: ../pakfire/cli.py:517
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:549
+#: ../pakfire/cli.py:466
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:555
+#: ../pakfire/cli.py:472
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../pakfire/cli.py:562
+#: ../pakfire/cli.py:479
 msgid "Update all repositories."
+msgstr ""
+
+#: ../pakfire/cli.py:485
+msgid "Repository management commands."
+msgstr ""
+
+#: ../pakfire/cli.py:493
+msgid "Create a new repository index."
+msgstr ""
+
+#: ../pakfire/cli.py:494
+msgid "Path to the packages."
+msgstr ""
+
+#: ../pakfire/cli.py:495
+msgid "Path to input packages."
 msgstr ""
 
 #: ../pakfire/errors.py:8
@@ -464,6 +452,32 @@ msgstr ""
 #: ../pakfire/util.py:46
 #, python-format
 msgid "%s [y/N]"
+msgstr ""
+
+#: ../scripts/pakfire:23
+msgid ""
+"There has been an error when trying to import one or more of the modules, "
+"that are required to run Pakfire."
+msgstr ""
+
+#: ../scripts/pakfire:25
+msgid "Please your installation of Pakfire."
+msgstr ""
+
+#: ../scripts/pakfire:27
+msgid "The error that lead to this:"
+msgstr ""
+
+#: ../scripts/pakfire:64
+msgid "An error has occured when running Pakfire."
+msgstr ""
+
+#: ../scripts/pakfire:67
+msgid "Error message:"
+msgstr ""
+
+#: ../scripts/pakfire:71
+msgid "Further description:"
 msgstr ""
 
 #: ../src/problem.c:140

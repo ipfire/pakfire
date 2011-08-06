@@ -36,6 +36,7 @@ pakfire/satsolver.py
 pakfire/server.py
 pakfire/transaction.py
 pakfire/util.py
+scripts/pakfire
 src/_pakfiremodule.c
 src/pool.c
 src/problem.c

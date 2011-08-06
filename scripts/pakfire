@@ -35,7 +35,6 @@ basename2cls = {
 	"pakfire" : Cli,
 	"pakfire-build" : CliBuilder,
 	"pakfire-server" : CliServer,
-	"pakfire-repo" : CliRepo,
 }
 
 # Get the basename of the program
