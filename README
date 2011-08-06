@@ -1,0 +1,66 @@
+###############################################################################
+#                                                                             #
+# Pakfire - The IPFire package management system                              #
+# Copyright (C) 2011 Pakfire development team                                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+Pakfire is the package management system of the IPFire (http://www.ipfire.org)
+firewall distribution.
+
+It is as well the buildsystem that is used to create the distribution.
+
+Development goals have been:
+
+ * To be very fast
+   As system administration and package development is a daily job and needs
+   to be done very frequently, it needs to be fast and reliable.
+   Pakfire is trying to reach this goal by having a very light package format
+   and a very fast dependency solver that is using the SAT algorithm
+   originally developed by SuSE.
+
+ * One error should not break the whole distribution
+   Recently, if one or more packages had a build error, there was no way to
+   skip that. Pakfire 3 divides the whole distribution into lots of little
+   packages, which are versioned. So if one packages does not build, you
+   can just use the older version and do what you were doing. The error
+   can be fixed later.
+
+ * Multiple architectures and distributions
+   The buildsystem should be able to work on other distributions as well, so
+   the developers do not need to set up a specific development system. You
+   can now use every common distribution like Fedora, install Pakfire on it
+   and start with your work. Additionally, pakfire is able to build ix86
+   architectures on an x64_86 machine.
+
+ * Support multiple repositories
+   Pakfire should be able to support multiple repositories. Which can be
+   a testing repository, unstable, stable or a repository for development
+   of a new feature.
+
+In the end, pakfire turned out to be exactly what the IPFire developers wanted.
+It is fast and easy to use, you can start development after only one minute
+of installation of the software. No more waiting for the compiler to finish
+compiling the whole distribution.
+
+ - The Pakfire development team
+
+   Michael Tremer <michael.tremer@ipfire.org>
+   Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+   Christian Schmidt <christian.schmidt@ipfire.org>
+   Stefan Schantl <stefan.schantl@ipfire.org>
+
+Please report all bugs to: http://redmine.ipfire.org/projects/pakfire3
