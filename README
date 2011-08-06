@@ -35,7 +35,7 @@ Development goals have been:
  * One error should not break the whole distribution
    Recently, if one or more packages had a build error, there was no way to
    skip that. Pakfire 3 divides the whole distribution into lots of little
-   packages, which are versioned. So if one packages does not build, you
+   packages, which are versioned. So if one package does not build, you
    can just use the older version and do what you were doing. The error
    can be fixed later.
 
