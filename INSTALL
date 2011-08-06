@@ -1,13 +1,27 @@
 
-# Requirements #
+For general information about pakfire see README.
 
- * Python 2.x (only tested with 2.7 so far)
+Requirements:
+ * Python 2.6 or greater (not Python 3.x)
  * python-distutils-extra (for install)
  * pyliblzma
  * python-progressbar
  * python-xattr
+ * python-argsparse (included in Python 2.7)
+ * libsolv
 
 
-# Install instructions #
+Install instructions:
 
-Run   make install   as the root user and you are done.
+Run   make && make install   as the root user and you are done.
+
+
+Binary packages:
+
+ Binaries are available for at least Fedora at:
+
+ Open build service:
+ https://build.opensuse.org/project/show?project=home%3Amstremer%3Apakfire
+
+ See the announcement:
+ http://planet.ipfire.org/post/pakfire-3-rpm-packages-available-for-fedora-14-15
