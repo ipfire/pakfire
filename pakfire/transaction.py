@@ -114,7 +114,7 @@ class Transaction(object):
 
 	@property
 	def downloads(self):
-		return [a for a in self.actions if a.needs_download]
+		return sorted([a for a in self.actions if a.needs_download])
 
 	def download(self):
 		# Get all download actions as a list.

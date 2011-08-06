@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-06 17:57+0200\n"
+"POT-Creation-Date: 2011-08-06 18:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pakfire/actions.py:120 ../pakfire/actions.py:177
+#: ../pakfire/actions.py:123 ../pakfire/actions.py:180
 msgid "Installing"
 msgstr ""
 
-#: ../pakfire/actions.py:130
+#: ../pakfire/actions.py:133
 msgid "Updating"
 msgstr ""
 
-#: ../pakfire/actions.py:144
+#: ../pakfire/actions.py:147
 msgid "Removing"
 msgstr ""
 
 #. Cleaning up leftover files and stuff.
-#: ../pakfire/actions.py:162
+#: ../pakfire/actions.py:165
 msgid "Cleanup"
 msgstr ""
 
-#: ../pakfire/actions.py:187
+#: ../pakfire/actions.py:190
 msgid "Downgrading"
 msgstr ""
 

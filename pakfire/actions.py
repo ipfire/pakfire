@@ -37,6 +37,9 @@ class Action(object):
 		if binary_package:
 			self.pkg = binary_package
 
+	def __cmp__(self, other):
+		return cmp(self.pkg, other.pkg)
+
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.pkg.friendly_name)
 
