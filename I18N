@@ -1,0 +1,21 @@
+Some notes about the translation process:
+
+The Pakfire developers cannot support various languages,
+although it is very nice to have a couple of different
+languages supported.
+
+We want to achieve, that at least the major languages
+in the world are included - but it is not limited to that:
+
+	- English (done by the developers)
+	- Spanish (Castillian)
+	- French
+	- German
+	- Italian
+	- Russian
+
+Everybody is welcome to join the translation team on
+transifex and add his or her own language or fix bugs
+in already existing translations.
+
+https://www.transifex.net/projects/p/ipfire/resource/pakfire/
