@@ -56,6 +56,7 @@ class Cli(object):
 		self.parse_command_remove()
 		self.parse_command_info()
 		self.parse_command_search()
+		self.parse_command_check_update()
 		self.parse_command_update()
 		self.parse_command_provides()
 		self.parse_command_grouplist()
@@ -71,6 +72,7 @@ class Cli(object):
 			"install"      : self.handle_install,
 			"localinstall" : self.handle_localinstall,
 			"remove"       : self.handle_remove,
+			"check_update" : self.handle_check_update,
 			"update"       : self.handle_update,
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
@@ -147,6 +149,14 @@ class Cli(object):
 		sub_update.add_argument("package", nargs="*",
 			help=_("Give a name of a package to update or leave emtpy for all."))
 		sub_update.add_argument("action", action="store_const", const="update")
+
+	def parse_command_check_update(self):
+		# Implement the "check-update" command.
+		sub_check_update = self.sub_commands.add_parser("check-update",
+			help=_("Check, if there are any updates available."))
+		sub_check_update.add_argument("package", nargs="*",
+			help=_("Give a name of a package to update or leave emtpy for all."))
+		sub_check_update.add_argument("action", action="store_const", const="check_update")
 
 	def parse_command_info(self):
 		# Implement the "info" command.
@@ -239,6 +249,9 @@ class Cli(object):
 
 	def handle_update(self):
 		pakfire.update(self.args.package, **self.pakfire_args)
+
+	def handle_check_update(self):
+		pakfire.update(self.args.package, check=True, **self.pakfire_args)
 
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)

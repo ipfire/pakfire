@@ -239,7 +239,11 @@ class Pakfire(object):
 			# Remove the temporary copy of the repository we have created earlier.
 			repo.remove()
 
-	def update(self, pkgs):
+	def update(self, pkgs, check=False):
+		"""
+			check indicates, if the method should return after calculation
+			of the transaction.
+		"""
 		request = self.create_request()
 
 		# If there are given any packets on the command line, we will
@@ -257,6 +261,17 @@ class Pakfire(object):
 
 		if not t:
 			logging.info(_("Nothing to do"))
+
+			# If we are running in check mode, we return a non-zero value to
+			# indicate, that there are no updates.
+			if check:
+				return 1
+			else:
+				return
+
+		# Just exit here, because we won't do the transaction in this mode.
+		if check:
+			t.dump()
 			return
 
 		# Ask the user if the transaction is okay.
