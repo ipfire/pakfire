@@ -47,6 +47,5 @@ src/solution.c
 src/solvable.c
 src/solver.c
 src/step.c
-src/test.py
 src/transaction.c
 src/util.c
