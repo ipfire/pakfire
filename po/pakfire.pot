@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-06 14:14+0200\n"
+"POT-Creation-Date: 2011-08-06 15:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,16 +38,16 @@ msgstr ""
 msgid "Downgrading"
 msgstr ""
 
-#: ../pakfire/base.py:157 ../pakfire/base.py:199 ../pakfire/base.py:230
-#: ../pakfire/base.py:252
+#: ../pakfire/base.py:167 ../pakfire/base.py:209 ../pakfire/base.py:240
+#: ../pakfire/base.py:262
 msgid "Nothing to do"
 msgstr ""
 
-#: ../pakfire/base.py:185
+#: ../pakfire/base.py:195
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../pakfire/base.py:448
+#: ../pakfire/base.py:458
 msgid "Everything is fine."
 msgstr ""
 
@@ -64,207 +64,211 @@ msgstr ""
 msgid "The path where pakfire should operate in."
 msgstr ""
 
-#: ../pakfire/cli.py:83
+#: ../pakfire/cli.py:86
 msgid "Enable verbose output."
 msgstr ""
 
-#: ../pakfire/cli.py:86
+#: ../pakfire/cli.py:89
 msgid "Path to a configuration file to load."
 msgstr ""
 
-#: ../pakfire/cli.py:89
+#: ../pakfire/cli.py:92
 msgid "Disable a repository temporarily."
 msgstr ""
 
-#: ../pakfire/cli.py:92
+#: ../pakfire/cli.py:95
 msgid "Enable a repository temporarily."
 msgstr ""
 
-#: ../pakfire/cli.py:97
+#: ../pakfire/cli.py:98
+msgid "Run pakfire in offline mode."
+msgstr ""
+
+#: ../pakfire/cli.py:103
 msgid "Install one or more packages to the system."
 msgstr ""
 
-#: ../pakfire/cli.py:99
+#: ../pakfire/cli.py:105
 msgid "Give name of at least one package to install."
 msgstr ""
 
-#: ../pakfire/cli.py:105
+#: ../pakfire/cli.py:111
 msgid "Install one or more packages from the filesystem."
 msgstr ""
 
-#: ../pakfire/cli.py:107
+#: ../pakfire/cli.py:113
 msgid "Give filename of at least one package."
 msgstr ""
 
-#: ../pakfire/cli.py:113
+#: ../pakfire/cli.py:119
 msgid "Remove one or more packages from the system."
 msgstr ""
 
-#: ../pakfire/cli.py:115
+#: ../pakfire/cli.py:121
 msgid "Give name of at least one package to remove."
 msgstr ""
 
-#: ../pakfire/cli.py:121
+#: ../pakfire/cli.py:127
 msgid "Update the whole system or one specific package."
 msgstr ""
 
-#: ../pakfire/cli.py:123
+#: ../pakfire/cli.py:129
 msgid "Give a name of a package to update or leave emtpy for all."
 msgstr ""
 
-#: ../pakfire/cli.py:129
+#: ../pakfire/cli.py:135
 msgid "Print some information about the given package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:131
+#: ../pakfire/cli.py:137
 msgid "Give at least the name of one package."
 msgstr ""
 
-#: ../pakfire/cli.py:137
+#: ../pakfire/cli.py:143
 msgid "Search for a given pattern."
 msgstr ""
 
-#: ../pakfire/cli.py:139
+#: ../pakfire/cli.py:145
 msgid "A pattern to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:145
+#: ../pakfire/cli.py:151
 msgid "Get a list of packages that provide a given file or feature."
 msgstr ""
 
-#: ../pakfire/cli.py:147
+#: ../pakfire/cli.py:153
 msgid "File or feature to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:153
+#: ../pakfire/cli.py:159
 msgid "Get list of packages that belong to the given group."
 msgstr ""
 
-#: ../pakfire/cli.py:155
+#: ../pakfire/cli.py:161
 msgid "Group name to search for."
 msgstr ""
 
-#: ../pakfire/cli.py:161
+#: ../pakfire/cli.py:167
 msgid "Install all packages that belong to the given group."
 msgstr ""
 
-#: ../pakfire/cli.py:163
+#: ../pakfire/cli.py:169
 msgid "Group name."
 msgstr ""
 
-#: ../pakfire/cli.py:169
+#: ../pakfire/cli.py:175
 msgid "List all currently enabled repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:173
+#: ../pakfire/cli.py:179
 msgid "Cleanup commands."
 msgstr ""
 
-#: ../pakfire/cli.py:181
+#: ../pakfire/cli.py:187
 msgid "Cleanup all temporary files."
 msgstr ""
 
-#: ../pakfire/cli.py:187
+#: ../pakfire/cli.py:193
 msgid "Check the system for any errors."
 msgstr ""
 
-#: ../pakfire/cli.py:247 ../pakfire/transaction.py:175
+#: ../pakfire/cli.py:253 ../pakfire/transaction.py:175
 msgid "Repository"
 msgstr ""
 
-#: ../pakfire/cli.py:247
+#: ../pakfire/cli.py:253
 msgid "Enabled"
 msgstr ""
 
-#: ../pakfire/cli.py:247
+#: ../pakfire/cli.py:253
 msgid "Priority"
 msgstr ""
 
-#: ../pakfire/cli.py:247
+#: ../pakfire/cli.py:253
 msgid "Packages"
 msgstr ""
 
-#: ../pakfire/cli.py:259
+#: ../pakfire/cli.py:265
 msgid "Cleaning up everything..."
 msgstr ""
 
-#: ../pakfire/cli.py:270
+#: ../pakfire/cli.py:276
 msgid "Pakfire builder command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:320
+#: ../pakfire/cli.py:329
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../pakfire/cli.py:326
+#: ../pakfire/cli.py:335
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../pakfire/cli.py:328
+#: ../pakfire/cli.py:337
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../pakfire/cli.py:332
+#: ../pakfire/cli.py:341
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:334 ../pakfire/cli.py:360
+#: ../pakfire/cli.py:343 ../pakfire/cli.py:369
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:336 ../pakfire/cli.py:349
+#: ../pakfire/cli.py:345 ../pakfire/cli.py:358
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
-#: ../pakfire/cli.py:341
+#: ../pakfire/cli.py:350
 msgid "Go into a shell."
 msgstr ""
 
-#: ../pakfire/cli.py:343
+#: ../pakfire/cli.py:352
 msgid "Give name of a package."
 msgstr ""
 
-#: ../pakfire/cli.py:347
+#: ../pakfire/cli.py:356
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../pakfire/cli.py:354
+#: ../pakfire/cli.py:363
 msgid "Generate a source package."
 msgstr ""
 
-#: ../pakfire/cli.py:356
+#: ../pakfire/cli.py:365
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:432
+#: ../pakfire/cli.py:441
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:466
+#: ../pakfire/cli.py:478
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:472
+#: ../pakfire/cli.py:484
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../pakfire/cli.py:479
+#: ../pakfire/cli.py:491
 msgid "Update all repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:485
+#: ../pakfire/cli.py:497
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:493
+#: ../pakfire/cli.py:505
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:494
+#: ../pakfire/cli.py:506
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:495
+#: ../pakfire/cli.py:507
 msgid "Path to input packages."
 msgstr ""
 
@@ -274,6 +278,13 @@ msgstr ""
 
 #: ../pakfire/errors.py:29
 msgid "One or more dependencies could not been resolved."
+msgstr ""
+
+#: ../pakfire/errors.py:44
+msgid ""
+"The requested action cannot be done on offline mode.\n"
+"Please connect your system to the network, remove --offline from the command "
+"line and try again."
 msgstr ""
 
 #: ../pakfire/packages/base.py:70
@@ -344,20 +355,46 @@ msgstr ""
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/repository/index.py:232
+#: ../pakfire/repository/index.py:201
+#, python-format
+msgid ""
+"There is no metadata for the repository '%s' and we cannot download any "
+"because we are running in offline mode. Connect to a network or disable this "
+"repository."
+msgstr ""
+
+#: ../pakfire/repository/index.py:206
+#, python-format
+msgid ""
+"I cannot be forced to re-download the metadata for the repository '%s' when "
+"running in offline mode."
+msgstr ""
+
+#: ../pakfire/repository/index.py:243
+msgid ""
+"Your repository metadata is outdated  and a new version needs to be "
+"downloaded."
+msgstr ""
+
+#: ../pakfire/repository/index.py:249
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:320
+#: ../pakfire/repository/index.py:337
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:373
+#: ../pakfire/repository/index.py:390
 msgid "Loading installed packages"
+msgstr ""
+
+#: ../pakfire/repository/remote.py:87
+#, python-format
+msgid "Cannot download this file in offline mode: %s"
 msgstr ""
 
 #: ../pakfire/satsolver.py:129

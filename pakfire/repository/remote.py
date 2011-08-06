@@ -9,6 +9,7 @@ import index
 import pakfire.downloader as downloader
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 class RepositorySolv(base.RepositoryFactory):
 	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled=True):
@@ -80,6 +81,11 @@ class RepositorySolv(base.RepositoryFactory):
 
 		if download:
 			logging.debug("Going to download %s" % filename)
+
+			# If we are in offline mode, we cannot download any files.
+			if self.pakfire.offline and not self.url.startswith("file://"):
+				raise OfflineModeError, _("Cannot download this file in offline mode: %s") \
+					% filename
 
 			# Make sure filename is of type string (and not unicode)
 			filename = str(filename)

@@ -28,10 +28,10 @@ class Pakfire(object):
 
 	def __init__(self, mode=None, path="/", configs=[],
 			enable_repos=None, disable_repos=None,
-			distro_config=None):
+			distro_config=None, **kwargs):
 
 		# Set the mode.
-		assert mode in ("normal", "builder", "repo", "server", "master")
+		assert mode in ("normal", "builder", "server",)
 		self.mode = mode
 
 		# Check if we are operating as the root user.
@@ -53,6 +53,9 @@ class Pakfire(object):
 		self.config = config.Config(type=mode)
 		for filename in configs:
 			self.config.read(filename)
+		# Assume, that all other keyword arguments are configuration
+		# parameters.
+		self.config.update(kwargs)
 
 		# Setup the logger
 		logger.setup_logging(self.config)
@@ -104,6 +107,13 @@ class Pakfire(object):
 	@property
 	def supported_arches(self):
 		return self.config.supported_arches
+
+	@property
+	def offline(self):
+		"""
+			A shortcut that indicates if the system is running in offline mode.
+		"""
+		return self.config.get("offline", False)
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:

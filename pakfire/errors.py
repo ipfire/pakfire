@@ -40,6 +40,11 @@ class FileNotFoundError(Error):
 class NotAnIPFireSystemError(Error):
 	pass
 
+class OfflineModeError(Error):
+	message = _("The requested action cannot be done on offline mode.\n"
+		"Please connect your system to the network, remove --offline from the"
+		" command line and try again.")
+
 class PakfireError(Error):
 	pass
 

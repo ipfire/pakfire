@@ -76,6 +76,9 @@ class Cli(object):
 		if hasattr(self.args, "enable_repo"):
 			ret["enable_repos"] = self.args.enable_repo
 
+		if hasattr(self.args, "offline"):
+			ret["offline"] = self.args.offline
+
 		return ret
 
 	def parse_common_arguments(self):
@@ -90,6 +93,9 @@ class Cli(object):
 
 		self.parser.add_argument("--enabled-repo", nargs="*", metavar="REPO",
 			help=_("Enable a repository temporarily."))
+
+		self.parser.add_argument("--offline", action="store_true",
+			help=_("Run pakfire in offline mode."))
 
 	def parse_command_install(self):
 		# Implement the "install" command.
@@ -312,6 +318,9 @@ class CliBuilder(Cli):
 		if hasattr(self.args, "enable_repo"):
 			ret["enable_repos"] = self.args.enable_repo
 
+		if hasattr(self.args, "offline"):
+			ret["offline"] = self.args.offline
+
 		return ret
 
 	def parse_command_update(self):
@@ -457,6 +466,9 @@ class CliServer(Cli):
 	@property
 	def pakfire_args(self):
 		ret = { "mode" : "server" }
+
+		if hasattr(self.args, "offline"):
+			ret["offline"] = self.args.offline
 
 		return ret
 

@@ -27,6 +27,10 @@ class PakfireGrabber(URLGrabber):
 		else:
 			config = pakfire.config
 
+		if config.get("offline"):
+			raise
+			raise OfflineModeError, "Cannot use %s in offline mode." % self.__class__.__name__
+
 		# Set throttle setting.
 		bandwidth_throttle = config.get("bandwidth_throttle")
 		if bandwidth_throttle:

@@ -196,26 +196,39 @@ class IndexSolv(Index):
 				old_metadata = metadata.Metadata(self.pakfire, self,
 					self.cache.abspath(filename))
 
+			# If no metadata was downloaded and we are in offline mode.
+			elif self.pakfire.offline:
+				raise OfflineModeError, _("There is no metadata for the repository '%s' and"
+					" we cannot download any because we are running in offline mode."
+					" Connect to a network or disable this repository.") % self.repo.name
+
+		elif force and self.pakfire.offline:
+			raise OfflineModeError, _("I cannot be forced to re-download the metadata for"
+				" the repository '%s' when running in offline mode.") % self.repo.name
+
 		if download:
-			logging.debug("Going to (re-)download the repository metadata.")
+			# We are supposed to download new metadata, but we are running in
+			# offline mode. That's okay. Just doing nothing.
+			if not self.pakfire.offline:
+				logging.debug("Going to (re-)download the repository metadata.")
 
-			# Initialize a grabber for download.
-			grabber = downloader.MetadataDownloader(self.pakfire)
-			grabber = self.repo.mirrors.group(grabber)
+				# Initialize a grabber for download.
+				grabber = downloader.MetadataDownloader(self.pakfire)
+				grabber = self.repo.mirrors.group(grabber)
 
-			data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
+				data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
 
-			# Parse new metadata for comparison.
-			new_metadata = metadata.Metadata(self.pakfire, self, metadata=data)
+				# Parse new metadata for comparison.
+				new_metadata = metadata.Metadata(self.pakfire, self, metadata=data)
 
-			if old_metadata and new_metadata < old_metadata:
-				logging.warning("The downloaded metadata was less recent than the current one. Trashing that.")
+				if old_metadata and new_metadata < old_metadata:
+					logging.warning("The downloaded metadata was less recent than the current one. Trashing that.")
 
-			else:
-				# We explicitely rewrite the metadata if it is equal to have
-				# a new timestamp and do not download it over and over again.
-				with self.cache.open(filename, "w") as o:
-					o.write(data)
+				else:
+					# We explicitely rewrite the metadata if it is equal to have
+					# a new timestamp and do not download it over and over again.
+					with self.cache.open(filename, "w") as o:
+						o.write(data)
 
 		# Parse the metadata that we just downloaded or load it from cache.
 		self.metadata = metadata.Metadata(self.pakfire, self,
@@ -226,6 +239,10 @@ class IndexSolv(Index):
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
 
 		if not self.cache.exists(filename):
+			if self.pakfire.offline:
+				raise OfflineModeError, _("Your repository metadata is outdated "
+					" and a new version needs to be downloaded.")
+
 			# Initialize a grabber for download.
 			grabber = downloader.DatabaseDownloader(
 				self.pakfire,

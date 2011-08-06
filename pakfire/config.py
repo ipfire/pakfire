@@ -96,7 +96,16 @@ class Config(object):
 		return self._config.get(key, default)
 
 	def set(self, key, val):
+		logging.debug("Updating configuration parameter: %s = %s" % (key, val))
 		self._config[key] = val
+
+	def update(self, values):
+		"""
+			This function takes a dictionary which configuration
+			parameters and applies them to the configuration.
+		"""
+		for key, val in values.items():
+			self.set(key, val)
 
 	def get_repos(self):
 		return self._config_repos.items()
