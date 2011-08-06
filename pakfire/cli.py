@@ -64,6 +64,7 @@ class Cli(object):
 		self.parse_command_repolist()
 		self.parse_command_clean()
 		self.parse_command_check()
+		self.parse_command_resolvdep()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -82,6 +83,7 @@ class Cli(object):
 			"repolist"     : self.handle_repolist,
 			"clean_all"    : self.handle_clean_all,
 			"check"        : self.handle_check,
+			"resolvdep"    : self.handle_resolvdep,
 		}
 
 	@property
@@ -222,6 +224,14 @@ class Cli(object):
 			help=_("Check the system for any errors."))
 		sub_check.add_argument("action", action="store_const", const="check")
 
+	def parse_command_resolvdep(self):
+		# Implement the "resolvdep" command.
+		sub_resolvdep = self.sub_commands.add_parser("resolvdep",
+			help=_("Check the dependencies for a particular package."))
+		sub_resolvdep.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to check."))
+		sub_resolvdep.add_argument("action", action="store_const", const="resolvdep")
+
 	def run(self):
 		action = self.args.action
 
@@ -301,6 +311,9 @@ class Cli(object):
 	def handle_check(self):
 		pakfire.check(**self.pakfire_args)
 
+	def handle_resolvdep(self):
+		pakfire.resolvdep(self.args.package, **self.pakfire_args)
+
 
 class CliBuilder(Cli):
 	def __init__(self):
@@ -323,6 +336,7 @@ class CliBuilder(Cli):
 		self.parse_command_grouplist()
 		self.parse_command_repolist()
 		self.parse_command_clean()
+		self.parse_command_resolvdep()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -338,6 +352,7 @@ class CliBuilder(Cli):
 			"grouplist"   : self.handle_grouplist,
 			"repolist"    : self.handle_repolist,
 			"clean_all"   : self.handle_clean_all,
+			"resolvdep"   : self.handle_resolvdep,
 		}
 
 	@property

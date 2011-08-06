@@ -171,6 +171,22 @@ class Pakfire(object):
 		# XXX just backwards compatibility
 		return self.mode == "builder"
 
+	def resolvdep(self, requires):
+		# Create a new request.
+		request = self.create_request()
+		for req in requires:
+			req = self.create_relation(req)
+			request.install(req)
+
+		# Do the solving.
+		solver = self.create_solver()
+		t = solver.solve(request)
+
+		if t:
+			t.dump()
+		else:
+			logging.info(_("Nothing to do"))
+
 	def install(self, requires):
 		# Create a new request.
 		request = self.create_request()
