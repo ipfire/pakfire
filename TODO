@@ -2,3 +2,4 @@
 This is just a couple of ideas that may or may not be done:
 
 	# XMLRPC calls need HTTP proxy support
+	# Maybe use systemd-nspawn?
