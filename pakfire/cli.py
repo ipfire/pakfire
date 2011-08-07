@@ -105,6 +105,9 @@ class Cli(object):
 		return ret
 
 	def parse_common_arguments(self):
+		self.parser.add_argument("--version", action="version",
+			version="%(prog)s " + PAKFIRE_VERSION)
+
 		self.parser.add_argument("-v", "--verbose", action="store_true",
 			help=_("Enable verbose output."))
 
