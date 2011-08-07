@@ -209,7 +209,7 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run()
 
-	def localinstall(self, files):
+	def localinstall(self, files, yes=None):
 		repo_name = repo_desc = "localinstall"
 
 		# Create a new repository that holds all packages we passed on
@@ -244,8 +244,13 @@ class Pakfire(object):
 				logging.info(_("Nothing to do"))
 				return
 
-			# Ask the user if this is okay.
-			if not t.cli_yesno():
+			if yes is None:
+				# Ask the user if this is okay.
+				if not t.cli_yesno():
+					return
+			elif yes:
+				t.dump()
+			else:
 				return
 
 			# If okay, run the transcation.

@@ -324,15 +324,12 @@ class Builder(object):
 		transaction.run()
 
 	def install_test(self):
-		# XXX currently disabled
-		return
-
 		pkgs = []
 		for dir, subdirs, files in os.walk(self.chrootPath("result")):
 			for file in files:
 				pkgs.append(os.path.join(dir, file))
 
-		self.pakfire.localinstall(pkgs)
+		self.pakfire.localinstall(pkgs, yes=True)
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes
