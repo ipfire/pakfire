@@ -81,7 +81,7 @@ class Package(object):
 
 		return hash("-".join(hashstr))
 
-	def dump(self, short=False, long=False):
+	def dump(self, short=False, long=False, filelist=False):
 		if short:
 			return "%s.%s : %s" % (self.name, self.arch, self.summary)
 
@@ -118,6 +118,11 @@ class Package(object):
 			for req in sorted(self.requires):
 				items.append((caption, req))
 				caption = ""
+
+		# Append filelist if requested.
+		if filelist:
+			for file in self.filelist:
+				items.append((_("File"), file))
 
 		format = "%%-%ds : %%s" % (max([len(k) for k, v in items]))
 
@@ -296,6 +301,9 @@ class Package(object):
 			Automatically convert the UNIX timestamp from self.build_time to
 			a humanly readable format.
 		"""
+		if self.build_time is None:
+			return _("Not set")
+
 		return "%s UTC" % datetime.datetime.utcfromtimestamp(self.build_time)
 
 	@property
@@ -358,6 +366,10 @@ class Package(object):
 	@property
 	def obsoletes(self):
 		return self.metadata.get("PKG_OBSOLETES", "").split()
+
+	@property
+	def filelist(self):
+		raise NotImplementedError
 
 	def extract(self, path, prefix=None):
 		raise NotImplementedError, "%s" % repr(self)

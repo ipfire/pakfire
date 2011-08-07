@@ -94,7 +94,7 @@ class SolvPackage(base.Package):
 
 	@property
 	def description(self):
-		return self.solvable.get_description()
+		return self.solvable.get_description() or ""
 
 	@property
 	def groups(self):
@@ -175,6 +175,11 @@ class SolvPackage(base.Package):
 	@property
 	def filename(self):
 		return self.solvable.get_filename()
+
+	@property
+	def filelist(self):
+		# XXX need to support filelist.
+		return ["%s does not support filelists, yet." % self.__class__.__name__,]
 
 	@property
 	def is_in_cache(self):

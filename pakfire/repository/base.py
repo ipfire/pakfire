@@ -125,6 +125,15 @@ class RepositoryFactory(object):
 		assert self.index
 		self.index.clear()
 
+	def dump(self, long=False, filelist=False):
+		dumps = []
+		# Dump all package information of the packages in this repository.
+		for pkg in self:
+			dump = pkg.dump(long=long, filelist=filelist)
+			dumps.append(dump)
+
+		return "\n\n".join(dumps)
+
 
 class RepositoryDummy(RepositoryFactory):
 	"""

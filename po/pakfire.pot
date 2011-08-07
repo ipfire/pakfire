@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-06 20:55+0200\n"
+"POT-Creation-Date: 2011-08-07 12:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid "Downgrading"
 msgstr ""
 
 #: ../pakfire/base.py:188 ../pakfire/base.py:202 ../pakfire/base.py:244
-#: ../pakfire/base.py:279 ../pakfire/base.py:312
+#: ../pakfire/base.py:284 ../pakfire/base.py:317
 msgid "Nothing to do"
 msgstr ""
 
@@ -47,13 +47,17 @@ msgstr ""
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../pakfire/base.py:508
+#: ../pakfire/base.py:513
 msgid "Everything is fine."
 msgstr ""
 
 #: ../pakfire/builder.py:278
 #, python-format
 msgid "Extracting: %s (source)"
+msgstr ""
+
+#: ../pakfire/builder.py:702
+msgid "Dumping created packages"
 msgstr ""
 
 #: ../pakfire/cli.py:42
@@ -365,6 +369,14 @@ msgstr ""
 
 #: ../pakfire/packages/base.py:117
 msgid "Requires"
+msgstr ""
+
+#: ../pakfire/packages/base.py:125
+msgid "File"
+msgstr ""
+
+#: ../pakfire/packages/base.py:305
+msgid "Not set"
 msgstr ""
 
 #: ../pakfire/repository/index.py:220

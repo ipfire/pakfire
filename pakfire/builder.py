@@ -683,6 +683,9 @@ class Builder(object):
 				self.settings["icecream_toolchain"] = "/%s" % m.group(1)
 
 	def build(self):
+		assert self.pkg
+
+		# Create icecream toolchain.
 		self.create_icecream_toolchain()
 
 		try:
@@ -694,6 +697,21 @@ class Builder(object):
 		for pkg in reversed(self.packages):
 			packager = packages.BinaryPackager(self.pakfire, pkg, self)
 			packager()
+		self.log.info("")
+
+		self.log.info(_("Dumping created packages"))
+		repo = repository.RepositoryDir(self.pakfire, "build-%s" % self.build_id,
+			"", self.chrootPath("result"), type="binary")
+		self.pakfire.repos.add_repo(repo)
+
+		repo.update()
+		for line in repo.dump(long=True, filelist=True).splitlines():
+			self.log.info("  %s" % line)
+		self.log.info("")
+
+		self.pakfire.repos.rem_repo(repo)
+
+		return repo
 
 	def dist(self):
 		self.pkg.dist(self)

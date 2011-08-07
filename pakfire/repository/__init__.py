@@ -109,6 +109,15 @@ class Repositories(object):
 
 		self.__repos[repo.name] = repo
 
+	def rem_repo(self, repo):
+		"""
+			Remove the given repository from the global repository set.
+		"""
+		try:
+			del self.__repos[repo.name]
+		except KeyError:
+			logging.debug("Repository that was to be removed does not exist: %s" % repo.name)
+
 	def get_repo(self, name):
 		"""
 			Get the repository with the given name, if not available, return
