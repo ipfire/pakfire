@@ -118,14 +118,13 @@ class RepositoryDir(base.RepositoryFactory):
 		db_path = os.path.join(metapath, METADATA_DATABASE_FILE)
 		md_path = os.path.join(metapath, METADATA_DOWNLOAD_FILE)
 
-		if not os.path.exists(metapath):
-			os.makedirs(metapath)
+		# Remove all pre-existing metadata.
+		if os.path.exists(metapath):
+			print "Removing", metapath
+			util.rm(metapath)
 
-		else:
-			# If a database is present, we remove it because we want to start
-			# with a clean environment.
-			if os.path.exists(db_path):
-				os.unlink(db_path)
+		# Create directory for metdadata.
+		os.makedirs(metapath)
 
 		# Save the database to path and get the filename.
 		self.index.write(db_path)
