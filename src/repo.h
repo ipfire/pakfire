@@ -41,6 +41,7 @@ extern PyObject *Repo_get_priority(RepoObject *self);
 extern PyObject *Repo_set_priority(RepoObject *self, PyObject *args);
 extern PyObject *Repo_write(RepoObject *self, PyObject *args);
 extern PyObject *Repo_read(RepoObject *self, PyObject *args);
+extern PyObject *Repo_internalize(RepoObject *self);
 extern PyObject *Repo_clear(RepoObject *self);
 extern PyObject *Repo_get_all(RepoObject *self);
 

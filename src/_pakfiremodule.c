@@ -88,6 +88,7 @@ static PyMethodDef Repo_methods[] = {
 	{"set_priority", (PyCFunction)Repo_set_priority, METH_VARARGS, NULL},
 	{"write", (PyCFunction)Repo_write, METH_VARARGS, NULL},
 	{"read", (PyCFunction)Repo_read, METH_VARARGS, NULL},
+	{"internalize", (PyCFunction)Repo_internalize, METH_NOARGS, NULL},
 	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
 	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }

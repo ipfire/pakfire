@@ -383,6 +383,10 @@ class IndexDir(Index):
 		if pb:
 			pb.finish()
 
+		# Internalize the repository, that all imported information
+		# is available for access.
+		self.solver_repo.internalize()
+
 		return pkgs
 
 
