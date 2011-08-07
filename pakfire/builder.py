@@ -98,13 +98,17 @@ class Builder(object):
 			# If no logile was given, we use the root logger.
 			self.log = logging.getLogger()
 
-		logdata = {
-			"host"    : socket.gethostname(),
-			"time"    : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
-			"version" : "Pakfire %s" % PAKFIRE_VERSION,
-		}
-		for line in BUILD_LOG_HEADER.splitlines():
-			self.log.info(line % logdata)
+		# Log information about pakfire and some more information, when we
+		# are running in release mode.
+		if self.mode == "release":
+			logdata = {
+				"host"    : socket.gethostname(),
+				"time"    : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
+				"version" : "Pakfire %s" % PAKFIRE_VERSION,
+			}
+
+			for line in BUILD_LOG_HEADER.splitlines():
+				self.log.info(line % logdata)
 
 		# Create pakfire instance.
 		if pakfire_args.has_key("mode"):
