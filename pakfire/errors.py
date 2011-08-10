@@ -21,6 +21,9 @@
 
 from i18n import _
 
+class commandTimeoutExpired(Exception):
+	pass # XXX cannot be as is
+
 class Error(Exception):
 	exit_code = 1
 

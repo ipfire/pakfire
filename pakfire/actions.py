@@ -20,8 +20,11 @@
 ###############################################################################
 
 import logging
+import os
 
+import chroot
 import packages
+import util
 
 from constants import *
 from i18n import _
@@ -37,11 +40,17 @@ class Action(object):
 		if binary_package:
 			self.pkg = binary_package
 
+		self.init()
+
 	def __cmp__(self, other):
 		return cmp(self.pkg, other.pkg)
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.pkg.friendly_name)
+
+	def init(self):
+		# A function to run additional initialization.
+		pass
 
 	@property
 	def needs_download(self):
@@ -68,33 +77,143 @@ class Action(object):
 class ActionScript(Action):
 	type = "script"
 
+	def init(self):
+		# Load the scriplet.
+		self.scriptlet = self.pkg.scriptlet
+
+	@property
+	def interpreter(self):
+		"""
+			Get the interpreter of this scriptlet.
+		"""
+		# XXX check, how to handle elf files here.
+
+		# If nothing was found, we return the default interpreter.
+		interpreter = SCRIPTLET_INTERPRETER
+
+		for line in self.scriptlet.splitlines():
+			if line.startswith("#!/"):
+				interpreter = line[2:]
+				interpreter = interpreter.split()[0]
+			break
+
+		return interpreter
+
+	@property
+	def args(self):
+		raise NotImplementedError
+
 	def run(self):
-		#print "Pretending to run script: %s" % self.__class__.__name__
-		pass
+		# Exit immediately, if the scriptlet is empty.
+		if not self.scriptlet:
+			return
+
+		# Actually run the scriplet.
+		logging.debug("Running scriptlet %s" % self)
+
+		# Check if the interpreter does exist and is executable.
+		interpreter = "%s/%s" % (self.pakfire.path, self.interpreter)
+		if not os.path.exists(interpreter):
+			raise ActionError, _("Cannot run scriptlet because no interpreter is available: %s" \
+				% self.interpreter)
+
+		if not os.access(interpreter, os.X_OK):
+			raise ActionError, _("Cannot run scriptlet because the interpreter is not executable: %s" \
+				% self.interpreter)
+
+		# Create a name for the temporary script file.
+		script_file_chroot = os.path.join("/", LOCAL_TMP_PATH,
+			"scriptlet_%s" % util.random_string(10))
+		script_file = os.path.join(self.pakfire.path, script_file_chroot[1:])
+		assert script_file.startswith("%s/" % self.pakfire.path)
+
+		# Create script directory, if it does not exist.
+		script_dir = os.path.dirname(script_file)
+		if not os.path.exists(script_dir):
+			os.makedirs(script_dir)
+
+		# Write the scriptlet to a file that we can execute it.
+		try:
+			f = open(script_file, "wb")
+			f.write(self.scriptlet)
+			f.close()
+
+			# The file is only accessable by root.
+			os.chmod(script_file, 700)
+		except:
+			# Remove the file if an error occurs.
+			try:
+				os.unlink(script_file)
+			except OSError:
+				pass
+
+			# XXX catch errors and return a beautiful message to the user
+			raise
+
+		command = [script_file_chroot,] + self.args
+
+		# If we are running in /, we do not need to chroot there.
+		chroot_dir = None
+		if not self.pakfire.path == "/":
+			chroot_dir = self.pakfire.path
+
+		try:
+			ret = chroot.do(command, cwd="/tmp",
+				chrootPath=chroot_path,
+				personality=self.pakfire.distro.personality,
+				shell=False,
+				timeout=SCRIPTLET_TIMEOUT,
+				logger=logging.getLogger())
+
+		except Error, e:
+			raise ActionError, _("The scriptlet returned an error:\n%s" % e)
+
+		except commandTimeoutExpired:
+			raise ActionError, _("The scriptlet ran more than %s seconds and was killed." \
+				% SCRIPTLET_TIMEOUT)
+
+		finally:
+			# Remove the script file.
+			try:
+				os.unlink(script_file)
+			except OSError:
+				logging.debug("Could not remove scriptlet file: %s" % script_file)
 
 
 class ActionScriptPreIn(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["prein",]
 
 
 class ActionScriptPostIn(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["postin",]
 
 
 class ActionScriptPreUn(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["preun",]
 
 
 class ActionScriptPostUn(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["postun",]
 
 
 class ActionScriptPreUp(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["preup",]
 
 
 class ActionScriptPostUp(ActionScript):
-	pass
+	@property
+	def args(self):
+		return ["postup",]
 
 
 class ActionScriptPostTrans(ActionScript):
@@ -102,15 +221,21 @@ class ActionScriptPostTrans(ActionScript):
 
 
 class ActionScriptPostTransIn(ActionScriptPostTrans):
-	pass
+	@property
+	def args(self):
+		return ["posttransin",]
 
 
 class ActionScriptPostTransUn(ActionScriptPostTrans):
-	pass
+	@property
+	def args(self):
+		return ["posttransun",]
 
 
 class ActionScriptPostTransUp(ActionScriptPostTrans):
-	pass
+	@property
+	def args(self):
+		return ["posttransup",]
 
 
 class ActionInstall(Action):

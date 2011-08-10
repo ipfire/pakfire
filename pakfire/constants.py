@@ -35,7 +35,7 @@ CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
 REPO_CACHE_DIR = os.path.join(CACHE_DIR, "repos")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
-LOCAL_TMP_PATH = "/var/tmp/pakfire"
+LOCAL_TMP_PATH = "var/tmp/pakfire"
 
 PACKAGES_DB_DIR = "var/lib/pakfire"
 PACKAGES_DB = os.path.join(PACKAGES_DB_DIR, "packages.db")
@@ -125,3 +125,64 @@ PKG_PAYLOAD_HASH1="%(payload_hash1)s"
 
 # XXX make this configurable in pakfire.conf
 PAKFIRE_MULTIINSTALL = ["kernel",]
+
+SCRIPTLET_INTERPRETER = "/bin/sh"
+SCRIPTLET_TIMEOUT = 60 * 15
+
+SCRIPTLET_TEMPLATE = """\
+#!/bin/sh
+
+function control_prein() {
+%(control_prein)s
+}
+
+function control_postin() {
+%(control_postin)s
+}
+
+function control_preun() {
+%(control_preun)s
+}
+
+function control_postun() {
+%(control_postun)s
+}
+
+function control_preup() {
+%(control_preup)s
+}
+
+function control_postup() {
+%(control_postup)s
+}
+
+function control_postransin() {
+%(control_posttransin)s
+}
+
+function control_posttransun() {
+%(control_posttransun)s
+}
+
+function control_posttransup() {
+%(control_posttransup)s
+}
+
+# Get right action from commandline.
+action=${1}
+shift
+
+case "${action}" in
+	prein|postin|preun|postun|preup|postup|posttransin|posttransun|posttransup)
+		control_${action} $@
+		;;
+
+	*)
+		echo "Unknown action: ${action}" >&2
+		exit 2
+		;;
+esac
+
+# Always exit with an okay status.
+exit 0
+"""

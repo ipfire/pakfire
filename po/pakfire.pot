@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-07 13:23+0200\n"
+"POT-Creation-Date: 2011-08-10 18:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pakfire/actions.py:123 ../pakfire/actions.py:180
+#: ../pakfire/actions.py:117
+#, python-format
+msgid "Cannot run scriptlet because no interpreter is available: %s"
+msgstr ""
+
+#: ../pakfire/actions.py:121
+#, python-format
+msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+msgstr ""
+
+#: ../pakfire/actions.py:169
+#, python-format
+msgid ""
+"The scriptlet returned an error:\n"
+"%s"
+msgstr ""
+
+#: ../pakfire/actions.py:172
+#, python-format
+msgid "The scriptlet ran more than %s seconds and was killed."
+msgstr ""
+
+#: ../pakfire/actions.py:248 ../pakfire/actions.py:305
 msgid "Installing"
 msgstr ""
 
-#: ../pakfire/actions.py:133
+#: ../pakfire/actions.py:258
 msgid "Updating"
 msgstr ""
 
-#: ../pakfire/actions.py:147
+#: ../pakfire/actions.py:272
 msgid "Removing"
 msgstr ""
 
 #. Cleaning up leftover files and stuff.
-#: ../pakfire/actions.py:165
+#: ../pakfire/actions.py:290
 msgid "Cleanup"
 msgstr ""
 
-#: ../pakfire/actions.py:190
+#: ../pakfire/actions.py:315
 msgid "Downgrading"
 msgstr ""
 
@@ -288,15 +310,15 @@ msgstr ""
 msgid "Path to input packages."
 msgstr ""
 
-#: ../pakfire/errors.py:27
+#: ../pakfire/errors.py:30
 msgid "An unhandled error occured."
 msgstr ""
 
-#: ../pakfire/errors.py:48
+#: ../pakfire/errors.py:51
 msgid "One or more dependencies could not been resolved."
 msgstr ""
 
-#: ../pakfire/errors.py:63
+#: ../pakfire/errors.py:66
 msgid ""
 "The requested action cannot be done on offline mode.\n"
 "Please connect your system to the network, remove --offline from the command "

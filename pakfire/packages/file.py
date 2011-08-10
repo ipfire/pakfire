@@ -137,7 +137,7 @@ class FilePackage(Package):
 		return True
 
 	def open_archive(self):
-		return tarfile.open(self.filename)
+		return tarfile.open(self.filename, format=tarfile.PAX_FORMAT)
 
 	def extract(self, message=None, prefix=None):
 		logging.debug("Extracting package %s" % self.friendly_name)
