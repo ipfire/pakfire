@@ -144,7 +144,7 @@ class ActionRemove(Action):
 		assert self.pkg
 
 	def run(self):
-		self.pkg.remove(_("Removing"), prefix=self.pakfire.path)
+		self.pkg.cleanup(_("Removing"), prefix=self.pakfire.path)
 
 		# Remove package from the database.
 		self.local.rem_package(self.pkg)
