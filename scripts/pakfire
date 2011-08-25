@@ -22,7 +22,7 @@ except ImportError, e:
 	# XXX Maybe we can make a more beautiful message here?!
 	print _("There has been an error when trying to import one or more of the"
 		" modules, that are required to run Pakfire.")
-	print _("Please your installation of Pakfire.")
+	print _("Please check your installation of Pakfire.")
 	print
 	print _("The error that lead to this:")
 	print "  ", e
