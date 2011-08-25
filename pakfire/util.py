@@ -24,6 +24,7 @@ from __future__ import division
 import fcntl
 import hashlib
 import logging
+import math
 import os
 import progressbar
 import random
@@ -205,21 +206,44 @@ def calc_hash1(filename=None, data=None):
 	return h.hexdigest()
 
 def text_wrap(s, length=65):
-	t = []
-	s = s.split()
+	if not s:
+		return ""
 
-	l = []
-	for word in s:
-		l.append(word)
+	lines = []
 
-		if len(" ".join(l)) >= length:
-			t.append(l)
-			l = []
+	words = []
+	for line in s.splitlines():
+		if not line:
+			words.append("")
+		else:
+			words += line.split()
 
-	if l:
-		t.append(l)
+	line = []
+	while words:
+		word = words.pop(0)
 
-	return [" ".join(l) for l in t]
+		# An empty words means a line break.
+		if not word:
+			if line:
+				lines.append(" ".join(line))
+			lines.append("")
+			line = []
+
+		else:
+			if len(" ".join(line)) + len(word) >= length:
+				lines.append(" ".join(line))
+				line = []
+				words.insert(0, word)
+			else:
+				line.append(word)
+
+	if line:
+		lines.append(" ".join(line))
+
+	assert not words
+
+	#return "\n".join(lines)
+	return lines
 
 def orphans_kill(root, killsig=signal.SIGTERM):
 	"""
@@ -238,3 +262,31 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 				os.waitpid(pid, 0)
 		except OSError, e:
 			pass
+
+def scriptlet_interpreter(scriptlet):
+	"""
+		This function returns the interpreter of a scriptlet.
+	"""
+	# XXX handle ELF?
+	interpreter = None
+
+	for line in scriptlet.splitlines():
+		if line.startswith("#!/"):
+			interpreter = line[2:]
+			interpreter = interpreter.split()[0]
+		break
+
+	return interpreter
+
+def calc_parallelism():
+	"""
+		Calculate how many processes to run
+		at the same time.
+
+		We take the log10(number of processors) * factor
+	"""
+	num = os.sysconf("SC_NPROCESSORS_CONF")
+	if num == 1:
+		return 2
+	else:
+		return int(round(math.log10(num) * 26))

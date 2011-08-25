@@ -28,10 +28,15 @@ import xattr
 
 import pakfire.util as util
 import pakfire.compress as compress
-from pakfire.errors import FileError
 from pakfire.constants import *
 
 from base import Package
+from lexer import FileLexer
+
+# XXX need to add zlib and stuff here.
+PAYLOAD_COMPRESSION_MAGIC = {
+	"xz" : "\xfd7zXZ",
+}
 
 class InnerTarFile(tarfile.TarFile):
 	SUPPORTED_XATTRS = ("security.capability",)
@@ -118,7 +123,27 @@ class FilePackage(Package):
 		# Place to cache the metadata
 		self._metadata = {}
 
+		# Store the format of this package file.
+		self.format = self.get_format()
+
+		# XXX need to make this much better.
 		self.check()
+
+		# Read the info file.
+		if self.format >= 1:
+			a = self.open_archive()
+			f = a.extractfile("info")
+
+			self.lexer = FileLexer(f.readlines())
+
+			f.close()
+			a.close()
+
+		elif self.format == 0:
+			pass
+
+		else:
+			raise PackageFormatUnsupportedError, _("Filename: %s") % self.filename
 
 	def check(self):
 		"""
@@ -127,6 +152,26 @@ class FilePackage(Package):
 		"""
 		if not tarfile.is_tarfile(self.filename):
 			raise FileError, "Given file is not of correct format: %s" % self.filename
+
+		assert self.format in PACKAGE_FORMATS_SUPPORTED
+
+	def get_format(self):
+		a = self.open_archive()
+		try:
+			f = a.extractfile("pakfire-format")
+		except KeyError:
+			return 0
+
+		format = f.read()
+		try:
+			format = int(format)
+		except TypeError:
+			format = 0
+
+		f.close()
+		a.close()
+
+		return format
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.filename)
@@ -234,17 +279,12 @@ class FilePackage(Package):
 			pb.finish()
 
 	@property
-	def file_version(self):
-		"""
-			Returns the version of the package metadata.
-		"""
-		return self.metadata.get("VERSION")
-
-	@property
 	def metadata(self):
 		"""
 			Read-in the metadata from the "info" file and cache it in _metadata.
 		"""
+		assert self.format == 0, self
+
 		if not self._metadata:
 			a = self.open_archive()
 			f = a.extractfile("info")
@@ -324,22 +364,42 @@ class FilePackage(Package):
 
 	@property
 	def configfiles(self):
-		return [] # XXX to be done
+		a = self.open_archive()
+
+		f = a.extractfile("configs")
+		for line in f.readlines():
+			if not line.startswith("/"):
+				line = "/%s" % line
+			yield line
+
+		a.close()
 
 	@property
 	def payload_compression(self):
 		"""
-			Return the compression type of the payload.
+			Return the (guessed) compression type of the payload.
 		"""
-		comp = self.metadata.get("PKG_PAYLOAD_COMP", None)
+		# Get the max. length of the magic values.
+		max_length = max([len(v) for v in PAYLOAD_COMPRESSION_MAGIC.values()])
 
-		if comp == "XXX":
-			return
+		a = self.open_archive()
+		f = a.extractfile("data.img")
 
-		return comp
+		# Read magic bytes from file.
+		magic = f.read(max_length)
+
+		f.close()
+		a.close()
+
+		for algo, m in PAYLOAD_COMPRESSION_MAGIC.items():
+			if not magic.startswith(m):
+				continue
+
+			return algo
 
 	@property
 	def signature(self):
+		# XXX needs to be replaced
 		"""
 			Read the signature from the archive or return None if no
 			signature does exist.
@@ -366,25 +426,231 @@ class FilePackage(Package):
 			Calculate the hash1 of this package.
 		"""
 		return util.calc_hash1(self.filename)
+	
+	@property
+	def name(self):
+		if self.format >= 1:
+			name = self.lexer.package.get_var("name")
+		elif self.format == 0:
+			name = self.metadata.get("PKG_NAME")
+
+		assert name, self
+		return name
 
 	@property
-	def scriptlet(self):
-		"""
-			Read the scriptlet from the archive or return an empty string if no
-			scriptlet does exist.
-		"""
-		ret = None
+	def epoch(self):
+		if self.format >= 1:
+			epoch = self.lexer.package.get_var("epoch", 0)
+		elif self.format == 0:
+			epoch = self.metadata.get("PKG_EPOCH")
+
 		try:
-			a = self.open_archive()
-			f = a.extractfile("control")
+			epoch = int(epoch)
+		except TypeError:
+			epoch = 0
 
-			ret = f.read()
+		return epoch
 
-			f.close()
-			a.close()
+	@property
+	def version(self):
+		if self.format >= 1:
+			version = self.lexer.package.get_var("version")
+		elif self.format == 0:
+			version = self.metadata.get("PKG_VER")
 
-		except KeyError:
-			# scriptlet file could not be found
-			pass
+		assert version, self
+		return version
 
-		return ret or ""
+	@property
+	def release(self):
+		if self.format >= 1:
+			release = self.lexer.package.get_var("release")
+		elif self.format == 0:
+			release = self.metadata.get("PKG_REL")
+
+		assert release, self
+		return release
+
+	@property
+	def arch(self):
+		if self.format >= 1:
+			arch = self.lexer.package.get_var("arch")
+		elif self.format == 0:
+			arch = self.metadata.get("PKG_ARCH")
+
+		assert arch, self
+		return arch
+
+	@property
+	def vendor(self):
+		if self.format >= 1:
+			vendor = self.lexer.distro.get_var("vendor")
+		elif self.format == 0:
+			vendor = self.metadata.get("PKG_VENDOR")
+
+		return vendor
+
+	@property
+	def summary(self):
+		if self.format >= 1:
+			summary = self.lexer.package.get_var("summary")
+		elif self.format == 0:
+			summary = self.metadata.get("PKG_SUMMARY")
+
+		assert summary, self
+		return summary
+
+	@property
+	def description(self):
+		if self.format >= 1:
+			description = self.lexer.package.get_var("description")
+		elif self.format == 0:
+			description = self.metadata.get("PKG_DESC")
+
+		return description
+
+	@property
+	def groups(self):
+		if self.format >= 1:
+			groups = self.lexer.package.get_var("groups")
+		elif self.format == 0:
+			groups = self.metadata.get("PKG_GROUPS")
+
+		if groups:
+			return groups.split()
+
+		return []
+
+	@property
+	def license(self):
+		if self.format >= 1:
+			license = self.lexer.package.get_var("license")
+		elif self.format == 0:
+			license = self.metadata.get("PKG_LICENSE")
+
+		return license
+
+	@property
+	def url(self):
+		if self.format >= 1:
+			url = self.lexer.package.get_var("url")
+		elif self.format == 0:
+			url = self.metadata.get("PKG_URL")
+
+		return url
+
+	@property
+	def maintainer(self):
+		if self.format >= 1:
+			maintainer = self.lexer.package.get_var("maintainer")
+		elif self.format == 0:
+			maintainer = self.metadata.get("PKG_MAINTAINER")
+
+		return maintainer
+
+	@property
+	def uuid(self):
+		if self.format >= 1:
+			uuid = self.lexer.package.get_var("uuid")
+		elif self.format == 0:
+			uuid = self.metadata.get("PKG_UUID")
+
+		#assert uuid, self XXX re-enable this
+		return uuid
+
+	@property
+	def build_id(self):
+		if self.format >= 1:
+			build_id = self.lexer.build.get_var("id")
+		elif self.format == 0:
+			build_id = self.metadata.get("BUILD_ID")
+
+		assert build_id, self
+		return build_id
+
+	@property
+	def build_host(self):
+		if self.format >= 1:
+			build_host = self.lexer.build.get_var("host")
+		elif self.format == 0:
+			build_host = self.metadata.get("BUILD_HOST")
+
+		assert build_host, self
+		return build_host
+
+	@property
+	def build_time(self):
+		if self.format >= 1:
+			build_time = self.lexer.build.get_var("time")
+		elif self.format == 0:
+			build_time = self.metadata.get("BUILD_TIME")
+
+		# XXX re-enable this later
+		#assert build_time, self
+
+		try:
+			build_time = int(build_time)
+		except TypeError:
+			build_time = 0
+
+		return build_time
+
+	@property
+	def provides(self):
+		if self.format >= 1:
+			provides = self.lexer.deps.get_var("provides")
+		elif self.format == 0:
+			provides = self.metadata.get("PKG_PROVIDES")
+
+		if not provides:
+			return []
+
+		return provides.split()
+
+	@property
+	def requires(self):
+		if self.format >= 1:
+			requires = self.lexer.deps.get_var("requires")
+		elif self.format == 0:
+			requires = self.metadata.get("PKG_REQUIRES")
+
+		if not requires:
+			return []
+
+		return requires.split()
+
+	@property
+	def prerequires(self):
+		if self.format >= 1:
+			prerequires = self.lexer.deps.get_var("prerequires")
+		elif self.format == 0:
+			prerequires = self.metadata.get("PKG_PREREQUIRES")
+
+		if not prerequires:
+			return []
+
+		return prerequires.split()
+
+	@property
+	def obsoletes(self):
+		if self.format >= 1:
+			obsoletes = self.lexer.deps.get_var("obsoletes")
+		elif self.format == 0:
+			obsoletes = self.metadata.get("PKG_OBSOLETES")
+
+		if not obsoletes:
+			return []
+
+		return obsoletes.split()
+
+	@property
+	def conflicts(self):
+		if self.format >= 1:
+			conflicts = self.lexer.deps.get_var("conflicts")
+		elif self.format == 0:
+			conflicts = self.metadata.get("PKG_CONFLICTS")
+
+		if not conflicts:
+			return []
+
+		return conflicts.split()

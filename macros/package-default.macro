@@ -1,0 +1,16 @@
+
+# Epoch information should always be set, starting with zero.
+epoch      = 0
+
+# The default maintainer is the maintainer of the distribution.
+maintainer = %{DISTRO_MAINTAINER}
+
+# The default architecture is the architecture of the distribution.
+arch       = %{DISTRO_ARCH}
+
+# Place to add URLs for sources download.
+source_dl  =
+
+# A list of sources that need to be fetched in
+# order to build the package.
+sources    = %{thisapp}.tar.gz

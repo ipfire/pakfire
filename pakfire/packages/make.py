@@ -19,23 +19,30 @@
 #                                                                             #
 ###############################################################################
 
+import logging
 import os
+import shutil
+import socket
 import tarfile
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.progress import TextMeter
 
+import lexer
 import packager
+
+import pakfire.util as util
 
 from base import Package
 from source import SourcePackage
-from virtual import VirtualPackage
-from pakfire.errors import DownloadError
 from pakfire.constants import *
+from pakfire.i18n import _
 
+# XXX to be moved to pakfire.downloader
 class SourceDownloader(object):
-	def __init__(self, pakfire):
+	def __init__(self, pakfire, mirrors=None):
 		self.pakfire = pakfire
+		self.mirrors = mirrors
 
 		# XXX need to use downloader.py
 		self.grabber = URLGrabber(
@@ -62,42 +69,17 @@ class SourceDownloader(object):
 		return filename
 
 
-class MakeVirtualPackage(VirtualPackage):
-	"""
-		A simple package that always overwrites the file_patterns.
-	"""
-	@property
-	def file_patterns(self):
-		"""
-			All files that belong into a source package are located in /build.
-		"""
-		return ["/",]
-
-class Makefile(Package):
+class MakefileBase(Package):
 	def __init__(self, pakfire, filename):
 		Package.__init__(self, pakfire)
+
+		# Save the filename of the makefile.
 		self.filename = os.path.abspath(filename)
 
-	@property
-	def files(self):
-		basedir = os.path.dirname(self.filename)
-
-		for dirs, subdirs, files in os.walk(basedir):
-			for f in files:
-				yield os.path.join(dirs, f)
-
-	def extract(self, env):
-		# Copy all files that belong to the package
-		for f in self.files:
-			_f = f[len(os.path.dirname(self.filename)):]
-			env.copyin(f, "/build/%s" % _f)
-
-		downloader = SourceDownloader(env.pakfire)
-		for filename in env.make_sources():
-			_filename = downloader.download(filename)
-
-			if _filename:
-				env.copyin(_filename, "/build/files/%s" % os.path.basename(_filename))
+		# Open and parse the makefile.
+		# XXX pass environment to lexer
+		self.lexer = lexer.RootLexer.open(self.filename,
+			environ=self.pakfire.environ)
 
 	@property
 	def package_filename(self):
@@ -109,6 +91,112 @@ class Makefile(Package):
 			"version" : self.version,
 		}
 
+	def lint(self):
+		errors = []
+
+		if not self.name:
+			errors.append(_("Package name is undefined."))
+
+		if not self.version:
+			errors.append(_("Package version is undefined."))
+
+		# XXX to do...
+
+		return errors
+
+	@property
+	def name(self):
+		return self.lexer.get_var("name")
+
+	@property
+	def epoch(self):
+		epoch = self.lexer.get_var("epoch")
+		if not epoch:
+			return 0
+
+		return int(epoch)
+
+	@property
+	def version(self):
+		return self.lexer.get_var("version")
+
+	@property
+	def release(self):
+		release = self.lexer.get_var("release")
+		assert release
+
+		tag = self.lexer.get_var("DISTRO_DISTTAG")
+		assert tag
+
+		return ".".join((release, tag))
+
+	@property
+	def summary(self):
+		return self.lexer.get_var("summary")
+
+	@property
+	def description(self):
+		return self.lexer.get_var("description")
+
+	@property
+	def groups(self):
+		groups = self.lexer.get_var("groups").split()
+
+		return sorted(groups)
+
+	@property
+	def url(self):
+		return self.lexer.get_var("url")
+
+	@property
+	def license(self):
+		return self.lexer.get_var("license")
+
+	@property
+	def maintainer(self):
+		maintainer = self.lexer.get_var("maintainer")
+
+		if not maintainer:
+			maintainer = self.lexer.get_var("DISTRO_MAINTAINER")
+
+		return maintainer
+
+	@property
+	def vendor(self):
+		return self.lexer.get_var("DISTRO_VENDOR")
+
+	@property
+	def build_host(self):
+		return socket.gethostname()
+
+	# XXX build_id and build_time are used to create a source package
+
+	@property
+	def build_id(self):
+		# XXX todo
+		# Not existant for Makefiles
+		return None
+
+	@property
+	def build_time(self):
+		# XXX todo
+		# Not existant for Makefiles
+		return None
+
+
+class Makefile(MakefileBase):
+	@property
+	def uuid(self):
+		hash1 = util.calc_hash1(self.filename)
+
+		# Return UUID version 5 (SHA1 hash)
+		return "%8s-%4s-5%3s-%4s-%11s" % \
+			(hash1[0:8], hash1[9:13], hash1[14:17], hash1[18:22], hash1[23:34])
+
+	@property
+	def path(self):
+		return os.path.dirname(self.filename)
+
 	@property
 	def arch(self):
 		"""
@@ -116,14 +204,211 @@ class Makefile(Package):
 		"""
 		return "src"
 
-	def dist(self, env):
+	@property
+	def packages(self):
+		pkgs = []
+
+		for lexer in self.lexer.packages:
+			name = lexer.get_var("name")
+
+			pkg = MakefilePackage(self.pakfire, name, lexer)
+			pkgs.append(pkg)
+
+		return sorted(pkgs)
+
+	@property
+	def source_dl(self):
+		dls = []
+
+		if self.pakfire.distro.source_dl:
+			dls.append(self.pakfire.distro.source_dl)
+
+		dl = self.lexer.get_var("source_dl")
+		if dl:
+			dls.append(dl)
+
+		return dls
+
+	def download(self):
 		"""
-			Create a source package in env.
-
-			We assume that all requires files are in /build.
+			Download all external sources and return a list with the local
+			copies.
 		"""
-		pkg = MakeVirtualPackage(self.pakfire, env.make_info)
+		# Download source files.
+		# XXX need to implement mirrors
+		downloader = SourceDownloader(self.pakfire, mirrors=self.source_dl)
 
-		p = packager.SourcePackager(self.pakfire, pkg, env)
-		p()
+		files = []
+		for filename in self.sources:
+			filename = downloader.download(filename)
+			files.append(filename)
 
+		return files
+
+	def dist(self, resultdirs):
+		"""
+			Create a source package.
+
+			We assume that all required files are in /build.
+		"""
+		#dump = self.dump()
+		#for line in dump.splitlines():
+		#	logging.info(line)
+
+		p = packager.SourcePackager(self.pakfire, self)
+		p.run(resultdirs)
+
+	def dump(self, *args, **kwargs):
+		dump = MakefileBase.dump(self, *args, **kwargs)
+		dump = dump.splitlines()
+
+		#dump += ["", _("Containing the following binary packages:"),]
+		#
+		#for pkg in self.packages:
+		#	_dump = pkg.dump(*args, **kwargs)
+		#
+		#	for line in _dump.splitlines():
+		#		dump.append("  %s" % line)
+		#	dump.append("")
+
+		return "\n".join(dump)
+
+	def get_buildscript(self, stage):
+		return self.lexer.build.get_var("_%s" % stage)
+
+	@property
+	def prerequires(self):
+		return []
+
+	@property
+	def requires(self):
+		return self.lexer.get_var("build_requires").split()
+
+	@property
+	def provides(self):
+		return []
+
+	@property
+	def obsoletes(self):
+		return []
+
+	@property
+	def conflicts(self):
+		return []
+
+	@property
+	def files(self):
+		files = []
+		basedir = os.path.dirname(self.filename)
+
+		for dirs, subdirs, _files in os.walk(basedir):
+			for f in _files:
+				files.append(os.path.join(dirs, f))
+
+		return files
+
+	@property
+	def sources(self):
+		return self.lexer.get_var("sources").split()
+
+	def extract(self, message=None, prefix=None):
+		# XXX neeed to make this waaaaaaaaaay better.
+
+		files = self.files
+
+		# Load progressbar.
+		pb = None
+		if message:
+			message = "%-10s : %s" % (message, self.friendly_name)
+			pb = util.make_progress(message, len(files), eta=False)
+
+		dir_len = len(os.path.dirname(self.filename))
+
+		# Copy all files that belong to the package
+		i = 0
+		for f in files:
+			if pb:
+				i += 1
+				pb.update(i)
+
+			_f = f[dir_len:]
+			logging.debug("%s/%s" % (prefix, _f))
+	
+			path = "%s/%s" % (prefix, _f)
+
+			path_dir = os.path.dirname(path)
+			if not os.path.exists(path_dir):
+				os.makedirs(path_dir)
+
+			shutil.copy2(f, path)
+
+		if pb:
+			pb.finish()
+
+		# Download source files.
+		downloader = SourceDownloader(self.pakfire, mirrors=self.source_dl)
+		for filename in self.sources:
+			_filename = downloader.download(filename)
+			assert _filename
+
+			filename = "%s/files/%s" % (prefix, os.path.basename(_filename))
+			dirname = os.path.dirname(filename)
+
+			if not os.path.exists(dirname):
+				os.makedirs(dirname)
+				
+			shutil.copy2(_filename, filename)
+
+
+class MakefilePackage(MakefileBase):
+	def __init__(self, pakfire, name, lexer):
+		Package.__init__(self, pakfire)
+
+		self._name = name
+		self.lexer = lexer
+
+	@property
+	def name(self):
+		return self._name
+
+	@property
+	def arch(self):
+		return self.lexer.get_var("arch", "%{DISTRO_ARCH}")
+
+	@property
+	def configfiles(self):
+		return self.lexer.get_var("configfiles").split()
+
+	@property
+	def files(self):
+		return self.lexer.get_var("files").split()
+
+	@property
+	def uuid(self):
+		return None
+
+	def get_deps_from_builder(self, builder):
+		pass
+
+	@property
+	def prerequires(self):
+		return []
+
+	@property
+	def requires(self):
+		return []
+
+	@property
+	def provides(self):
+		return []
+
+	@property
+	def obsoletes(self):
+		return []
+
+	@property
+	def conflicts(self):
+		return []
+
+	def get_scriptlet(self, type):
+		return self.lexer.scriptlets.get(type, None)

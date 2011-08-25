@@ -70,7 +70,7 @@ class Repositories(object):
 
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
-		self.update()
+		self.update(offline=self.pakfire.offline)
 
 	def __iter__(self):
 		repositories = self.__repos.values()
@@ -140,12 +140,12 @@ class Repositories(object):
 		except KeyError:
 			pass
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		logging.debug("Updating all repository indexes (force=%s)" % force)
 
 		# update all indexes if necessary or forced
 		for repo in self:
-			repo.update(force=force)
+			repo.update(force=force, offline=offline)
 
 	def whatprovides(self, what):
 		what = self.pakfire.create_relation(what)

@@ -5,7 +5,7 @@ from distutils.core import Extension, setup
 
 from DistUtilsExtra.command import *
 
-PAKFIRE_VERSION = "0.9.7"
+PAKFIRE_VERSION = "0.9.8"
 
 _pakfire_module_files = [os.path.join("src", f) for f in os.listdir("src") if f.endswith(".c")]
 
@@ -30,7 +30,11 @@ setup(
 	scripts = [
 		"scripts/pakfire",
 		"scripts/pakfire-build",
+		"scripts/pakfire-build2",
 		"scripts/pakfire-server",
+	],
+	data_files = [
+		("lib/pakfire/macros", [os.path.join("macros", f) for f in os.listdir("macros") if f.endswith(".macro")]),
 	],
 	ext_modules = [
 		Extension("pakfire._pakfire", _pakfire_module_files,

@@ -18,11 +18,11 @@ pakfire/packages/binary.py
 pakfire/packages/file.py
 pakfire/packages/__init__.py
 pakfire/packages/installed.py
+pakfire/packages/lexer.py
 pakfire/packages/make.py
 pakfire/packages/packager.py
 pakfire/packages/solv.py
 pakfire/packages/source.py
-pakfire/packages/virtual.py
 pakfire/repository/base.py
 pakfire/repository/cache.py
 pakfire/repository/database.py

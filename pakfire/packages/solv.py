@@ -215,3 +215,7 @@ class SolvPackage(base.Package):
 			self.repo.download(self, text=text)
 
 		return self.get_from_cache()
+
+	def get_scriptlet(self, type):
+		# XXX TODO
+		return None

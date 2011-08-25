@@ -76,32 +76,22 @@ class Action(object):
 
 class ActionScript(Action):
 	type = "script"
+	script_action = None
 
 	def init(self):
 		# Load the scriplet.
-		self.scriptlet = self.pkg.scriptlet
+		self.scriptlet = self.pkg.get_scriptlet(self.script_action)
 
 	@property
 	def interpreter(self):
 		"""
 			Get the interpreter of this scriptlet.
 		"""
-		# XXX check, how to handle elf files here.
-
-		# If nothing was found, we return the default interpreter.
-		interpreter = SCRIPTLET_INTERPRETER
-
-		for line in self.scriptlet.splitlines():
-			if line.startswith("#!/"):
-				interpreter = line[2:]
-				interpreter = interpreter.split()[0]
-			break
-
-		return interpreter
+		return util.scriptlet_interpreter(self.scriptlet)
 
 	@property
 	def args(self):
-		raise NotImplementedError
+		return []
 
 	def run(self):
 		# Exit immediately, if the scriptlet is empty.
@@ -112,14 +102,15 @@ class ActionScript(Action):
 		logging.debug("Running scriptlet %s" % self)
 
 		# Check if the interpreter does exist and is executable.
-		interpreter = "%s/%s" % (self.pakfire.path, self.interpreter)
-		if not os.path.exists(interpreter):
-			raise ActionError, _("Cannot run scriptlet because no interpreter is available: %s" \
-				% self.interpreter)
+		if self.interpreter:
+			interpreter = "%s/%s" % (self.pakfire.path, self.interpreter)
+			if not os.path.exists(interpreter):
+				raise ActionError, _("Cannot run scriptlet because no interpreter is available: %s" \
+					% self.interpreter)
 
-		if not os.access(interpreter, os.X_OK):
-			raise ActionError, _("Cannot run scriptlet because the interpreter is not executable: %s" \
-				% self.interpreter)
+			if not os.access(interpreter, os.X_OK):
+				raise ActionError, _("Cannot run scriptlet because the interpreter is not executable: %s" \
+					% self.interpreter)
 
 		# Create a name for the temporary script file.
 		script_file_chroot = os.path.join("/", LOCAL_TMP_PATH,
@@ -150,12 +141,13 @@ class ActionScript(Action):
 			# XXX catch errors and return a beautiful message to the user
 			raise
 
-		command = [script_file_chroot,] + self.args
+		# Generate the script command.
+		command = [script_file_chroot] + self.args
 
 		# If we are running in /, we do not need to chroot there.
-		chroot_dir = None
+		chroot_path = None
 		if not self.pakfire.path == "/":
-			chroot_dir = self.pakfire.path
+			chroot_path = self.pakfire.path
 
 		try:
 			ret = chroot.do(command, cwd="/tmp",
@@ -181,39 +173,27 @@ class ActionScript(Action):
 
 
 class ActionScriptPreIn(ActionScript):
-	@property
-	def args(self):
-		return ["prein",]
+	script_action = "prein"
 
 
 class ActionScriptPostIn(ActionScript):
-	@property
-	def args(self):
-		return ["postin",]
+	script_action = "postin"
 
 
 class ActionScriptPreUn(ActionScript):
-	@property
-	def args(self):
-		return ["preun",]
+	script_action = "preun"
 
 
 class ActionScriptPostUn(ActionScript):
-	@property
-	def args(self):
-		return ["postun",]
+	script_action = "postun"
 
 
 class ActionScriptPreUp(ActionScript):
-	@property
-	def args(self):
-		return ["preup",]
+	script_action = "preup"
 
 
 class ActionScriptPostUp(ActionScript):
-	@property
-	def args(self):
-		return ["postup",]
+	script_action = "postup"
 
 
 class ActionScriptPostTrans(ActionScript):
@@ -221,21 +201,15 @@ class ActionScriptPostTrans(ActionScript):
 
 
 class ActionScriptPostTransIn(ActionScriptPostTrans):
-	@property
-	def args(self):
-		return ["posttransin",]
+	script_action = "posttransin"
 
 
 class ActionScriptPostTransUn(ActionScriptPostTrans):
-	@property
-	def args(self):
-		return ["posttransun",]
+	script_action = "posttransun"
 
 
 class ActionScriptPostTransUp(ActionScriptPostTrans):
-	@property
-	def args(self):
-		return ["posttransup",]
+	script_action = "posttransup"
 
 
 class ActionInstall(Action):

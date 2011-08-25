@@ -1,0 +1,53 @@
+
+# XXX fill in description
+_release = %{release}.%{DISTRO_DISTTAG}
+thisapp = %{name}-%{version}
+thisver = %{version}-%{_release}
+
+template MAIN
+	def files
+		/
+	end
+end
+
+template LIBS
+	summary = Library files of %{thisapp}.
+	description = Runtime library files of the package %{thisapp}.
+
+	def files
+		/lib/lib*.so.*
+		/usr/lib*/*.so.*
+	end
+
+	script postin
+		# Update linker cache.
+		/sbin/ldconfig 2>/dev/null || true
+	end
+
+	script postup
+		/sbin/ldconfig 2>/dev/null || true
+	end
+
+	script postun
+		/sbin/ldconfig 2>/dev/null || true
+	end
+end
+
+template DEVEL
+	summary = Development files of %{thisapp}.
+	description = %{summary}
+
+	def files
+		/usr/bin/*-config
+		/usr/include
+		/usr/lib/*.a
+		/usr/lib/pkgconfig
+		/usr/share/aclocal
+		*/lib/*.so
+		/usr/share/*/cmake
+		/usr/share/man/man2
+		/usr/share/man/man3
+		/usr/share/pkgconfig
+		/usr/share/vala
+	end
+end

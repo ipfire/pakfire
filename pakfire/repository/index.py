@@ -66,7 +66,7 @@ class Index(object):
 		"""
 		raise NotImplementedError
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		raise NotImplementedError
 
 	def read(self, filename):
@@ -190,11 +190,11 @@ class IndexSolv(Index):
 	def check(self):
 		pass # XXX to be done
 
-	def update(self, force=False):
-		self._update_metadata(force)
-		self._update_database(force)
+	def update(self, force=False, offline=False):
+		self._update_metadata(force, offline)
+		self._update_database(force, offline)
 
-	def _update_metadata(self, force):
+	def _update_metadata(self, force, offline=False):
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
 
 		# Marker if we need to do the download.
@@ -216,19 +216,23 @@ class IndexSolv(Index):
 					self.cache.abspath(filename))
 
 			# If no metadata was downloaded and we are in offline mode.
-			elif self.pakfire.offline:
-				raise OfflineModeError, _("There is no metadata for the repository '%s' and"
-					" we cannot download any because we are running in offline mode."
-					" Connect to a network or disable this repository.") % self.repo.name
+			elif offline:
+				# If we cannot download new metadata, we should skip this
+				# repository.
+				return
 
-		elif force and self.pakfire.offline:
+				#raise OfflineModeError, _("There is no metadata for the repository '%s' and"
+				#	" we cannot download any because we are running in offline mode."
+				#	" Connect to a network or disable this repository.") % self.repo.name
+
+		elif force and offline:
 			raise OfflineModeError, _("I cannot be forced to re-download the metadata for"
 				" the repository '%s' when running in offline mode.") % self.repo.name
 
 		if download:
 			# We are supposed to download new metadata, but we are running in
 			# offline mode. That's okay. Just doing nothing.
-			if not self.pakfire.offline:
+			if not offline:
 				logging.debug("Going to (re-)download the repository metadata.")
 
 				# Initialize a grabber for download.
@@ -253,14 +257,21 @@ class IndexSolv(Index):
 		self.metadata = metadata.Metadata(self.pakfire, self,
 			self.cache.abspath(filename))
 
-	def _update_database(self, force):
+	def _update_database(self, force, offline=False):
+		if not hasattr(self, "metadata"):
+			return
+
 		# Construct cache and download filename.
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
 
 		if not self.cache.exists(filename):
-			if self.pakfire.offline:
-				raise OfflineModeError, _("Your repository metadata is outdated "
-					" and a new version needs to be downloaded.")
+			if offline:
+				# If there is not database and we are in offline mode, we cannot
+				# download anything so we just skip the rest of this function.
+				return
+
+				#raise OfflineModeError, _("Your repository metadata is outdated "
+				#	" and a new version needs to be downloaded.")
 
 			# Initialize a grabber for download.
 			grabber = downloader.DatabaseDownloader(
@@ -319,7 +330,7 @@ class IndexDir(Index):
 
 		return path
 
-	def update(self, force=False):
+	def update(self, force=False, offline=False):
 		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
 
 		# Do nothing if the update is not forced but populate the database
@@ -398,7 +409,7 @@ class IndexLocal(Index):
 		# XXX Create the database and lock it or something.
 		pass
 
-	def update(self, force=True):
+	def update(self, force=True, offline=False):
 		if self.solver_repo.size() == 0:
 			force = True
 

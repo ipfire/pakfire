@@ -56,7 +56,7 @@ BUILD_LOG_HEADER = """
 
 """
 
-class Builder(object):
+class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
@@ -117,8 +117,12 @@ class Builder(object):
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
-		# Open the package.
-		self.pkg = pkg
+		# Log the package information.
+		self.pkg = packages.Makefile(self.pakfire, pkg)
+		self.log.info(_("Package information:"))
+		for line in self.pkg.dump(long=True).splitlines():
+			self.log.info("  %s" % line)
+		self.log.info("")
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -136,27 +140,6 @@ class Builder(object):
 
 		# Save the build time.
 		self.build_time = int(time.time())
-
-	def get_pkg(self):
-		return getattr(self, "_pkg", None)
-
-	def set_pkg(self, pkg):
-		if pkg is None:
-			self.__pkg = None
-			return
-
-		self._pkg = packages.open(self.pakfire, None, pkg)
-
-		# Log the package information.
-		if not isinstance(self._pkg, packages.Makefile):
-			self.log.info("Package information:")
-			for line in self._pkg.dump(long=True).splitlines():
-				self.log.info("  %s" % line)
-			self.log.info("")
-
-		assert self.pkg
-
-	pkg = property(get_pkg, set_pkg)
 
 	@property
 	def arch(self):
@@ -245,6 +228,52 @@ class Builder(object):
 
 				self.copyout(file_in, file_out)
 
+	def get_pwuid(self, uid):
+		users = {}
+
+		f = open(self.chrootPath("/etc/passwd"))
+		for line in f.readlines():
+			m = re.match(r"^([a-z][a-z0-9_\-]{,30}):x:(\d+):(\d+):(.*):(.*)$", line)
+			if not m:
+				continue
+
+			item = {
+				"name"  : m.group(1),
+				"uid"   : int(m.group(2)),
+				"gid"   : int(m.group(3)),
+				"home"  : m.group(4),
+				"shell" : m.group(5),
+			}
+
+			assert not users.has_key(item["uid"])
+			users[item["uid"]] = item
+
+		f.close()
+
+		return users.get(uid, None)
+
+	def get_grgid(self, gid):
+		groups = {}
+
+		f = open(self.chrootPath("/etc/group"))
+		for line in f.readlines():
+			m = re.match(r"^([a-z][a-z0-9_\-]{,30}):x:(\d+):(.*)$", line)
+			if not m:
+				continue
+
+			item = {
+				"name"  : m.group(1),
+				"gid"   : int(m.group(2)),
+			}
+
+			# XXX re-enable later
+			#assert not groups.has_key(item["gid"])
+			groups[item["gid"]] = item
+
+		f.close()
+
+		return groups.get(gid, None)
+
 	def extract(self, requires=None, build_deps=True):
 		"""
 			Gets a dependency set and extracts all packages
@@ -267,29 +296,15 @@ class Builder(object):
 			requires.append("icecream")
 
 		# Get build dependencies from source package.
-		if isinstance(self.pkg, packages.SourcePackage):
-			for req in self.pkg.requires:
-				requires.append(req)
+		for req in self.pkg.requires:
+			requires.append(req)
 
 		# Install all packages.
 		self.install(requires)
 
 		# Copy the makefile and load source tarballs.
-		if isinstance(self.pkg, packages.Makefile):
-			self.pkg.extract(self)
-
-		elif isinstance(self.pkg, packages.SourcePackage):
-			self.pkg.extract(_("Extracting: %s (source)") % self.pkg.name,
-				prefix=os.path.join(self.path, "build"))
-
-		# If we have a makefile, we can only get the build dependencies
-		# after we have extracted all the rest.
-		if build_deps and isinstance(self.pkg, packages.Makefile):
-			requires = self.make_requires()
-			if not requires:
-				return
-
-			self.install(requires)
+		self.pkg.extract(_("Extracting"),
+			prefix=os.path.join(self.path, "build"))
 
 	def install(self, requires):
 		"""
@@ -299,33 +314,8 @@ class Builder(object):
 		if not requires:
 			return
 
-		# Create a request and fill it with what we need.
-		request = self.pakfire.create_request()
-
-		for req in requires:
-			if isinstance(req, packages.BinaryPackage):
-				req = req.friendly_name
-
-			if "<" in req or ">" in req or "=" in req or req.startswith("/"):
-				req = self.pakfire.create_relation(req)
-
-			request.install(req)
-
-		# Create a new solver instance.
-		solver = self.pakfire.create_solver()
-
-		# Do the solving.
-		transaction = solver.solve(request, allow_downgrade=True, logger=self.log)
-
-		# XXX check for errors
-		if not transaction:
-			raise DependencyError, "Could not resolve dependencies"
-
-		# Show the user what is going to be done.
-		transaction.dump(logger=self.log)
-
-		# Run the transaction.
-		transaction.run()
+		self.pakfire.install(requires, interactive=False,
+			allow_downgrade=True, logger=self.log)
 
 	def install_test(self):
 		pkgs = []
@@ -472,9 +462,6 @@ class Builder(object):
 	def cleanup(self):
 		logging.debug("Cleaning environemnt.")
 
-		# Run make clean and let it cleanup its stuff.
-		self.make("clean")
-
 		# Remove the build directory and buildroot.
 		dirs = ("build", self.buildroot, "result")
 
@@ -485,10 +472,6 @@ class Builder(object):
 
 			util.rm(d)
 			os.makedirs(d)
-
-		# Clear make_info cache.
-		if hasattr(self, "_make_info"):
-			del self._make_info
 
 	def _mountall(self):
 		self.log.debug("Mounting environment")
@@ -523,20 +506,6 @@ class Builder(object):
 
 		return ret
 
-	@staticmethod
-	def calc_parallelism():
-		"""
-			Calculate how many processes to run
-			at the same time.
-
-			We take the log10(number of processors) * factor
-		"""
-		num = os.sysconf("SC_NPROCESSORS_CONF")
-		if num == 1:
-			return 2
-		else:
-			return int(round(math.log10(num) * 26))
-
 	@property
 	def environ(self):
 		env = {
@@ -547,14 +516,14 @@ class Builder(object):
 			"PS1"  : "\u:\w\$ ",
 
 			"BUILDROOT" : self.buildroot,
-			"PARALLELISMFLAGS" : "-j%s" % self.calc_parallelism(),
+			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
 		}
 
 		# Inherit environment from distro
 		env.update(self.pakfire.distro.environ)
 
 		# Icecream environment settings
-		if self.settings.get("enable_icecream", None):
+		if self.settings.get("enable_icecream", False):
 			# Set the toolchain path
 			if self.settings.get("icecream_toolchain", None):
 				env["ICECC_VERSION"] = self.settings.get("icecream_toolchain")
@@ -610,105 +579,40 @@ class Builder(object):
 
 		return ret
 
-	def make(self, *args, **kwargs):
-		if isinstance(self.pkg, packages.Makefile):
-			filename = os.path.basename(self.pkg.filename)
-		elif isinstance(self.pkg, packages.SourcePackage):
-			filename = "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION)
-
-		return self.do("make -f /build/%s %s" % (filename, " ".join(args)),
-			**kwargs)
-
-	@property
-	def make_info(self):
-		if not hasattr(self, "_make_info"):
-			info = {}
-
-			output = self.make("buildinfo", returnOutput=True)
-
-			for line in output.splitlines():
-				# XXX temporarily
-				if not line:
-					break
-
-				m = re.match(r"^(\w+)=(.*)$", line)
-				if not m:
-					continue
-
-				info[m.group(1)] = m.group(2).strip("\"")
-
-			self._make_info = info
-
-		return self._make_info
-
-	@property
-	def packages(self):
-		if hasattr(self, "_packages"):
-			return self._packages
-
-		pkgs = []
-		output = self.make("packageinfo", returnOutput=True)
-
-		pkg = {}
-		for line in output.splitlines():
-			if not line:
-				pkgs.append(pkg)
-				pkg = {}
-
-			m = re.match(r"^(\w+)=(.*)$", line)
-			if not m:
-				continue
-
-			k, v = m.groups()
-			pkg[k] = v.strip("\"")
-
-		self._packages = []
-		for pkg in pkgs:
-			pkg = packages.VirtualPackage(self.pakfire, pkg)
-			self._packages.append(pkg)
-
-		return self._packages
-
-	def make_requires(self):
-		return self.make_info.get("PKG_BUILD_DEPS", "").split()
-
-	def make_sources(self):
-		return self.make_info.get("PKG_FILES", "").split()
-
-	def create_icecream_toolchain(self):
-		if not self.settings.get("enable_icecream", None):
-			return
-
-		out = self.do("icecc --build-native", returnOutput=True)
-
-		for line in out.splitlines():
-			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
-			if m:
-				self.settings["icecream_toolchain"] = "/%s" % m.group(1)
-
 	def build(self):
 		assert self.pkg
 
 		# Create icecream toolchain.
 		self.create_icecream_toolchain()
 
+		# Create the build script and build command.
+		build_script = self.create_buildscript()
+		build_cmd = "/bin/sh -e -x %s" % build_script
+
 		try:
-			self.make("build", logger=self.log)
+			self.do(build_cmd, logger=self.log)
 
 		except Error:
 			raise BuildError, "The build command failed."
 
-		for pkg in reversed(self.packages):
-			packager = packages.BinaryPackager(self.pakfire, pkg, self)
-			packager()
-		self.log.info("")
+		# XXX clean up that mess after this line
 
-		self.log.info(_("Dumping created packages"))
+		# Create a temporary repository where we put in the just built packages.
 		repo = repository.RepositoryDir(self.pakfire, "build-%s" % self.build_id,
 			"", self.chrootPath("result"), type="binary")
 		self.pakfire.repos.add_repo(repo)
 
-		repo.update()
+		# Make all these little package from the build environment.
+		for pkg in reversed(self.pkg.packages):
+			packager = packages.BinaryPackager(self.pakfire, pkg, self)
+			packager.run([repo.path,])
+		self.log.info("")
+
+		# Update repository metadata.
+		repo.update(force=True)
+
+		self.log.info(_("Dumping created packages"))
+
 		for line in repo.dump(long=True, filelist=True).splitlines():
 			self.log.info("  %s" % line)
 		self.log.info("")
@@ -717,8 +621,22 @@ class Builder(object):
 
 		return repo
 
-	def dist(self):
-		self.pkg.dist(self)
+	def build(self):
+		pkgfile = os.path.join("/build", os.path.basename(self.pkg.filename))
+		resultdir = self.chrootPath("/result")
+
+		# Create the build command, that is executed in the chroot.
+		build_command = ["pakfire-build2", "--offline", "build", pkgfile,
+			"--nodeps",]
+
+		try:
+			self.do(" ".join(build_command), logger=self.log)
+
+		except Error:
+			raise BuildError, _("The build command failed. See logfile for details.")
+
+		# Copy the final packages and stuff.
+		# XXX TODO resultdir
 
 	def shell(self, args=[]):
 		if not util.cli_is_interactive():
@@ -752,3 +670,129 @@ class Builder(object):
 
 		finally:
 			self._umountall()
+
+# XXX backwards compatibilty
+Builder = BuildEnviron
+
+class Builder2(object):
+	def __init__(self, pakfire, filename, resultdir, **kwargs):
+		self.pakfire = pakfire
+
+		self.filename = filename
+
+		self.resultdir = resultdir
+
+		# Open package file.
+		self.pkg = packages.Makefile(self.pakfire, self.filename)
+
+		#self.buildroot = "/tmp/pakfire_buildroot/%s" % util.random_string(20)
+		self.buildroot = "/buildroot"
+
+		self._environ = {
+			"BUILDROOT" : self.buildroot,
+			"LANG"      : "C",
+		}
+
+	@property
+	def distro(self):
+		return self.pakfire.distro
+
+	@property
+	def environ(self):
+		environ = os.environ
+		environ.update(self._environ)
+
+		return environ
+
+	def do(self, command, shell=True, personality=None, cwd=None, *args, **kwargs):
+		# Environment variables
+		logging.debug("Environment:")
+		for k, v in sorted(self.environ.items()):
+			logging.debug("  %s=%s" % (k, v))
+
+		# Update personality it none was set
+		if not personality:
+			personality = self.distro.personality
+
+		if not cwd:
+			cwd = "/%s" % LOCAL_TMP_PATH
+
+		# Make every shell to a login shell because we set a lot of
+		# environment things there.
+		if shell:
+			command = ["bash", "--login", "-c", command]
+
+		return chroot.do(
+			command,
+			personality=personality,
+			shell=False,
+			env=self.environ,
+			logger=logging.getLogger(),
+			cwd=cwd,
+			*args,
+			**kwargs
+		)
+
+	def create_icecream_toolchain(self):
+		try:
+			out = self.do("icecc --build-native", returnOutput=True)
+		except Error:
+			return
+
+		for line in out.splitlines():
+			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
+			if m:
+				self._environ["icecream_toolchain"] = "/%s" % m.group(1)
+
+	def create_buildscript(self, stage):
+		file = "/tmp/build_%s" % util.random_string()
+
+		# Get buildscript from the package.
+		script = self.pkg.get_buildscript(stage)
+
+		# Write script to an empty file.
+		f = open(file, "w")
+		f.write("#!/bin/sh\n\n")
+		f.write("set -e\n")
+		f.write("set -x\n")
+		f.write("\n%s\n" % script)
+		f.write("exit 0\n")
+		f.close()
+		os.chmod(file, 700)
+
+		return file
+
+	def build(self):
+		# Create buildroot.
+		if not os.path.exists(self.buildroot):
+			os.makedirs(self.buildroot)
+
+		# Build icecream toolchain if icecream is installed.
+		self.create_icecream_toolchain()
+
+		for stage in ("prepare", "build", "test", "install"):
+			self.build_stage(stage)
+
+		# Package the result.
+		# Make all these little package from the build environment.
+		logging.info(_("Creating packages:"))
+		for pkg in reversed(self.pkg.packages):
+			packager = packages.BinaryPackager(self.pakfire, pkg, self.buildroot)
+			packager.run([self.resultdir,])
+		logging.info("")
+
+	def build_stage(self, stage):
+		# Get the buildscript for this stage.
+		buildscript = self.create_buildscript(stage)
+
+		# Execute the buildscript of this stage.
+		logging.info(_("Running stage %s:") % stage)
+		self.do(buildscript, shell=False)
+
+		# Remove the buildscript.
+		if os.path.exists(buildscript):
+			os.unlink(buildscript)
+
+	def cleanup(self):
+		if os.path.exists(self.buildroot):
+			util.rm(self.buildroot)

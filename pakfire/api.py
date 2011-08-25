@@ -72,14 +72,21 @@ def grouplist(group, **pakfire_args):
 
 	return pakfire.grouplist(group)
 
+def _build(pkg, resultdir, **kwargs):
+	pakfire = Pakfire(**kwargs)
+
+	return pakfire._build(pkg, resultdir, **kwargs)
+
 def build(pkg, **kwargs):
 	return Pakfire.build(pkg, **kwargs)
 
 def shell(pkg, **kwargs):
 	return Pakfire.shell(pkg, **kwargs)
 
-def dist(pkgs, **kwargs):
-	return Pakfire.dist(pkgs, **kwargs)
+def dist(pkgs, resultdirs=None, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.dist(pkgs, resultdirs=resultdirs)
 
 def provides(patterns, **pakfire_args):
 	# Create pakfire instance.

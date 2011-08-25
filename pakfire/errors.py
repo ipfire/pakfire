@@ -67,6 +67,9 @@ class OfflineModeError(Error):
 		"Please connect your system to the network, remove --offline from the"
 		" command line and try again.")
 
+class PackageFormatUnsupportedError(Error):
+	pass
+
 class PakfireError(Error):
 	pass
 

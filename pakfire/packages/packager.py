@@ -19,7 +19,10 @@
 #                                                                             #
 ###############################################################################
 
+import collections
+import fnmatch
 import glob
+import hashlib
 import logging
 import lzma
 import os
@@ -29,6 +32,7 @@ import shutil
 import sys
 import tarfile
 import tempfile
+import time
 import uuid
 import xattr
 import zlib
@@ -40,137 +44,249 @@ from pakfire.util import rm
 from pakfire.constants import *
 from pakfire.i18n import _
 
+from binary import BinaryPackage
+from source import SourcePackage
 from file import InnerTarFile
 
 class Packager(object):
-	ARCHIVE_FILES = ("info", "filelist", "data.img")
-
-	def __init__(self, pakfire, pkg, env):
+	def __init__(self, pakfire, pkg):
 		self.pakfire = pakfire
 		self.pkg = pkg
-		self.env = env
 
-		self.tarball = None
+		self.files = []
+		self.tmpfiles = []
 
-		self.cleanup = True
+	def __del__(self):
+		for file in self.tmpfiles:
+			if not os.path.exists(file):
+				continue
 
-		# Store meta information
-		self.info = {
-			"package_format" : PACKAGE_FORMAT,
-			"package_type" : self.type,
-			"package_uuid" : uuid.uuid4(),
-			"payload_comp" : "",
+			logging.debug("Removing tmpfile: %s" % file)
+			os.remove(file)
 
-			"prerequires" : "",
-			"requires" : "",
-			"provides" : "",
-			"conflicts" : "",
-			"obsoletes": "",
-		}
-		self.info.update(self.pkg.info)
-		self.info["groups"] = " ".join(self.info["groups"])
-		self.info.update(self.pakfire.distro.info)
-		self.info.update(self.env.info)
+	def mktemp(self):
+		# XXX use real mk(s)temp here
+		filename = os.path.join("/", LOCAL_TMP_PATH, util.random_string())
 
-		### Create temporary files
-		# Create temp directory to where we extract all files again and
-		# gather some information about them like requirements and provides.
-		self.tempdir = self.env.chrootPath("tmp", "%s_data" % self.pkg.friendly_name)
-		if not os.path.exists(self.tempdir):
-			os.makedirs(self.tempdir)
+		self.tmpfiles.append(filename)
 
-		# Create files that have the archive data
-		self.archive_files = {}
-		for i in self.ARCHIVE_FILES:
-			self.archive_files[i] = \
-				self.env.chrootPath("tmp", "%s_%s" % (self.pkg.friendly_name, i))
+		return filename
 
-	def __call__(self):
-		logging.debug("Packaging %s" % self.pkg.friendly_name)
-
-		# Create the tarball and add all data to it.
-		self.create_tarball()
-
-		if self.type == "binary":
-			e = self.env.do("/usr/lib/buildsystem-tools/dependency-tracker %s" % \
-				self.tempdir[len(self.env.chrootPath()):], returnOutput=True,
-				env=self.pkg.env)
-
-			for line in e.splitlines():
-				m = re.match(r"^(\w+)=(.*)$", line)
-				if m is None:
-					continue
-
-				key, val = m.groups()
-
-				if not key in ("prerequires", "requires", "provides", "conflicts", "obsoletes",):
-					continue
-
-				val = val.strip("\"")
-				val = val.split()
-
-				self.info[key] = " ".join(sorted(val))
-
-		elif self.type == "source":
-			# Save the build requirements.
-			self.info["requires"] = " ".join(self.pkg.requires)
-
-		self.create_info()
-
-		# Create the outer tarball.
-		resultdir = os.path.join(self.env.chrootPath("result", self.pkg.arch))
-		if not os.path.exists(resultdir):
-			os.makedirs(resultdir)
-
-		filename = os.path.join(resultdir, self.pkg.filename)
-
+	def save(self, filename):
+		# Create a new tar archive.
 		tar = tarfile.TarFile(filename, mode="w", format=tarfile.PAX_FORMAT)
 
-		for i in self.ARCHIVE_FILES:
-			tar.add(self.archive_files[i], arcname=i)
+		# Add package formation information.
+		# Must always be the first file in the archive.
+		formatfile = self.create_package_format()
+		tar.add(formatfile, arcname="pakfire-format")
 
+		# XXX make sure all files belong to the root user
+
+		# Create checksum file.
+		chksumsfile = self.mktemp()
+		chksums = open(chksumsfile, "w")
+
+		# Add all files to tar file.
+		for arcname, filename in self.files:
+			tar.add(filename, arcname=arcname)
+
+			# Calculating the hash sum of the added file
+			# and store it in the chksums file.
+			f = open(filename)
+			h = hashlib.sha512()
+			while True:
+				buf = f.read(BUFFER_SIZE)
+				if not buf:
+					break
+
+				h.update(buf)
+			f.close()
+
+			chksums.write("%-10s %s\n" % (arcname, h.hexdigest()))
+
+		# Close checksum file and attach it to the end.
+		chksums.close()
+		tar.add(chksumsfile, "chksums")
+
+		# Close the tar file.
 		tar.close()
 
-		rm(self.tempdir)
+	def add(self, filename, arcname=None):
+		if not arcname:
+			arcname = os.path.basename(filename)
 
-	def create_tarball(self, compress=None):
-		tar = InnerTarFile(self.archive_files["data.img"], mode="w")
+		logging.debug("Adding %s (as %s) to tarball." % (filename, arcname))
+		self.files.append((arcname, filename))
 
-		prefix = self.env.buildroot
-		if self.type == "source":
-			prefix = "build"
+	def create_package_format(self):
+		filename = self.mktemp()
 
-		if not compress and self.type == "binary":
-			compress = "xz"
+		f = open(filename, "w")
+		f.write("%s\n" % PACKAGE_FORMAT)
+		f.close()
 
+		return filename
+
+	def create_filelist(self, datafile):
+		filelist = self.mktemp()
+
+		f = open(filelist, "w")
+		datafile = InnerTarFile(datafile)
+
+		for m in datafile.getmembers():
+			# XXX need to check what to do with UID/GID
+			logging.info("  %s %-8s %-8s %s %6s %s" % \
+				(tarfile.filemode(m.mode), m.uname, m.gname,
+				"%d-%02d-%02d %02d:%02d:%02d" % time.localtime(m.mtime)[:6],
+				util.format_size(m.size), m.name))
+		
+			info = m.get_info(tarfile.ENCODING, "strict")
+
+			# Update uname.
+			if hasattr(self, "builder"):
+				pwuid = self.builder.get_pwuid(info["uid"])
+				if not pwuid:
+					logging.warning("UID '%d' not found. Using root.")
+					info["uname"] = "root"
+				else:
+					info["uname"] = pwuid["name"]
+
+				# Update gname.
+				grgid = self.builder.get_grgid(info["gid"])
+				if not grgid:
+					logging.warning("GID '%d' not found. Using root.")
+					info["gname"] = "root"
+				else:
+					info["gname"] = grgid["name"]
+			else:
+				# Files in the source packages always belong to root.
+				info["uname"] = info["gname"] = "root"
+
+			f.write("%(name)-40s %(type)1s %(size)-10d %(uname)-10s %(gname)-10s %(mode)-6d %(mtime)-12d" \
+				% info)
+
+			# Calculate SHA512 hash of regular files.
+			if m.isreg():
+				mobj = datafile.extractfile(m)
+				h = hashlib.sha512()
+
+				while True:
+					buf = mobj.read(BUFFER_SIZE)
+					if not buf:
+						break
+					h.update(buf)
+
+				mobj.close()
+				f.write(" %s\n" % h.hexdigest())
+
+			# For other files, just finish the line.
+			else:
+				f.write(" -\n")
+				
+		logging.info("")
+
+		datafile.close()
+		f.close()
+
+		return filelist
+
+	def run(self):
+		raise NotImplementedError
+
+
+class BinaryPackager(Packager):
+	def __init__(self, pakfire, pkg, buildroot):
+		Packager.__init__(self, pakfire, pkg)
+
+		self.buildroot = buildroot
+
+	def create_metafile(self, datafile):
+		info = collections.defaultdict(lambda: "")
+
+		# Generic package information including Pakfire information.
+		info.update({
+			"pakfire_version" : PAKFIRE_VERSION,
+			"uuid"            : uuid.uuid4(),
+		})
+
+		# Include distribution information.
+		info.update(self.pakfire.distro.info)
+		info.update(self.pkg.info)
+
+		# Update package information for string formatting.
+		info.update({
+			"groups"   : " ".join(self.pkg.groups),
+			"requires" : " ".join(self.pkg.requires),
+		})
+
+		# Format description.
+		description = [PACKAGE_INFO_DESCRIPTION_LINE % l \
+			for l in util.text_wrap(self.pkg.description, length=80)]
+		info["description"] = "\n".join(description)
+
+		# Build information.
+		info.update({
+			# Package it built right now.
+			"build_time" : int(time.time()),
+			"build_id"   : uuid.uuid4(),
+		})
+
+		# Installed size (equals size of the uncompressed tarball).
+		info.update({
+			"inst_size" : os.path.getsize(datafile),
+		})
+
+		metafile = self.mktemp()
+
+		f = open(metafile, "w")
+		f.write(PACKAGE_INFO % info)
+		f.close()
+
+		return metafile
+
+	def create_datafile(self):
 		includes = []
 		excludes = []
 
-		for pattern in self.pkg.file_patterns:
+		# List of all patterns, which grows.
+		patterns = self.pkg.files
+
+		for pattern in patterns:
 			# Check if we are running in include or exclude mode.
 			if pattern.startswith("!"):
 				files = excludes
 
-				# Strip the ! charater
+				# Strip the ! character.
 				pattern = pattern[1:]
-
 			else:
 				files = includes
 
+			# Expand file to point to chroot.
 			if pattern.startswith("/"):
 				pattern = pattern[1:]
-			pattern = self.env.chrootPath(prefix, pattern)
+			pattern = os.path.join(self.buildroot, pattern)
 
 			# Recognize the type of the pattern. Patterns could be a glob
 			# pattern that is expanded here or just a directory which will
 			# be included recursively.
 			if "*" in pattern or "?" in pattern:
-				files += glob.glob(pattern)
+				patterns += glob.glob(pattern)
 
 			elif os.path.exists(pattern):
 				# Add directories recursively...
 				if os.path.isdir(pattern):
+					# Add directory itself.
+					files.append(pattern)
+
 					for dir, subdirs, _files in os.walk(pattern):
+						for subdir in subdirs:
+							if subdir in ORPHAN_DIRECTORIES:
+								continue
+
+							subdir = os.path.join(dir, subdir)
+							files.append(subdir)
+
 						for file in _files:
 							file = os.path.join(dir, file)
 							files.append(file)
@@ -187,99 +303,341 @@ class Packager(object):
 				continue
 
 			files.append(file)
-
 		files.sort()
 
-		filelist = open(self.archive_files["filelist"], mode="w")
+		# Load progressbar.
+		message = "%-10s : %s" % (_("Packaging"), self.pkg.friendly_name)
+		pb = util.make_progress(message, len(files), eta=False)
 
-		for file_real in files:
-			file_tar = file_real[len(self.env.chrootPath(prefix)) + 1:]
-			file_tmp = os.path.join(self.tempdir, file_tar)
+		datafile = self.mktemp()
+		tar = InnerTarFile(datafile, mode="w")
 
-			if file_tar in ORPHAN_DIRECTORIES and not os.listdir(file_real):
-				logging.debug("Found an orphaned directory: %s" % file_tar)
-				os.unlink(file_real)
+		# All files in the tarball are relative to this directory.
+		basedir = self.buildroot
+
+		i = 0
+		for file in files:
+			if pb:
+				i += 1
+				pb.update(i)
+
+			# Never package /.
+			if os.path.normpath(file) == os.path.normpath(basedir):
 				continue
 
-			tar.add(file_real, arcname=file_tar)
+			arcname = "/%s" % os.path.relpath(file, basedir)
 
-			# Record the packaged file to the filelist.
-			filelist.write("/%s\n" % file_tar)
+			# Special handling for directories.
+			if os.path.isdir(file):
+				# Empty directories that are in the list of ORPHAN_DIRECTORIES
+				# can be skipped and removed.
+				if arcname in ORPHAN_DIRECTORIES and not os.listdir(file):
+					logging.debug("Found an orphaned directory: %s" % arcname)
+					try:
+						os.unlink(file)
+					except OSError:
+						pass
 
-			# "Copy" the file to the tmp path for later investigation.
-			if os.path.isdir(file_real):
-				file_dir = file_tmp
+					continue
+
+			# Add file to tarball.
+			tar.add(file, arcname=arcname, recursive=False)
+
+		# Remove all packaged files.
+		for file in reversed(files):
+			if not os.path.exists(file):
+				continue
+
+			# It's okay if we cannot remove directories,
+			# when they are not empty.
+			if os.path.isdir(file):
+				try:
+					os.rmdir(file)
+				except OSError:
+					continue
 			else:
-				file_dir = os.path.dirname(file_tmp)
+				os.unlink(file)
 
-			if not os.path.exists(file_dir):
-				os.makedirs(file_dir)
+			while True:
+				file = os.path.dirname(file)
 
-			if os.path.isfile(file_real):
-				os.link(file_real, file_tmp)
+				if not file.startswith(basedir):
+					break
 
-			elif os.path.islink(file_real):
-				# Dead symlinks cannot be copied by shutil.
-				os.symlink(os.readlink(file_real), file_tmp)
+				try:
+					os.rmdir(file)
+				except OSError:
+					break
 
-			elif os.path.isdir(file_real):
-				if not os.path.exists(file_tmp):
-					os.makedirs(file_tmp)
-
-			else:
-				shutil.copy2(file_real, file_tmp)
-
-			# Unlink the file and remove empty directories.
-			if self.cleanup:
-				if not os.path.isdir(file_real):
-					os.unlink(file_real)
-
-				elif os.path.isdir(file_real) and not os.listdir(file_real):
-					os.rmdir(file_real)
-
-		# Dump all files that are in the archive.
-		tar.list()
-
-		# Write all data to disk.
+		# Close the tarfile.
 		tar.close()
-		filelist.close()
 
-		# compress the tarball here
-		if compress:
-			# Save algorithm to metadata.
-			self.info["payload_comp"] = compress
+		# Finish progressbar.
+		if pb:
+			pb.finish()
 
-			logging.debug("Compressing package with %s algorithm." % compress or "no")
+		return datafile
 
-			# Compress file (in place).
-			pakfire.compress.compress(self.archive_files["data.img"],
-				algo=compress, progress=True)
+	def create_scriptlets(self):
+		scriptlets = []
 
-		# Calc hashsum of the payload of the package.
-		self.info["payload_hash1"] = util.calc_hash1(self.archive_files["data.img"])
+		for scriptlet_name in SCRIPTS:
+			scriptlet = self.pkg.get_scriptlet(scriptlet_name)
 
-	def create_info(self):
-		f = open(self.archive_files["info"], "w")
-		f.write(BINARY_PACKAGE_META % self.info)
+			if not scriptlet:
+				continue
+
+			# Write script to a file.
+			scriptlet_file = self.mktemp()
+
+			if scriptlet["lang"] == "bin":
+				path = lang["path"]
+				try:
+					f = open(path, "b")
+				except OSError:
+					raise Exception, "Cannot open script file: %s" % lang["path"]
+
+				s = open(scriptlet_file, "wb")
+
+				while True:
+					buf = f.read(BUFFER_SIZE)
+					if not buf:
+						break
+
+					s.write(buf)
+
+				f.close()
+				s.close()
+
+			elif scriptlet["lang"] == "shell":
+				s = open(scriptlet_file, "w")
+
+				# Write shell script to file.
+				s.write("#!/bin/sh -e\n\n")
+				s.write(scriptlet["scriptlet"])
+				s.write("\n\nexit 0\n")
+
+				s.close()
+
+			else:
+				raise Exception, "Unknown scriptlet language: %s" % scriptlet["lang"]
+
+			scriptlets.append((scriptlet_name, scriptlet_file))
+
+		# XXX scan for script dependencies
+
+		return scriptlets
+
+	def create_configs(self, datafile):
+		datafile = InnerTarFile(datafile)
+
+		members = datafile.getmembers()
+
+		configfiles = []
+		configdirs  = []
+
+		# Find all directories in the config file list.
+		for file in self.pkg.configfiles:
+			if file.startswith("/"):
+				file = file[1:]
+
+			for member in members:
+				if member.name == file and member.isdir():
+					configdirs.append(file)
+
+		for configdir in configdirs:
+			for member in members:
+				if not member.isdir() and member.name.startswith(configdir):
+					configfiles.append(member.name)
+
+		for pattern in self.pkg.configfiles:
+			if pattern.startswith("/"):
+				pattern = pattern[1:]
+
+			for member in members:
+				if not fnmatch.fnmatch(member.name, pattern):
+					continue
+
+				if member.name in configfiles:
+					continue
+
+				configfiles.append(member.name)
+
+		# Sort list alphabetically.
+		configfiles.sort()
+
+		configsfile = self.mktemp()
+
+		f = open(configsfile, "w")
+		for file in configfiles:
+			f.write("%s\n" % file)
 		f.close()
 
-	@property
-	def type(self):
-		raise NotImplementedError
+		return configsfile
 
+	def compress_datafile(self, datafile, algo="xz"):
+		pass
 
-class BinaryPackager(Packager):
-	@property
-	def type(self):
-		return "binary"
+	def run(self, resultdirs=[]):
+		assert resultdirs
+
+		# Add all files to this package.
+		datafile = self.create_datafile()
+
+		# Get filelist from datafile.
+		filelist = self.create_filelist(datafile)
+		configs  = self.create_configs(datafile)
+
+		# Create script files.
+		scriptlets = self.create_scriptlets()
+
+		metafile = self.create_metafile(datafile)
+
+		# XXX make xz in variable
+		self.compress_datafile(datafile, algo="xz")
+
+		# Add files to the tar archive in correct order.
+		self.add(metafile, "info")
+		self.add(filelist, "filelist")
+		self.add(configs,  "configs")
+		self.add(datafile, "data.img")
+
+		for scriptlet_name, scriptlet_file in scriptlets:
+			self.add(scriptlet_file, "scriptlets/%s" % scriptlet_name)
+
+		# Build the final package.
+		tempfile = self.mktemp()
+		self.save(tempfile)
+
+		for resultdir in resultdirs:
+			# XXX sometimes, there has been a None in resultdirs
+			if not resultdir:
+				continue
+
+			resultdir = "%s/%s" % (resultdir, self.pkg.arch)
+
+			if not os.path.exists(resultdir):
+				os.makedirs(resultdir)
+
+			resultfile = os.path.join(resultdir, self.pkg.package_filename)
+			logging.info("Saving package to %s" % resultfile)
+			try:
+				os.link(tempfile, resultfile)
+			except OSError:
+				shutil.copy2(tempfile, resultfile)
+
+		## Dump package information.
+		#pkg = BinaryPackage(self.pakfire, self.pakfire.repos.dummy, tempfile)
+		#for line in pkg.dump(long=True).splitlines():
+		#	logging.info(line)
+		#logging.info("")
 
 
 class SourcePackager(Packager):
-	def __init__(self, *args, **kwargs):
-		Packager.__init__(self, *args, **kwargs)
+	def create_metafile(self, datafile):
+		info = collections.defaultdict(lambda: "")
 
-		self.cleanup = False
+		# Generic package information including Pakfire information.
+		info.update({
+			"pakfire_version" : PAKFIRE_VERSION,
+		})
 
-	@property
-	def type(self):
-		return "source"
+		# Include distribution information.
+		info.update(self.pakfire.distro.info)
+		info.update(self.pkg.info)
+
+		# Update package information for string formatting.
+		requires = [PACKAGE_INFO_DEPENDENCY_LINE % r for r in self.pkg.requires]
+		info.update({
+			"groups"   : " ".join(self.pkg.groups),
+			"requires" : "\n".join(requires),
+		})
+
+		# Format description.
+		description = [PACKAGE_INFO_DESCRIPTION_LINE % l \
+			for l in util.text_wrap(self.pkg.description, length=80)]
+		info["description"] = "\n".join(description)
+
+		# Build information.
+		info.update({
+			# Package it built right now.
+			"build_time" : int(time.time()),
+			"build_id"   : uuid.uuid4(),
+		})
+
+		# Set UUID
+		# XXX replace this by the payload hash
+		info.update({
+			"uuid"       : uuid.uuid4(),
+		})
+
+		metafile = self.mktemp()
+
+		f = open(metafile, "w")
+		f.write(PACKAGE_INFO % info)
+		f.close()
+
+		return metafile
+
+	def create_datafile(self):
+		filename = self.mktemp()
+		datafile = InnerTarFile(filename, mode="w")
+
+		# Add all downloaded files to the package.
+		for file in self.pkg.download():
+			datafile.add(file, "files/%s" % os.path.basename(file))
+
+		# Add all files in the package directory.
+		for file in self.pkg.files:
+			arcname = os.path.relpath(file, self.pkg.path)
+			datafile.add(file, arcname)
+
+		datafile.close()
+
+		return filename
+
+	def run(self, resultdirs=[]):
+		assert resultdirs
+
+		logging.info(_("Building source package %s:") % self.pkg.package_filename)
+
+		# Add datafile to package.
+		datafile = self.create_datafile()
+
+		# Create filelist out of data.
+		filelist = self.create_filelist(datafile)
+
+		# Create metadata.
+		metafile = self.create_metafile(datafile)
+
+		# Add files to the tar archive in correct order.
+		self.add(metafile, "info")
+		self.add(filelist, "filelist")
+		self.add(datafile, "data.img")
+
+		# Build the final tarball.
+		tempfile = self.mktemp()
+		self.save(tempfile)
+
+		for resultdir in resultdirs:
+			# XXX sometimes, there has been a None in resultdirs
+			if not resultdir:
+				continue
+
+			resultdir = "%s/%s" % (resultdir, self.pkg.arch)
+
+			if not os.path.exists(resultdir):
+				os.makedirs(resultdir)
+
+			resultfile = os.path.join(resultdir, self.pkg.package_filename)
+			logging.info("Saving package to %s" % resultfile)
+			try:
+				os.link(tempfile, resultfile)
+			except OSError:
+				shutil.copy2(tempfile, resultfile)
+
+		# Dump package information.
+		pkg = SourcePackage(self.pakfire, self.pakfire.repos.dummy, tempfile)
+		for line in pkg.dump(long=True).splitlines():
+			logging.info(line)
+		logging.info("")

@@ -47,7 +47,6 @@ class PakfireGrabber(URLGrabber):
 			config = pakfire.config
 
 		if config.get("offline"):
-			raise
 			raise OfflineModeError, "Cannot use %s in offline mode." % self.__class__.__name__
 
 		# Set throttle setting.
@@ -131,6 +130,10 @@ class MirrorList(object):
 		# XXX should this be allowed?
 		if not self.mirrorlist:
 			return 
+
+		# If the system is not online, we cannot download anything.
+		if self.pakfire.offline:
+			return
 
 		logging.debug("Updating mirrorlist for repository '%s' (force=%s)" % (self.repo.name, force))
 

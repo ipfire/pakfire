@@ -1,0 +1,77 @@
+
+# XXX just for now
+PARALLELISMFLAGS = -j2
+
+BASEDIR     = /build
+BUILDROOT   = /buildroot
+
+DIR_APP     = %{DIR_SRC}/%{thisapp}
+DIR_DL      = %{BASEDIR}/files
+DIR_PATCHES = %{BASEDIR}/patches
+DIR_SRC     = /usr/src
+DIR_TMP     = /tmp
+DIR_SOURCE  = %{BASEDIR}
+
+CONFIGURE_SCRIPT = configure
+configure_options = \
+	--host=%{DISTRO_MACHINE} \
+	--build=%{DISTRO_MACHINE} \
+	--prefix=/usr
+
+patches =
+sources = %{tarball}
+tarball = %{thisapp}.tar.gz
+
+# Macro definitions
+
+# Macro to extract tarballs.
+# Guesses the compression type automatically.
+MACRO_EXTRACT = tar xvaf
+
+# Macro to define and start the quality agent.
+# Long term goal is to improve the commited code.
+MACRO_QUALITY_AGENT = quality-agent
+
+# Macro to strip debugging symbols.
+MACRO_STRIP = /usr/lib/buildsystem-tools/stripper %{BUILDROOT}
+
+def MACRO_PATCHES
+	patches="%{patches}"
+
+	if [ -n "${patches}" ]; then
+		_patches=""
+		for patch in ${patches}; do
+			_patches="${_patches} %{DIR_PATCHES}/${patch}"
+		done
+		patches="${_patches}"
+		unset _patches
+	else
+		for patch in %{DIR_PATCHES}/*.{diff,patch{,0}}; do
+			[ -e "${patch}" ] || continue
+			patches="${patches} ${patch}"
+		done
+	fi
+	
+	for patch in ${patches}; do
+		case "${patch}" in
+			*.patch0)
+				cmd="patch -Np0"
+				;;
+			*.patch|*.diff)
+				cmd="patch -Np1"
+				;;
+		esac
+
+		${cmd} -i ${patch}
+	done
+	unset cmd patch patches
+end
+
+# Remove rpath from libtool.
+def MACRO_FIX_LIBTOOL
+	if [ -e "%{DIR_APP}/libtool" ]; then
+		sed -e %{DIR_APP}/libtool \
+			-e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g'
+			-e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g'
+	fi
+end

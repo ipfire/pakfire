@@ -55,7 +55,7 @@ class Distribution(object):
 		logging.debug("Distribution configuration:")
 
 		attrs = ("name", "version", "release", "sname", "dist", "vendor",
-			"arch", "machine",)
+			"arch", "machine", "source_dl",)
 
 		for attr in attrs:
 			logging.debug(" %s : %s" % (attr, getattr(self, attr)))
@@ -97,6 +97,10 @@ class Distribution(object):
 	def vendor(self):
 		return self._data.get("vendor")
 
+	@property
+	def maintainer(self):
+		return self._data.get("maintainer")
+
 	def get_arch(self):
 		return self._data.get("arch") or self.config.host_arch
 	
@@ -120,21 +124,26 @@ class Distribution(object):
 		return "%s-%s-linux-gnu" % (self.arch, vendor.lower())
 
 	@property
+	def source_dl(self):
+		return self._data.get("source_dl", None)
+
+	@property
 	def environ(self):
 		"""
 			An attribute that adds some environment variables to the
 			chroot environment.
 		"""
 		env = {
-			"DISTRO_NAME"    : self.name,
-			"DISTRO_SNAME"   : self.sname,
-			"DISTRO_VERSION" : self.version,
-			"DISTRO_RELEASE" : self.release,
-			"DISTRO_DISTTAG" : self.dist,
-			"DISTRO_ARCH"    : self.arch,
-			"DISTRO_MACHINE" : self.machine,
-			"DISTRO_VENDOR"  : self.vendor,
-			"DISTRO_SLOGAN"  : self.slogan,
+			"DISTRO_NAME"       : self.name,
+			"DISTRO_SNAME"      : self.sname,
+			"DISTRO_VERSION"    : self.version,
+			"DISTRO_RELEASE"    : self.release,
+			"DISTRO_DISTTAG"    : self.dist,
+			"DISTRO_ARCH"       : self.arch,
+			"DISTRO_MACHINE"    : self.machine,
+			"DISTRO_MAINTAINER" : self.maintainer,
+			"DISTRO_VENDOR"     : self.vendor,
+			"DISTRO_SLOGAN"     : self.slogan,
 		}
 
 		return env

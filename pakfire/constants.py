@@ -25,6 +25,8 @@ from errors import *
 
 from __version__ import PAKFIRE_VERSION
 
+PAKFIRE_LEAST_COMPATIBLE_VERSION = "0.9.5"
+
 SYSCONFDIR = "/etc"
 
 CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire.repos.d")
@@ -45,20 +47,34 @@ BUFFER_SIZE = 102400
 
 MIRRORLIST_MAXSIZE = 1024**2
 
+MACRO_FILE_DIR = "/usr/lib/pakfire/macros"
+MACRO_FILES = \
+	(os.path.join(MACRO_FILE_DIR, f) for f in sorted(os.listdir(MACRO_FILE_DIR)) if f.endswith(".macro"))
+
 METADATA_FORMAT = 0
 METADATA_DOWNLOAD_LIMIT = 1024**2
 METADATA_DOWNLOAD_PATH  = "repodata"
 METADATA_DOWNLOAD_FILE  = "repomd.json"
 METADATA_DATABASE_FILE  = "packages.solv"
 
-PACKAGE_FORMAT = 0
+PACKAGE_FORMAT = 1
+# XXX implement this properly
+PACKAGE_FORMATS_SUPPORTED = [0, 1]
 PACKAGE_EXTENSION = "pfm"
 MAKEFILE_EXTENSION = "nm"
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
-BUILD_PACKAGES = ["build-essentials>=2:1.0-1.ip3",]
-SHELL_PACKAGES = ["elinks", "less", "pakfire", "vim",]
+BUILD_PACKAGES = [
+	"@Build",
+	"/bin/bash",
+	"build-essentials>=2:1.0-1.ip3",
+	"gcc",
+	"glibc-devel",
+	"shadow-utils>=4.1.4.3",
+	"pakfire-build>=%s" % PAKFIRE_LEAST_COMPATIBLE_VERSION,
+]
+SHELL_PACKAGES = ["elinks", "less", "vim",]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"
@@ -75,53 +91,82 @@ ORPHAN_DIRECTORIES = [
 	"usr/share/man/man5", "usr/share/man/man6", "usr/share/man/man7",
 	"usr/share/man/man8", "usr/share/man/man9", "usr/lib/pkgconfig",
 ]
+for i in ORPHAN_DIRECTORIES:
+	i = os.path.dirname(i)
+
+	if not i or i in ORPHAN_DIRECTORIES:
+		continue
+
+	ORPHAN_DIRECTORIES.append(i)
+
 ORPHAN_DIRECTORIES.sort(cmp=lambda x,y: cmp(len(x), len(y)), reverse=True)
 
-BINARY_PACKAGE_META = SOURCE_PACKAGE_META = """\
-### %(name)s package
-
-VERSION="%(package_format)s"
-TYPE="%(package_type)s"
-
-# Build information
-BUILD_DATE="%(build_date)s"
-BUILD_HOST="%(build_host)s"
-BUILD_ID="%(build_id)s"
-BUILD_TIME="%(build_time)s"
-
-# Distribution information
-DISTRO_NAME="%(distro_name)s"
-DISTRO_RELEASE="%(distro_release)s"
-DISTRO_VENDOR="%(distro_vendor)s"
+PACKAGE_INFO = """\
+# Pakfire %(pakfire_version)s
 
 # Package information
-PKG_NAME="%(name)s"
-PKG_VER="%(version)s"
-PKG_REL="%(release)s"
-PKG_EPOCH="%(epoch)s"
-PKG_UUID="%(package_uuid)s"
+package
+	name        = %(name)s
+	version     = %(version)s
+	release     = %(release)s
+	epoch       = %(epoch)s
+	arch        = %(arch)s
 
-PKG_GROUPS="%(groups)s"
-PKG_ARCH="%(arch)s"
+	uuid        = %(uuid)s
+	groups      = %(groups)s
+	maintainer  = %(maintainer)s
+	url         = %(url)s
+	license     = %(license)s
 
-PKG_MAINTAINER="%(maintainer)s"
-PKG_LICENSE="%(license)s"
-PKG_URL="%(url)s"
+	summary     = %(summary)s
+	def description
+%(description)s
+	end
 
-PKG_SUMMARY="%(summary)s"
-PKG_DESCRIPTION="%(description)s"
+	size        = %(inst_size)d
+end
 
-# Dependency info
-PKG_PREREQUIRES="%(prerequires)s"
-PKG_REQUIRES="%(requires)s"
-PKG_PROVIDES="%(provides)s"
-PKG_CONFLICTS="%(conflicts)s"
-PKG_OBSOLETES="%(obsoletes)s"
+# Build information
+build
+	host        = %(build_host)s
+	id          = %(build_id)s
+	time        = %(build_time)d
+end
 
-PKG_PAYLOAD_COMP="%(payload_comp)s"
-PKG_PAYLOAD_HASH1="%(payload_hash1)s"
+# Distribution information
+distribution
+	name        = %(distro_name)s
+	release     = %(distro_release)s
+	vendor      = %(distro_vendor)s
+	maintainer  = %(distro_maintainer)s
+end
 
+# Dependency information
+dependencies
+	def prerequires
+%(prerequires)s
+	end
+
+	def requires
+%(requires)s
+	end
+
+	def provides
+%(provides)s
+	end
+
+	def conflicts
+%(conflicts)s
+	end
+
+	def obsoletes
+%(obsoletes)s
+	end
+end
+
+# EOF
 """
+PACKAGE_INFO_DESCRIPTION_LINE = PACKAGE_INFO_DEPENDENCY_LINE = "\t\t%s"
 
 # XXX make this configurable in pakfire.conf
 PAKFIRE_MULTIINSTALL = ["kernel",]
@@ -129,60 +174,14 @@ PAKFIRE_MULTIINSTALL = ["kernel",]
 SCRIPTLET_INTERPRETER = "/bin/sh"
 SCRIPTLET_TIMEOUT = 60 * 15
 
-SCRIPTLET_TEMPLATE = """\
-#!/bin/sh
-
-function control_prein() {
-%(control_prein)s
-}
-
-function control_postin() {
-%(control_postin)s
-}
-
-function control_preun() {
-%(control_preun)s
-}
-
-function control_postun() {
-%(control_postun)s
-}
-
-function control_preup() {
-%(control_preup)s
-}
-
-function control_postup() {
-%(control_postup)s
-}
-
-function control_postransin() {
-%(control_posttransin)s
-}
-
-function control_posttransun() {
-%(control_posttransun)s
-}
-
-function control_posttransup() {
-%(control_posttransup)s
-}
-
-# Get right action from commandline.
-action=${1}
-shift
-
-case "${action}" in
-	prein|postin|preun|postun|preup|postup|posttransin|posttransun|posttransup)
-		control_${action} $@
-		;;
-
-	*)
-		echo "Unknown action: ${action}" >&2
-		exit 2
-		;;
-esac
-
-# Always exit with an okay status.
-exit 0
-"""
+SCRIPTS = (
+	"prein",
+	"postin",
+	"preun",
+	"postun",
+	"preup",
+	"postup",
+	"posttransin",
+	"posttransun",
+	"posttransup",
+)

@@ -38,6 +38,6 @@ def _(singular, plural=None, n=None):
 	"""
 	if not plural is None:
 		assert n is not None
-		return gettext.ldngettext("pakfire", singular, plural, n)
+		return gettext.dngettext("pakfire", singular, plural, n)
 
-	return gettext.ldgettext("pakfire", singular)
+	return gettext.dgettext("pakfire", singular)

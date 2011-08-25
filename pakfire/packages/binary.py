@@ -22,6 +22,21 @@
 from file import FilePackage
 
 class BinaryPackage(FilePackage):
-	@property
-	def arch(self):
-		return self.metadata.get("PKG_ARCH")
+	def get_scriptlet(self, type):
+		a = self.open_archive()
+
+		# Path of the scriptlet in the tarball.
+		path = "scriptlets/%s" % type
+
+		try:
+			f = a.extractfile(path)
+		except KeyError:
+			# If the scriptlet is not available, we just return.
+			return
+
+		scriptlet = f.read()
+
+		f.close()
+		a.close()
+
+		return scriptlet

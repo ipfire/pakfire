@@ -149,9 +149,21 @@ class DatabaseLocal(Database):
 				build_time	INTEGER,
 				installed	INT,
 				reason		TEXT,
-				repository	TEXT,
-				scriptlet	TEXT,
-				triggers	TEXT
+				repository	TEXT
+			);
+
+			CREATE TABLE scriptlets(
+				id			INTEGER PRIMARY KEY,
+				pkg			INTEGER,
+				action		TEXT,
+				scriptlet	TEXT
+			);
+
+			CREATE TABLE triggers(
+				id			INTEGER PRIMARY KEY,
+				pkg			INTEGER,
+				dependency	TEXT,
+				scriptlet	TEXT
 			);
 		""")
 		# XXX add some indexes here
@@ -189,10 +201,8 @@ class DatabaseLocal(Database):
 					build_time,
 					installed,
 					repository,
-					reason,
-					scriptlet,
-					triggers
-				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+					reason
+				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 				(
 					pkg.name,
 					pkg.epoch,
@@ -218,8 +228,6 @@ class DatabaseLocal(Database):
 					time.time(),
 					pkg.repo.name,
 					reason or "",
-					pkg.scriptlet,
-					" ".join(pkg.triggers)
 				)
 			)
 

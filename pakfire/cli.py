@@ -437,8 +437,9 @@ class CliBuilder(Cli):
 			"arch" : self.args.arch,
 		}
 
-		pakfire.build(pkg, builder_mode=self.args.mode, distro_config=distro_config,
-			resultdirs=[self.args.resultdir,], shell=True, **self.pakfire_args)
+		pakfire.build(pkg, builder_mode=self.args.mode,
+			distro_config=distro_config, resultdirs=[self.args.resultdir,],
+			shell=True, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None
@@ -570,3 +571,60 @@ class CliServer(Cli):
 		path = self.args.path[0]
 
 		pakfire.repo_create(path, self.args.inputs, **self.pakfire_args)
+
+
+class CliBuilder2(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire builder command line interface."),
+		)
+
+		self.parse_common_arguments()
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_build()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.action2func = {
+			"build"       : self.handle_build,
+		}
+
+	def parse_command_build(self):
+		# Implement the "build" command.
+		sub_build = self.sub_commands.add_parser("build",
+			help=_("Build one or more packages."))
+		sub_build.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to build."))
+		sub_build.add_argument("action", action="store_const", const="build")
+
+		sub_build.add_argument("-a", "--arch",
+			help=_("Build the package for the given architecture."))
+		sub_build.add_argument("--resultdir", nargs="?",
+			help=_("Path were the output files should be copied to."))
+		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
+		sub_build.add_argument("--nodeps", action="store_true",
+			help=_("Do not verify build dependencies."))
+
+	def handle_build(self):
+		# Get the package descriptor from the command line options
+		pkg = self.args.package[0]
+
+		# Check, if we got a regular file
+		if os.path.exists(pkg):
+			pkg = os.path.abspath(pkg)
+		else:
+			raise FileNotFoundError, pkg
+
+		# Create distribution configuration from command line.
+		distro_config = {
+			"arch" : self.args.arch,
+		}
+
+		pakfire._build(pkg, builder_mode=self.args.mode,
+			distro_config=distro_config, resultdir=self.args.resultdir,
+			nodeps=self.args.nodeps, **self.pakfire_args)

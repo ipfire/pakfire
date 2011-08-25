@@ -1,0 +1,146 @@
+
+
+def MACRO_EXTRACT_TARBALL
+	set +x
+	for source in %{sources}; do
+		%{MACRO_EXTRACT} %{DIR_DL}/${source} || exit 1
+	done
+	unset source
+
+	[ -d "%{DIR_APP}" ] && cd %{DIR_APP}
+	set -x
+end
+
+def MACRO_INSTALL_FILES
+	%{MACRO_INSTALL_DEFAULT_FILES}
+	%{MACRO_INSTALL_SYSTEMD_FILES}
+	%{MACRO_INSTALL_SYSTEMD_TMPFILES}
+	%{MACRO_INSTALL_PAM_FILES}
+	%{MACRO_INSTALL_LOGROTATE_FILES}
+end
+
+# XXX to be removed soon
+def MACRO_INSTALL_DEFAULT_FILES
+	for file in %{DIR_SOURCE}/default/*; do
+		[ -e "${file}" ] || continue
+		mkdir -p %{BUILDROOT}/etc/default
+		cp -vf ${file} %{BUILDROOT}/etc/default/$(basename ${file})
+	done
+	unset file
+end
+
+def MACRO_INSTALL_PAM_FILES
+	for file in %{DIR_SOURCE}/{*.pam,pam.d/*}; do
+		[ -e "${file}" ] || continue
+		mkdir -p %{BUILDROOT}/etc/pam.d
+		cp -vf ${file} %{BUILDROOT}/etc/pam.d/$(basename ${file%*.pam})
+	done
+	unset file
+end
+
+def MACRO_INSTALL_LOGROTATE_FILES
+	for file in %{DIR_SOURCE}/{*.logrotate,logrotate/*}; do
+		[ -e "${file}" ] || continue
+		mkdir -p %{BUILDROOT}/etc/logrotate.d
+		cp -vf ${file} %{BUILDROOT}/etc/logrotate.d/$(basename ${file%*.logrotate})
+	done
+	unset file
+end
+
+def MACRO_PYTHON_COMPILE
+	# XXX TODO
+end
+
+# These variables are used if you have to add some targets
+# directly to the make command.
+make_build_targets   =
+make_install_targets = install
+
+build_requires = gcc glibc-devel
+
+# Pre-defined build scripts.
+build
+	def _prepare
+		[ -d "%{DIR_SRC}" ] && cd %{DIR_SRC}
+
+		%{prepare}
+	end
+
+	def prepare
+		# Extract source tarball.
+		%{MACRO_EXTRACT_TARBALL}
+
+		# Apply all patches.
+		%{MACRO_PATCHES}
+
+		# Run custom commands.
+		%{prepare_cmds}
+	end
+
+	def prepare_cmds
+	end
+
+	def _build
+		[ -d "%{DIR_APP}" ] && cd %{DIR_APP}
+
+		%{build}
+	end
+
+	def build
+		if [ -e "%{CONFIGURE_SCRIPT}" ]; then
+			./%{CONFIGURE_SCRIPT} \
+				%{configure_options}
+
+			${MACRO_FIX_LIBTOOL}
+		fi
+
+		# Run custom commands.
+		%{configure_cmds}
+
+		make %{PARALLELISMFLAGS} %{make_build_targets}
+
+		# Run more custom commands.
+		%{build_cmds}
+	end
+
+	def configure_cmds
+	end
+
+	def build_cmds
+	end
+
+	def _test
+		[ -d "%{DIR_APP}" ] && cd %{DIR_APP}
+
+		%{test}
+	end
+
+	def test
+	end
+
+	def _install
+		[ -d "%{DIR_APP}" ] && cd %{DIR_APP}
+
+		mkdir -pv %{BUILDROOT}
+
+		%{install}
+
+		%{MACRO_INSTALL_FILES}
+		%{MACRO_PYTHON_COMPILE}
+
+		%{install_post}
+
+		%{MACRO_QUALITY_AGENT}
+	end
+
+	def install
+		make DESTDIR=%{BUILDROOT} %{make_install_targets}
+
+		# Run custom commands.
+		%{install_cmds}
+	end
+
+	# XXX to be removed soon
+	def install_post
+	end
+end

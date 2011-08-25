@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-10 18:10+0200\n"
+"POT-Creation-Date: 2011-08-23 20:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,69 +17,93 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../pakfire/actions.py:117
+#: ../pakfire/actions.py:108
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 
-#: ../pakfire/actions.py:121
+#: ../pakfire/actions.py:112
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 
-#: ../pakfire/actions.py:169
+#: ../pakfire/actions.py:161
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
 msgstr ""
 
-#: ../pakfire/actions.py:172
+#: ../pakfire/actions.py:164
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr ""
 
-#: ../pakfire/actions.py:248 ../pakfire/actions.py:305
+#: ../pakfire/actions.py:222 ../pakfire/actions.py:279
 msgid "Installing"
 msgstr ""
 
-#: ../pakfire/actions.py:258
+#: ../pakfire/actions.py:232
 msgid "Updating"
 msgstr ""
 
-#: ../pakfire/actions.py:272
+#: ../pakfire/actions.py:246
 msgid "Removing"
 msgstr ""
 
 #. Cleaning up leftover files and stuff.
-#: ../pakfire/actions.py:290
+#: ../pakfire/actions.py:264
 msgid "Cleanup"
 msgstr ""
 
-#: ../pakfire/actions.py:315
+#: ../pakfire/actions.py:289
 msgid "Downgrading"
 msgstr ""
 
-#: ../pakfire/base.py:188 ../pakfire/base.py:202 ../pakfire/base.py:244
-#: ../pakfire/base.py:284 ../pakfire/base.py:317
+#: ../pakfire/base.py:199 ../pakfire/base.py:229 ../pakfire/base.py:275
+#: ../pakfire/base.py:315 ../pakfire/base.py:348
 msgid "Nothing to do"
 msgstr ""
 
-#: ../pakfire/base.py:230
+#: ../pakfire/base.py:261
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../pakfire/base.py:513
+#: ../pakfire/base.py:453
+msgid "Build command has failed."
+msgstr ""
+
+#: ../pakfire/base.py:537
 msgid "Everything is fine."
 msgstr ""
 
-#: ../pakfire/builder.py:282
-#, python-format
-msgid "Extracting: %s (source)"
+#: ../pakfire/builder.py:122
+msgid "Package information:"
 msgstr ""
 
-#: ../pakfire/builder.py:706
+#. Copy the makefile and load source tarballs.
+#: ../pakfire/builder.py:306
+msgid "Extracting"
+msgstr ""
+
+#: ../pakfire/builder.py:614
 msgid "Dumping created packages"
+msgstr ""
+
+#: ../pakfire/builder.py:636
+msgid "The build command failed. See logfile for details."
+msgstr ""
+
+#. Package the result.
+#. Make all these little package from the build environment.
+#: ../pakfire/builder.py:778
+msgid "Creating packages:"
+msgstr ""
+
+#. Execute the buildscript of this stage.
+#: ../pakfire/builder.py:789
+#, python-format
+msgid "Running stage %s:"
 msgstr ""
 
 #: ../pakfire/cli.py:42
@@ -230,7 +254,7 @@ msgstr ""
 msgid "Cleaning up everything..."
 msgstr ""
 
-#: ../pakfire/cli.py:324
+#: ../pakfire/cli.py:324 ../pakfire/cli.py:579
 msgid "Pakfire builder command line interface."
 msgstr ""
 
@@ -238,23 +262,23 @@ msgstr ""
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../pakfire/cli.py:385
+#: ../pakfire/cli.py:385 ../pakfire/cli.py:599
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../pakfire/cli.py:387
+#: ../pakfire/cli.py:387 ../pakfire/cli.py:601
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../pakfire/cli.py:391
+#: ../pakfire/cli.py:391 ../pakfire/cli.py:605
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../pakfire/cli.py:393 ../pakfire/cli.py:419
+#: ../pakfire/cli.py:393 ../pakfire/cli.py:419 ../pakfire/cli.py:607
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../pakfire/cli.py:395 ../pakfire/cli.py:408
+#: ../pakfire/cli.py:395 ../pakfire/cli.py:408 ../pakfire/cli.py:609
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
@@ -278,36 +302,40 @@ msgstr ""
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../pakfire/cli.py:491
+#: ../pakfire/cli.py:492
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../pakfire/cli.py:528
+#: ../pakfire/cli.py:529
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../pakfire/cli.py:534
+#: ../pakfire/cli.py:535
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../pakfire/cli.py:541
+#: ../pakfire/cli.py:542
 msgid "Update all repositories."
 msgstr ""
 
-#: ../pakfire/cli.py:547
+#: ../pakfire/cli.py:548
 msgid "Repository management commands."
 msgstr ""
 
-#: ../pakfire/cli.py:555
+#: ../pakfire/cli.py:556
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../pakfire/cli.py:556
+#: ../pakfire/cli.py:557
 msgid "Path to the packages."
 msgstr ""
 
-#: ../pakfire/cli.py:557
+#: ../pakfire/cli.py:558
 msgid "Path to input packages."
+msgstr ""
+
+#: ../pakfire/cli.py:611
+msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../pakfire/errors.py:30
@@ -341,100 +369,125 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../pakfire/packages/base.py:93 ../pakfire/transaction.py:194
+#: ../pakfire/packages/base.py:96 ../pakfire/transaction.py:194
 msgid "Size"
 msgstr ""
 
-#: ../pakfire/packages/base.py:94
+#: ../pakfire/packages/base.py:100
 msgid "Repo"
 msgstr ""
 
-#: ../pakfire/packages/base.py:95
+#: ../pakfire/packages/base.py:103
 msgid "Summary"
 msgstr ""
 
-#: ../pakfire/packages/base.py:96
+#: ../pakfire/packages/base.py:104
 msgid "Groups"
 msgstr ""
 
-#: ../pakfire/packages/base.py:97
+#: ../pakfire/packages/base.py:105
 msgid "URL"
 msgstr ""
 
-#: ../pakfire/packages/base.py:98
+#: ../pakfire/packages/base.py:106
 msgid "License"
 msgstr ""
 
-#: ../pakfire/packages/base.py:101
+#: ../pakfire/packages/base.py:109
 msgid "Description"
 msgstr ""
 
-#: ../pakfire/packages/base.py:107
+#: ../pakfire/packages/base.py:116
+msgid "Maintainer"
+msgstr ""
+
+#: ../pakfire/packages/base.py:118
 msgid "UUID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:108
+#: ../pakfire/packages/base.py:119
 msgid "Build ID"
 msgstr ""
 
-#: ../pakfire/packages/base.py:109
+#: ../pakfire/packages/base.py:120
 msgid "Build date"
 msgstr ""
 
-#: ../pakfire/packages/base.py:110
+#: ../pakfire/packages/base.py:121
 msgid "Build host"
 msgstr ""
 
-#: ../pakfire/packages/base.py:112
+#: ../pakfire/packages/base.py:123
 msgid "Provides"
 msgstr ""
 
-#: ../pakfire/packages/base.py:117
+#: ../pakfire/packages/base.py:128
+msgid "Pre-requires"
+msgstr ""
+
+#: ../pakfire/packages/base.py:133
 msgid "Requires"
 msgstr ""
 
-#: ../pakfire/packages/base.py:125
+#: ../pakfire/packages/base.py:138
+msgid "Conflicts"
+msgstr ""
+
+#: ../pakfire/packages/base.py:143
+msgid "Obsoletes"
+msgstr ""
+
+#: ../pakfire/packages/base.py:151
 msgid "File"
 msgstr ""
 
-#: ../pakfire/packages/base.py:305
+#: ../pakfire/packages/base.py:333
 msgid "Not set"
 msgstr ""
 
-#: ../pakfire/repository/index.py:220
+#: ../pakfire/packages/file.py:146
 #, python-format
-msgid ""
-"There is no metadata for the repository '%s' and we cannot download any "
-"because we are running in offline mode. Connect to a network or disable this "
-"repository."
+msgid "Filename: %s"
 msgstr ""
 
-#: ../pakfire/repository/index.py:225
+#: ../pakfire/packages/make.py:98
+msgid "Package name is undefined."
+msgstr ""
+
+#: ../pakfire/packages/make.py:101
+msgid "Package version is undefined."
+msgstr ""
+
+#. Load progressbar.
+#: ../pakfire/packages/packager.py:309
+msgid "Packaging"
+msgstr ""
+
+#: ../pakfire/packages/packager.py:602
+#, python-format
+msgid "Building source package %s:"
+msgstr ""
+
+#: ../pakfire/repository/index.py:229
 #, python-format
 msgid ""
 "I cannot be forced to re-download the metadata for the repository '%s' when "
 "running in offline mode."
 msgstr ""
 
-#: ../pakfire/repository/index.py:262
-msgid ""
-"Your repository metadata is outdated  and a new version needs to be "
-"downloaded."
-msgstr ""
-
-#: ../pakfire/repository/index.py:268
+#: ../pakfire/repository/index.py:279
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../pakfire/repository/index.py:356
+#: ../pakfire/repository/index.py:367
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../pakfire/repository/index.py:413
+#: ../pakfire/repository/index.py:424
 msgid "Loading installed packages"
 msgstr ""
 
@@ -532,7 +585,7 @@ msgstr ""
 msgid "Running transaction"
 msgstr ""
 
-#: ../pakfire/util.py:65
+#: ../pakfire/util.py:66
 #, python-format
 msgid "%s [y/N]"
 msgstr ""
@@ -551,15 +604,15 @@ msgstr ""
 msgid "The error that lead to this:"
 msgstr ""
 
-#: ../scripts/pakfire:64
+#: ../scripts/pakfire:65
 msgid "An error has occured when running Pakfire."
 msgstr ""
 
-#: ../scripts/pakfire:67
+#: ../scripts/pakfire:68
 msgid "Error message:"
 msgstr ""
 
-#: ../scripts/pakfire:71
+#: ../scripts/pakfire:72
 msgid "Further description:"
 msgstr ""
 

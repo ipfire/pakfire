@@ -124,6 +124,15 @@ class Pakfire(object):
 			util.rm(self.path)
 
 	@property
+	def environ(self):
+		env = {}
+
+		# Get distribution information.
+		env.update(self.distro.environ)
+
+		return env
+
+	@property
 	def supported_arches(self):
 		return self.config.supported_arches
 
@@ -161,6 +170,8 @@ class Pakfire(object):
 		raise BuildError, arch
 
 	def check_is_ipfire(self):
+		return # XXX disabled for now
+
 		ret = os.path.exists("/etc/ipfire-release")
 
 		if not ret:
@@ -187,24 +198,44 @@ class Pakfire(object):
 		else:
 			logging.info(_("Nothing to do"))
 
-	def install(self, requires):
+	def install(self, requires, interactive=True, logger=None, **kwargs):
+		if not logger:
+			logger = logging.getLogger()
+
 		# Create a new request.
 		request = self.create_request()
+
+		# Expand all groups.
 		for req in requires:
-			req = self.create_relation(req)
-			request.install(req)
+			if req.startswith("@"):
+				reqs = self.grouplist(req[1:])
+			else:
+				reqs = [req,]
+
+			for req in reqs:
+				if not isinstance(req, packages.BinaryPackage):
+					req = self.create_relation(req)
+
+				request.install(req)
 
 		# Do the solving.
 		solver = self.create_solver()
-		t = solver.solve(request)
+		t = solver.solve(request, **kwargs)
 
 		if not t:
+			if not interactive:
+				raise DependencyError
+
 			logging.info(_("Nothing to do"))
 			return
 
-		# Ask if the user acknowledges the transaction.
-		if not t.cli_yesno():
-			return
+		if interactive:
+			# Ask if the user acknowledges the transaction.
+			if not t.cli_yesno():
+				return
+
+		else:
+			t.dump(logger=logger)
 
 		# Run the transaction.
 		t.run()
@@ -330,14 +361,20 @@ class Pakfire(object):
 		# For all patterns we run a single search which returns us a bunch
 		# of solvables which are transformed into Package objects.
 		for pattern in patterns:
-			solvs = self.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
+			if os.path.exists(pattern):
+				pkg = packages.open(self, self.repos.dummy, pattern)
+				if pkg:
+					pkgs.append(pkg)
 
-			for solv in solvs:
-				pkg = packages.SolvPackage(self, solv)
-				if pkg in pkgs:
-					continue
+			else:
+				solvs = self.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
 
-				pkgs.append(pkg)
+				for solv in solvs:
+					pkg = packages.SolvPackage(self, solv)
+					if pkg in pkgs:
+						continue
+
+					pkgs.append(pkg)
 
 		return sorted(pkgs)
 
@@ -358,10 +395,8 @@ class Pakfire(object):
 		# Return a list of the packages, alphabetically sorted.
 		return sorted(pkgs.values())
 
-	def groupinstall(self, group):
-		pkgs = self.grouplist(group)
-
-		self.install(pkgs)
+	def groupinstall(self, group, **kwargs):
+		self.install("@%s" % group, **kwargs)
 
 	def grouplist(self, group):
 		pkgs = []
@@ -407,6 +442,18 @@ class Pakfire(object):
 		finally:
 			b.destroy()
 
+	def _build(self, pkg, resultdir, nodeps=False, **kwargs):
+		print kwargs
+
+		b = builder.Builder2(self, pkg, resultdir, **kwargs)
+
+		try:
+			b.build()
+		except Error:
+			raise BuildError, _("Build command has failed.")
+		finally:
+			b.cleanup()
+
 	@staticmethod
 	def shell(pkg, **kwargs):
 		b = builder.Builder(pkg, **kwargs)
@@ -418,40 +465,17 @@ class Pakfire(object):
 		finally:
 			b.destroy()
 
-	@staticmethod
-	def dist(pkgs, resultdirs=None, **pakfire_args):
-		# Create a builder with empty package.
-		b = builder.Builder(None, **pakfire_args)
-		p = b.pakfire
-
+	def dist(self, pkgs, resultdirs=None):
 		if not resultdirs:
 			resultdirs = []
 
 		# Always include local repository
-		resultdirs.append(p.repos.local_build.path)
+		resultdirs.append(self.repos.local_build.path)
 
-		try:
-			b.prepare()
+		for pkg in pkgs:
+			pkg = packages.Makefile(self, pkg)
 
-			for pkg in pkgs:
-				b.pkg = pkg
-
-				b.extract(build_deps=False)
-
-				# Run the actual dist.
-				b.dist()
-
-				# Copy-out all resultfiles
-				for resultdir in resultdirs:
-					if not resultdir:
-						continue
-
-					b.copy_result(resultdir)
-
-				# Cleanup the stuff that the package left.
-				b.cleanup()
-		finally:
-			b.destroy()
+			pkg.dist(resultdirs)
 
 	def provides(self, patterns):
 		pkgs = []

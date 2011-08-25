@@ -26,7 +26,6 @@ from file import InnerTarFile
 from installed import DatabasePackage, InstalledPackage
 from solv import SolvPackage
 from source import SourcePackage
-from virtual import VirtualPackage
 
 from make import Makefile
 from packager import BinaryPackager

@@ -91,7 +91,7 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 
 		# Create new child process
 		child = subprocess.Popen(
-			command, 
+			command,
 			shell=shell,
 			bufsize=0, close_fds=True, 
 			stdin=open("/dev/null", "r"), 
@@ -179,4 +179,7 @@ class ChildPreExec(object):
 
 		# Change to cwd.
 		if self.cwd:
+			if not os.path.exists(self.cwd):
+				os.makedirs(self.cwd)
+
 			os.chdir(self.cwd)

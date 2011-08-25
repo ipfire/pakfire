@@ -90,8 +90,16 @@ class Package(object):
 			(_("Arch"), self.arch),
 			(_("Version"), self.version),
 			(_("Release"), self.release),
-			(_("Size"), util.format_size(self.size)),
-			(_("Repo"), self.repo.name),
+		]
+
+		if self.size:
+			items.append((_("Size"), util.format_size(self.size)))
+
+		# filter dummy repository
+		if not self.repo == self.pakfire.repos.dummy:
+			items.append((_("Repo"), self.repo.name))
+
+		items += [
 			(_("Summary"), self.summary),
 			(_("Groups"), " ".join(self.groups)),
 			(_("URL"), self.url),
@@ -104,6 +112,9 @@ class Package(object):
 			caption = ""
 
 		if long:
+			if self.maintainer:
+				items.append((_("Maintainer"), self.maintainer))
+
 			items.append((_("UUID"), self.uuid))
 			items.append((_("Build ID"), self.build_id))
 			items.append((_("Build date"), self.build_date))
@@ -114,8 +125,23 @@ class Package(object):
 				items.append((caption, prov))
 				caption = ""
 
+			caption = _("Pre-requires")
+			for req in sorted(self.prerequires):
+				items.append((caption, req))
+				caption = ""
+
 			caption = _("Requires")
 			for req in sorted(self.requires):
+				items.append((caption, req))
+				caption = ""
+
+			caption = _("Conflicts")
+			for req in sorted(self.conflicts):
+				items.append((caption, req))
+				caption = ""
+
+			caption = _("Obsoletes")
+			for req in sorted(self.obsoletes):
 				items.append((caption, req))
 				caption = ""
 
@@ -151,7 +177,9 @@ class Package(object):
 			"license"     : self.license,
 			"hash1"       : self.hash1,
 			"vendor"      : self.vendor,
+			"build_date"  : self.build_date,
 			"build_host"  : self.build_host,
+			"build_id"    : self.build_id,
 			"build_time"  : self.build_time,
 			"size"        : self.size,
 			"inst_size"   : self.inst_size,
@@ -366,6 +394,10 @@ class Package(object):
 	@property
 	def obsoletes(self):
 		return self.metadata.get("PKG_OBSOLETES", "").split()
+
+	@property
+	def scriptlets(self):
+		return self.metadata.get("PKG_SCRIPTLETS", "").split()
 
 	@property
 	def filelist(self):
