@@ -215,7 +215,7 @@ class Makefile(MakefileBase):
 			pkg = MakefilePackage(self.pakfire, name, lexer)
 			pkgs.append(pkg)
 
-		return sorted(pkgs)
+		return pkgs
 
 	@property
 	def source_dl(self):
