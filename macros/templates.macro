@@ -8,6 +8,9 @@ template MAIN
 	def files
 		/
 	end
+
+	def configfiles
+	end
 end
 
 template LIBS
@@ -17,6 +20,9 @@ template LIBS
 	def files
 		/lib/lib*.so.*
 		/usr/lib*/*.so.*
+	end
+
+	def configfiles
 	end
 
 	script postin
@@ -49,5 +55,8 @@ template DEVEL
 		/usr/share/man/man3
 		/usr/share/pkgconfig
 		/usr/share/vala
+	end
+
+	def configfiles
 	end
 end
