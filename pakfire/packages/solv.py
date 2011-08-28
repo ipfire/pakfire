@@ -23,7 +23,7 @@ import os
 import re
 
 import base
-import binary
+import file
 
 class SolvPackage(base.Package):
 	def __init__(self, pakfire, solvable, repo=None):
@@ -200,7 +200,7 @@ class SolvPackage(base.Package):
 				path = os.path.join(self.repo.path, i, self.filename)
 
 				if os.path.exists(path):
-					return binary.BinaryPackage(self.pakfire, self.repo, path)
+					return file.BinaryPackage(self.pakfire, self.repo, path)
 		else:
 			filename = "packages/%s" % self.filename
 
@@ -208,7 +208,7 @@ class SolvPackage(base.Package):
 				path = self.repo.cache.abspath(filename)
 
 		if path:
-			return binary.BinaryPackage(self.pakfire, self.repo, path)
+			return file.BinaryPackage(self.pakfire, self.repo, path)
 
 	def download(self, text=""):
 		if not self.repo.local:

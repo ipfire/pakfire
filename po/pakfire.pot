@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-23 20:53+0200\n"
+"POT-Creation-Date: 2011-08-28 14:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,31 +77,31 @@ msgstr ""
 msgid "Everything is fine."
 msgstr ""
 
-#: ../pakfire/builder.py:122
+#: ../pakfire/builder.py:123
 msgid "Package information:"
 msgstr ""
 
 #. Copy the makefile and load source tarballs.
-#: ../pakfire/builder.py:306
+#: ../pakfire/builder.py:307
 msgid "Extracting"
 msgstr ""
 
-#: ../pakfire/builder.py:614
+#: ../pakfire/builder.py:615
 msgid "Dumping created packages"
 msgstr ""
 
-#: ../pakfire/builder.py:636
+#: ../pakfire/builder.py:637
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../pakfire/builder.py:778
+#: ../pakfire/builder.py:779
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../pakfire/builder.py:789
+#: ../pakfire/builder.py:790
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
@@ -450,20 +450,20 @@ msgstr ""
 msgid "Filename: %s"
 msgstr ""
 
-#: ../pakfire/packages/make.py:98
+#: ../pakfire/packages/make.py:99
 msgid "Package name is undefined."
 msgstr ""
 
-#: ../pakfire/packages/make.py:101
+#: ../pakfire/packages/make.py:102
 msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../pakfire/packages/packager.py:309
+#: ../pakfire/packages/packager.py:306
 msgid "Packaging"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:602
+#: ../pakfire/packages/packager.py:599
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
@@ -597,7 +597,7 @@ msgid ""
 msgstr ""
 
 #: ../scripts/pakfire:25
-msgid "Please your installation of Pakfire."
+msgid "Please check your installation of Pakfire."
 msgstr ""
 
 #: ../scripts/pakfire:27

@@ -35,6 +35,7 @@ import base
 import chroot
 import logger
 import packages
+import packages.packager
 import repository
 import util
 
@@ -604,7 +605,7 @@ class BuildEnviron(object):
 
 		# Make all these little package from the build environment.
 		for pkg in reversed(self.pkg.packages):
-			packager = packages.BinaryPackager(self.pakfire, pkg, self)
+			packager = packages.packager.BinaryPackager(self.pakfire, pkg, self)
 			packager.run([repo.path,])
 		self.log.info("")
 
@@ -777,7 +778,7 @@ class Builder2(object):
 		# Make all these little package from the build environment.
 		logging.info(_("Creating packages:"))
 		for pkg in reversed(self.pkg.packages):
-			packager = packages.BinaryPackager(self.pakfire, pkg, self.buildroot)
+			packager = packages.packager.BinaryPackager(self.pakfire, pkg, self.buildroot)
 			packager.run([self.resultdir,])
 		logging.info("")
 

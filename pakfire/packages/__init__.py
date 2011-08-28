@@ -21,14 +21,11 @@
 
 import tarfile
 
-from binary import BinaryPackage
-from file import InnerTarFile
+from file import BinaryPackage, InnerTarFile, SourcePackage
 from installed import DatabasePackage, InstalledPackage
 from solv import SolvPackage
-from source import SourcePackage
 
 from make import Makefile
-from packager import BinaryPackager
 
 from pakfire.constants import *
 

@@ -97,7 +97,7 @@ def make_progress(message, maxval, eta=True):
 
 	widgets = [
 		"  ",
-		"%-40s" % message,
+		"%s" % message,
 		" ",
 		Bar(left="[", right="]"),
 		"  ",

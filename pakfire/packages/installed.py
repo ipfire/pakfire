@@ -24,7 +24,7 @@ import os
 import pakfire.downloader
 
 from base import Package
-from binary import BinaryPackage
+from file import BinaryPackage
 
 import pakfire.util as util
 from pakfire.constants import *

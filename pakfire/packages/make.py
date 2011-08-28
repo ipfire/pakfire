@@ -34,7 +34,8 @@ import packager
 import pakfire.util as util
 
 from base import Package
-from source import SourcePackage
+from file import SourcePackage
+
 from pakfire.constants import *
 from pakfire.i18n import _
 

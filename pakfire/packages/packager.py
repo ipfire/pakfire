@@ -39,14 +39,11 @@ import zlib
 
 import pakfire.compress
 import pakfire.util as util
-from pakfire.util import rm
 
 from pakfire.constants import *
 from pakfire.i18n import _
 
-from binary import BinaryPackage
-from source import SourcePackage
-from file import InnerTarFile
+from file import BinaryPackage, InnerTarFile, SourcePackage
 
 class Packager(object):
 	def __init__(self, pakfire, pkg):
