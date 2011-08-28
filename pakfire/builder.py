@@ -580,61 +580,25 @@ class BuildEnviron(object):
 
 		return ret
 
-	def build(self):
+	def build(self, install_test=True):
 		assert self.pkg
 
-		# Create icecream toolchain.
-		self.create_icecream_toolchain()
-
-		# Create the build script and build command.
-		build_script = self.create_buildscript()
-		build_cmd = "/bin/sh -e -x %s" % build_script
-
-		try:
-			self.do(build_cmd, logger=self.log)
-
-		except Error:
-			raise BuildError, "The build command failed."
-
-		# XXX clean up that mess after this line
-
-		# Create a temporary repository where we put in the just built packages.
-		repo = repository.RepositoryDir(self.pakfire, "build-%s" % self.build_id,
-			"", self.chrootPath("result"), type="binary")
-		self.pakfire.repos.add_repo(repo)
-
-		# Make all these little package from the build environment.
-		for pkg in reversed(self.pkg.packages):
-			packager = packages.packager.BinaryPackager(self.pakfire, pkg, self)
-			packager.run([repo.path,])
-		self.log.info("")
-
-		# Update repository metadata.
-		repo.update(force=True)
-
-		self.log.info(_("Dumping created packages"))
-
-		for line in repo.dump(long=True, filelist=True).splitlines():
-			self.log.info("  %s" % line)
-		self.log.info("")
-
-		self.pakfire.repos.rem_repo(repo)
-
-		return repo
-
-	def build(self):
 		pkgfile = os.path.join("/build", os.path.basename(self.pkg.filename))
 		resultdir = self.chrootPath("/result")
 
 		# Create the build command, that is executed in the chroot.
 		build_command = ["pakfire-build2", "--offline", "build", pkgfile,
-			"--nodeps",]
+			"--nodeps", "--resultdir=/result",]
 
 		try:
 			self.do(" ".join(build_command), logger=self.log)
 
 		except Error:
 			raise BuildError, _("The build command failed. See logfile for details.")
+
+		# Perform install test.
+		if install_test:
+			self.install_test()
 
 		# Copy the final packages and stuff.
 		# XXX TODO resultdir
@@ -779,7 +743,7 @@ class Builder2(object):
 		logging.info(_("Creating packages:"))
 		for pkg in reversed(self.pkg.packages):
 			packager = packages.packager.BinaryPackager(self.pakfire, pkg, self.buildroot)
-			packager.run([self.resultdir,])
+			packager.run(self.resultdir)
 		logging.info("")
 
 	def build_stage(self, stage):
@@ -788,11 +752,14 @@ class Builder2(object):
 
 		# Execute the buildscript of this stage.
 		logging.info(_("Running stage %s:") % stage)
-		self.do(buildscript, shell=False)
 
-		# Remove the buildscript.
-		if os.path.exists(buildscript):
-			os.unlink(buildscript)
+		try:
+			self.do(buildscript, shell=False)
+
+		finally:
+			# Remove the buildscript.
+			if os.path.exists(buildscript):
+				os.unlink(buildscript)
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):

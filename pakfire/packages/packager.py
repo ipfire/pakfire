@@ -267,10 +267,15 @@ class BinaryPackager(Packager):
 			# Recognize the type of the pattern. Patterns could be a glob
 			# pattern that is expanded here or just a directory which will
 			# be included recursively.
-			if "*" in pattern or "?" in pattern:
-				patterns += glob.glob(pattern)
+			if "*" in pattern or "?" in pattern or ("[" in pattern and "]" in pattern):
+				_patterns = glob.glob(pattern)
+			else:
+				_patterns = [pattern,]
 
-			elif os.path.exists(pattern):
+			for pattern in _patterns:
+				if not os.path.exists(pattern):
+					continue
+
 				# Add directories recursively...
 				if os.path.isdir(pattern):
 					# Add directory itself.
@@ -475,9 +480,7 @@ class BinaryPackager(Packager):
 	def compress_datafile(self, datafile, algo="xz"):
 		pass
 
-	def run(self, resultdirs=[]):
-		assert resultdirs
-
+	def run(self, resultdir):
 		# Add all files to this package.
 		datafile = self.create_datafile()
 
@@ -506,28 +509,18 @@ class BinaryPackager(Packager):
 		tempfile = self.mktemp()
 		self.save(tempfile)
 
-		for resultdir in resultdirs:
-			# XXX sometimes, there has been a None in resultdirs
-			if not resultdir:
-				continue
+		# Add architecture information to path.
+		resultdir = "%s/%s" % (resultdir, self.pkg.arch)
 
-			resultdir = "%s/%s" % (resultdir, self.pkg.arch)
+		if not os.path.exists(resultdir):
+			os.makedirs(resultdir)
 
-			if not os.path.exists(resultdir):
-				os.makedirs(resultdir)
-
-			resultfile = os.path.join(resultdir, self.pkg.package_filename)
-			logging.info("Saving package to %s" % resultfile)
-			try:
-				os.link(tempfile, resultfile)
-			except OSError:
-				shutil.copy2(tempfile, resultfile)
-
-		## Dump package information.
-		#pkg = BinaryPackage(self.pakfire, self.pakfire.repos.dummy, tempfile)
-		#for line in pkg.dump(long=True).splitlines():
-		#	logging.info(line)
-		#logging.info("")
+		resultfile = os.path.join(resultdir, self.pkg.package_filename)
+		logging.info("Saving package to %s" % resultfile)
+		try:
+			os.link(tempfile, resultfile)
+		except OSError:
+			shutil.copy2(tempfile, resultfile)
 
 
 class SourcePackager(Packager):

@@ -29,6 +29,7 @@ import xattr
 import pakfire.util as util
 import pakfire.compress as compress
 from pakfire.constants import *
+from pakfire.i18n import _
 
 from base import Package
 from lexer import FileLexer
@@ -91,13 +92,22 @@ class InnerTarFile(tarfile.TarFile):
 			self.addfile(tarinfo)
 
 	def extract(self, member, path=""):
+		target = os.path.join(path, member.name)
+
+		# Remove symlink targets, because tarfile cannot replace them.
+		if member.issym() and os.path.exists(target):
+			print "unlinking", target
+			os.unlink(target)
+
 		# Extract file the normal way...
-		tarfile.TarFile.extract(self, member, path)
+		try:
+			tarfile.TarFile.extract(self, member, path)
+		except OSError, e:
+			logging.warning(_("Could not extract file: /%s - %s") \
+				% (member.name, e))
 
 		# ...and then apply the extended attributes.
 		if member.pax_headers:
-			target = os.path.join(path, member.name)
-
 			for attr, val in member.pax_headers.items():
 				# Skip all attrs that are not supported (e.g. selinux).
 				if not attr in self.SUPPORTED_XATTRS:

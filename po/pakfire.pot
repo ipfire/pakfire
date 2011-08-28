@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-28 18:13+0200\n"
+"POT-Creation-Date: 2011-08-28 21:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgid "Downgrading"
 msgstr ""
 
 #: ../pakfire/base.py:199 ../pakfire/base.py:229 ../pakfire/base.py:275
-#: ../pakfire/base.py:315 ../pakfire/base.py:348
+#: ../pakfire/base.py:316 ../pakfire/base.py:349
 msgid "Nothing to do"
 msgstr ""
 
@@ -86,22 +86,18 @@ msgstr ""
 msgid "Extracting"
 msgstr ""
 
-#: ../pakfire/builder.py:615
-msgid "Dumping created packages"
-msgstr ""
-
-#: ../pakfire/builder.py:637
+#: ../pakfire/builder.py:599
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../pakfire/builder.py:779
+#: ../pakfire/builder.py:745
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../pakfire/builder.py:790
+#: ../pakfire/builder.py:756
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
@@ -445,7 +441,12 @@ msgstr ""
 msgid "Not set"
 msgstr ""
 
-#: ../pakfire/packages/file.py:146
+#: ../pakfire/packages/file.py:106
+#, python-format
+msgid "Could not extract file: /%s - %s"
+msgstr ""
+
+#: ../pakfire/packages/file.py:156
 #, python-format
 msgid "Filename: %s"
 msgstr ""
@@ -459,11 +460,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../pakfire/packages/packager.py:306
+#: ../pakfire/packages/packager.py:309
 msgid "Packaging"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:599
+#: ../pakfire/packages/packager.py:590
 #, python-format
 msgid "Building source package %s:"
 msgstr ""

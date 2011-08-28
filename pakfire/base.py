@@ -290,6 +290,7 @@ class Pakfire(object):
 		finally:
 			# Remove the temporary copy of the repository we have created earlier.
 			repo.remove()
+			self.repos.rem_repo(repo)
 
 	def update(self, pkgs, check=False):
 		"""
@@ -410,7 +411,7 @@ class Pakfire(object):
 		return sorted(pkgs)
 
 	@staticmethod
-	def build(pkg, resultdirs=None, shell=False, **kwargs):
+	def build(pkg, resultdirs=None, shell=False, install_test=True, **kwargs):
 		if not resultdirs:
 			resultdirs = []
 
@@ -423,8 +424,7 @@ class Pakfire(object):
 		try:
 			b.prepare()
 			b.extract()
-			b.build()
-			b.install_test()
+			b.build(install_test=install_test)
 
 			# Copy-out all resultfiles
 			for resultdir in resultdirs:
