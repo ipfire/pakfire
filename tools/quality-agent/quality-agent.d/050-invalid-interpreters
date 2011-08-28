@@ -1,0 +1,44 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Detect invalid interpreters."
+
+check() {
+	local failed=0
+
+	local file
+	local interpreter
+	for file in $(find ${BUILDROOT} -type f 2>/dev/null); do
+		# If a file is not executeable we don't need to check it
+		[ -x "${file}" ] || continue
+
+		if file_is_script ${file}; then
+			interpreter=$(file_get_interpreter ${file})
+
+			if grep -q /usr/local <<<${interpreter}; then
+				failed=1
+				log_error "  Interpreter in /usr/local: ${file}"
+			fi
+
+			# Search for bad /usr/bin/env
+			if [ "$(basename ${interpreter})" = "env" ]; then	
+				# Autofix that crap
+				sed -i ${file} \
+					-e "s,/usr/bin/env python.\..,/usr/bin/python," \
+					-e "s,/usr/bin/env python,/usr/bin/python," \
+					-e "s,/usr/bin/env perl,/usr/bin/perl,"
+
+				# If we could not fix it, raise an error
+				if [ "${interpreter}" = "$(file_get_interpreter ${file})" ]; then
+					failed=1
+					log_error "  Script uses forbidden \"env\" interpreter: ${file}"
+				fi
+			fi
+		fi
+	done
+
+	return ${failed}
+}
+
+run

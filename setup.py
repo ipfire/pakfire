@@ -35,6 +35,9 @@ setup(
 	],
 	data_files = [
 		("lib/pakfire/macros", [os.path.join("macros", f) for f in os.listdir("macros") if f.endswith(".macro")]),
+		("lib/pakfire", ["tools/quality-agent/quality-agent",]),
+		("lib/quality-agent", [os.path.join("tools/quality-agent/quality-agent.d", f) \
+			for f in os.listdir("tools/quality-agent/quality-agent.d")]),
 	],
 	ext_modules = [
 		Extension("pakfire._pakfire", _pakfire_module_files,

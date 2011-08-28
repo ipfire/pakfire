@@ -1,0 +1,25 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+function check() {
+	local failed=0
+
+	FILTER="${QUALITY_AGENT_WHITELIST_NX}"
+
+	local file
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${BINARY_PATHS}); do
+		if filtered ${file}; then
+			continue
+		fi
+
+		if ! file_has_nx ${file}; then
+			log_error "  No NX: ${file}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

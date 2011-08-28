@@ -1,0 +1,33 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Searching for world-writeable files..."
+
+function check() {
+	local ret=0
+
+	local files=$(find ${BUILDROOT} -type f -perm -2 2>/dev/null)
+	if [ -n "${files}" ]; then
+		log ERROR "  QA Security Notice:"
+		log ERROR "   - The folloing files will be world writable."
+		log ERROR "   - This may or may not be a security problem, most of the time it is one."
+		log ERROR "   - Please double check that these files really need a world writeable bit and file bugs accordingly."
+		log ERROR
+		log ERROR "${files}"
+		ret=1
+	fi
+
+	files=$(find ${BUILDROOT} -type f '(' -perm -2002 -o -perm -4002 ')')
+	if [ -n "${files}" ]; then
+		log ERROR "  QA Notice: Unsafe files detected (set*id and world writable)"
+		log ERROR
+		log ERROR "${files}"
+		ret=1
+	fi
+
+	return ${ret}
+}
+
+run
+

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Every shared object has to provide the NEEDED entry."
+
+check() {
+	local failed=0
+
+	local file
+	local needed
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${LIBARY_PATHS}); do
+		if ! file_is_shared_object ${file}; then
+			continue
+		fi
+
+		if ! file_has_interpreter ${file}; then
+			continue
+		fi
+
+		needed=$(file_get_needed ${file})
+		if [ -z "${needed}" ]; then
+			log_error "  File lacks needed attribute: ${file}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

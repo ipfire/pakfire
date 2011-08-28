@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Checking correct installation of libraries"
+
+function check() {
+	local failed=0
+	for lib in $(find ${BUILDROOT}/lib -type f -name "lib*.so.*" 2>/dev/null); do
+		lib=${lib##*/}
+		lib=${lib%%.so*}
+
+		if [ ! -e "${BUILDROOT}/usr/lib/${lib}.so" ]; then
+			log ERROR "  /usr/lib/${lib}.so is missing"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run
+

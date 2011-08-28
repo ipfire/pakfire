@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Remove unwanted files."
+
+function check() {
+	for dir in $(sort_by_length {,/usr}/{{,s}bin,lib{,exec}} /usr/share/man{,/man{0,1,2,3,4,5,6,7,8,9}}); do
+		dir="${BUILDROOT}/${dir}"
+		if [ -d "${dir}" ] && [ "$(ls -1A ${dir} | wc -l)" = "0" ]; then
+			log DEBUG "  Removing ${dir}"
+			rm -rf ${dir}
+		fi
+	done
+}
+
+run
+

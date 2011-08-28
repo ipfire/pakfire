@@ -1,0 +1,17 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Remove documentation files."
+
+function check() {
+	for dir in ${BUILDROOT}/usr/{,share}/{doc,gtk-doc,info}; do
+		if [ -d "${dir}" ]; then
+			log DEBUG "  Removing: ${dir}"
+			rm -rf ${dir} || exit $?
+		fi
+	done
+}
+
+run
+

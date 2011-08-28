@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DIR_QA=/usr/lib/quality-agent
+
+failed=0
+for file in ${DIR_QA}/*; do
+	[ -x "${file}" ] || continue
+
+	${file} || failed=1
+done
+
+exit ${failed}

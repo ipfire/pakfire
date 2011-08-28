@@ -30,7 +30,7 @@ MACRO_EXTRACT = tar xvaf
 
 # Macro to define and start the quality agent.
 # Long term goal is to improve the commited code.
-MACRO_QUALITY_AGENT = quality-agent
+MACRO_QUALITY_AGENT = /usr/lib/pakfire/quality-agent
 
 # Macro to strip debugging symbols.
 MACRO_STRIP = /usr/lib/buildsystem-tools/stripper %{BUILDROOT}

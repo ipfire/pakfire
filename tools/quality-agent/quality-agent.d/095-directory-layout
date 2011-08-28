@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="The filelayout should comply to the FHS."
+
+DIRS="/etc/init.d /etc/rc.d /lib/pkgconfig /usr/etc /usr/libexec /usr/local /usr/man /usr/usr /usr/var"
+
+function check() {
+	# Do nothing, if directory check was disabled.
+	if [ "${QUALITY_AGENT_NO_DIRECTORY_CHECK}" = "yes" ]; then
+		return 0
+	fi
+
+	local failed=0
+
+	local dir
+	for dir in ${DIRS}; do
+		if [ -d "${BUILDROOT}${dir}" ]; then
+			log_error "Bad directory: ${dir}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

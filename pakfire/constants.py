@@ -25,7 +25,7 @@ from errors import *
 
 from __version__ import PAKFIRE_VERSION
 
-PAKFIRE_LEAST_COMPATIBLE_VERSION = "0.9.5"
+PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 
 SYSCONFDIR = "/etc"
 
@@ -68,10 +68,8 @@ PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 BUILD_PACKAGES = [
 	"@Build",
 	"/bin/bash",
-	"build-essentials>=2:1.0-1.ip3",
 	"gcc",
 	"glibc-devel",
-	"shadow-utils>=4.1.4.3",
 	"pakfire-build>=%s" % PAKFIRE_LEAST_COMPATIBLE_VERSION,
 ]
 SHELL_PACKAGES = ["elinks", "less", "vim",]

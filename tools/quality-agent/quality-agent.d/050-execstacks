@@ -1,0 +1,22 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Files with executable stacks will not work properly (or at all!) \
+	on some architectures/operating systems."
+
+check() {
+	local failed=0
+
+	local file
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${BINARY_PATHS}); do
+		if file_has_execstack ${file}; then
+			log_error "  File has execstack: ${file}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

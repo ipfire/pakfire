@@ -1,0 +1,16 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Include files have to belong to the root user. \
+	This script will fix this automatically."
+
+check() {
+	if [ ! -d "${BUILDROOT}/usr/include" ]; then
+		return 0
+	fi
+	
+	chown -R root:root ${BUILDROOT}/usr/include
+}
+
+run

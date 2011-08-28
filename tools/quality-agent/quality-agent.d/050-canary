@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Every binary file has to provide a canary."
+
+function check() {
+	local failed=0
+
+	local file
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${BINARY_PATHS}); do
+		if filter_startfiles ${file}; then
+			continue
+		fi
+
+		if ! file_has_canary ${file}; then
+			log_warning "  Has no canary: ${file}"
+			failed=1
+		fi
+	done
+
+	# This is currently disabled and will only return a warning !
+	failed=0
+
+	return ${failed}
+}
+
+run

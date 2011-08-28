@@ -2,3 +2,4 @@ include INSTALL Makefile
 recursive-include examples *
 recursive-include po *
 recursive-include src *.c *.h
+recursive-include tools *

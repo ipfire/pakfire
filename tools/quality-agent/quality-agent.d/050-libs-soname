@@ -1,0 +1,35 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Every shared object has to provide the SONAME entry."
+
+check() {
+	local failed=0
+
+	local file
+	local soname
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${LIBARY_PATHS}); do
+		if ! grep -q "\.so" <<<${file}; then
+			continue
+		fi
+
+		if ! file_is_shared_object ${file}; then
+			continue
+		fi
+
+		if ! file_has_interpreter ${file}; then
+			continue
+		fi
+
+		soname=$(file_get_soname ${file})
+		if [ -z "${soname}" ]; then
+			log_error "  File lacks soname attribute: ${file}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

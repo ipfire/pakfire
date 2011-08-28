@@ -1,0 +1,31 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Check for binaries in /bin or /sbin that link to /usr/..."
+
+function check() {
+	local ret=0
+
+	for file in $(find ${BUILDROOT}/{bin,lib,sbin}/* 2>/dev/null); do
+		[ -f "${file}" ] || continue
+		log DEBUG "  ${file}"
+
+		interpreter=$(file_get_interpreter ${file})
+		if [ ! -e "${interpreter}" ]; then
+			log WARN "  SKIPPED because interpreter is not available"
+			continue
+		fi
+
+		libs=$(ldd ${file})
+		if grep -q /usr/lib <<<${libs}; then
+			log ERROR "${file} links to libs in /usr/lib..."
+			log ERROR "  ${libs}"
+			ret=1
+		fi
+	done
+
+	return ${ret}
+}
+
+run

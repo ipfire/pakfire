@@ -1,0 +1,39 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+# Check for absolute symlinks.
+# We do not allow them because they may point to any bad location.
+
+log_debug "Search for absolute symlinks"
+
+function check() {
+	local failed=0
+	local item
+
+	for link in $(find ${BUILDROOT} -type l); do
+		if fgrep -q "/lib/udev/devices" <<<${link}; then
+			continue
+		fi
+
+		if listmatch "${link:${#BUILDROOT}}" ${QUALITY_AGENT_WHITELIST_SYMLINK}; then
+			log INFO "Symlink ${link} is on the whitelist."
+			continue
+		fi
+
+		destination=$(readlink ${link})
+		if [ "${destination:0:1}" = "/" ]; then
+			log ERROR "  Absolute symlink: ${link}"
+			failed=1
+		fi
+		if [ ! -e "${link%/*}/${destination}" ]; then
+			log ERROR "  Not existant destination: ${link} -> ${destination}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run
+

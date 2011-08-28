@@ -1,0 +1,36 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Searching for RPATHs. We don't want paths that point to the tree where \
+	the package was built (older, broken libtools would do this). \
+	Also check for null paths because the loader will search \$PWD when it \
+	finds null paths."
+
+check() {
+	local failed=0
+
+	local file
+	local rpath
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${BINARY_PATHS}); do
+		if filtered ${file}; then
+			continue
+		fi
+
+		rpath=$(file_get_rpath ${file})
+		if [ -n "${rpath}" ]; then
+			if [ "${QUALITY_AGENT_RPATH_ALLOW_ORIGIN}" = "yes" ]; then
+				[ "${rpath}" = '$ORIGIN' ] && continue
+			fi
+			if listmatch ${rpath} ${QUALITY_AGENT_WHITELIST_RPATH}; then
+				continue
+			fi
+			log_error "  File has unallowed rpath: ${file} - ${rpath}"
+			failed=1
+		fi
+	done
+
+	return ${failed}
+}
+
+run

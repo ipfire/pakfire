@@ -1,0 +1,35 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Text relocations force the dynamic linker to perform extra \
+	work at startup, waste system resources, and may pose a security \
+	risk. On some architectures, the code may not even function \
+	properly, if at all."
+
+function check() {
+	local failed=0
+
+	local file
+	for file in $(find_elf_files --prefix=${BUILDROOT} ${BINARY_PATHS}); do
+		if filter_startfiles ${file}; then
+			continue
+		fi
+
+		# Skip all files that are not a shared object.
+		file_is_shared_object ${file} || continue
+
+		if ! file_is_relro_full ${file}; then
+			if [ "${QUALITY_AGENT_PERMIT_NOT_FULL_RELRO}" = "yes" ]; then
+				log_warning "  Is not full relro: ${file}"
+			else
+				log_error "  Is not relro: ${file}"
+				failed=1
+			fi
+		fi
+	done
+
+	return ${failed}
+}
+
+run
