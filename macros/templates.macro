@@ -19,7 +19,7 @@ template LIBS
 
 	def files
 		/lib/lib*.so.*
-		/usr/lib*/*.so.*
+		/usr/lib*/lib*.so.*
 	end
 
 	def configfiles
@@ -49,7 +49,7 @@ template DEVEL
 		/usr/lib/*.a
 		/usr/lib/pkgconfig
 		/usr/share/aclocal
-		*/lib/*.so
+		/usr/lib/*.so
 		/usr/share/*/cmake
 		/usr/share/man/man2
 		/usr/share/man/man3
