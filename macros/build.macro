@@ -51,15 +51,13 @@ def MACRO_PYTHON_COMPILE
 	# XXX TODO
 end
 
-# These variables are used if you have to add some targets
-# directly to the make command.
-make_build_targets   =
-make_install_targets = install
-
-build_requires = gcc glibc-devel
-
 # Pre-defined build scripts.
 build
+	# These variables are used if you have to add some targets
+	# directly to the make command.
+	make_build_targets   =
+	make_install_targets = install
+
 	def _prepare
 		[ -d "%{DIR_SRC}" ] && cd %{DIR_SRC}
 
