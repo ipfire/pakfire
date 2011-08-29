@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Simply import all files from this directory that
+# begin with functions-*.
+
+BASEDIR=$(dirname ${BASH_SOURCE[0]})
+
+for file in ${BASEDIR}/functions-*; do
+	# Avoid infinite loop when importing this file again
+	[ "$(basename ${file})" = "functions-common" ] && continue
+
+	. ${file}
+done
+

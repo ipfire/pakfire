@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function dir_is_empty() {
+	[ "$(ls -A $@ 2>/dev/null | wc -l)" = "0" ]
+}
+
+function directory_remove_orphans() {
+	if [ "${QUALITY_AGENT_NO_DIRECTORY_PRUNE}" = "yes" ]; then
+		return
+	fi
+
+	local basedir=${1}
+
+	log DEBUG "Removing orphans in ${basedir}"
+
+	local dir
+	local dir_pattern
+	for dir_pattern in ${ORPHAN_CANDIDATES}; do
+		dir=$(echo ${basedir}/${dir_pattern})
+
+		for dir in ${dir}; do
+			echo "DIR ${dir}" >&2
+			[ -d "${dir}" ] || continue
+
+			if dir_is_empty ${dir}; then
+				log DEBUG "  Found orphaned directory: ${dir}"
+				rm -rf ${dir}
+			fi
+		done
+	done
+}
+

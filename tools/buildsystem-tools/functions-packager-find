@@ -1,0 +1,237 @@
+#!/bin/bash
+
+# A function that finds needed libraries and interpreters.
+#
+function find_requires() {
+	local dir
+	local dirs=$@
+
+	# Find interpreters of all files in the dirs and skip those we provide
+	# ourself.
+	local interpreter
+	local interpreters
+	for interpreter in $(find_interpreters ${dirs}); do
+		local found=0
+		for dir in ${dirs}; do
+			if [ -e "${dir}/${interpreter}" ]; then
+				found=1
+				break
+			fi
+		done
+
+		[ "${found}" = "0" ] && interpreters="${interpreters} ${interpreter}"
+	done
+
+	# Find NEEDED libs and add them to a list if they are not provided by any
+	# other file in dirs.
+	local neededs
+	for file in $(find_elf_files ${dirs}); do
+		for needed in $(file_get_needed ${file}); do
+			neededs="${neededs} ${needed}"
+		done
+	done
+
+	# Find all symlink destinations
+	local links=$(find_symlink_destinations ${dirs})
+
+	# Others
+	local others=$(find_python_requires ${dirs})
+	others="${others} $(find_weak_symbols_requires ${dirs})"
+	others="${others} $(find_perl_requires ${dirs})"
+	others="${others} $(find_pkgconfig_requires ${dirs})"
+
+	# Return a sorted and unique(!) list
+	local require
+	local requires
+	for require in $(listsort ${PKG_DEPS} ${interpreters} ${neededs} ${links} ${others}); do
+		[ "${require:0:3}" = "ld-" ] && continue
+
+		if [ -n "${PKG_REQUIRES_FILTER}" ]; then
+			grep -qE "${PKG_REQUIRES_FILTER}" <<< "${require}" && continue
+		fi
+
+		requires="${requires} ${require}"
+	done
+
+	echo ${requires}
+}
+
+function find_provides() {
+	local dirs=$@
+
+	local file
+	local sonames
+	for file in $(find_elf_files ${dirs}); do
+		sonames="${sonames} $(file_get_soname ${file})"
+	done
+	sonames=$(listsort ${sonames})
+
+	# Others
+	local others=$(find_python_provides ${dirs})
+	others="${others} $(find_weak_symbols_provides ${dirs})"
+	others="${others} $(find_perl_provides ${dirs})"
+	others="${others} $(find_pkgconfig_provides ${dirs})"
+
+	local provide
+	local provides
+	for provide in $(listsort ${PKG_PROVIDES} ${sonames} ${others}); do
+		if [ -n "${PKG_PROVIDES_FILTER}" ]; then
+			grep -qE "${PKG_PROVIDES_FILTER}" <<< "${provide}" && continue
+		fi
+
+		provides="${provides} ${provide}"
+	done
+
+	echo ${provides}
+}
+
+function find_interpreters() {
+	local dirs=$@
+
+	log DEBUG "Searching for interpreters in ${dirs}"
+
+	local file
+	local interpreter
+	local interpreters
+	for file in $(find ${dirs} -type f 2>/dev/null); do
+		# Get interpreter information from file.
+		interpreter=$(file_get_interpreter ${file})
+
+		# Skip the file silently if the result was empty.
+		[ -z "${interpreter}" ] && continue
+
+		# Skip invalid interpreters that don't start with a slash.
+		if [ "${interpreter:0:1}" != "/" ]; then
+			log WARNING "Skipping invalid interpreter \"${interpreter}\" from \"${file}\"."
+			continue
+		fi
+
+		if ! listmatch ${interpreter} ${INTERPRETERS_TO_BE_SKIPPED}; then
+			interpreters="${interpreters} ${interpreter}"
+		fi
+	done
+
+	interpreters=$(listsort ${interpreters})
+
+	log DEBUG "find_interpreters ${dirs}: ${interpreters}"
+
+	echo "${interpreters}"
+}
+
+# Find the destinations of all symlinks and adds a dependency for that.
+#
+function find_symlink_destinations() {
+        local dir=$@
+
+        local link
+        local links
+        for link in $(find ${dir} -type l 2>/dev/null); do
+                link="$(readlink -m ${link})"
+                [ -e "${link}" ] && continue
+
+                link="${link#${dir}}"
+                links="${links} ${link}"
+        done
+
+        echo ${links}
+}
+
+function find_python_provides() {
+	local dir=${1}
+
+	local file
+	for file in $(find ${dir}/usr/bin/python* 2>/dev/null); do
+		file=$(basename ${file})
+		file=${file#python}
+
+		if [ -n "${file}" ]; then
+			echo "python-api=${file}"
+		fi
+	done
+}
+
+function find_python_requires() {
+	local dir=${1}
+
+	local file
+	for file in $(find ${dir}/usr/lib -maxdepth 1 2>/dev/null); do
+		file=$(basename ${file})
+
+		if [ "${file:0:6}" = "python" ]; then
+			file=${file#python}
+
+			if [ -n "${file}" ]; then
+				echo "python-api=${file}"
+			fi
+		fi
+	done
+}
+
+function find_perl_files() {
+	local extension
+	for extension in pm pl; do
+		find $@ -name "*.${extension}" 2>/dev/null
+	done
+}
+
+function find_perl_provides() {
+	[ -x "/usr/bin/perl" ] || return 0
+	perl ${BASEDIR}/perl.prov $(find_perl_files $@) | sort -u
+}
+
+function find_perl_requires() {
+	[ -x "/usr/bin/perl" ] || return 0
+	perl ${BASEDIR}/perl.req $(find_perl_files $@) | sort -u
+}
+
+function find_pkgconfig_provides() {
+	[ -x "/usr/bin/pkg-config" ] || return 0
+	find $@ | ${BASEDIR}/pkg-config.prov
+}
+
+function find_pkgconfig_requires() {
+	[ -x "/usr/bin/pkg-config" ] || return 0
+	find $@ | ${BASEDIR}/pkg-config.req
+}
+
+function find_weak_symbols_provides() {
+	local dirs=$@
+
+	local file
+	local soname
+	local symbol
+	for file in $(find_elf_files ${dirs}); do
+		soname=$(file_get_soname ${file})
+		[ -z "${soname}" ] && continue
+
+		for symbol in $(objdump -p ${file} | grep -E "^[0-9]+" | awk '{ print $4 }'); do
+			[ "${symbol}" = "${soname}" ] && continue
+			[ "${symbol}" = "GLIBC_PRIVATE" ] && continue
+
+			echo "${soname}(${symbol})"
+		done
+	done | sort -u
+}
+
+function find_weak_symbols_requires() {
+	local dirs=$@
+
+	local file
+	for file in $(find_elf_files ${dirs}); do
+	    objdump -p ${file} | awk 'BEGIN { START=0; LIBNAME=""; }
+			/^$/ { START=0; }
+			/^Dynamic Section:$/ { START=1; }
+			(START==1) && /NEEDED/ {
+				print $2;
+			}
+			(START==2) && /^[A-Za-z]/ { START=3; }
+			/^Version References:$/ { START=2; }
+			(START==2) && /required from/ {
+			    sub(/:/, "", $3);
+			    LIBNAME=$3;
+			}
+			(START==2) && (LIBNAME!="") && ($4!="") && (($4~/^GLIBC_*/) || ($4~/^GCC_*/)) {
+			    print LIBNAME "(" $4 ")";
+			}'
+	done | grep -v "GLIBC_PRIVATE" | sort -u
+}

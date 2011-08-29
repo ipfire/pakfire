@@ -1,0 +1,31 @@
+#!/bin/bash
+
+function listsort() {
+	local item
+	for item in $@; do
+		echo "${item}"
+	done | sort -u | tr "\n" " "
+}
+
+function listmatch() {
+	local arg=${1}
+	shift
+
+	local item
+	for item in $@; do
+		if [ "${arg}" = "${item}" ]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+function sort_by_length() {
+	local c
+	local i
+	for i in $@; do
+		echo "$(wc -c <<<${i}) ${i}"
+	done | sort -n -r | while read c i; do
+		echo "${i}"
+	done
+}

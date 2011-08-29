@@ -1,0 +1,27 @@
+#!/bin/bash
+
+dirname=$(dirname ${0})
+
+. ${dirname}/common-functions
+
+args=${1}
+
+if [ -n "${2}" ]; then
+	args=${2}
+fi
+
+provides=$(find_provides ${args})
+requires=""
+for require in $(find_requires ${args}); do
+	listmatch ${require} ${provides} || requires="${requires} ${require}"
+done
+
+if [ -n "${PKG_PREREQUIRES}" ]; then
+	echo "prerequires=\"/bin/sh ${PKG_PREREQUIRES}\""
+fi
+echo "requires=\"${requires}\""
+echo "provides=\"${provides}\""
+echo "conflicts=\"${PKG_CONFLICTS}\""
+echo "obsoletes=\"${PKG_OBSOLETES}\""
+
+exit 0

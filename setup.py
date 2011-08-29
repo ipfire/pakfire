@@ -38,6 +38,8 @@ setup(
 		("lib/pakfire", ["tools/quality-agent/quality-agent",]),
 		("lib/quality-agent", [os.path.join("tools/quality-agent/quality-agent.d", f) \
 			for f in os.listdir("tools/quality-agent/quality-agent.d")]),
+		("lib/buildsystem-tools", [os.path.join("tools/buildsystem-tools", f) \
+			for f in os.listdir("tools/buildsystem-tools")]),
 	],
 	ext_modules = [
 		Extension("pakfire._pakfire", _pakfire_module_files,

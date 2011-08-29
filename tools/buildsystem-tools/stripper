@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Based on RedHat's brp-strip*.
+
+BUILDROOT=${1}
+
+for f in `find ${BUILDROOT} -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
+		grep -v "^${BUILDROOT}/\?usr/lib/debug"  | \
+		grep -v ' shared object,' | \
+		sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
+
+	# Strip ELF binaries
+	strip -g "$f" || :
+
+	note="-R .note"
+	if objdump -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
+		grep ALLOC >/dev/null; then
+		note=
+	fi
+	strip -R .comment $note "$f" || :
+done
+
+# Strip ELF shared objects
+# Please note we don't restrict our search to executable files because
+# our libraries are not (should not be, at least) +x.
+for f in `find ${BUILDROOT} -type f -a -exec file {} \; | \
+        grep -v "^${BUILDROOT}/\?usr/lib/debug"  | \
+	grep ' shared object,' | \
+	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
+	strip --strip-unneeded "$f"
+done

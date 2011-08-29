@@ -1,0 +1,195 @@
+#!/bin/bash
+
+# Check if a file is an ELF binary
+#
+function file_is_elf() {
+	local file=${1}
+
+	file "${file}" | grep -q "ELF"
+}
+
+# Check if a file is a script.
+#   If the first line starts with #! this is sufficient.
+#
+function file_is_script() {
+	local file=${1}
+
+	local first_line=$(head -n1 ${file})
+
+	[ "${first_line:0:2}" = "#!" ]
+}
+
+# Get the interpreter of a file.
+#
+function file_get_interpreter() {
+	local file=${1}
+
+	if file_is_elf ${file}; then
+		_file_get_elf_interpreter ${file}
+	elif file_is_script ${file}; then
+		_file_get_script_interpreter ${file}
+	fi
+}
+
+# Hidden function that gets the interpreter from an ELF file.
+#
+function _file_get_elf_interpreter() {
+	local file=${1}
+
+	readelf -l ${file} | grep "program interpreter" | \
+		tr -d "]" | awk '{ print $NF }'
+}
+
+# Hidden fucntion that gets the interpreter from a script file.
+#
+function _file_get_script_interpreter() {
+	local file=${1}
+
+	# If the file is not executeable, no interpreter will be needed
+	[ -x "${file}" ] || return
+
+	local first_line=$(head -n1 ${file})
+
+	first_line="${first_line:2:${#first_line}}"
+
+	# Choose the first argument and strip any parameters if available
+	local interpreter
+	for interpreter in ${first_line}; do
+		echo "${interpreter}"
+		return
+	done
+}
+
+# Check if a file is statically linked.
+#
+function file_is_static() {
+	local file=${1}
+
+	file ${file} | grep -q "statically linked"
+}
+
+# Get NEEDED from a file.
+#
+function file_get_needed() {
+	local file=${1}
+
+	readelf -d ${file} | grep NEEDED | \
+		tr -d "[]" | awk '{ print $NF }'
+}
+
+# Get RPATH from a file.
+#
+function file_get_rpath() {
+	local file=${1}
+
+	readelf -d ${file} | grep RPATH | \
+		tr -d "[]" | awk '{ print $NF }'
+}
+
+# Get SONAME from a file.
+#
+function file_get_soname() {
+	local file=${1}
+
+	local file_basename=$(basename ${file})
+	if [ "${file_basename:0:3}" = "ld-" ]; then
+		log DEBUG "Don't return a SONAME for linkers: ${file}"
+		return
+	fi
+
+	readelf -d ${file} | grep SONAME | \
+		tr -d "[]" | awk '{ print $NF }'
+}
+
+# Check if a file is a shared object.
+#
+function file_is_shared_object() {
+	local file=${1}
+
+	file ${file} | grep -q "shared object"
+}
+
+# Check if a file has the canary.
+#
+function file_has_canary() {
+	local file=${1}
+
+	readelf -s ${file} | grep -q "__stack_chk_fail"
+}
+
+# Check if a file has an executeable stack.
+#
+function file_has_execstack() {
+	local file=${1}
+
+	readelf -h ${file} | grep -qE "Type:[[:space:]]*EXEC"
+}
+
+# Check if a file has NX.
+#
+function file_has_nx() {
+	local file=${1}
+
+	readelf -l ${file} | grep "GNU_STACK" | grep -q "RWE"
+	[ $? != 0 ]
+}
+
+# Check if a file is partly RELRO.
+#
+function file_is_relro_partly() {
+	local file=${1}
+
+	readelf -l ${file} | grep -q "GNU_RELRO"
+}
+
+# Check if a file is fully RELRO.
+#
+function file_is_relro_full() {
+	local file=${1}
+
+	if file_is_relro_partly ${file}; then
+		readelf -d ${file} | grep -q "BIND_NOW"
+		return $?
+	fi
+	return 1
+}
+
+# Find all ELF files.
+#
+function find_elf_files() {
+	local dir
+	local dirs
+	local prefix
+
+	while [ $# -gt 0 ]; do
+		case "${1}" in
+			--prefix=*)
+				prefix="${1#--prefix=}/"
+				;;
+			*)
+				dirs="${dirs} ${1}"
+				;;
+		esac
+		shift
+	done
+
+	local file
+	local files
+
+	for dir in ${dirs}; do
+		dir="${prefix}${dir}"
+		for file in $(find ${dir} -type f 2>/dev/null); do
+			if file_is_elf ${file} && ! file_is_static ${file}; then
+				files="${files} ${file}"
+			fi
+		done
+	done
+
+	echo ${files}
+}
+
+function filter_startfiles() {
+	local file=${1}
+
+	grep -qE "crt[1in]\.o$" <<<${file}
+}

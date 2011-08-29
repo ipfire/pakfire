@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cat <<EOF
+
+	You are now dropped to a chrooted shell of the package's environment.
+
+	The sources have been extracted to /build and maybe there are files left
+	from a last (broken) build. Nothing of that content will be saved after
+	you left the shell.
+
+	You can leave the environment by typing "exit" or Ctrl-D.
+
+EOF
+
+# Setting nice environment
+export PS1="pakfire-chroot \w> "
+
+# Change to directory the user will most likely work in
+if [ -z "${SOURCE_DIR}" ]; then
+	SOURCE_DIR="/build"
+fi
+cd "${SOURCE_DIR}"
+
+exec /bin/bash --login

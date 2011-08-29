@@ -1,0 +1,48 @@
+#!/bin/sh
+
+PYTHON=$(which python 2>/dev/null)
+
+if [ -z "${PYTHON}" ]; then
+	# Python is not present. Fail silently.
+	exit 0
+fi
+
+files=""
+for i in $*; do
+	if [ -e ${i}c ] && [ -e ${i}o ]; then
+		continue # all files we want are already there
+	fi
+	files="$files $i"
+done
+
+if [ -z "${files}" ]; then
+	# No files need to be proceeded.
+	exit 0
+fi
+
+$PYTHON -c "
+import sys, os, string, py_compile
+
+files = '''$files'''
+print 'Byte-compiling python modules...'
+for file in string.split(files):
+    if not os.path.exists(file) or not (len(file) >= 3 and file[-3:] == '.py'):
+        continue
+    print file,
+    sys.stdout.flush()
+    py_compile.compile(file)
+print" || exit $?
+
+# this will fail for python < 1.5, but that doesn't matter ...
+$PYTHON -O -c "
+import sys, os, string, py_compile
+
+files = '''$files'''
+print 'Byte-compiling python modules (optimised versions) ...'
+for file in string.split(files):
+    if not os.path.exists(file) or not (len(file) >= 3 and file[-3:] == '.py'):
+        continue
+    print file,
+    sys.stdout.flush()
+    py_compile.compile(file)
+print" 2>/dev/null || :

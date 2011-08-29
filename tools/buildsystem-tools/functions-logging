@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function log() {
+	local level=${1}
+	shift
+
+	if [ "${level}" = "DEBUG" ] && [ "${DEBUG}" != "1" ]; then
+		return
+	fi
+
+	printf " %1s | %s\n" "${level:0:1}" "$@" >&2
+}

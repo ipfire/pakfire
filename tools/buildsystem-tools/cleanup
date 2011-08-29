@@ -1,0 +1,7 @@
+#!/bin/bash
+
+dirname=$(dirname ${0})
+
+. ${dirname}/common-functions
+
+directory_remove_orphans $@

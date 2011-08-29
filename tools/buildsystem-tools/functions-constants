@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Debugging mode for these scripts
+DEBUG=0
+
+# Interpreters that should not be found by find_interpreters()
+INTERPRETERS_TO_BE_SKIPPED="/usr/bin/env"
+
+# Some path constants...
+LIBRARY_PATHS="/lib /usr/lib /libexec /usr/libexec"
+BINARY_PATHS="${LIBRARY_PATHS} /bin /sbin /usr/bin /usr/sbin"
+
+# List of directories that could probably empty and are removed automatically
+# so they won't appear in any package.
+ORPHAN_CANDIDATES="${BINARY_PATHS} /usr /usr/include /usr/share"
+for i in $(seq 0 9); do
+	ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/share/man/man${i}"
+done
+ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/pkgconfig"
+ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/python*"
+
