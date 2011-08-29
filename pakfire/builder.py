@@ -229,52 +229,6 @@ class BuildEnviron(object):
 
 				self.copyout(file_in, file_out)
 
-	def get_pwuid(self, uid):
-		users = {}
-
-		f = open(self.chrootPath("/etc/passwd"))
-		for line in f.readlines():
-			m = re.match(r"^([a-z][a-z0-9_\-]{,30}):x:(\d+):(\d+):(.*):(.*)$", line)
-			if not m:
-				continue
-
-			item = {
-				"name"  : m.group(1),
-				"uid"   : int(m.group(2)),
-				"gid"   : int(m.group(3)),
-				"home"  : m.group(4),
-				"shell" : m.group(5),
-			}
-
-			assert not users.has_key(item["uid"])
-			users[item["uid"]] = item
-
-		f.close()
-
-		return users.get(uid, None)
-
-	def get_grgid(self, gid):
-		groups = {}
-
-		f = open(self.chrootPath("/etc/group"))
-		for line in f.readlines():
-			m = re.match(r"^([a-z][a-z0-9_\-]{,30}):x:(\d+):(.*)$", line)
-			if not m:
-				continue
-
-			item = {
-				"name"  : m.group(1),
-				"gid"   : int(m.group(2)),
-			}
-
-			# XXX re-enable later
-			#assert not groups.has_key(item["gid"])
-			groups[item["gid"]] = item
-
-		f.close()
-
-		return groups.get(gid, None)
-
 	def extract(self, requires=None, build_deps=True):
 		"""
 			Gets a dependency set and extracts all packages

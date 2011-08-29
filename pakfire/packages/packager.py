@@ -132,36 +132,13 @@ class Packager(object):
 		datafile = InnerTarFile(datafile)
 
 		for m in datafile.getmembers():
-			# XXX need to check what to do with UID/GID
-			logging.info("  %s %-8s %-8s %s %6s %s" % \
+			logging.debug("  %s %-8s %-8s %s %6s %s" % \
 				(tarfile.filemode(m.mode), m.uname, m.gname,
 				"%d-%02d-%02d %02d:%02d:%02d" % time.localtime(m.mtime)[:6],
 				util.format_size(m.size), m.name))
-		
-			info = m.get_info(tarfile.ENCODING, "strict")
-
-			# Update uname.
-			if hasattr(self, "builder"):
-				pwuid = self.builder.get_pwuid(info["uid"])
-				if not pwuid:
-					logging.warning("UID '%d' not found. Using root.")
-					info["uname"] = "root"
-				else:
-					info["uname"] = pwuid["name"]
-
-				# Update gname.
-				grgid = self.builder.get_grgid(info["gid"])
-				if not grgid:
-					logging.warning("GID '%d' not found. Using root.")
-					info["gname"] = "root"
-				else:
-					info["gname"] = grgid["name"]
-			else:
-				# Files in the source packages always belong to root.
-				info["uname"] = info["gname"] = "root"
 
 			f.write("%(name)-40s %(type)1s %(size)-10d %(uname)-10s %(gname)-10s %(mode)-6d %(mtime)-12d" \
-				% info)
+				% m.get_info(tarfile.ENCODING, "strict"))
 
 			# Calculate SHA512 hash of regular files.
 			if m.isreg():
