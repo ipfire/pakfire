@@ -455,7 +455,17 @@ class BinaryPackager(Packager):
 		return configsfile
 
 	def compress_datafile(self, datafile, algo="xz"):
-		pass
+		outputfile = self.mktemp()
+
+		# Compress the datafile with the choosen algorithm.
+		pakfire.compress.compress_file(datafile, outputfile, algo=algo,
+			progress=True, message=_("Compressing %s") % self.pkg.friendly_name)
+
+		# We do not need the uncompressed output anymore.
+		os.unlink(datafile)
+
+		# The outputfile becomes out new datafile.
+		return outputfile
 
 	def run(self, resultdir):
 		# Add all files to this package.
@@ -471,7 +481,7 @@ class BinaryPackager(Packager):
 		metafile = self.create_metafile(datafile)
 
 		# XXX make xz in variable
-		self.compress_datafile(datafile, algo="xz")
+		datafile = self.compress_datafile(datafile, algo="xz")
 
 		# Add files to the tar archive in correct order.
 		self.add(metafile, "info")

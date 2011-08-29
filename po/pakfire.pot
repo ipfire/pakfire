@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-28 21:19+0200\n"
+"POT-Creation-Date: 2011-08-29 17:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,22 +82,22 @@ msgid "Package information:"
 msgstr ""
 
 #. Copy the makefile and load source tarballs.
-#: ../pakfire/builder.py:307
+#: ../pakfire/builder.py:261
 msgid "Extracting"
 msgstr ""
 
-#: ../pakfire/builder.py:599
+#: ../pakfire/builder.py:551
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../pakfire/builder.py:745
+#: ../pakfire/builder.py:697
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../pakfire/builder.py:756
+#: ../pakfire/builder.py:708
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
@@ -334,6 +334,11 @@ msgstr ""
 msgid "Do not verify build dependencies."
 msgstr ""
 
+#: ../pakfire/compress.py:133 ../pakfire/packages/packager.py:462
+#, python-format
+msgid "Compressing %s"
+msgstr ""
+
 #: ../pakfire/errors.py:30
 msgid "An unhandled error occured."
 msgstr ""
@@ -460,11 +465,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../pakfire/packages/packager.py:309
+#: ../pakfire/packages/packager.py:288
 msgid "Packaging"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:590
+#: ../pakfire/packages/packager.py:579
 #, python-format
 msgid "Building source package %s:"
 msgstr ""

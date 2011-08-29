@@ -25,6 +25,7 @@ import progressbar
 import zlib
 
 from constants import *
+from i18n import _
 
 PROGRESS_WIDGETS = [
 	progressbar.Bar(left="[", right="]"),
@@ -112,3 +113,63 @@ def decompressobj(i, o, algo="xz", progress=None):
 
 	return __compress_helper(i, o, comp.decompress, comp.flush, progress=progress)
 
+def compress_file(inputfile, outputfile, message="", algo="xz", progress=True):
+	"""
+		Compress a file in place.
+	"""
+	assert os.path.exists(inputfile)
+
+	# Get total size of the file for the progressbar.
+	total_size = os.path.getsize(inputfile)
+
+	# Open the input file for reading.
+	i = open(inputfile, "r")
+
+	# Open the output file for wrinting.
+	o = open(outputfile, "w")
+
+	if progress:
+		if not message:
+			message = _("Compressing %s") % os.path.basename(filename)
+
+		progress = progressbar.ProgressBar(
+			widgets = ["%-40s" % message, " ",] + PROGRESS_WIDGETS,
+			maxval = total_size,
+		)
+
+		progress.start()
+
+	if algo == "xz":
+		compressor = lzma.LZMACompressor()
+	elif algo == "zlib":
+		comp = zlib.decompressobj(9)
+	else:
+		raise Exception, "Unknown compression choosen: %s" % algo
+
+	size = 0
+	while True:
+		buf = i.read(BUFFER_SIZE)
+		if not buf:
+			break
+
+		# Update progressbar.
+		size += len(buf)
+		if progress:
+			progress.update(size)
+
+		# Compress the bits in buf.
+		buf = compressor.compress(buf)
+
+		# Write the compressed output.
+		o.write(buf)
+
+	# Flush all buffers.
+	buf = compressor.flush()
+	o.write(buf)
+
+	# Close the progress bar.
+	if progress:
+		progress.finish()
+
+	i.close()
+	o.close()
