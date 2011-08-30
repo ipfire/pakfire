@@ -21,6 +21,7 @@
 
 import logging
 import os
+import re
 import shutil
 import socket
 import tarfile
@@ -31,6 +32,7 @@ from urlgrabber.progress import TextMeter
 import lexer
 import packager
 
+import pakfire.chroot as chroot
 import pakfire.util as util
 
 from base import Package
@@ -368,6 +370,9 @@ class MakefilePackage(MakefileBase):
 		self._name = name
 		self.lexer = lexer
 
+		# Store additional dependencies in here.
+		self._dependencies = {}
+
 	@property
 	def name(self):
 		return self._name
@@ -388,28 +393,57 @@ class MakefilePackage(MakefileBase):
 	def uuid(self):
 		return None
 
-	def get_deps_from_builder(self, builder):
-		pass
+	def track_dependencies(self, builder, path):
+		result = builder.do("/usr/lib/buildsystem-tools/dependency-tracker %s" \
+			% path, returnOutput=True)
+
+		for line in result.splitlines():
+			m = re.match(r"^(\w+)=(.*)$", line)
+			if m is None:
+				continue
+
+			key, val = m.groups()
+
+			if not key in ("prerequires", "requires", "provides", "conflicts", "obsoletes",):
+				continue
+
+			val = val.strip("\"")
+			val = val.split()
+
+			self._dependencies[key] = sorted(val)
+
+	def get_deps(self, key):
+		# Collect all dependencies that were set in the makefile by the user.
+		deps = self.lexer.get_var(key).split()
+
+		# Collect all dependencies that were discovered by the tracker.
+		deps += self._dependencies.get(key, [])
+
+		# Remove duplicates.
+		deps = set(deps)
+		deps = list(deps)
+
+		return sorted(deps)
 
 	@property
 	def prerequires(self):
-		return []
+		return self.get_deps("prerequires")
 
 	@property
 	def requires(self):
-		return []
+		return self.get_deps("requires")
 
 	@property
 	def provides(self):
-		return []
+		return self.get_deps("provides")
 
 	@property
 	def obsoletes(self):
-		return []
+		return self.get_deps("obsoletes")
 
 	@property
 	def conflicts(self):
-		return []
+		return self.get_deps("conflicts")
 
 	def get_scriptlet(self, type):
 		return self.lexer.scriptlets.get(type, None)

@@ -59,11 +59,18 @@ class Packager(object):
 				continue
 
 			logging.debug("Removing tmpfile: %s" % file)
-			os.remove(file)
 
-	def mktemp(self):
+			if os.path.isdir(file):
+				util.rm(file)
+			else:
+				os.remove(file)
+
+	def mktemp(self, directory=False):
 		# XXX use real mk(s)temp here
 		filename = os.path.join("/", LOCAL_TMP_PATH, util.random_string())
+
+		if directory:
+			os.makedirs(filename)
 
 		self.tmpfiles.append(filename)
 
@@ -170,13 +177,24 @@ class Packager(object):
 
 
 class BinaryPackager(Packager):
-	def __init__(self, pakfire, pkg, buildroot):
+	def __init__(self, pakfire, pkg, builder, buildroot):
 		Packager.__init__(self, pakfire, pkg)
 
+		self.builder = builder
 		self.buildroot = buildroot
 
 	def create_metafile(self, datafile):
 		info = collections.defaultdict(lambda: "")
+
+		# Extract datafile in temporary directory and scan for dependencies.
+		tmpdir = self.mktemp(directory=True)
+
+		tarfile = InnerTarFile(datafile)
+		tarfile.extractall(path=tmpdir)
+		tarfile.close()
+
+		# Run the dependency tracker.
+		self.pkg.track_dependencies(self.builder, tmpdir)
 
 		# Generic package information including Pakfire information.
 		info.update({
@@ -190,8 +208,17 @@ class BinaryPackager(Packager):
 
 		# Update package information for string formatting.
 		info.update({
-			"groups"   : " ".join(self.pkg.groups),
-			"requires" : " ".join(self.pkg.requires),
+			"groups"      : " ".join(self.pkg.groups),
+			"prerequires" : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.prerequires]),
+			"requires"    : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.requires]),
+			"provides"    : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.provides]),
+			"conflicts"   : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.conflicts]),
+			"obsoletes"   : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.obsoletes]),
 		})
 
 		# Format description.

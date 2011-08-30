@@ -696,7 +696,8 @@ class Builder2(object):
 		# Make all these little package from the build environment.
 		logging.info(_("Creating packages:"))
 		for pkg in reversed(self.pkg.packages):
-			packager = packages.packager.BinaryPackager(self.pakfire, pkg, self.buildroot)
+			packager = packages.packager.BinaryPackager(self.pakfire, pkg,
+				self, self.buildroot)
 			packager.run(self.resultdir)
 		logging.info("")
 

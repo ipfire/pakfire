@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 18:18+0200\n"
+"POT-Creation-Date: 2011-08-29 19:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -334,7 +334,7 @@ msgstr ""
 msgid "Do not verify build dependencies."
 msgstr ""
 
-#: ../pakfire/compress.py:133 ../pakfire/packages/packager.py:462
+#: ../pakfire/compress.py:133 ../pakfire/packages/packager.py:483
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -465,11 +465,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../pakfire/packages/packager.py:288
+#: ../pakfire/packages/packager.py:309
 msgid "Packaging"
 msgstr ""
 
-#: ../pakfire/packages/packager.py:579
+#: ../pakfire/packages/packager.py:600
 #, python-format
 msgid "Building source package %s:"
 msgstr ""

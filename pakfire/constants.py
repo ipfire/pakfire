@@ -117,6 +117,7 @@ package
 	license     = %(license)s
 
 	summary     = %(summary)s
+
 	def description
 %(description)s
 	end
