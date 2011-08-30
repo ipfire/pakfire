@@ -447,3 +447,8 @@ class MakefilePackage(MakefileBase):
 
 	def get_scriptlet(self, type):
 		return self.lexer.scriptlets.get(type, None)
+
+	@property
+	def inst_size(self):
+		# The size of this is unknown.
+		return 0

@@ -134,6 +134,11 @@ class DatabasePackage(Package):
 		return self.metadata.get("size", 0)
 
 	@property
+	def inst_size(self):
+		# XXX to be done
+		return 0
+
+	@property
 	def provides(self):
 		return self.metadata.get("provides", "").split()
 

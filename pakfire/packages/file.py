@@ -319,6 +319,19 @@ class FilePackage(Package):
 		"""
 		return os.path.getsize(self.filename)
 
+	@property
+	def inst_size(self):
+		inst_size = 0
+
+		if self.format >= 1:
+			inst_size = self.lexer.package.get_var("size")
+			try:
+				inst_size = int(inst_size)
+			except TypeError:
+				inst_size = 0
+
+		return inst_size
+
 	def __filelist_from_metadata(self):
 		a = self.open_archive()
 		f = a.extractfile("filelist")

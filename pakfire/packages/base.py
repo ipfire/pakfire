@@ -203,8 +203,7 @@ class Package(object):
 
 	@property
 	def inst_size(self):
-		# XXX to be done
-		return 0
+		raise NotImplementedError, "%s" % self
 
 	@property
 	def local(self):
