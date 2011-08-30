@@ -310,8 +310,10 @@ class Lexer(object):
 
 		if o == "+":
 			prev = self.definitions.get(k, None)
+			if prev is None and self.parent:
+				prev = self.parent.definitions.get(k, None)
 			if prev:
-				v = " ".join((prev, v))
+				v = " ".join((prev or "", v))
 
 		# Handle backslash.
 		while v and v.endswith("\\"):
