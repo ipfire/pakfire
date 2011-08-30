@@ -164,7 +164,7 @@ class Packager(object):
 			# For other files, just finish the line.
 			else:
 				f.write(" -\n")
-				
+
 		logging.info("")
 
 		datafile.close()

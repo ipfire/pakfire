@@ -332,13 +332,23 @@ class FilePackage(Package):
 
 		return inst_size
 
-	def __filelist_from_metadata(self):
+	@property
+	def filelist(self):
+		"""
+			Return a list of the files that are contained in the package
+			payload.
+		"""
 		a = self.open_archive()
 		f = a.extractfile("filelist")
 
 		ret = []
 		for line in f.readlines():
 			line = line.strip()
+
+			if self.format >= 1:
+				line = line.split()
+				line = line[0]
+
 			if not line.startswith("/"):
 				line = "/%s" % line
 
@@ -348,42 +358,6 @@ class FilePackage(Package):
 		a.close()
 
 		return ret
-
-	def __filelist_from_payload(self):
-		# XXX expect uncompressed payload for now
-		# this is very simple and very slow
-
-		a = self.open_archive()
-		f = a.extractfile("data.img")
-		t = tarfile.open(fileobj=f)
-
-		ret = ["/%s" % n for n in t.getnames()]
-
-		t.close()
-		f.close()
-		a.close()
-
-		return ret
-
-	@property
-	def filelist(self):
-		"""
-			Return a list of the files that are contained in the package
-			payload.
-
-			At first, we try to get them from the metadata (which is the
-			'filelist' file).
-			If the file is not existant, we will open the payload and
-			read it instead. The latter is a very slow procedure and
-			should not be used anyway.
-		"""
-		if not hasattr(self, "__filelist"):
-			try:
-				self.__filelist = self.__filelist_from_metadata()
-			except KeyError:
-				self.__filelist = self.__filelist_from_payload()
-
-		return self.__filelist
 
 	@property
 	def configfiles(self):
