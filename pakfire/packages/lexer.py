@@ -38,7 +38,7 @@ LEXER_BLOCK_LINE_INDENT = "\t"
 LEXER_BLOCK_LINE      = re.compile(r"^\t(.*)$")
 LEXER_BLOCK_END       = re.compile(r"^end$")
 
-LEXER_DEFINE_BEGIN    = re.compile(r"^def ([A-Za-z0-9_\-]+)$")
+LEXER_DEFINE_BEGIN    = re.compile(r"^(def)?\s?([A-Za-z0-9_\-]+)$")
 LEXER_DEFINE_LINE     = LEXER_BLOCK_LINE
 LEXER_DEFINE_END      = LEXER_BLOCK_END
 
@@ -67,6 +67,10 @@ LEXER_DISTRO_BEGIN    = re.compile(r"^distribution$")
 LEXER_DISTRO_LINE     = LEXER_BLOCK_LINE
 LEXER_DISTRO_END      = LEXER_BLOCK_END
 
+LEXER_PACKAGES_BEGIN  = re.compile(r"^packages$")
+LEXER_PACKAGES_LINE   = LEXER_BLOCK_LINE
+LEXER_PACKAGES_END    = LEXER_BLOCK_END
+
 LEXER_PACKAGE2_BEGIN  = re.compile(r"^package$")
 LEXER_PACKAGE2_LINE   = LEXER_BLOCK_LINE
 LEXER_PACKAGE2_END    = LEXER_BLOCK_END
@@ -77,6 +81,7 @@ LEXER_UNEXPORT        = re.compile(r"^unexport ([A-Za-z0-9_\-]+)$")
 LEXER_INCLUDE         = re.compile(r"^include (.+)$")
 
 LEXER_VARIABLE        = re.compile(r"\%\{([A-Za-z0-9_\-]+)\}")
+LEXER_SHELL           = re.compile(r"\%\(.*\)")
 
 
 class Lexer(object):
@@ -210,6 +215,9 @@ class Lexer(object):
 			(LEXER_COMMENT,			self.parse_comment),
 			(LEXER_DEFINITION,		self.parse_definition),
 			(LEXER_DEFINE_BEGIN,	self.parse_define),
+			# Needs to be done.
+			#(LEXER_EXPORT,		self.parse_export),
+			#(LEXER_UNEXPORT,		self.parse_unexport),
 		]
 
 	def get_parsers(self):
@@ -223,7 +231,7 @@ class Lexer(object):
 
 		line = self.get_line(self._lineno)
 
-		parsers = self.get_default_parsers() + self.get_parsers()
+		parsers = self.get_parsers() + self.get_default_parsers()
 
 		found = False
 		for pattern, func in parsers:
@@ -333,10 +341,34 @@ class Lexer(object):
 		if not m:
 			raise Exception, "XXX not a define"
 
+		# Check content of next line.
+		found = None
+		i = 1
+		while True:
+			line = self.get_line(self._lineno + i)
+
+			# Skip empty lines.
+			empty = re.match(LEXER_EMPTY_LINE, line)
+			if empty:
+				i += 1
+				continue
+
+			for pattern in (LEXER_DEFINE_LINE, LEXER_DEFINE_END):
+				found = re.match(pattern, line)
+				if found:
+					break
+
+			if found:
+				break
+
+		if found is None:
+			line = self.get_line(self._lineno)
+			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+
 		# Go in to next line.
 		self._lineno += 1
 
-		key = m.group(1)
+		key = m.group(2)
 		assert key
 
 		value = []
@@ -450,6 +482,8 @@ class PackageLexer(TemplateLexer):
 
 		self._template = "MAIN"
 
+		assert isinstance(self.parent, PackagesLexer)
+
 	@property
 	def definitions(self):
 		definitions = {}
@@ -466,21 +500,16 @@ class PackageLexer(TemplateLexer):
 		if not self._template:
 			return None
 
-		# Get templates from root.
-		assert self.root
-		templates = self.root.templates
-
+		# Get template from parent.
 		try:
-			return templates[self._template]
+			return self.root.templates[self._template]
 		except KeyError:
 			raise LexerError, "Template does not exist: %s" % self._template
 
 	def get_parsers(self):
-		parsers = TemplateLexer.get_parsers(self)
-
-		parsers += [
+		parsers = [
 			(LEXER_PACKAGE_INHERIT,		self.parse_inherit),
-		]
+		] + TemplateLexer.get_parsers(self)
 
 		return parsers
 
@@ -521,18 +550,15 @@ class RootLexer(DefaultLexer):
 		# environment.
 		self.exports = []
 
+		# A place to store all packages and templates.
+		self.packages = PackagesLexer([], parent=self)
+
 		# Import all environment variables.
 		if environ:
 			for k, v in environ.items():
 				self._definitions[k] = v
 
 				self.exports.append(k)
-
-		# A place to store all packages.
-		self.packages = []
-
-		# A place to store all templates.
-		self.templates = {}
 
 		# Place for build instructions
 		self.build = BuildLexer([], parent=self)
@@ -556,18 +582,20 @@ class RootLexer(DefaultLexer):
 		self._definitions.update(other._definitions)
 
 		self.build.inherit(other.build)
-		self.templates.update(other.templates)
-		self.packages += other.packages
+		self.packages.inherit(other.packages)
 
 		for export in other.exports:
 			if not export in self.exports:
 				self.exports.append(export)
 
+	@property
+	def templates(self):
+		return self.packages.templates
+
 	def get_parsers(self):
 		return [
 			(LEXER_INCLUDE,			self.parse_include),
-			(LEXER_TEMPLATE_BEGIN,	self.parse_template),
-			(LEXER_PACKAGE_BEGIN,	self.parse_package),
+			(LEXER_PACKAGES_BEGIN,	self.parse_packages),
 			(LEXER_BUILD_BEGIN,		self.parse_build),
 		]
 
@@ -638,6 +666,46 @@ class RootLexer(DefaultLexer):
 			if k and k in self.exports:
 				self.exports.remove(k)
 
+	def parse_packages(self):
+		keys, lines = self.read_block(
+			pattern_start=LEXER_PACKAGES_BEGIN,
+			pattern_line=LEXER_PACKAGES_LINE,
+			pattern_end=LEXER_PACKAGES_END,
+			raw=True,
+		)
+
+		pkgs = PackagesLexer(lines, parent=self)
+		self.packages.inherit(pkgs)
+
+
+class PackagesLexer(DefaultLexer):
+	def init(self, environ):
+		# A place to store all templates.
+		self.templates = {}
+
+		# A place to store all packages.
+		self.packages = []
+
+	def inherit(self, other):
+		# Copy all templates and packages but make sure
+		# to update the parent lexer (for accessing each other).
+		for name, template in other.templates.items():
+			template.parent = self
+			self.templates[name] = template
+
+		for pkg in other.packages:
+			pkg.parent = self
+			self.packages.append(pkg)
+
+	def __iter__(self):
+		return iter(self.packages)
+
+	def get_parsers(self):
+		return [
+			(LEXER_TEMPLATE_BEGIN,	self.parse_template),
+			(LEXER_PACKAGE_BEGIN,	self.parse_package),
+		]
+
 	def parse_template(self):
 		line = self.get_line(self._lineno)
 
@@ -690,13 +758,15 @@ class RootLexer(DefaultLexer):
 		if not m:
 			raise LexerError, "Invalid package name: %s" % name
 
-		lines = ["name = %s" % name]
+		lines = ["_name = %s" % name]
 
-		while True:
+		opened = False
+		while len(self.lines) > self._lineno:
 			line = self.get_line(self._lineno)
 
 			m = re.match(LEXER_PACKAGE_END, line)
 			if m:
+				opened = False
 				self._lineno += 1
 				break
 
@@ -704,6 +774,7 @@ class RootLexer(DefaultLexer):
 			if m:
 				self._lineno += 1
 				lines.append(m.group(1))
+				opened = True
 				continue
 
 			# Accept empty lines.
@@ -713,7 +784,16 @@ class RootLexer(DefaultLexer):
 				lines.append(line)
 				continue
 
-			raise Exception, "XXX unhandled line in package block: %s" % line
+			# If there is an unhandled line in a block, we raise an error.
+			if opened:
+				raise Exception, "XXX unhandled line in package block: %s" % line
+
+			# If the block was never opened, we just go on.
+			else:
+				break
+
+		if opened:
+			raise LexerError, "Unclosed package block '%s'." % name
 
 		package = PackageLexer(lines, parent=self)
 		self.packages.append(package)

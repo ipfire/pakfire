@@ -212,7 +212,7 @@ class Makefile(MakefileBase):
 		pkgs = []
 
 		for lexer in self.lexer.packages:
-			name = lexer.get_var("name")
+			name = lexer.get_var("_name")
 
 			pkg = MakefilePackage(self.pakfire, name, lexer)
 			pkgs.append(pkg)
@@ -285,7 +285,7 @@ class Makefile(MakefileBase):
 
 	@property
 	def requires(self):
-		return self.lexer.get_var("build_requires").split()
+		return self.lexer.build.get_var("requires", "").split()
 
 	@property
 	def provides(self):
