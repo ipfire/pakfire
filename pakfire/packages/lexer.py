@@ -83,6 +83,11 @@ LEXER_INCLUDE         = re.compile(r"^include (.+)$")
 LEXER_VARIABLE        = re.compile(r"\%\{([A-Za-z0-9_\-]+)\}")
 LEXER_SHELL           = re.compile(r"\%\(.*\)")
 
+LEXER_IF_IF           = re.compile(r"^if\s+(.*)\s+(==|!=)\s+(.*)\s*")
+LEXER_IF_ELIF         = re.compile(r"^elif\s+(.*)\s*(==|!=)\s*(.*)\s*")
+LEXER_IF_ELSE         = re.compile(r"^else")
+LEXER_IF_LINE         = LEXER_BLOCK_LINE
+LEXER_IF_END          = LEXER_BLOCK_END
 
 class Lexer(object):
 	def __init__(self, lines=[], parent=None, environ=None):
@@ -101,6 +106,9 @@ class Lexer(object):
 		self.run()
 
 	def inherit(self, other):
+		"""
+			Inherit everything from other lexer.
+		"""
 		self._definitions.update(other._definitions)
 
 	@property
@@ -215,6 +223,7 @@ class Lexer(object):
 			(LEXER_COMMENT,			self.parse_comment),
 			(LEXER_DEFINITION,		self.parse_definition),
 			(LEXER_DEFINE_BEGIN,	self.parse_define),
+			(LEXER_IF_IF,			self.parse_if),
 			# Needs to be done.
 			#(LEXER_EXPORT,		self.parse_export),
 			#(LEXER_UNEXPORT,		self.parse_unexport),
@@ -396,10 +405,120 @@ class Lexer(object):
 
 		self._definitions[key] = "\n".join(value)
 
+	def _parse_if_block(self, first=True):
+		line = self.get_line(self._lineno)
+
+		found = False
+
+		if first:
+			m = re.match(LEXER_IF_IF, line)
+			if m:
+				found = True
+		else:
+			m = re.match(LEXER_IF_ELIF, line)
+			if m:
+				found = True
+			else:
+				m = re.match(LEXER_IF_ELSE, line)
+				if m:
+					found = True
+
+		if not found:
+			raise LexerError, "No valid begin of if statement: %d: %s" \
+					% (self.lineno, line)
+
+		self._lineno += 1
+		clause = m.groups()
+		lines = []
+
+		block_closed = False
+		while len(self.lines) >= self._lineno:
+			line = self.get_line(self._lineno)
+
+			for pattern in (LEXER_IF_END, LEXER_IF_ELIF, LEXER_IF_ELSE):
+				m = re.match(pattern, line)
+				if m:
+					block_closed = True
+					break
+
+			if block_closed:
+				break
+
+			m = re.match(LEXER_IF_LINE, line)
+			if m:
+				self._lineno += 1
+				lines.append("%s" % m.groups())
+				continue
+
+			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+
+		if not block_closed:
+			raise LexerError, "Unclosed if block"
+
+		return (clause, lines)
+
+	def parse_if(self):
+		blocks = []
+		blocks.append(self._parse_if_block(first=True))
+
+		while len(self.lines) >= self._lineno:
+			line = self.get_line(self._lineno)
+
+			found = False
+			for pattern in (LEXER_IF_ELIF, LEXER_IF_ELSE,):
+				m = re.match(pattern, line)
+				if m:
+					# Found another block.
+					found = True
+					blocks.append(self._parse_if_block(first=False))
+					break
+
+			if not found:
+				break
+
+		# Check for end.
+		line = self.get_line(self._lineno)
+		m = re.match(LEXER_IF_END, line)
+		if not m:
+			raise LexerError, "Unclosed if clause"
+
+		self._lineno += 1
+
+		# Read in all blocks, now we evaluate each clause.
+		for clause, lines in blocks:
+			val = False
+
+			if len(clause) == 3:
+				a, op, b = clause
+
+				# Remove leading and trailing "s and 's.
+				a = a.lstrip("\"'").rstrip("\"'")
+				b = b.lstrip("\"'").rstrip("\"'")
+
+				a = self.expand_string(a)
+				b = self.expand_string(b)
+
+				if op == "==":
+					val = a == b
+				elif op == "!=":
+					val = not a == b
+				else:
+					raise LexerError, "Unknown operator: %s" % op
+
+			else:
+				# Else is always true.
+				val = True
+
+			# If any clause is true, we can parse the block.
+			if val:
+				lexer = self.__class__(lines, parent=self)
+				self.inherit(lexer)
+				break
+
 
 class DefaultLexer(Lexer):
 	"""
-		A lexer which only knows about about simple definitions and def.
+		A lexer which only knows about simple definitions.
 	"""
 	pass
 
@@ -482,7 +601,8 @@ class PackageLexer(TemplateLexer):
 
 		self._template = "MAIN"
 
-		assert isinstance(self.parent, PackagesLexer)
+		assert isinstance(self.parent, PackagesLexer) or \
+			isinstance(self.parent, PackageLexer), self.parent
 
 	@property
 	def definitions(self):
@@ -530,18 +650,8 @@ class PackageLexer(TemplateLexer):
 
 class BuildLexer(DefaultLexer):
 	@property
-	def definitions(self):
-		return self._definitions
-
-	@property
 	def stages(self):
 		return self.definitions
-
-	def inherit(self, other):
-		"""
-			Inherit everything from other lexer.
-		"""
-		self._definitions.update(other._definitions)
 
 
 class RootLexer(DefaultLexer):
