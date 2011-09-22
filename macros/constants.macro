@@ -19,14 +19,13 @@ configure_options = \
 	--prefix=/usr
 
 patches =
-sources = %{tarball}
-tarball = %{thisapp}.tar.gz
+sources = %{thisapp}.tar.gz
 
 # Macro definitions
 
 # Macro to extract tarballs.
 # Guesses the compression type automatically.
-MACRO_EXTRACT = tar xvaf
+MACRO_EXTRACT = tar xaf
 
 # Macro to define and start the quality agent.
 # Long term goal is to improve the commited code.

@@ -1,0 +1,9 @@
+
+# Export CFLAGS + CXXFLAGS
+GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -fexceptions --param=ssp-buffer-size=4
+
+CFLAGS_i686     = -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables
+CFLAGS_x86_64   = -m64 -mtune=generic
+
+export CFLAGS   = %{GLOBAL_CFLAGS} %{CFLAGS_%{DISTRO_ARCH}}
+export CXXFLAGS = %{CFLAGS}
