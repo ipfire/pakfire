@@ -314,6 +314,15 @@ class Makefile(MakefileBase):
 	def sources(self):
 		return self.lexer.get_var("sources").split()
 
+	@property
+	def exports(self):
+		exports = {}
+
+		for export in self.lexer.build.exports:
+			exports[export] = self.lexer.build.get_var(export)
+
+		return exports
+
 	def extract(self, message=None, prefix=None):
 		# XXX neeed to make this waaaaaaaaaay better.
 

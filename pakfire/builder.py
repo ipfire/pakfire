@@ -619,6 +619,11 @@ class Builder2(object):
 	@property
 	def environ(self):
 		environ = os.environ
+
+		# Get all definitions from the package.
+		environ.update(self.pkg.exports)
+
+		# Overwrite some definitions by default values.
 		environ.update(self._environ)
 
 		return environ

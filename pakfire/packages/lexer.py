@@ -32,7 +32,7 @@ LEXER_COMMENT         = re.compile(r"^\s*#")
 LEXER_QUOTES          = "\"'"
 LEXER_EMPTY_LINE      = re.compile(r"^\s*$")
 
-LEXER_DEFINITION      = re.compile(r"^([A-Za-z0-9_\-]+)\s*(\+)?=\s*(.+)?")
+LEXER_DEFINITION      = re.compile(r"^([A-Za-z0-9_\-]+)\s*(\+)?=\s*(.+)?$")
 
 LEXER_BLOCK_LINE_INDENT = "\t"
 LEXER_BLOCK_LINE      = re.compile(r"^\t(.*)$")
@@ -76,9 +76,10 @@ LEXER_PACKAGE2_LINE   = LEXER_BLOCK_LINE
 LEXER_PACKAGE2_END    = LEXER_BLOCK_END
 
 # Statements:
-LEXER_EXPORT          = re.compile(r"^export ([A-Za-z0-9_\-])\s*(\+)?=\s*(.+)$")
-LEXER_UNEXPORT        = re.compile(r"^unexport ([A-Za-z0-9_\-]+)$")
-LEXER_INCLUDE         = re.compile(r"^include (.+)$")
+LEXER_EXPORT          = re.compile(r"^export\s+([A-Za-z0-9_\-]+)\s*(\+)?=\s*(.+)?$")
+LEXER_EXPORT2         = re.compile(r"^export\s+([A-Za-z0-9_\-]+)$")
+LEXER_UNEXPORT        = re.compile(r"^unexport\s+([A-Za-z0-9_\-]+)$")
+LEXER_INCLUDE         = re.compile(r"^include\s+(.+)$")
 
 LEXER_VARIABLE        = re.compile(r"\%\{([A-Za-z0-9_\-]+)\}")
 LEXER_SHELL           = re.compile(r"\%\(.*\)")
@@ -205,10 +206,7 @@ class Lexer(object):
 		try:
 			val = definitions[key]
 		except KeyError:
-			logging.warning("Undefined variable: %s" % key)
-			#if default is None:
-			#	logging.warning("Undefined variable: %s" % key)
-			#	raise LexerUndefinedVariableError, key
+			pass
 
 		if val is None:
 			val = default
@@ -224,9 +222,6 @@ class Lexer(object):
 			(LEXER_DEFINITION,		self.parse_definition),
 			(LEXER_DEFINE_BEGIN,	self.parse_define),
 			(LEXER_IF_IF,			self.parse_if),
-			# Needs to be done.
-			#(LEXER_EXPORT,		self.parse_export),
-			#(LEXER_UNEXPORT,		self.parse_unexport),
 		]
 
 	def get_parsers(self):
@@ -648,17 +643,82 @@ class PackageLexer(TemplateLexer):
 		assert self.template
 
 
-class BuildLexer(DefaultLexer):
+class ExportLexer(DefaultLexer):
+	@property
+	def exports(self):
+		if not hasattr(self.parent, "exports"):
+			return self._exports
+
+		exports = []
+		for export in self._exports + self.parent.exports:
+			exports.append(export)
+
+		return exports
+
+	def init(self, environ):
+		# A list of variables that should be exported in the build
+		# environment.
+		self._exports = []
+		self._unexports = []
+
+	def get_parsers(self):
+		return [
+			(LEXER_EXPORT,			self.parse_export),
+			(LEXER_EXPORT2,			self.parse_export2),
+			(LEXER_UNEXPORT,		self.parse_unexport),
+		]
+
+	def inherit(self, other):
+		DefaultLexer.inherit(self, other)
+
+		# Try to remove all unexported variables.
+		for unexport in other._unexports:
+			try:
+				self._exports.remove(unexport)
+			except:
+				pass
+
+		for export in other._exports:
+			if not export in self._exports:
+				self._exports.append(export)
+
+	def parse_export(self):
+		k, v = self.parse_definition(pattern=LEXER_EXPORT)
+
+		if k and not k in self.exports:
+			self._exports.append(k)
+
+	def parse_export2(self):
+		line = self.get_line(self._lineno)
+		self._lineno += 1
+
+		m = re.match(LEXER_EXPORT2, line)
+		if m:
+			k = m.group(1)
+			if k and k in self.exports:
+				self._exports.append(k)
+
+	def parse_unexport(self):
+		line = self.get_line(self._lineno)
+		self._lineno += 1
+
+		m = re.match(LEXER_UNEXPORT, line)
+		if m:
+			k = m.group(1)
+			if k and k in self.exports:
+				self._exports.remove(k)
+				self._unexports.append(k)
+
+
+class BuildLexer(ExportLexer):
 	@property
 	def stages(self):
 		return self.definitions
 
 
-class RootLexer(DefaultLexer):
+class RootLexer(ExportLexer):
 	def init(self, environ):
-		# A list of variables that should be exported in the build
-		# environment.
-		self.exports = []
+		ExportLexer.init(self, environ)
 
 		# A place to store all packages and templates.
 		self.packages = PackagesLexer([], parent=self)
@@ -689,25 +749,26 @@ class RootLexer(DefaultLexer):
 		"""
 			Inherit everything from other lexer.
 		"""
+		ExportLexer.inherit(self, other)
+
 		self._definitions.update(other._definitions)
 
 		self.build.inherit(other.build)
 		self.packages.inherit(other.packages)
-
-		for export in other.exports:
-			if not export in self.exports:
-				self.exports.append(export)
 
 	@property
 	def templates(self):
 		return self.packages.templates
 
 	def get_parsers(self):
-		return [
+		parsers = ExportLexer.get_parsers(self)
+		parsers += [
 			(LEXER_INCLUDE,			self.parse_include),
 			(LEXER_PACKAGES_BEGIN,	self.parse_packages),
 			(LEXER_BUILD_BEGIN,		self.parse_build),
 		]
+
+		return parsers
 
 	def parse_build(self):
 		line = self.get_line(self._lineno)
@@ -759,22 +820,6 @@ class RootLexer(DefaultLexer):
 
 		# Go on to next line.
 		self._lineno += 1
-
-	def parse_export(self):
-		k, v = self.parse_definition(pattern, LEXER_EXPORT)
-
-		if k and not k in self.exports:
-			self.exports.append(k)
-
-	def parse_unexport(self):
-		line = self.get_line(self._lineno)
-		self._lineno += 1
-
-		m = re.match(LEXER_UNEXPORT, line)
-		if m:
-			k = m.group(1)
-			if k and k in self.exports:
-				self.exports.remove(k)
 
 	def parse_packages(self):
 		keys, lines = self.read_block(
