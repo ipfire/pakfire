@@ -659,7 +659,7 @@ class Builder2(object):
 
 	def create_icecream_toolchain(self):
 		try:
-			out = self.do("icecc --build-native", returnOutput=True)
+			out = self.do("icecc --build-native 2>/dev/null", returnOutput=True)
 		except Error:
 			return
 
