@@ -541,7 +541,7 @@ class BuildEnviron(object):
 		resultdir = self.chrootPath("/result")
 
 		# Create the build command, that is executed in the chroot.
-		build_command = ["pakfire-build2", "--offline", "build", pkgfile,
+		build_command = ["/usr/lib/pakfire/builder", "--offline", "build", pkgfile,
 			"--nodeps", "--resultdir=/result",]
 
 		try:

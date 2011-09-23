@@ -16,9 +16,16 @@ clean:
 dist:
 	python setup.py sdist
 
+.PHONY: bdist
+bdist:
+	python setup.py bdist
+
 .PHONY: install
 install: po
 	python setup.py install --root=$(DESTDIR) --prefix=/usr
+
+	-mkdir -pv $(DESTDIR)/usr/lib/pakfire
+	ln -svf ../../bin/pakfire $(DESTDIR)/usr/lib/pakfire/builder
 
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
 	cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf

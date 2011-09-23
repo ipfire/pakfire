@@ -32,10 +32,10 @@ except ImportError, e:
 	sys.exit(1)
 
 basename2cls = {
-	"pakfire" : Cli,
-	"pakfire-build" : CliBuilder,
-	"pakfire-build2" : CliBuilder2,
-	"pakfire-server" : CliServer,
+	"pakfire"         : Cli,
+	"pakfire-builder" : CliBuilder,
+	"pakfire-server"  : CliServer,
+	"builder"         : CliBuilderIntern,
 }
 
 # Get the basename of the program

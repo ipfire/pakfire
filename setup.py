@@ -29,8 +29,7 @@ setup(
 	],
 	scripts = [
 		"scripts/pakfire",
-		"scripts/pakfire-build",
-		"scripts/pakfire-build2",
+		"scripts/pakfire-builder",
 		"scripts/pakfire-server",
 	],
 	data_files = [

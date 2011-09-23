@@ -573,7 +573,7 @@ class CliServer(Cli):
 		pakfire.repo_create(path, self.args.inputs, **self.pakfire_args)
 
 
-class CliBuilder2(Cli):
+class CliBuilderIntern(Cli):
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface."),
