@@ -24,6 +24,10 @@ bdist:
 install: po
 	python setup.py install --root=$(DESTDIR) --prefix=/usr
 
+	# Create script aliases.
+	ln -svf pakfire $(DESTDIR)/usr/bin/pakfire-builder
+	ln -svf pakfire $(DESTDIR)/usr/bin/pakfire-server
+
 	-mkdir -pv $(DESTDIR)/usr/lib/pakfire
 	ln -svf ../../bin/pakfire $(DESTDIR)/usr/lib/pakfire/builder
 

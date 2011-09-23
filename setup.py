@@ -29,8 +29,6 @@ setup(
 	],
 	scripts = [
 		"scripts/pakfire",
-		"scripts/pakfire-builder",
-		"scripts/pakfire-server",
 	],
 	data_files = [
 		("lib/pakfire/macros", [os.path.join("macros", f) for f in os.listdir("macros") if f.endswith(".macro")]),
