@@ -590,10 +590,7 @@ class BuildEnviron(object):
 		finally:
 			self._umountall()
 
-# XXX backwards compatibilty
-Builder = BuildEnviron
-
-class Builder2(object):
+class Builder(object):
 	def __init__(self, pakfire, filename, resultdir, **kwargs):
 		self.pakfire = pakfire
 

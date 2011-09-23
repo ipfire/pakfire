@@ -415,7 +415,7 @@ class Pakfire(object):
 		if not resultdirs:
 			resultdirs = []
 
-		b = builder.Builder(pkg, **kwargs)
+		b = builder.BuildEnviron(pkg, **kwargs)
 		p = b.pakfire
 
 		# Always include local repository.
@@ -443,9 +443,7 @@ class Pakfire(object):
 			b.destroy()
 
 	def _build(self, pkg, resultdir, nodeps=False, **kwargs):
-		print kwargs
-
-		b = builder.Builder2(self, pkg, resultdir, **kwargs)
+		b = builder.Builder(self, pkg, resultdir, **kwargs)
 
 		try:
 			b.build()
@@ -456,7 +454,7 @@ class Pakfire(object):
 
 	@staticmethod
 	def shell(pkg, **kwargs):
-		b = builder.Builder(pkg, **kwargs)
+		b = builder.BuildEnviron(pkg, **kwargs)
 
 		try:
 			b.prepare()
