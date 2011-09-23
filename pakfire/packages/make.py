@@ -139,7 +139,10 @@ class MakefileBase(Package):
 
 	@property
 	def description(self):
-		return self.lexer.get_var("description")
+		description = self.lexer.get_var("description")
+
+		# Replace all backslashes at the end of a line.
+		return description.replace("\\\n", "\n")
 
 	@property
 	def groups(self):
