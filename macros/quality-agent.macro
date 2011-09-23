@@ -4,14 +4,11 @@
 # Quality agent
 #
 ###############################################################################
-# Export variables for the quality agent
 
-export QUALITY_AGENT_PERMIT_NOT_FULL_RELRO
-export QUALITY_AGENT_RPATH_ALLOW_ORIGIN
-export QUALITY_AGENT_WHITELIST_EXECSTACK
-export QUALITY_AGENT_WHITELIST_NX
-export QUALITY_AGENT_WHITELIST_RPATH
-export QUALITY_AGENT_WHITELIST_SONAME
-export QUALITY_AGENT_WHITELIST_SYMLINK
-export QUALITY_AGENT_NO_DIRECTORY_CHECK
-export QUALITY_AGENT_NO_DIRECTORY_PRUNE
+# Macro to define and start the quality agent.
+# Long term goal is to improve the commited code.
+MACRO_QUALITY_AGENT = /usr/lib/pakfire/quality-agent
+
+# XXX to be moved to some place else
+#export QUALITY_AGENT_NO_DIRECTORY_CHECK
+#export QUALITY_AGENT_NO_DIRECTORY_PRUNE

@@ -321,6 +321,9 @@ class Makefile(MakefileBase):
 	def exports(self):
 		exports = {}
 
+		# Include quality agent exports.
+		exports.update(self.lexer.quality_agent.exports)
+
 		for export in self.lexer.build.exports:
 			exports[export] = self.lexer.build.get_var(export)
 

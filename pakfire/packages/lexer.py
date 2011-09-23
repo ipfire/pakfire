@@ -75,6 +75,10 @@ LEXER_PACKAGE2_BEGIN  = re.compile(r"^package$")
 LEXER_PACKAGE2_LINE   = LEXER_BLOCK_LINE
 LEXER_PACKAGE2_END    = LEXER_BLOCK_END
 
+LEXER_QUALITY_AGENT_BEGIN = re.compile(r"^quality-agent$")
+LEXER_QUALITY_AGENT_LINE  = LEXER_BLOCK_LINE
+LEXER_QUALITY_AGENT_END   = LEXER_BLOCK_END
+
 # Statements:
 LEXER_EXPORT          = re.compile(r"^export\s+([A-Za-z0-9_\-]+)\s*(\+)?=\s*(.+)?$")
 LEXER_EXPORT2         = re.compile(r"^export\s+([A-Za-z0-9_\-]+)$")
@@ -518,6 +522,47 @@ class DefaultLexer(Lexer):
 	pass
 
 
+class QualityAgentLexer(DefaultLexer):
+	"""
+		A lexer to read quality agent exceptions.
+	"""
+	@property
+	def exports(self):
+		exports = {}
+
+		# Check if we permit full relro.
+		if self.get_var("permit_not_full_relro"):
+			exports["QUALITY_AGENT_PERMIT_NOT_FULL_RELRO"] = \
+				self.get_var("permit_not_full_relro")
+
+		# Check if we permit $ORIGIN in rpath.
+		if self.get_var("rpath_allow_origin"):
+			exports["QUALITY_AGENT_RPATH_ALLOW_ORIGIN"] = \
+				self.get_var("rpath_allow_origin")
+
+		# Load execstack whitelist.
+		if self.get_var("whitelist_execstack"):
+			exports["QUALITY_AGENT_WHITELIST_EXECSTACK"] = \
+				self.get_var("whitelist_execstack")
+
+		# Load nx whitelist.
+		if self.get_var("whitelist_nx"):
+			exports["QUALITY_AGENT_WHITELIST_NX"] = \
+				self.get_var("whitelist_nx")
+
+		# Load rpath whitelist.
+		if self.get_var("whitelist_rpath"):
+			exports["QUALITY_AGENT_WHITELIST_RPATH"] = \
+				self.get_var("whitelist_rpath")
+
+		# Load symlink whitelist
+		if self.get_var("whitelist_symlink"):
+			exports["QUALITY_AGENT_WHITELIST_SYMLINK"] = \
+				self.get_var("whitelist_symlink")
+
+		return exports
+
+
 class TemplateLexer(DefaultLexer):
 	def init(self, environ):
 		# A place to store the scriptlets.
@@ -733,6 +778,9 @@ class RootLexer(ExportLexer):
 		# Place for build instructions
 		self.build = BuildLexer([], parent=self)
 
+		# Place for quality-agent exceptions
+		self.quality_agent = QualityAgentLexer([], parent=self)
+
 		# Include all macros.
 		if not self.parent:
 			for macro in MACRO_FILES:
@@ -755,6 +803,7 @@ class RootLexer(ExportLexer):
 
 		self.build.inherit(other.build)
 		self.packages.inherit(other.packages)
+		self.quality_agent.inherit(other.quality_agent)
 
 	@property
 	def templates(self):
@@ -766,6 +815,7 @@ class RootLexer(ExportLexer):
 			(LEXER_INCLUDE,			self.parse_include),
 			(LEXER_PACKAGES_BEGIN,	self.parse_packages),
 			(LEXER_BUILD_BEGIN,		self.parse_build),
+			(LEXER_QUALITY_AGENT_BEGIN, self.parse_quality_agent),
 		]
 
 		return parsers
@@ -831,6 +881,17 @@ class RootLexer(ExportLexer):
 
 		pkgs = PackagesLexer(lines, parent=self)
 		self.packages.inherit(pkgs)
+
+	def parse_quality_agent(self):
+		keys, lines = self.read_block(
+			pattern_start=LEXER_QUALITY_AGENT_BEGIN,
+			pattern_line=LEXER_QUALITY_AGENT_LINE,
+			pattern_end=LEXER_QUALITY_AGENT_END,
+			raw = True,
+		)
+
+		qa = QualityAgentLexer(lines, parent=self)
+		self.quality_agent.inherit(qa)
 
 
 class PackagesLexer(DefaultLexer):
