@@ -67,9 +67,6 @@ PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
 BUILD_PACKAGES = [
 	"@Build",
-	"/bin/bash",
-	"gcc",
-	"glibc-devel",
 	"pakfire-build>=%s" % PAKFIRE_LEAST_COMPATIBLE_VERSION,
 ]
 SHELL_PACKAGES = ["elinks", "less", "vim",]
