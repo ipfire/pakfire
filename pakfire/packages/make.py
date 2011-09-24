@@ -377,6 +377,10 @@ class Makefile(MakefileBase):
 				
 			shutil.copy2(_filename, filename)
 
+	@property
+	def inst_size(self):
+		return 0
+
 
 class MakefilePackage(MakefileBase):
 	def __init__(self, pakfire, name, lexer):

@@ -536,6 +536,8 @@ class BinaryPackager(Packager):
 		except OSError:
 			shutil.copy2(tempfile, resultfile)
 
+		return BinaryPackage(self.pakfire, self.pakfire.repos.dummy, resultfile)
+
 
 class SourcePackager(Packager):
 	def create_metafile(self, datafile):
@@ -592,7 +594,7 @@ class SourcePackager(Packager):
 			datafile.add(file, "files/%s" % os.path.basename(file))
 
 		# Add all files in the package directory.
-		for file in self.pkg.files:
+		for file in sorted(self.pkg.files):
 			arcname = os.path.relpath(file, self.pkg.path)
 			datafile.add(file, arcname)
 

@@ -590,6 +590,7 @@ class BuildEnviron(object):
 		finally:
 			self._umountall()
 
+
 class Builder(object):
 	def __init__(self, pakfire, filename, resultdir, **kwargs):
 		self.pakfire = pakfire
@@ -697,10 +698,18 @@ class Builder(object):
 		# Package the result.
 		# Make all these little package from the build environment.
 		logging.info(_("Creating packages:"))
+		pkgs = []
 		for pkg in reversed(self.pkg.packages):
 			packager = packages.packager.BinaryPackager(self.pakfire, pkg,
 				self, self.buildroot)
-			packager.run(self.resultdir)
+			pkg = packager.run(self.resultdir)
+			pkgs.append(pkg)
+		logging.info("")
+
+		for pkg in sorted(pkgs):
+			for line in pkg.dump(long=True).splitlines():
+				logging.info(line)
+			logging.info("")
 		logging.info("")
 
 	def build_stage(self, stage):
