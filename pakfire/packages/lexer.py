@@ -201,9 +201,11 @@ class Lexer(object):
 
 		return s
 
-	def get_var(self, key, default=None):
+	def get_var(self, key, default=None, raw=False):
 		definitions = {}
 		definitions.update(self.root.definitions)
+		if self.parent:
+			definitions.update(self.parent.definitions)
 		definitions.update(self.definitions)
 
 		val = None
@@ -214,6 +216,9 @@ class Lexer(object):
 
 		if val is None:
 			val = default
+
+		if raw:
+			return val
 
 		return self.expand_string(val)
 
@@ -325,9 +330,7 @@ class Lexer(object):
 		k, o, v = m.groups()
 
 		if o == "+":
-			prev = self.definitions.get(k, None)
-			if prev is None and self.parent:
-				prev = self.parent.definitions.get(k, None)
+			prev = self.get_var(k, default=None, raw=True)
 			if prev:
 				v = " ".join((prev or "", v))
 
@@ -851,7 +854,7 @@ class RootLexer(ExportLexer):
 				self._lineno += 1
 				continue
 
-		build = BuildLexer(lines, parent=self)
+		build = BuildLexer(lines, parent=self.build)
 		self.build.inherit(build)
 
 	def parse_include(self):
@@ -879,7 +882,7 @@ class RootLexer(ExportLexer):
 			raw=True,
 		)
 
-		pkgs = PackagesLexer(lines, parent=self)
+		pkgs = PackagesLexer(lines, parent=self.packages)
 		self.packages.inherit(pkgs)
 
 	def parse_quality_agent(self):
@@ -890,7 +893,7 @@ class RootLexer(ExportLexer):
 			raw = True,
 		)
 
-		qa = QualityAgentLexer(lines, parent=self)
+		qa = QualityAgentLexer(lines, parent=self.quality_agent)
 		self.quality_agent.inherit(qa)
 
 
