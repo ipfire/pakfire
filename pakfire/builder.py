@@ -521,6 +521,10 @@ class BuildEnviron(object):
 
 			"BUILDROOT" : self.buildroot,
 			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
+
+			# Set the container that we can detect, if we are inside a
+			# chroot.
+			"container" : "pakfire-builder",
 		}
 
 		# Inherit environment from distro

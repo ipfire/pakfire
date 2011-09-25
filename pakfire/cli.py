@@ -20,6 +20,7 @@
 ###############################################################################
 
 import argparse
+import os
 import sys
 
 import logger
@@ -320,6 +321,11 @@ class Cli(object):
 
 class CliBuilder(Cli):
 	def __init__(self):
+		# Check if we are already running in a pakfire container. In that
+		# case, we cannot start another pakfire-builder.
+		if os.environ.get("container", None) == "pakfire-builder":
+			raise PakfireContainerError, _("You cannot run pakfire-builder in a pakfire chroot.")
+
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface."),
 		)

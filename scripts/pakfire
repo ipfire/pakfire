@@ -46,13 +46,13 @@ basename = os.path.basename(sys.argv[0])
 if not basename2cls.has_key(basename):
 	sys.exit(127)
 
-# Creating command line interface
-cli = basename2cls[basename]()
-
 # Return code for the shell.
 ret = 0
 
 try:
+	# Creating command line interface
+	cli = basename2cls[basename]()
+
 	cli.run()
 
 except KeyboardInterrupt:

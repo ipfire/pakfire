@@ -73,3 +73,6 @@ class PackageFormatUnsupportedError(Error):
 class PakfireError(Error):
 	pass
 
+
+class PakfireContainerError(Error):
+	message = _("Running pakfire-build in a pakfire container?")
