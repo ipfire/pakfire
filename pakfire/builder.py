@@ -142,6 +142,29 @@ class BuildEnviron(object):
 		# Save the build time.
 		self.build_time = int(time.time())
 
+	def start(self):
+		# Mount the directories.
+		self._mountall()
+
+		# Create all devnodes and other dirs we need.
+		self.prepare()
+
+		# Extract all needed packages.
+		self.extract()
+
+	def stop(self):
+		# Kill all still running processes.
+		util.orphans_kill(self.path)
+
+		# Close pakfire instance.
+		del self.pakfire
+
+		# Umount the build environment.
+		self._umountall()
+
+		# Remove all files.
+		self.destroy()
+
 	@property
 	def arch(self):
 		"""
@@ -407,8 +430,6 @@ class BuildEnviron(object):
 		os.mknod(filename, mode, device)
 
 	def destroy(self):
-		util.orphans_kill(self.path)
-
 		logging.debug("Destroying environment %s" % self.path)
 
 		if os.path.exists(self.path):
@@ -430,36 +451,67 @@ class BuildEnviron(object):
 
 	def _mountall(self):
 		self.log.debug("Mounting environment")
-		for cmd, mountpoint in self.mountpoints:
-			cmd = "%s %s" % (cmd, self.chrootPath(mountpoint))
+		for src, dest, fs, options in self.mountpoints:
+			mountpoint = self.chrootPath(dest)
+			if options:
+				options = "-o %s" % options
+
+			# Eventually create mountpoint directory
+			if not os.path.exists(mountpoint):
+				os.makedirs(mountpoint)
+
+			cmd = "mount -n -t %s %s %s %s" % \
+				(fs, options, src, mountpoint)
 			chroot.do(cmd, shell=True)
 
 	def _umountall(self):
 		self.log.debug("Umounting environment")
-		for cmd, mountpoint in self.mountpoints:
-			cmd = "umount -n %s" % self.chrootPath(mountpoint)
-			chroot.do(cmd, raiseExc=0, shell=True)
+
+		mountpoints = []
+		for src, dest, fs, options in reversed(self.mountpoints):
+			if not dest in mountpoints:
+				mountpoints.append(dest)
+
+		for dest in mountpoints:
+			mountpoint = self.chrootPath(dest)
+
+			chroot.do("umount -n %s" % mountpoint, raiseExc=0, shell=True)
 
 	@property
 	def mountpoints(self):
-		ret = [
-			("mount -n -t proc pakfire_chroot_proc", "proc"),
-			("mount -n -t sysfs pakfire_chroot_sysfs", "sys"),
+		mountpoints = []
+
+		# Make root as a tmpfs.
+		#mountpoints += [
+		#	("pakfire_root", "/", "tmpfs", "defaults"),
+		#]
+
+		mountpoints += [
+			# src, dest, fs, options
+			("pakfire_proc",  "/proc",     "proc",  "nosuid,noexec,nodev"),
+			("/proc/sys",     "/proc/sys", "bind",  "bind"),
+			("/proc/sys",     "/proc/sys", "bind",  "bind,ro,remount"),
+			("/sys",          "/sys",      "bind",  "bind"),
+			("/sys",          "/sys",      "bind",  "bind,ro,remount"),
+			("pakfire_tmpfs", "/dev",      "tmpfs", "mode=755,nosuid"),
+			("/dev/pts",      "/dev/pts",  "bind",  "bind"),
+			("pakfire_tmpfs", "/run",      "tmpfs", "mode=755,nosuid,nodev"),
 		]
 
-		mountopt = "gid=%d,mode=0620,ptmxmode=0666" % grp.getgrnam("tty").gr_gid
-		if self.kernel_version >= "2.6.29":
-			mountopt += ",newinstance"
+		# If selinux is enabled.
+		if os.path.exists("/sys/fs/selinux"):
+			mountpoints += [
+				("/sys/fs/selinux", "/sys/fs/selinux", "bind", "bind"),
+				("/sys/fs/selinux", "/sys/fs/selinux", "bind", "bind,ro,remount"),
+			]
 
-		ret.extend([
-			("mount -n -t devpts -o %s pakfire_chroot_devpts" % mountopt, "dev/pts"),
-			("mount -n -t tmpfs pakfire_chroot_shmfs", "dev/shm"),
-		])
-
+		# If ccache support is requested, we bind mount the cache.
 		if self.settings.get("enable_ccache"):
-			ret.append(("mount -n --bind %s" % CCACHE_CACHE_DIR, "var/cache/ccache"))
+			mountpoints += [
+				(CCACHE_CACHE_DIR, "/var/cache/ccache", "bind", "bind"),
+			]
 
-		return ret
+		return mountpoints
 
 	@property
 	def environ(self):
@@ -494,43 +546,38 @@ class BuildEnviron(object):
 
 	def do(self, command, shell=True, personality=None, logger=None, *args, **kwargs):
 		ret = None
-		try:
-			# Environment variables
-			env = self.environ
 
-			if kwargs.has_key("env"):
-				env.update(kwargs.pop("env"))
+		# Environment variables
+		env = self.environ
 
-			logging.debug("Environment:")
-			for k, v in sorted(env.items()):
-				logging.debug("  %s=%s" % (k, v))
+		if kwargs.has_key("env"):
+			env.update(kwargs.pop("env"))
 
-			# Update personality it none was set
-			if not personality:
-				personality = self.distro.personality
+		logging.debug("Environment:")
+		for k, v in sorted(env.items()):
+			logging.debug("  %s=%s" % (k, v))
 
-			# Make every shell to a login shell because we set a lot of
-			# environment things there.
-			if shell:
-				command = ["bash", "--login", "-c", command]
+		# Update personality it none was set
+		if not personality:
+			personality = self.distro.personality
 
-			self._mountall()
+		# Make every shell to a login shell because we set a lot of
+		# environment things there.
+		if shell:
+			command = ["bash", "--login", "-c", command]
 
-			if not kwargs.has_key("chrootPath"):
-				kwargs["chrootPath"] = self.chrootPath()
+		if not kwargs.has_key("chrootPath"):
+			kwargs["chrootPath"] = self.chrootPath()
 
-			ret = chroot.do(
-				command,
-				personality=personality,
-				shell=False,
-				env=env,
-				logger=logger,
-				*args,
-				**kwargs
-			)
-
-		finally:
-			self._umountall()
+		ret = chroot.do(
+			command,
+			personality=personality,
+			shell=False,
+			env=env,
+			logger=logger,
+			*args,
+			**kwargs
+		)
 
 		return ret
 
@@ -581,14 +628,8 @@ class BuildEnviron(object):
 
 		logging.debug("Shell command: %s" % command)
 
-		try:
-			self._mountall()
-
-			shell = os.system(command)
-			return os.WEXITSTATUS(shell)
-
-		finally:
-			self._umountall()
+		shell = os.system(command)
+		return os.WEXITSTATUS(shell)
 
 
 class Builder(object):

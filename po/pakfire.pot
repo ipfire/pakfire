@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-24 17:09+0200\n"
+"POT-Creation-Date: 2011-09-24 23:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,11 +69,11 @@ msgstr ""
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../pakfire/base.py:451
+#: ../pakfire/base.py:454
 msgid "Build command has failed."
 msgstr ""
 
-#: ../pakfire/base.py:535
+#: ../pakfire/base.py:537
 msgid "Everything is fine."
 msgstr ""
 
@@ -82,22 +82,22 @@ msgid "Package information:"
 msgstr ""
 
 #. Copy the makefile and load source tarballs.
-#: ../pakfire/builder.py:261
+#: ../pakfire/builder.py:284
 msgid "Extracting"
 msgstr ""
 
-#: ../pakfire/builder.py:551
+#: ../pakfire/builder.py:605
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../pakfire/builder.py:700
+#: ../pakfire/builder.py:748
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../pakfire/builder.py:720
+#: ../pakfire/builder.py:768
 #, python-format
 msgid "Running stage %s:"
 msgstr ""

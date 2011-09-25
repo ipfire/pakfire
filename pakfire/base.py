@@ -422,8 +422,11 @@ class Pakfire(object):
 		resultdirs.append(p.repos.local_build.path)
 
 		try:
-			b.prepare()
-			b.extract()
+			# Start to prepare the build environment by mounting
+			# the filesystems and extracting files.
+			b.start()
+
+			# Build the package.
 			b.build(install_test=install_test)
 
 			# Copy-out all resultfiles
@@ -440,7 +443,7 @@ class Pakfire(object):
 				raise
 
 		finally:
-			b.destroy()
+			b.stop()
 
 	def _build(self, pkg, resultdir, nodeps=False, **kwargs):
 		b = builder.Builder(self, pkg, resultdir, **kwargs)
@@ -457,11 +460,10 @@ class Pakfire(object):
 		b = builder.BuildEnviron(pkg, **kwargs)
 
 		try:
-			b.prepare()
-			b.extract()
+			b.start()
 			b.shell()
 		finally:
-			b.destroy()
+			b.stop()
 
 	def dist(self, pkgs, resultdirs=None):
 		if not resultdirs:
