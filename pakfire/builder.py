@@ -27,7 +27,6 @@ import os
 import re
 import shutil
 import socket
-import stat
 import time
 import uuid
 
@@ -145,6 +144,9 @@ class BuildEnviron(object):
 	def start(self):
 		# Mount the directories.
 		self._mountall()
+
+		# Populate /dev.
+		self.populate_dev()
 
 		# Create all devnodes and other dirs we need.
 		self.prepare()
@@ -371,43 +373,38 @@ class BuildEnviron(object):
 			f = open(file, "w")
 			f.close()
 
-		self._prepare_dev()
 		self._prepare_dns()
 
-	def _prepare_dev(self):
-		prevMask = os.umask(0000)
-
+	def populate_dev(self):
 		nodes = [
-			("dev/null",	stat.S_IFCHR | 0666, os.makedev(1, 3)),
-			("dev/full",	stat.S_IFCHR | 0666, os.makedev(1, 7)),
-			("dev/zero",	stat.S_IFCHR | 0666, os.makedev(1, 5)),
-			("dev/random",	stat.S_IFCHR | 0666, os.makedev(1, 8)),
-			("dev/urandom",	stat.S_IFCHR | 0444, os.makedev(1, 9)),
-			("dev/tty",		stat.S_IFCHR | 0666, os.makedev(5, 0)),
-			("dev/console",	stat.S_IFCHR | 0600, os.makedev(5, 1)),
+			"/dev/null",
+			"/dev/zero",
+			"/dev/full",
+			"/dev/random",
+			"/dev/urandom",
+			"/dev/tty",
+			"/dev/ptmx",
+			"/dev/kmsg",
+			"/dev/rtc0",
+			"/dev/console",
 		]
 
 		# If we need loop devices (which are optional) we create them here.
 		if self.settings["enable_loop_devices"]:
 			for i in range(0, 7):
-				nodes.append(("dev/loop%d" % i, stat.S_IFBLK | 0660, os.makedev(7, i)))
+				nodes.append("/dev/loop%d" % i)
 
-		# Create all the nodes.
 		for node in nodes:
-			self._create_node(*node)
+			# Stat the original node of the host system and copy it to
+			# the build chroot.
+			node_stat = os.stat(node)
+
+			self._create_node(node, node_stat.st_mode, node_stat.st_rdev)
 
 		os.symlink("/proc/self/fd/0", self.chrootPath("dev", "stdin"))
 		os.symlink("/proc/self/fd/1", self.chrootPath("dev", "stdout"))
 		os.symlink("/proc/self/fd/2", self.chrootPath("dev", "stderr"))
 		os.symlink("/proc/self/fd",   self.chrootPath("dev", "fd"))
-
-		# make device node for el4 and el5
-		if self.kernel_version < "2.6.19":
-			self._make_node("dev/ptmx", stat.S_IFCHR | 0666, os.makedev(5, 2))
-		else:
-			os.symlink("/dev/pts/ptmx", self.chrootPath("dev", "ptmx"))
-
-		os.umask(prevMask)
 
 	def _prepare_dns(self):
 		"""
