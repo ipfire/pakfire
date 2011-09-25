@@ -303,7 +303,7 @@ class BuildEnviron(object):
 			for file in files:
 				pkgs.append(os.path.join(dir, file))
 
-		self.pakfire.localinstall(pkgs, yes=True)
+		self.pakfire.localinstall(pkgs, yes=True, allow_uninstall=True)
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes

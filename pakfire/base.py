@@ -240,7 +240,7 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run()
 
-	def localinstall(self, files, yes=None):
+	def localinstall(self, files, yes=None, allow_uninstall=False):
 		repo_name = repo_desc = "localinstall"
 
 		# Create a new repository that holds all packages we passed on
@@ -268,7 +268,7 @@ class Pakfire(object):
 				request.install(solv)
 
 			solver = self.create_solver()
-			t = solver.solve(request)
+			t = solver.solve(request, uninstall=allow_uninstall)
 
 			# If solving was not possible, we exit here.
 			if not t:
