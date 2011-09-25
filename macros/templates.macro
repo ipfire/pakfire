@@ -44,6 +44,8 @@ packages
 		summary = Development files of %{thisapp}.
 		description = %{summary}
 
+		requires = %{name}=%{thisver}
+
 		def files
 			/usr/bin/*-config
 			/usr/include
