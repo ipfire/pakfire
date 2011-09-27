@@ -7,7 +7,7 @@
 
 # Macro to define and start the quality agent.
 # Long term goal is to improve the commited code.
-MACRO_QUALITY_AGENT = /usr/lib/pakfire/quality-agent
+MACRO_QUALITY_AGENT = BUILDROOT=%{BUILDROOT} /usr/lib/pakfire/quality-agent
 
 # XXX to be moved to some place else
 #export QUALITY_AGENT_NO_DIRECTORY_CHECK

@@ -1,9 +1,6 @@
 
-# XXX just for now
-PARALLELISMFLAGS = -j2
-
+BUILDROOT   = %{DIR_TMP}/buildroot_%{name}-%{thisver}
 BASEDIR     = /build
-BUILDROOT   = /buildroot
 
 DIR_APP     = %{DIR_SRC}/%{thisapp}
 DIR_DL      = %{BASEDIR}/files

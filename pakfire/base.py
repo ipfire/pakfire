@@ -452,8 +452,9 @@ class Pakfire(object):
 			b.build()
 		except Error:
 			raise BuildError, _("Build command has failed.")
-		finally:
-			b.cleanup()
+
+		# If the build was successful, cleanup all temporary files.
+		b.cleanup()
 
 	@staticmethod
 	def shell(pkg, **kwargs):

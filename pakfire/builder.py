@@ -132,8 +132,6 @@ class BuildEnviron(object):
 		}
 		#self.settings.update(settings)
 
-		self.buildroot = "/buildroot"
-
 		# Lock the buildroot
 		self._lock = None
 		self.lock()
@@ -436,7 +434,7 @@ class BuildEnviron(object):
 		logging.debug("Cleaning environemnt.")
 
 		# Remove the build directory and buildroot.
-		dirs = ("build", self.buildroot, "result")
+		dirs = ("build", "result")
 
 		for d in dirs:
 			d = self.chrootPath(d)
@@ -518,9 +516,6 @@ class BuildEnviron(object):
 			"HOME" : "/root",
 			"TERM" : os.environ.get("TERM", "dumb"),
 			"PS1"  : "\u:\w\$ ",
-
-			"BUILDROOT" : self.buildroot,
-			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
 
 			# Set the container that we can detect, if we are inside a
 			# chroot.
@@ -644,13 +639,14 @@ class Builder(object):
 		# Open package file.
 		self.pkg = packages.Makefile(self.pakfire, self.filename)
 
-		#self.buildroot = "/tmp/pakfire_buildroot/%s" % util.random_string(20)
-		self.buildroot = "/buildroot"
-
 		self._environ = {
-			"BUILDROOT" : self.buildroot,
-			"LANG"      : "C",
+			"LANG"             : "C",
+			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
 		}
+
+	@property
+	def buildroot(self):
+		return self.pkg.buildroot
 
 	@property
 	def distro(self):

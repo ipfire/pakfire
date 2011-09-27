@@ -80,7 +80,6 @@ class MakefileBase(Package):
 		self.filename = os.path.abspath(filename)
 
 		# Open and parse the makefile.
-		# XXX pass environment to lexer
 		self.lexer = lexer.RootLexer.open(self.filename,
 			environ=self.pakfire.environ)
 
@@ -170,6 +169,10 @@ class MakefileBase(Package):
 	@property
 	def vendor(self):
 		return self.lexer.get_var("DISTRO_VENDOR")
+
+	@property
+	def buildroot(self):
+		return self.lexer.get_var("BUILDROOT")
 
 	@property
 	def build_host(self):
