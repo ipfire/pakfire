@@ -69,7 +69,10 @@ BUILD_PACKAGES = [
 	"@Build",
 	"pakfire-build>=%s" % PAKFIRE_LEAST_COMPATIBLE_VERSION,
 ]
-SHELL_PACKAGES = ["elinks", "less", "vim",]
+
+# A script that is called, when a user is dropped to a chroot shell.
+SHELL_SCRIPT = "/usr/lib/buildsystem-tools/chroot-shell"
+SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"

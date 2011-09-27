@@ -146,8 +146,8 @@ class BuildEnviron(object):
 		# Populate /dev.
 		self.populate_dev()
 
-		# Create all devnodes and other dirs we need.
-		self.prepare()
+		# Setup domain name resolution in chroot.
+		self.setup_dns()
 
 		# Extract all needed packages.
 		self.extract()
@@ -319,60 +319,6 @@ class BuildEnviron(object):
 
 		return ret
 
-	def prepare(self):
-		prepared_tag = ".prepared"
-
-		if os.path.exists(self.chrootPath(prepared_tag)):
-			return
-
-		# Create directory.
-		if not os.path.exists(self.path):
-			os.makedirs(self.path)
-
-		# Create important directories.
-		dirs = [
-			"build",
-			self.buildroot,
-			"dev",
-			"dev/pts",
-			"dev/shm",
-			"etc",
-			"proc",
-			"result",
-			"sys",
-			"tmp",
-			"usr/src",
-		]
-
-		# Create cache dir if ccache is enabled.
-		if self.settings.get("enable_ccache"):
-			dirs.append("var/cache/ccache")
-
-			if not os.path.exists(CCACHE_CACHE_DIR):
-				os.makedirs(CCACHE_CACHE_DIR)
-
-		for dir in dirs:
-			dir = self.chrootPath(dir)
-			if not os.path.exists(dir):
-				os.makedirs(dir)
-
-		# Create neccessary files like /etc/fstab and /etc/mtab.
-		files = (
-			"etc/fstab",
-			"etc/mtab",
-			prepared_tag,
-		)
-
-		for file in files:
-			file = self.chrootPath(file)
-			dir = os.path.dirname(file)
-			if not os.path.exists(dir):
-				os.makedirs(dir)
-			f = open(file, "w")
-			f.close()
-
-		self._prepare_dns()
-
 	def populate_dev(self):
 		nodes = [
 			"/dev/null",
@@ -404,7 +350,7 @@ class BuildEnviron(object):
 		os.symlink("/proc/self/fd/2", self.chrootPath("dev", "stderr"))
 		os.symlink("/proc/self/fd",   self.chrootPath("dev", "fd"))
 
-	def _prepare_dns(self):
+	def setup_dns(self):
 		"""
 			Add DNS resolution facility to chroot environment by copying
 			/etc/resolv.conf and /etc/hosts.
@@ -609,8 +555,8 @@ class BuildEnviron(object):
 		self.install(SHELL_PACKAGES)
 
 		# XXX need to set CFLAGS here
-		command = "/usr/sbin/chroot %s /usr/bin/chroot-shell %s" % \
-			(self.chrootPath(), " ".join(args))
+		command = "/usr/sbin/chroot %s %s %s" % \
+			(self.chrootPath(), SHELL_SCRIPT, " ".join(args))
 
 		# Add personality if we require one
 		if self.pakfire.distro.personality:
