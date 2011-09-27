@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Include additional functions
-. /usr/lib/buildsystem-tools/common-functions
+. /usr/lib/pakfire/functions-common
 
 function debug() {
 	[ "${NAOKI_DEBUG}" = "1" ] || [ "${DEBUG}" = "1" ]

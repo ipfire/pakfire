@@ -27,9 +27,6 @@ sources = %{thisapp}.tar.gz
 # Guesses the compression type automatically.
 MACRO_EXTRACT = tar xaf
 
-# Macro to strip debugging symbols.
-MACRO_STRIP = /usr/lib/buildsystem-tools/stripper %{BUILDROOT}
-
 MACRO_PATCHES
 	patches="%{patches}"
 

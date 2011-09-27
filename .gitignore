@@ -1,5 +1,6 @@
-/build
-/dist
-/pakfire/__version__.py
+/python/pakfire/__version__.py
 /tmp
 *.py[co]
+*.o
+*.[ms]o
+*.tar.gz

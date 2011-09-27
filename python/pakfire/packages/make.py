@@ -413,7 +413,7 @@ class MakefilePackage(MakefileBase):
 		return None
 
 	def track_dependencies(self, builder, path):
-		result = builder.do("/usr/lib/buildsystem-tools/dependency-tracker %s" \
+		result = builder.do("/usr/lib/pakfire/dependency-tracker %s" \
 			% path, returnOutput=True)
 
 		for line in result.splitlines():
