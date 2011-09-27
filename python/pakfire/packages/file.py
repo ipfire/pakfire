@@ -103,8 +103,8 @@ class InnerTarFile(tarfile.TarFile):
 		try:
 			tarfile.TarFile.extract(self, member, path)
 		except OSError, e:
-			logging.warning(_("Could not extract file: /%s - %s") \
-				% (member.name, e))
+			logging.warning(_("Could not extract file: /%(src)s - %(dst)s") \
+				% { "src" : member.name, "dst" : e, })
 
 		# ...and then apply the extended attributes.
 		if member.pax_headers:

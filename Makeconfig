@@ -1,0 +1,24 @@
+
+PACKAGE_NAME    = pakfire
+PACKAGE_VERSION = 0.9.9
+PACKAGE_AUTHOR  = IPFire.org Team
+PACKAGE_AUTHOR_EMAIL = info@ipfire.org
+PACKAGE_URL     = http://redmine.ipfire.org/projects/buildsystem3
+PACKAGE_VERSION_FILE = pakfire/__version__.py
+
+# Get the version and configuration of the python interpreter.
+PYTHON_VERSION = $(shell python -c "import platform; print '.'.join(platform.python_version_tuple()[:2])")
+PYTHON_CC      = gcc -pthread
+PYTHON_CFLAGS  = $(shell python-config --cflags)
+PYTHON_DIR     = /usr/lib/python$(PYTHON_VERSION)/site-packages
+PYTHON_MODULES = pakfire pakfire/packages pakfire/repository
+
+# The place, where all internally used scripts and bins are copied.
+SCRIPT_DIR     = /usr/lib/$(PACKAGE_NAME)
+
+TOP := $(dir $(lastword $(MAKEFILE_LIST)))
+
+# A list of all files that contain translations and need to
+# be indexed.
+TRANS_FILES  = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
+TRANS_FILES += python/src/*.c scripts/pakfire-multicall.py

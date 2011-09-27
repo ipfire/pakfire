@@ -3,7 +3,6 @@ For general information about pakfire see README.
 
 Requirements:
  * Python 2.6 or greater (not Python 3.x)
- * python-distutils-extra (for install)
  * pyliblzma
  * python-progressbar
  * python-xattr

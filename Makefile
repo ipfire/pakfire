@@ -1,36 +1,37 @@
 
-DESTDIR ?= /
+include Makeconfig
 
-all: po build
+SUBDIRS = po python scripts
+
+all: build
 
 .PHONY: build
 build:
-	python setup.py build
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $${dir} || exit; \
+	done
 
 .PHONY: clean
 clean:
-	python setup.py clean
-	-rm -rfv build
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $${dir} clean || exit; \
+	done
 
 .PHONY: dist
 dist:
-	python setup.py sdist
-
-.PHONY: bdist
-bdist:
-	python setup.py bdist
+	git archive --format=tar --prefix=$(PACKAGE_NAME)-$(PACKAGE_VERSION)/ HEAD | \
+		gzip -9 > $(PACKAGE_NAME)-$(PACKAGE_VERSION).tar.gz
 
 .PHONY: install
-install: po
-	python setup.py install --root=$(DESTDIR) --prefix=/usr
+install:
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $${dir} install || exit; \
+	done
 
-	# Create script aliases.
-	ln -svf pakfire $(DESTDIR)/usr/bin/pakfire-builder
-	ln -svf pakfire $(DESTDIR)/usr/bin/pakfire-server
+	-mkdir -pv $(DESTDIR)/usr/lib/pakfire/macros
+	cp -vf macros/*.macro $(DESTDIR)/usr/lib/pakfire/macros
 
-	-mkdir -pv $(DESTDIR)/usr/lib/pakfire
-	ln -svf ../../bin/pakfire $(DESTDIR)/usr/lib/pakfire/builder
-
+	# Install example configuration.
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
 	cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
 	cp -vf examples/pakfire.repos.d/* $(DESTDIR)/etc/pakfire.repos.d/
@@ -38,8 +39,3 @@ install: po
 .PHONY: check
 check:
 	./runpychecker.sh
-
-.PHONY: po
-po:
-	find pakfire src scripts -name "*.py" -or -name "*.c" -or -name "pakfire" -and -type f | \
-		grep -v "__version__.py" | sort > po/POTFILES.in
