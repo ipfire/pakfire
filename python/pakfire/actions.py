@@ -52,6 +52,10 @@ class Action(object):
 		# A function to run additional initialization.
 		pass
 
+	def check(self, filelist):
+		# This is just a dummy test that does nothing at all.
+		return filelist
+
 	@property
 	def needs_download(self):
 		return self.type in ("install", "reinstall", "upgrade", "downgrade",) \
@@ -215,6 +219,12 @@ class ActionScriptPostTransUp(ActionScriptPostTrans):
 class ActionInstall(Action):
 	type = "install"
 
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be installed.
+		check.install(self.pkg)
+
 	def run(self):
 		# Add package to the database.
 		self.local.add_package(self.pkg)
@@ -224,6 +234,12 @@ class ActionInstall(Action):
 
 class ActionUpdate(Action):
 	type = "upgrade"
+
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be updated.
+		check.update(self.pkg)
 
 	def run(self):
 		# Add new package to the database.
@@ -242,6 +258,12 @@ class ActionRemove(Action):
 		self.pkg = self.local.index.db.get_package_from_solv(self.pkg_solv)
 		assert self.pkg
 
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be removed.
+		check.remove(self.pkg)
+
 	def run(self):
 		self.pkg.cleanup(_("Removing"), prefix=self.pakfire.path)
 
@@ -259,6 +281,12 @@ class ActionCleanup(Action):
 		self.pkg = self.local.index.db.get_package_from_solv(self.pkg_solv)
 		assert self.pkg
 
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be removed.
+		check.cleanup(self.pkg)
+
 	def run(self):
 		# Cleaning up leftover files and stuff.
 		self.pkg.cleanup(_("Cleanup"), prefix=self.pakfire.path)
@@ -269,6 +297,13 @@ class ActionCleanup(Action):
 
 class ActionReinstall(Action):
 	type = "reinstall"
+
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be reinstalled.
+		check.remove(self.pkg)
+		check.install(self.pkg)
 
 	def run(self):
 		# Remove package from the database and add it afterwards.
@@ -281,6 +316,12 @@ class ActionReinstall(Action):
 
 class ActionDowngrade(Action):
 	type = "downgrade"
+
+	def check(self, check):
+		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+
+		# Check if this package can be downgraded.
+		check.install(self.pkg)
 
 	def run(self):
 		# Add new package to database.

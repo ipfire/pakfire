@@ -19,64 +19,74 @@
 #                                                                             #
 ###############################################################################
 
-from i18n import _
-
-class commandTimeoutExpired(Exception):
-	pass # XXX cannot be as is
-
-class Error(Exception):
-	exit_code = 1
-
-	message = _("An unhandled error occured.")
+class _File(object):
+	def __init__(self, pakfire):
+		self.pakfire = pakfire
 
 
-class ActionError(Error):
-	pass
+class File(_File):
+	def __init__(self, pakfire):
+		_File.__init__(self, pakfire)
 
-class BuildAbortedException(Error):
-	pass
+		self.name = ""
+		self.pkg  = None
+		self.size = -1
+		self.hash1 = ""
 
-class BuildError(Error):
-	pass
+	def __cmp__(self, other):
+		return cmp(self.pkg, other.pkg) or cmp(self.name, other.name)
 
-class BuildRootLocked(Error):
-	pass
+	def is_dir(self):
+		# XXX TODO
+		# VERY POOR CHECK
+		return self.name.endswith("/")
 
-class ConfigError(Error):
-	pass
-
-class DependencyError(Error):
-	exit_code = 4
-
-	message = _("One or more dependencies could not been resolved.")
-
-class DownloadError(Error):
-	pass
-
-class FileError(Error):
-	pass
-
-class FileNotFoundError(Error):
-	pass
-
-class NotAnIPFireSystemError(Error):
-	pass
-
-class OfflineModeError(Error):
-	message = _("The requested action cannot be done on offline mode.\n"
-		"Please connect your system to the network, remove --offline from the"
-		" command line and try again.")
-
-class PackageFormatUnsupportedError(Error):
-	pass
-
-class PakfireError(Error):
-	pass
+	def is_config(self):
+		# XXX TODO
+		return False
 
 
-class PakfireContainerError(Error):
-	message = _("Running pakfire-build in a pakfire container?")
+class FileDatabase(_File):
+	def __init__(self, pakfire, db, row_id):
+		_File.__init__(self, pakfire)
 
+		self.db = db
+		self.row_id = row_id
 
-class TransactionCheckError(Error):
-	message = _("Transaction test was not successful")
+		self.__row = None
+
+	@property
+	def row(self):
+		"""
+			Lazy fetching of the database row.
+		"""
+		if self.__row is None:
+			c = self.db.cursor()
+			c.execute("SELECT * FROM files WHERE id = ? LIMIT 1", (self.row_id,))
+
+			# Check if we got the same row.
+			#assert c.lastrowid == self.row_id
+
+			for row in c:
+				self.__row = row
+				break
+
+			c.close()
+
+		return self.__row
+
+	@property
+	def pkg(self):
+		return self.db.get_package_by_id(self.row["pkg"])
+
+	@property
+	def name(self):
+		return self.row["name"]
+
+	@property
+	def size(self):
+		return self.row["size"]
+
+	@property
+	def hash1(self):
+		return self.row["hash1"]

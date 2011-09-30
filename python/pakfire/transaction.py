@@ -25,6 +25,7 @@ import progressbar
 import sys
 import time
 
+import i18n
 import packages
 import satsolver
 import util
@@ -36,6 +37,86 @@ PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
 
 # Import all actions directly.
 from actions import *
+
+class TransactionCheck(object):
+	def __init__(self, pakfire, transaction):
+		self.pakfire = pakfire
+		self.transaction = transaction
+
+		# A place to store errors.
+		self.errors = []
+
+		# Get a list of all installed files from the database.
+		self.filelist = self.load_filelist()
+
+	@property
+	def error_files(self):
+		ret = {}
+
+		for name, files in self.filelist.items():
+			if len(files) <= 1:
+				continue
+
+			ret[name] = files
+
+		return ret
+
+	@property
+	def successful(self):
+		return not self.error_files
+
+	def print_errors(self):
+		for name, files in sorted(self.error_files.items()):
+			assert len(files) >= 2
+
+			pkgs = [f.pkg.friendly_name for f in files]
+
+			if len(files) == 2:
+				logging.critical(
+					_("file %s from %s conflicts with file from package %s") % \
+						(name, pkgs[0], pkgs[1])
+				)
+
+			elif len(files) >= 3:
+				logging.critical(
+					_("file %s from %s conflicts with files from %s") % \
+						(name, pkgs[0], i18n.list(pkgs[1:]))
+				)
+
+	def load_filelist(self):
+		filelist = {}
+
+		for file in self.pakfire.repos.local.filelist:
+			filelist[file.name] = [file,]
+
+		return filelist
+
+	def install(self, pkg):
+		for file in pkg.filelist:
+			if file.is_dir():
+				continue
+
+			if self.filelist.has_key(file.name):
+				self.filelist[file.name].append(file)
+
+			else:
+				self.filelist[file.name] = [file,]
+
+				#self.errors.append((self.ERROR_TYPE_CONFLICT, file))
+
+	def remove(self, pkg):
+		for file in pkg.filelist:
+			try:
+				self.filelist[file.name].remove(file)
+			except KeyError:
+				pass
+
+	def update(self, pkg):
+		self.install(pkg)
+
+	def cleanup(self, pkg):
+		self.remove(pkg)
+
 
 class Transaction(object):
 	action_classes = {
@@ -235,9 +316,31 @@ class Transaction(object):
 
 		return util.ask_user(_("Is this okay?"))
 
+	def check(self):
+		logging.info(_("Running Transaction Test"))
+
+		# Initialize the check object.
+		check = TransactionCheck(self.pakfire, self)
+
+		for action in self.actions:
+			try:
+				action.check(check)
+			except ActionError, e:
+				raise
+
+		if check.successful:
+			logging.info(_("Transaction Test Succeeded"))
+			return
+
+		check.print_errors()
+		raise TransactionCheckError, _("Transaction test was not successful")
+
 	def run(self):
 		# Download all packages.
 		self.download()
+
+		# Run the transaction test
+		self.check()
 
 		logging.info(_("Running transaction"))
 		# Run all actions in order and catch all kinds of ActionError.

@@ -41,3 +41,17 @@ def _(singular, plural=None, n=None):
 		return gettext.dngettext("pakfire", singular, plural, n)
 
 	return gettext.dgettext("pakfire", singular)
+
+def list(self, parts):
+	"""
+		Returns a comma-separated list for the given list of parts.
+
+		The format is, e.g., "A, B and C", "A and B" or just "A" for lists
+		of size 1.
+	"""
+	if len(parts) == 0: return ""
+	if len(parts) == 1: return parts[0]
+	return _("%(commas)s and %(last)s") % {
+		"commas": u", ".join(parts[:-1]),
+		"last": parts[len(parts) - 1],
+	}

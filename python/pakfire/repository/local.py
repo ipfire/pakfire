@@ -205,3 +205,7 @@ class RepositoryLocal(base.RepositoryFactory):
 	def rem_package(self, pkg):
 		# Remove package from the database.
 		self.index.rem_package(pkg)
+
+	@property
+	def filelist(self):
+		return self.index.filelist

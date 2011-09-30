@@ -117,6 +117,7 @@ class DatabaseLocal(Database):
 			INSERT INTO settings(key, val) VALUES('version', '0');
 
 			CREATE TABLE files(
+				id			INTEGER PRIMARY KEY,
 				name		TEXT,
 				pkg			INTEGER,
 				size		INTEGER,
@@ -233,8 +234,8 @@ class DatabaseLocal(Database):
 
 			pkg_id = c.lastrowid
 
-			c.executemany("INSERT INTO files(name, pkg) VALUES(?, ?)",
-				((file, pkg_id) for file in pkg.filelist))
+			c.executemany("INSERT INTO files(name, pkg, size, hash1) VALUES(?, ?, ?, ?)",
+				((f.name, pkg_id, f.size, f.hash1) for f in pkg.filelist))
 
 		except:
 			raise
@@ -265,6 +266,17 @@ class DatabaseLocal(Database):
 
 		c.close()
 		self.commit()
+
+	def get_package_by_id(self, id):
+		c = self.cursor()
+		c.execute("SELECT * FROM packages WHERE id = ?", (id,))
+
+		try:
+			for row in c:
+				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+
+		finally:
+			c.close()
 
 	@property
 	def packages(self):

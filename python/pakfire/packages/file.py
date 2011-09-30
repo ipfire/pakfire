@@ -26,6 +26,7 @@ import tarfile
 import tempfile
 import xattr
 
+import pakfire.filelist
 import pakfire.util as util
 import pakfire.compress as compress
 from pakfire.constants import *
@@ -132,6 +133,9 @@ class FilePackage(Package):
 
 		# Place to cache the metadata
 		self._metadata = {}
+
+		# Place to cache the filelist
+		self._filelist = None
 
 		# Store the format of this package file.
 		self.format = self.get_format()
@@ -332,32 +336,50 @@ class FilePackage(Package):
 
 		return inst_size
 
-	@property
-	def filelist(self):
+	def get_filelist(self):
 		"""
 			Return a list of the files that are contained in the package
 			payload.
 		"""
+		ret = []
+
 		a = self.open_archive()
 		f = a.extractfile("filelist")
 
-		ret = []
 		for line in f.readlines():
 			line = line.strip()
 
+			file = pakfire.filelist.File(self.pakfire)
+
 			if self.format >= 1:
 				line = line.split()
-				line = line[0]
+				name = line[0]
 
-			if not line.startswith("/"):
-				line = "/%s" % line
+				# XXX need to parse the rest of the information from the
+				# file
 
-			ret.append(line)
+			else:
+				name = line
+
+			if not name.startswith("/"):
+				name = "/%s" % name
+
+			file.name = name
+			file.pkg  = self
+
+			ret.append(file)
 
 		f.close()
 		a.close()
 
 		return ret
+
+	@property
+	def filelist(self):
+		if self._filelist is None:
+			self._filelist = self.get_filelist()
+
+		return self._filelist
 
 	@property
 	def configfiles(self):

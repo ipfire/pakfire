@@ -22,6 +22,7 @@
 import os
 
 import pakfire.downloader
+import pakfire.filelist
 
 from base import Package
 from file import BinaryPackage
@@ -168,13 +169,16 @@ class DatabasePackage(Package):
 
 	@property
 	def filelist(self):
-		c = self.db.cursor()
-		try:
-			c.execute("SELECT name FROM files WHERE pkg = ?", (self.id,))
+		filelist = []
 
-			return [f["name"] for f in c]
-		finally:
-			c.close()
+		c = self.db.cursor()
+		c.execute("SELECT id FROM files WHERE pkg = ?", (self.id,))
+
+		for id in c:
+			file = pakfire.filelist.FileDatabase(self.pakfire, self.db, id[0])
+			filelist.append(file)
+
+		return filelist
 
 	@property
 	def configfiles(self):

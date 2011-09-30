@@ -27,6 +27,7 @@ import string
 import builder
 import config
 import distro
+import filelist
 import logger
 import repository
 import packages
@@ -106,7 +107,10 @@ class Pakfire(object):
 	def create_relation(self, s):
 		assert s
 
-		if s.startswith("/"):
+		if isinstance(s, filelist._File):
+			return satsolver.Relation(self.pool, s.name)
+
+		elif s.startswith("/"):
 			return satsolver.Relation(self.pool, s)
 
 		for pattern, type in self.RELATIONS:

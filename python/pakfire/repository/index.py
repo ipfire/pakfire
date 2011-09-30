@@ -433,3 +433,9 @@ class IndexLocal(Index):
 
 			if pb:
 				pb.finish()
+
+	@property
+	def filelist(self):
+		for pkg in self.db.packages:
+			for file in pkg.filelist:
+				yield file
