@@ -33,6 +33,7 @@ import lexer
 import packager
 
 import pakfire.chroot as chroot
+import pakfire.downloader as downloader
 import pakfire.util as util
 
 from base import Package
@@ -40,37 +41,6 @@ from file import SourcePackage
 
 from pakfire.constants import *
 from pakfire.i18n import _
-
-# XXX to be moved to pakfire.downloader
-class SourceDownloader(object):
-	def __init__(self, pakfire, mirrors=None):
-		self.pakfire = pakfire
-		self.mirrors = mirrors
-
-		# XXX need to use downloader.py
-		self.grabber = URLGrabber(
-			prefix = self.pakfire.config.get("source_download_url"),
-			progress_obj = TextMeter(),
-			quote = 0,
-		)
-
-	def download(self, filename):
-		filename = os.path.join(SOURCE_CACHE_DIR, filename)
-
-		if os.path.exists(filename):
-			return filename
-
-		dirname = os.path.dirname(filename)
-		if not os.path.exists(dirname):
-			os.makedirs(dirname)
-
-		try:
-			self.grabber.urlgrab(os.path.basename(filename), filename=filename)
-		except URLGrabError, e:
-			raise DownloadError, "%s %s" % (os.path.basename(filename), e)
-
-		return filename
-
 
 class MakefileBase(Package):
 	def __init__(self, pakfire, filename):
@@ -244,15 +214,10 @@ class Makefile(MakefileBase):
 			copies.
 		"""
 		# Download source files.
-		# XXX need to implement mirrors
-		downloader = SourceDownloader(self.pakfire, mirrors=self.source_dl)
+		grabber = downloader.SourceDownloader(self.pakfire,
+			mirrors=self.source_dl)
 
-		files = []
-		for filename in self.sources:
-			filename = downloader.download(filename)
-			files.append(filename)
-
-		return files
+		return grabber.download(self.sources)
 
 	def dist(self, resultdirs):
 		"""
@@ -367,17 +332,13 @@ class Makefile(MakefileBase):
 			pb.finish()
 
 		# Download source files.
-		downloader = SourceDownloader(self.pakfire, mirrors=self.source_dl)
-		for filename in self.sources:
-			_filename = downloader.download(filename)
-			assert _filename
-
+		for _filename in self.download():
 			filename = "%s/files/%s" % (prefix, os.path.basename(_filename))
 			dirname = os.path.dirname(filename)
 
 			if not os.path.exists(dirname):
 				os.makedirs(dirname)
-				
+
 			shutil.copy2(_filename, filename)
 
 	@property

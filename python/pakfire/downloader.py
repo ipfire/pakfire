@@ -21,6 +21,7 @@
 
 import json
 import logging
+import os
 import random
 
 from config import Config
@@ -30,6 +31,7 @@ from urlgrabber.mirror import MirrorGroup
 from urlgrabber.progress import TextMeter
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 class PakfireGrabber(URLGrabber):
 	"""
@@ -93,6 +95,49 @@ class DatabaseDownloader(PackageDownloader):
 		})
 
 		PackageDownloader.__init__(self, pakfire, *args, **kwargs)
+
+
+class SourceDownloader(object):
+	def __init__(self, pakfire, mirrors=None):
+		self.pakfire = pakfire
+
+		self.grabber = PakfireGrabber(
+			self.pakfire,
+			progress_obj = TextMeter(),
+		)
+
+		if mirrors:
+			self.grabber = MirrorGroup(self.grabber,
+				[{ "mirror" : m } for m in mirrors])
+
+	def download(self, files):
+		existant_files = []
+		download_files = []
+
+		for file in files:
+			filename = os.path.join(SOURCE_CACHE_DIR, file)
+
+			if os.path.exists(filename):
+				existant_files.append(filename)
+			else:
+				download_files.append(filename)
+
+		if download_files:
+			logging.info(_("Downloading source files:"))
+
+			# Create source download directory.
+			if not os.path.exists(SOURCE_CACHE_DIR):
+				os.makedirs(SOURCE_CACHE_DIR)
+
+			for filename in download_files:
+				try:
+					self.grabber.urlgrab(os.path.basename(filename), filename=filename)
+				except URLGrabError, e:
+					raise DownloadError, "%s %s" % (os.path.basename(filename), e)
+
+			logging.info("")
+
+		return existant_files + download_files
 
 
 class Mirror(object):

@@ -124,6 +124,9 @@ class BuildEnviron(object):
 			self.log.info("  %s" % line)
 		self.log.info("")
 
+		# Download all package files.
+		self.pkg.download()
+
 		# XXX need to make this configureable
 		self.settings = {
 			"enable_loop_devices" : True,
