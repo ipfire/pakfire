@@ -222,12 +222,9 @@ class Makefile(MakefileBase):
 	def dist(self, resultdirs):
 		"""
 			Create a source package.
-
-			We assume that all required files are in /build.
 		"""
-		#dump = self.dump()
-		#for line in dump.splitlines():
-		#	logging.info(line)
+		# Download all files we need for this package.
+		self.download()
 
 		p = packager.SourcePackager(self.pakfire, self)
 		p.run(resultdirs)
