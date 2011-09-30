@@ -433,7 +433,7 @@ class Package(object):
 
 		# Sort files by the length of their name to remove all files in
 		# a directory first and then check, if there are any files left.
-		files.sort(cmp=lambda x,y: cmp(len(x), len(y)), reverse=True)
+		files.sort(cmp=lambda x,y: cmp(len(x.name), len(y.name)), reverse=True)
 
 		i = 0
 		for _file in files:
@@ -445,10 +445,10 @@ class Package(object):
 			logging.debug("Removing file: %s" % _file)
 
 			if prefix:
-				file = os.path.join(prefix, _file[1:])
+				file = os.path.join(prefix, _file.name[1:])
 				assert file.startswith("%s/" % prefix)
 			else:
-				file = _file
+				file = _file.name
 
 			# If the file was removed by the user, we can skip it.
 			if not os.path.exists(file):

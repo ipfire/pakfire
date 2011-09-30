@@ -102,13 +102,11 @@ class TransactionCheck(object):
 			else:
 				self.filelist[file.name] = [file,]
 
-				#self.errors.append((self.ERROR_TYPE_CONFLICT, file))
-
 	def remove(self, pkg):
 		for file in pkg.filelist:
 			try:
 				self.filelist[file.name].remove(file)
-			except KeyError:
+			except (KeyError, ValueError):
 				pass
 
 	def update(self, pkg):
@@ -333,7 +331,7 @@ class Transaction(object):
 			return
 
 		check.print_errors()
-		raise TransactionCheckError, _("Transaction test was not successful")
+		#raise TransactionCheckError, _("Transaction test was not successful")
 
 	def run(self):
 		# Download all packages.

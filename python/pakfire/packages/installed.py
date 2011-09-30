@@ -182,7 +182,15 @@ class DatabasePackage(Package):
 
 	@property
 	def configfiles(self):
-		return [] # XXX to be done
+		ret = []
+
+		for file in self.filelist:
+			if not file.is_config():
+				continue
+
+			ret.append(file)
+
+		return ret
 
 	def _does_provide_file(self, requires):
 		"""

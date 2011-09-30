@@ -34,7 +34,14 @@ class File(_File):
 		self.hash1 = ""
 
 	def __cmp__(self, other):
-		return cmp(self.pkg, other.pkg) or cmp(self.name, other.name)
+		ret = cmp(self.name, other.name)
+
+		print self.pkg, other.pkg
+
+		if not ret:
+			ret = cmp(self.pkg, other.pkg)
+
+		return ret
 
 	def is_dir(self):
 		# XXX TODO
