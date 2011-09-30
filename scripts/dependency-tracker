@@ -2,7 +2,7 @@
 
 dirname=$(dirname ${0})
 
-. ${dirname}/common-functions
+. ${dirname}/functions-common
 
 args=${1}
 
