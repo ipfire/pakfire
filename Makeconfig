@@ -6,15 +6,27 @@ PACKAGE_AUTHOR_EMAIL = info@ipfire.org
 PACKAGE_URL     = http://redmine.ipfire.org/projects/buildsystem3
 PACKAGE_VERSION_FILE = pakfire/__version__.py
 
+PREFIX ?= /usr
+
+CC = gcc
+CFLAGS ?= -O2 -pipe
+MACHINE = $(shell uname -m)
+
+ifeq "$(MACHINE)" "x86_64"
+	LIBDIR = $(PREFIX)/lib64
+else
+	LIBDIR = $(PREFIX)/lib
+endif
+
 # Get the version and configuration of the python interpreter.
 PYTHON_VERSION = $(shell python -c "import platform; print '.'.join(platform.python_version_tuple()[:2])")
-PYTHON_CC      = gcc -pthread
+PYTHON_CC      = $(CC) -pthread
 PYTHON_CFLAGS  = $(shell python-config --cflags)
-PYTHON_DIR     = /usr/lib/python$(PYTHON_VERSION)/site-packages
+PYTHON_DIR     = $(LIBDIR)/python$(PYTHON_VERSION)/site-packages
 PYTHON_MODULES = pakfire pakfire/packages pakfire/repository
 
 # The place, where all internally used scripts and bins are copied.
-SCRIPT_DIR     = /usr/lib/$(PACKAGE_NAME)
+SCRIPT_DIR     = $(PREFIX)/lib/$(PACKAGE_NAME)
 
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 

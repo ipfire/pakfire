@@ -28,8 +28,8 @@ install:
 		$(MAKE) -C $${dir} install || exit; \
 	done
 
-	-mkdir -pv $(DESTDIR)/usr/lib/pakfire/macros
-	cp -vf macros/*.macro $(DESTDIR)/usr/lib/pakfire/macros
+	-mkdir -pv $(DESTDIR)$(PREFIX)/lib/pakfire/macros
+	cp -vf macros/*.macro $(DESTDIR)$(PREFIX)/lib/pakfire/macros
 
 	# Install example configuration.
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
