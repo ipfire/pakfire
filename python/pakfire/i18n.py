@@ -42,7 +42,7 @@ def _(singular, plural=None, n=None):
 
 	return gettext.dgettext("pakfire", singular)
 
-def list(self, parts):
+def list(parts):
 	"""
 		Returns a comma-separated list for the given list of parts.
 
