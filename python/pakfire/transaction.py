@@ -330,8 +330,11 @@ class Transaction(object):
 			logging.info(_("Transaction Test Succeeded"))
 			return
 
+		# In case of an unsuccessful transaction test, we print the error
+		# and raise TransactionCheckError.
 		check.print_errors()
-		#raise TransactionCheckError, _("Transaction test was not successful")
+
+		raise TransactionCheckError, _("Transaction test was not successful")
 
 	def run(self):
 		# Download all packages.
