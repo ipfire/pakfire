@@ -51,6 +51,15 @@ def MACRO_PYTHON_COMPILE
 	# XXX TODO
 end
 
+MACRO_PERL_CLEANUP
+	# Remove perllocal.pod.
+	rm -f %{BUILDROOT}/usr/lib/perl*/perllocal.pod
+
+	# Remove all .packlist files.
+	find %{BUILDROOT}/usr/{lib,share}/perl* -name ".packlist" 2>/dev/null | \
+		xargs --no-run-if-empty rm -f
+end
+
 # Pre-defined build scripts.
 build
 	# These variables are used if you have to add some targets
@@ -125,6 +134,7 @@ build
 
 		%{MACRO_INSTALL_FILES}
 		%{MACRO_PYTHON_COMPILE}
+		%{MACRO_PERL_CLEANUP}
 
 		%{install_post}
 
