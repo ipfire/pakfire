@@ -58,7 +58,7 @@ class Action(object):
 
 	@property
 	def needs_download(self):
-		return self.type in ("install", "reinstall", "upgrade", "downgrade",) \
+		return self.type in ("install", "reinstall", "upgrade", "downgrade", "change",) \
 			and not isinstance(self.pkg, packages.BinaryPackage)
 
 	def download(self, text):
@@ -314,6 +314,13 @@ class ActionReinstall(Action):
 		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
 
 
+class ActionChange(ActionReinstall):
+	"""
+		The change action is like the reinstall action.
+	"""
+	type = "change"
+
+
 class ActionDowngrade(Action):
 	type = "downgrade"
 
@@ -328,12 +335,3 @@ class ActionDowngrade(Action):
 		self.local.add_package(self.pkg)
 
 		self.pkg.extract(_("Downgrading"), prefix=self.pakfire.path)
-
-
-class ActionChange(Action):
-	type = "change"
-
-	# XXX still need to find out what this should be doing
-
-	def run(self):
-		print "XXX Change: %s" % self.pkg
