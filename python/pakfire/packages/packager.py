@@ -351,9 +351,6 @@ class BinaryPackager(Packager):
 
 		# Remove all packaged files.
 		for file in reversed(files):
-			if not os.path.exists(file):
-				continue
-
 			# It's okay if we cannot remove directories,
 			# when they are not empty.
 			if os.path.isdir(file):
@@ -362,7 +359,10 @@ class BinaryPackager(Packager):
 				except OSError:
 					continue
 			else:
-				os.unlink(file)
+				try:
+					os.unlink(file)
+				except OSError:
+					pass
 
 			while True:
 				file = os.path.dirname(file)
