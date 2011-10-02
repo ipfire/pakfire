@@ -49,9 +49,14 @@ class MakefileBase(Package):
 		# Save the filename of the makefile.
 		self.filename = os.path.abspath(filename)
 
+		# Update environment.
+		environ = self.pakfire.environ
+		environ.update({
+			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
+		})
+
 		# Open and parse the makefile.
-		self.lexer = lexer.RootLexer.open(self.filename,
-			environ=self.pakfire.environ)
+		self.lexer = lexer.RootLexer.open(self.filename, environ=environ)
 
 	@property
 	def package_filename(self):

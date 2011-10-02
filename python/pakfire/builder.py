@@ -590,7 +590,6 @@ class Builder(object):
 
 		self._environ = {
 			"LANG"             : "C",
-			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
 		}
 
 	@property
