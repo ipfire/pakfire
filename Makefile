@@ -23,7 +23,7 @@ dist:
 		gzip -9 > $(PACKAGE_NAME)-$(PACKAGE_VERSION).tar.gz
 
 .PHONY: install
-install:
+install: build
 	for dir in $(SUBDIRS); do \
 		$(MAKE) -C $${dir} install || exit; \
 	done
