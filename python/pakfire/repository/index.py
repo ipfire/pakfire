@@ -149,7 +149,7 @@ class Index(object):
 			requires.append("solvable:prereqmarker")
 			requires += prerequires
 
-		for req in pkg.requires:
+		for req in requires:
 			rel = self.create_relation(req)
 			solvable.add_requires(rel)
 
