@@ -36,8 +36,6 @@ class File(_File):
 	def __cmp__(self, other):
 		ret = cmp(self.name, other.name)
 
-		print self.pkg, other.pkg
-
 		if not ret:
 			ret = cmp(self.pkg, other.pkg)
 

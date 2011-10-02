@@ -104,10 +104,11 @@ class TransactionCheck(object):
 
 	def remove(self, pkg):
 		for file in pkg.filelist:
-			try:
-				self.filelist[file.name].remove(file)
-			except (KeyError, ValueError):
-				pass
+			for f in self.filelist[file.name]:
+				if not f.pkg == pkg:
+					continue
+
+				self.filelist[file.name].remove(f)
 
 	def update(self, pkg):
 		self.install(pkg)

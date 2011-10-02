@@ -43,19 +43,24 @@ class Package(object):
 		if not self.name == other.name:
 			return cmp(self.name, other.name)
 
+		# If UUIDs match, the packages are absolutely equal.
+		if self.uuid == other.uuid:
+			#logging.debug("%s is equal to %s by UUID" % (self, other))
+			return 0
+
 		ret = util.version_compare(self.pakfire.pool,
 			self.friendly_version, other.friendly_version)
 
 		# XXX this is to move packages that have been built a while ago and
 		# do not have all the meta information that they won't be evaluated
 		# as the best match.
-		if not ret:
-			if "X"*3 in (self.build_id, other.build_id):
-				if self.build_id == "X"*3 and not other.build_id == "X"*3:
-					ret = -1
-
-				elif not self.build_id == "X"*3 and other.build_id == "X"*3:
-					ret = 1
+		#if not ret:
+		#	if "X"*3 in (self.build_id, other.build_id):
+		#		if self.build_id == "X"*3 and not other.build_id == "X"*3:
+		#			ret = -1
+		#
+		#		elif not self.build_id == "X"*3 and other.build_id == "X"*3:
+		#			ret = 1
 		# XXX hack end
 
 		# Compare the build times if we have a rebuilt package.
