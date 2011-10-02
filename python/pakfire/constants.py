@@ -71,7 +71,7 @@ BUILD_PACKAGES = [
 ]
 
 # A script that is called, when a user is dropped to a chroot shell.
-SHELL_SCRIPT = "/usr/lib/buildsystem-tools/chroot-shell"
+SHELL_SCRIPT = "/usr/lib/pakfire/chroot-shell"
 SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
