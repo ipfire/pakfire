@@ -208,7 +208,12 @@ class Package(object):
 
 	@property
 	def inst_size(self):
-		raise NotImplementedError, "%s" % self
+		"""
+			The used disk space when the package is installed.
+
+			Returns None if inst_size is unknown.
+		"""
+		return None
 
 	@property
 	def local(self):
