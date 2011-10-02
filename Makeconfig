@@ -8,6 +8,9 @@ PACKAGE_VERSION_FILE = pakfire/__version__.py
 
 PREFIX ?= /usr
 
+# Are we running on Debian?
+DEBIAN = $(shell test -e /etc/debian_version && echo 1 || echo 0)
+
 CC = gcc
 CFLAGS ?= -O2 -pipe
 MACHINE = $(shell uname -m)
@@ -22,8 +25,12 @@ endif
 PYTHON_VERSION = $(shell python -c "import platform; print '.'.join(platform.python_version_tuple()[:2])")
 PYTHON_CC      = $(CC) -pthread -fPIC
 PYTHON_CFLAGS  = $(shell python-config --cflags)
-PYTHON_DIR     = $(LIBDIR)/python$(PYTHON_VERSION)/site-packages
 PYTHON_MODULES = pakfire pakfire/packages pakfire/repository
+ifeq "$(DEBIAN)" "1"
+	PYTHON_DIR = $(LIBDIR)/python$(PYTHON_VERSION)/dist-packages
+else
+	PYTHON_DIR = $(LIBDIR)/python$(PYTHON_VERSION)/site-packages
+endif
 
 # The place, where all internally used scripts and bins are copied.
 SCRIPT_DIR     = $(PREFIX)/lib/$(PACKAGE_NAME)
