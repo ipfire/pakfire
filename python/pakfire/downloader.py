@@ -69,6 +69,12 @@ class PakfireGrabber(URLGrabber):
 
 		URLGrabber.__init__(self, *args, **kwargs)
 
+	def urlread(self, filename, *args, **kwargs):
+		# This is for older versions of urlgrabber which are packaged in Debian
+		# and Ubuntu and cannot handle filenames as a normal Python string but need
+		# a unicode string.
+		return URLGrabber.urlread(self, filename.encode("utf-8"), *args, **kwargs)
+
 
 class PackageDownloader(PakfireGrabber):
 	def __init__(self, pakfire, *args, **kwargs):
@@ -108,7 +114,7 @@ class SourceDownloader(object):
 
 		if mirrors:
 			self.grabber = MirrorGroup(self.grabber,
-				[{ "mirror" : m } for m in mirrors])
+				[{ "mirror" : m.encode("utf-8") } for m in mirrors])
 
 	def download(self, files):
 		existant_files = []
@@ -263,7 +269,7 @@ class MirrorList(object):
 		# Add all preferred mirrors at the first place and shuffle them
 		# that we will start at a random place.
 		for mirror in self.preferred:
-			mirrors.append(mirror.url)
+			mirrors.append(mirror.url.encode("utf-8"))
 		random.shuffle(mirrors)
 
 		# All other mirrors are added as well and will only be used if all
@@ -272,7 +278,7 @@ class MirrorList(object):
 			if mirror.url in mirrors:
 				continue
 
-			mirrors.append({ "mirror" : mirror.url })
+			mirrors.append({ "mirror" : mirror.url.encode("utf-8") })
 
 		return MirrorGroup(grabber, mirrors)
 
