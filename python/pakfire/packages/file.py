@@ -357,6 +357,13 @@ class FilePackage(Package):
 				line = line.split()
 				name = line[0]
 
+				# Parse the size information.
+				try:
+					file.size = int(line[2])
+				except ValueError:
+					print "PARSE ERROR", line[2]
+					file.size = 0
+
 				# XXX need to parse the rest of the information from the
 				# file
 

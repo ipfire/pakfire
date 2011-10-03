@@ -28,6 +28,7 @@ import time
 import i18n
 import packages
 import satsolver
+import system
 import util
 
 from constants import *
@@ -49,6 +50,9 @@ class TransactionCheck(object):
 		# Get a list of all installed files from the database.
 		self.filelist = self.load_filelist()
 
+		# Get information about the mounted filesystems.
+		self.mountpoints = system.Mountpoints(self.pakfire, root=self.pakfire.path)
+
 	@property
 	def error_files(self):
 		ret = {}
@@ -63,7 +67,15 @@ class TransactionCheck(object):
 
 	@property
 	def successful(self):
-		return not self.error_files
+		if self.error_files:
+			return False
+
+		# Check if all mountpoints have enough space left.
+		for mp in self.mountpoints:
+			if mp.space_left < 0:
+				return False
+
+		return True
 
 	def print_errors(self):
 		for name, files in sorted(self.error_files.items()):
@@ -82,6 +94,14 @@ class TransactionCheck(object):
 					_("file %s from %s conflicts with files from %s") % \
 						(name, pkgs[0], i18n.list(pkgs[1:]))
 				)
+
+		for mp in self.mountpoints:
+			if mp.space_left >= 0:
+				continue
+
+			print util.format_size(mp.free), util.format_size(mp.disk_usage)
+			logging.critical(_("There is not enough space left on %(name)s. Need at least %(size)s to perform transaction.") \
+				% { "name" : mp.path, "size" : util.format_size(mp.space_needed) })
 
 	def load_filelist(self):
 		filelist = {}
@@ -102,6 +122,9 @@ class TransactionCheck(object):
 			else:
 				self.filelist[file.name] = [file,]
 
+		# Add all filesize data to mountpoints.
+		self.mountpoints.add_pkg(pkg)
+
 	def remove(self, pkg):
 		for file in pkg.filelist:
 			if file.is_dir():
@@ -115,6 +138,9 @@ class TransactionCheck(object):
 					continue
 
 				self.filelist[file.name].remove(f)
+
+		# Remove all filesize data from mountpoints.
+		self.mountpoints.rem_pkg(pkg)
 
 	def update(self, pkg):
 		self.install(pkg)
@@ -211,13 +237,23 @@ class Transaction(object):
 		if not downloads:
 			return
 
-		logging.info(_("Downloading packages:"))
-		time_start = time.time()
-
 		# Calculate downloadsize.
 		download_size = 0
 		for action in downloads:
 			download_size += action.pkg.size
+
+		# Get free space of the download location.
+		path = os.path.realpath(REPO_CACHE_DIR)
+		while not os.path.ismount(path):
+			path = os.path.dirname(path)
+		path_stat = os.statvfs(path)
+
+		if download_size >= path_stat.f_bavail * path_stat.f_bsize:
+			raise DownloadError, _("Not enough space to download %s of packages.") \
+				% util.format_size(download_size)
+
+		logging.info(_("Downloading packages:"))
+		time_start = time.time()
 
 		i = 0
 		for action in downloads:
