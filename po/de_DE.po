@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-28 12:35+0200\n"
-"PO-Revision-Date: 2011-10-02 03:21+0000\n"
+"POT-Creation-Date: 2011-10-02 14:37+0200\n"
+"PO-Revision-Date: 2011-10-03 03:20+0000\n"
 "Last-Translator: numark1 <numark1@gmail.com>\n"
 "Language-Team: German (Germany) (http://www.transifex.net/projects/p/ipfire/team/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +48,7 @@ msgstr "Das Script lief länger als %s Sekunden und wurde beendet."
 
 #: ../python/pakfire/actions.py:223 ../python/pakfire/actions.py:239
 #: ../python/pakfire/actions.py:262 ../python/pakfire/actions.py:285
-#: ../python/pakfire/actions.py:302 ../python/pakfire/actions.py:321
+#: ../python/pakfire/actions.py:302 ../python/pakfire/actions.py:328
 #, python-format
 msgid "Running transaction test for %s"
 msgstr ""
@@ -70,25 +70,25 @@ msgstr "Entferne"
 msgid "Cleanup"
 msgstr "Aufräumen"
 
-#: ../python/pakfire/actions.py:330
+#: ../python/pakfire/actions.py:337
 msgid "Downgrading"
 msgstr "Herabsetzen"
 
-#: ../python/pakfire/base.py:199 ../python/pakfire/base.py:229
-#: ../python/pakfire/base.py:275 ../python/pakfire/base.py:316
-#: ../python/pakfire/base.py:349
+#: ../python/pakfire/base.py:203 ../python/pakfire/base.py:233
+#: ../python/pakfire/base.py:279 ../python/pakfire/base.py:320
+#: ../python/pakfire/base.py:353
 msgid "Nothing to do"
 msgstr "Nichts zu tun"
 
-#: ../python/pakfire/base.py:261
+#: ../python/pakfire/base.py:265
 msgid "There are no packages to install."
 msgstr "Es gibt keine Pakete zum installieren"
 
-#: ../python/pakfire/base.py:454
+#: ../python/pakfire/base.py:458
 msgid "Build command has failed."
 msgstr "Aufbauen fehlgeschlagen."
 
-#: ../python/pakfire/base.py:538
+#: ../python/pakfire/base.py:542
 msgid "Everything is fine."
 msgstr "Alles in Ordnung"
 
@@ -97,22 +97,22 @@ msgid "Package information:"
 msgstr "Paket Informationen:"
 
 #. Copy the makefile and load source tarballs.
-#: ../python/pakfire/builder.py:284
+#: ../python/pakfire/builder.py:287
 msgid "Extracting"
 msgstr "Entpacke"
 
-#: ../python/pakfire/builder.py:540
+#: ../python/pakfire/builder.py:543
 msgid "The build command failed. See logfile for details."
 msgstr "Aufbauen fehlgeschlagen. Sehen Sie in die Logfiles für Details."
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:684
+#: ../python/pakfire/builder.py:687
 msgid "Creating packages:"
 msgstr "Erstelle Pakete:"
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:704
+#: ../python/pakfire/builder.py:707
 #, python-format
 msgid "Running stage %s:"
 msgstr "Starte Level %s:"
@@ -246,7 +246,7 @@ msgstr "Überprüfe die Abhängigkeiten eines bestimmten Paketes."
 msgid "Give name of at least one package to check."
 msgstr "Gib mindestens ein Paket an das überprüft werden soll."
 
-#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:246
+#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:274
 msgid "Repository"
 msgstr "Repositorium"
 
@@ -357,10 +357,14 @@ msgid "Do not verify build dependencies."
 msgstr "Überprüfe keine Abhängigkeiten beim Aufbauen."
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:489
+#: ../python/pakfire/packages/packager.py:487
 #, python-format
 msgid "Compressing %s"
 msgstr "Komprimiere %s"
+
+#: ../python/pakfire/downloader.py:126
+msgid "Downloading source files:"
+msgstr ""
 
 #: ../python/pakfire/errors.py:30
 msgid "An unhandled error occured."
@@ -382,117 +386,122 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:308
+#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:338
 msgid "Transaction test was not successful"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:89
+#: ../python/pakfire/i18n.py:54
+#, python-format
+msgid "%(commas)s and %(last)s"
+msgstr ""
+
+#: ../python/pakfire/packages/base.py:94
 msgid "Name"
 msgstr "Name"
 
-#: ../python/pakfire/packages/base.py:90 ../python/pakfire/transaction.py:245
+#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:273
 msgid "Arch"
 msgstr "Arch"
 
-#: ../python/pakfire/packages/base.py:91 ../python/pakfire/transaction.py:245
+#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:273
 msgid "Version"
 msgstr "Version"
 
-#: ../python/pakfire/packages/base.py:92
+#: ../python/pakfire/packages/base.py:97
 msgid "Release"
 msgstr "Release"
 
-#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:246
+#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:274
 msgid "Size"
 msgstr "Größe"
 
-#: ../python/pakfire/packages/base.py:100
+#: ../python/pakfire/packages/base.py:105
 msgid "Repo"
 msgstr "Repo"
 
-#: ../python/pakfire/packages/base.py:103
+#: ../python/pakfire/packages/base.py:108
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: ../python/pakfire/packages/base.py:104
+#: ../python/pakfire/packages/base.py:109
 msgid "Groups"
 msgstr "Gruppen"
 
-#: ../python/pakfire/packages/base.py:105
+#: ../python/pakfire/packages/base.py:110
 msgid "URL"
 msgstr "URL"
 
-#: ../python/pakfire/packages/base.py:106
+#: ../python/pakfire/packages/base.py:111
 msgid "License"
 msgstr "Lizenz"
 
-#: ../python/pakfire/packages/base.py:109
+#: ../python/pakfire/packages/base.py:114
 msgid "Description"
 msgstr "Beschreibung"
 
-#: ../python/pakfire/packages/base.py:116
+#: ../python/pakfire/packages/base.py:121
 msgid "Maintainer"
 msgstr "Besitzer"
 
-#: ../python/pakfire/packages/base.py:118
+#: ../python/pakfire/packages/base.py:123
 msgid "UUID"
 msgstr "UUID"
 
-#: ../python/pakfire/packages/base.py:119
+#: ../python/pakfire/packages/base.py:124
 msgid "Build ID"
 msgstr "Build-ID"
 
-#: ../python/pakfire/packages/base.py:120
+#: ../python/pakfire/packages/base.py:125
 msgid "Build date"
 msgstr "Build-Datum"
 
-#: ../python/pakfire/packages/base.py:121
+#: ../python/pakfire/packages/base.py:126
 msgid "Build host"
 msgstr "Build-Host"
 
-#: ../python/pakfire/packages/base.py:123
+#: ../python/pakfire/packages/base.py:128
 msgid "Provides"
 msgstr "Bietet an"
 
-#: ../python/pakfire/packages/base.py:128
+#: ../python/pakfire/packages/base.py:133
 msgid "Pre-requires"
 msgstr "Vorbereitungen"
 
-#: ../python/pakfire/packages/base.py:133
+#: ../python/pakfire/packages/base.py:138
 msgid "Requires"
 msgstr "Benötigt"
 
-#: ../python/pakfire/packages/base.py:138
+#: ../python/pakfire/packages/base.py:143
 msgid "Conflicts"
 msgstr "Konflikte"
 
-#: ../python/pakfire/packages/base.py:143
+#: ../python/pakfire/packages/base.py:148
 msgid "Obsoletes"
 msgstr "Veraltetes"
 
-#: ../python/pakfire/packages/base.py:151
+#: ../python/pakfire/packages/base.py:156
 msgid "File"
 msgstr "Datei"
 
-#: ../python/pakfire/packages/base.py:332
+#: ../python/pakfire/packages/base.py:337
 msgid "Not set"
 msgstr "Nicht gesetzt"
 
-#: ../python/pakfire/packages/file.py:106
+#: ../python/pakfire/packages/file.py:107
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:156
+#: ../python/pakfire/packages/file.py:160
 #, python-format
 msgid "Filename: %s"
 msgstr "Dateiname: %s"
 
-#: ../python/pakfire/packages/make.py:100
+#: ../python/pakfire/packages/make.py:70
 msgid "Package name is undefined."
 msgstr "Paket Name ist undefiniert."
 
-#: ../python/pakfire/packages/make.py:103
+#: ../python/pakfire/packages/make.py:73
 msgid "Package version is undefined."
 msgstr "Paket Version ist undefiniert."
 
@@ -501,7 +510,7 @@ msgstr "Paket Version ist undefiniert."
 msgid "Packaging"
 msgstr "Packe ein"
 
-#: ../python/pakfire/packages/packager.py:608
+#: ../python/pakfire/packages/packager.py:606
 #, python-format
 msgid "Building source package %s:"
 msgstr "Aufbauen des Quellcode Paket %s:"
@@ -566,70 +575,80 @@ msgstr "Lösung: %s"
 msgid "    Solutions:"
 msgstr "Lösungen:"
 
-#: ../python/pakfire/transaction.py:180
+#: ../python/pakfire/transaction.py:76
+#, python-format
+msgid "file %s from %s conflicts with file from package %s"
+msgstr ""
+
+#: ../python/pakfire/transaction.py:82
+#, python-format
+msgid "file %s from %s conflicts with files from %s"
+msgstr ""
+
+#: ../python/pakfire/transaction.py:208
 msgid "Downloading packages:"
 msgstr "Herunterladen von Paketen:"
 
-#: ../python/pakfire/transaction.py:245
+#: ../python/pakfire/transaction.py:273
 msgid "Package"
 msgstr "Paket"
 
-#: ../python/pakfire/transaction.py:250
+#: ../python/pakfire/transaction.py:278
 msgid "Installing:"
 msgstr "Installiere:"
 
-#: ../python/pakfire/transaction.py:251
+#: ../python/pakfire/transaction.py:279
 msgid "Reinstalling:"
 msgstr "Neuinstallation:"
 
-#: ../python/pakfire/transaction.py:252
+#: ../python/pakfire/transaction.py:280
 msgid "Updating:"
 msgstr "Aktualisiere:"
 
-#: ../python/pakfire/transaction.py:253
+#: ../python/pakfire/transaction.py:281
 msgid "Downgrading:"
 msgstr "Herabsetzen:"
 
-#: ../python/pakfire/transaction.py:254
+#: ../python/pakfire/transaction.py:282
 msgid "Removing:"
 msgstr "Entferne:"
 
-#: ../python/pakfire/transaction.py:260
+#: ../python/pakfire/transaction.py:288
 msgid "Transaction Summary"
 msgstr "Zusammenfassung der Transaktion"
 
-#: ../python/pakfire/transaction.py:267
+#: ../python/pakfire/transaction.py:295
 msgid "package"
 msgstr "Paket"
 
-#: ../python/pakfire/transaction.py:273
+#: ../python/pakfire/transaction.py:301
 #, python-format
 msgid "Total download size: %s"
 msgstr "Gesamte Downloadgröße: %s"
 
-#: ../python/pakfire/transaction.py:277
+#: ../python/pakfire/transaction.py:305
 #, python-format
 msgid "Installed size: %s"
 msgstr "Installations Größe: %s"
 
-#: ../python/pakfire/transaction.py:279
+#: ../python/pakfire/transaction.py:307
 #, python-format
 msgid "Freed size: %s"
 msgstr "Freigegebene Größe: %s"
 
-#: ../python/pakfire/transaction.py:288
+#: ../python/pakfire/transaction.py:316
 msgid "Is this okay?"
 msgstr "Ist dies in Ordnung?"
 
-#: ../python/pakfire/transaction.py:291
+#: ../python/pakfire/transaction.py:319
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:303
+#: ../python/pakfire/transaction.py:331
 msgid "Transaction Test Succeeded"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:317
+#: ../python/pakfire/transaction.py:347
 msgid "Running transaction"
 msgstr "führe Transaktionen durch"
 
