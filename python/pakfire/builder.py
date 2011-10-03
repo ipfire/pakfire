@@ -451,6 +451,10 @@ class BuildEnviron(object):
 
 		# If ccache support is requested, we bind mount the cache.
 		if self.settings.get("enable_ccache"):
+			# Create ccache cache directory if it does not exist.
+			if not os.path.exists(CCACHE_CACHE_DIR):
+				os.makedirs(CCACHE_CACHE_DIR)
+
 			mountpoints += [
 				(CCACHE_CACHE_DIR, "/var/cache/ccache", "bind", "bind"),
 			]
