@@ -23,16 +23,6 @@ class _File(object):
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
 
-
-class File(_File):
-	def __init__(self, pakfire):
-		_File.__init__(self, pakfire)
-
-		self.name = ""
-		self.pkg  = None
-		self.size = -1
-		self.hash1 = ""
-
 	def __cmp__(self, other):
 		ret = cmp(self.name, other.name)
 
@@ -49,6 +39,16 @@ class File(_File):
 	def is_config(self):
 		# XXX TODO
 		return False
+
+
+class File(_File):
+	def __init__(self, pakfire):
+		_File.__init__(self, pakfire)
+
+		self.name = ""
+		self.pkg  = None
+		self.size = -1
+		self.hash1 = ""
 
 
 class FileDatabase(_File):

@@ -130,7 +130,7 @@ class TransactionCheck(object):
 			if file.is_dir():
 				continue
 
-			if not self.filelist.has_key(file):
+			if not self.filelist.has_key(file.name):
 				continue
 
 			for f in self.filelist[file.name]:
