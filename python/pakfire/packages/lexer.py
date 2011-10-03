@@ -571,6 +571,12 @@ class TemplateLexer(DefaultLexer):
 		# A place to store the scriptlets.
 		self.scriptlets = {}
 
+	def inherit(self, other):
+		DefaultLexer.inherit(self, other)
+
+		# Inherit all scriptlets.
+		self.scriptlets.update(other.scriptlets)
+
 	@property
 	def definitions(self):
 		definitions = {}
