@@ -675,9 +675,9 @@ class Builder(object):
 		return file
 
 	def build(self):
-		# Create buildroot.
-		if not os.path.exists(self.buildroot):
-			os.makedirs(self.buildroot)
+		# Create buildroot and remove all content if it was existant.
+		util.rm(self.buildroot)
+		os.makedirs(self.buildroot)
 
 		# Build icecream toolchain if icecream is installed.
 		self.create_icecream_toolchain()
