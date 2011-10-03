@@ -301,6 +301,9 @@ class BinaryPackager(Packager):
 				else:
 					files.append(pattern)
 
+		# ...
+		orphan_directories = [os.path.join(self.buildroot, d) for d in ORPHAN_DIRECTORIES]
+
 		files = []
 		for file in includes:
 			# Skip if file is already in the file set or
@@ -308,7 +311,22 @@ class BinaryPackager(Packager):
 			if file in excludes or file in files:
 				continue
 
+			# Skip orphan directories.
+			if file in orphan_directories and not os.listdir(file):
+				logging.debug("Found an orphaned directory: %s" % file)
+				continue
+
 			files.append(file)
+
+			while True:
+				file = os.path.dirname(file)
+
+				if file == self.buildroot:
+					break
+
+				if not file in files:
+					files.append(file)
+
 		files.sort()
 
 		# Load progressbar.
@@ -331,20 +349,8 @@ class BinaryPackager(Packager):
 			if os.path.normpath(file) == os.path.normpath(basedir):
 				continue
 
+			# Name of the file in the archive.
 			arcname = "/%s" % os.path.relpath(file, basedir)
-
-			# Special handling for directories.
-			if os.path.isdir(file):
-				# Empty directories that are in the list of ORPHAN_DIRECTORIES
-				# can be skipped and removed.
-				if arcname in ORPHAN_DIRECTORIES and not os.listdir(file):
-					logging.debug("Found an orphaned directory: %s" % arcname)
-					try:
-						os.unlink(file)
-					except OSError:
-						pass
-
-					continue
 
 			# Add file to tarball.
 			tar.add(file, arcname=arcname, recursive=False)

@@ -104,6 +104,12 @@ class TransactionCheck(object):
 
 	def remove(self, pkg):
 		for file in pkg.filelist:
+			if file.is_dir():
+				continue
+
+			if not self.filelist.has_key(file):
+				continue
+
 			for f in self.filelist[file.name]:
 				if not f.pkg == pkg:
 					continue
