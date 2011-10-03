@@ -280,9 +280,12 @@ class DatabasePackage(Package):
 
 		for row in c:
 			# Check if file in filelist.
-			if row["name"] in files:
-				files.remove(row["name"])
+			for f in files:
+				if not row["name"] == f.name:
+					continue
 
+				files.remove(f)
+				break
 		c.close()
 
 		self._remove_files(files, message, prefix)
