@@ -96,9 +96,11 @@ class InnerTarFile(tarfile.TarFile):
 		target = os.path.join(path, member.name)
 
 		# Remove symlink targets, because tarfile cannot replace them.
-		if member.issym() and os.path.exists(target):
-			print "unlinking", target
-			os.unlink(target)
+		if member.issym():
+			try:
+				os.unlink(target)
+			except OSError:
+				pass
 
 		# Extract file the normal way...
 		try:
