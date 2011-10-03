@@ -552,6 +552,9 @@ class SourcePackager(Packager):
 		info.update(self.pakfire.distro.info)
 		info.update(self.pkg.info)
 
+		# Size is the size of the (uncompressed) datafile.
+		info["inst_size"] = os.path.getsize(datafile)
+
 		# Update package information for string formatting.
 		requires = [PACKAGE_INFO_DEPENDENCY_LINE % r for r in self.pkg.requires]
 		info.update({

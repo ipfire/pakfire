@@ -343,10 +343,6 @@ class Makefile(MakefileBase):
 
 			shutil.copy2(_filename, filename)
 
-	@property
-	def inst_size(self):
-		return 0
-
 
 class MakefilePackage(MakefileBase):
 	def __init__(self, pakfire, name, lexer):
@@ -431,7 +427,12 @@ class MakefilePackage(MakefileBase):
 		return self.get_deps("conflicts")
 
 	def get_scriptlet(self, type):
-		return self.lexer.scriptlets.get(type, None)
+		scriptlet = self.lexer.scriptlets.get(type, None)
+
+		if scriptlet is None and self.lexer.template:
+			scriptlet = self.lexer.template.scriptlets.get(type, None)
+
+		return scriptlet
 
 	@property
 	def inst_size(self):
