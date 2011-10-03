@@ -249,19 +249,27 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 	"""
 		kill off anything that is still chrooted.
 	"""
-	logging.debug("Killing orphans...")
+	logging.debug(_("Killing orphans..."))
 
+	killed = False
 	for fn in [d for d in os.listdir("/proc") if d.isdigit()]:
 		try:
 			r = os.readlink("/proc/%s/root" % fn)
 			if os.path.realpath(root) == os.path.realpath(r):
-				logging.warning("Process ID %s is still running in chroot. Killing..." % fn)
+				logging.warning(_("Process ID %s is still running in chroot. Killing...") % fn)
+				killed = True
 
 				pid = int(fn, 10)
 				os.kill(pid, killsig)
 				os.waitpid(pid, 0)
 		except OSError, e:
 			pass
+
+	# If something was killed, wait a couple of seconds to make sure all file descriptors
+	# are closed and we can proceed with umounting the filesystems.
+	if killed:
+		logging.warning(_("Waiting for processes to terminate..."))
+		time.sleep(3)
 
 def scriptlet_interpreter(scriptlet):
 	"""
