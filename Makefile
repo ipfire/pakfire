@@ -39,3 +39,7 @@ install: build
 .PHONY: check
 check:
 	./runpychecker.sh
+
+.PHONY: po
+po:
+	$(MAKE) -C po
