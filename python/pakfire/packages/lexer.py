@@ -32,7 +32,7 @@ LEXER_COMMENT         = re.compile(r"^\s*#")
 LEXER_QUOTES          = "\"'"
 LEXER_EMPTY_LINE      = re.compile(r"^\s*$")
 
-LEXER_DEFINITION      = re.compile(r"^([A-Za-z0-9_\-]+)\s*(\+)?=\s*(.+)?$")
+LEXER_DEFINITION      = re.compile(r"^([A-Za-z0-9_\-]+)\s*([\+\:])?=\s*(.+)?$")
 
 LEXER_BLOCK_LINE_INDENT = "\t"
 LEXER_BLOCK_LINE      = re.compile(r"^\t(.*)$")
@@ -333,6 +333,10 @@ class Lexer(object):
 			prev = self.get_var(k, default=None, raw=True)
 			if prev:
 				v = " ".join((prev or "", v))
+
+		elif o == ":":
+			# Expand the value immediately and save it.
+			v = self.expand_string(v)
 
 		# Handle backslash.
 		while v and v.endswith("\\"):
