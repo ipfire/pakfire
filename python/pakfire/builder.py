@@ -117,15 +117,27 @@ class BuildEnviron(object):
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
+		# Open package.
+		if pkg.endswith(MAKEFILE_EXTENSION):
+			self.pkg = packages.Makefile(self.pakfire, pkg)
+		elif pkg.endswith(PACKAGE_EXTENSION):
+			self.pkg = packages.SourcePackage(self.pakfire, None, pkg)
+		assert self.pkg, pkg
+
 		# Log the package information.
-		self.pkg = packages.Makefile(self.pakfire, pkg)
 		self.log.info(_("Package information:"))
 		for line in self.pkg.dump(long=True).splitlines():
 			self.log.info("  %s" % line)
 		self.log.info("")
 
+		# Path where we extract the package and put all the source files.
+		self.build_dir = os.path.join(self.path, "usr/src", self.pkg.friendly_name)
+
 		# Download all package files.
-		self.pkg.download()
+		# In case of a SourcePackage, we don't need to do that because
+		# it includes everyting we need.
+		if isinstance(self.pkg, packages.Makefile):
+			self.pkg.download()
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -284,8 +296,7 @@ class BuildEnviron(object):
 		self.install(requires)
 
 		# Copy the makefile and load source tarballs.
-		self.pkg.extract(_("Extracting"),
-			prefix=os.path.join(self.path, "build"))
+		self.pkg.extract(_("Extracting"), prefix=self.build_dir)
 
 	def install(self, requires):
 		"""
@@ -383,10 +394,9 @@ class BuildEnviron(object):
 		logging.debug("Cleaning environemnt.")
 
 		# Remove the build directory and buildroot.
-		dirs = ("build", "result")
+		dirs = (self.build_dir, self.chrootPath("result"),)
 
 		for d in dirs:
-			d = self.chrootPath(d)
 			if not os.path.exists(d):
 				continue
 
@@ -533,7 +543,12 @@ class BuildEnviron(object):
 	def build(self, install_test=True):
 		assert self.pkg
 
-		pkgfile = os.path.join("/build", os.path.basename(self.pkg.filename))
+		# Search for the package file in build_dir and raise BuildError if it is not present.
+		pkgfile = os.path.join(self.build_dir, "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION))
+		if not os.path.exists(pkgfile):
+			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
+		pkgfile = os.path.relpath(pkgfile, self.chrootPath())
+
 		resultdir = self.chrootPath("/result")
 
 		# Create the build command, that is executed in the chroot.

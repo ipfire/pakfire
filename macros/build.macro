@@ -68,7 +68,7 @@ build
 	make_install_targets = install
 
 	def _prepare
-		[ -d "%{DIR_SRC}" ] && cd %{DIR_SRC}
+		mkdir -p %{DIR_SRC} && cd %{DIR_SRC}
 
 		%{prepare}
 	end
