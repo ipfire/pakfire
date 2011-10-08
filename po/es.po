@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-02 14:37+0200\n"
-"PO-Revision-Date: 2011-10-03 03:20+0000\n"
+"POT-Creation-Date: 2011-10-03 22:36+0200\n"
+"PO-Revision-Date: 2011-10-04 03:25+0000\n"
 "Last-Translator: andres_reyes <andres.rt@gmail.com>\n"
 "Language-Team: Spanish (Castilian) (http://www.transifex.net/projects/p/ipfire/team/es/)\n"
 "MIME-Version: 1.0\n"
@@ -101,19 +101,19 @@ msgstr "Información del paquete:"
 msgid "Extracting"
 msgstr "Extrayendo"
 
-#: ../python/pakfire/builder.py:543
+#: ../python/pakfire/builder.py:547
 msgid "The build command failed. See logfile for details."
 msgstr ""
 "El comando de construcción falló. Revisar fichero de log para más detalles."
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:687
+#: ../python/pakfire/builder.py:690
 msgid "Creating packages:"
 msgstr "Creando paquetes:"
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:707
+#: ../python/pakfire/builder.py:710
 #, python-format
 msgid "Running stage %s:"
 msgstr "Fase en ejecución %s:"
@@ -250,7 +250,7 @@ msgstr "Comprobar las dependencias de un paquete en particular."
 msgid "Give name of at least one package to check."
 msgstr "Dar al menos el nombre de un paquete a comprobar."
 
-#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:274
+#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:317
 msgid "Repository"
 msgstr "Repositorio"
 
@@ -361,12 +361,12 @@ msgid "Do not verify build dependencies."
 msgstr "No verificar dependencias de construcción."
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:487
+#: ../python/pakfire/packages/packager.py:493
 #, python-format
 msgid "Compressing %s"
 msgstr "Comprimiendo %s"
 
-#: ../python/pakfire/downloader.py:126
+#: ../python/pakfire/downloader.py:132
 msgid "Downloading source files:"
 msgstr ""
 
@@ -390,7 +390,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:338
+#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:381
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -403,11 +403,11 @@ msgstr ""
 msgid "Name"
 msgstr "Nombre"
 
-#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:273
+#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:316
 msgid "Arch"
 msgstr "Arquitectura"
 
-#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:273
+#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:316
 msgid "Version"
 msgstr "Versión"
 
@@ -415,7 +415,7 @@ msgstr "Versión"
 msgid "Release"
 msgstr "Lanzamiento"
 
-#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:274
+#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:317
 msgid "Size"
 msgstr "Tamaño"
 
@@ -487,34 +487,34 @@ msgstr "Obsoleto"
 msgid "File"
 msgstr "Fichero"
 
-#: ../python/pakfire/packages/base.py:337
+#: ../python/pakfire/packages/base.py:342
 msgid "Not set"
 msgstr "No establecido"
 
-#: ../python/pakfire/packages/file.py:107
+#: ../python/pakfire/packages/file.py:109
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:160
+#: ../python/pakfire/packages/file.py:162
 #, python-format
 msgid "Filename: %s"
 msgstr "Nombre de fichero: %s"
 
-#: ../python/pakfire/packages/make.py:70
+#: ../python/pakfire/packages/make.py:75
 msgid "Package name is undefined."
 msgstr "El nombre del paquete no está definido."
 
-#: ../python/pakfire/packages/make.py:73
+#: ../python/pakfire/packages/make.py:78
 msgid "Package version is undefined."
 msgstr "La versión del paquete no está definida."
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:315
+#: ../python/pakfire/packages/packager.py:333
 msgid "Packaging"
 msgstr "Empaquetado"
 
-#: ../python/pakfire/packages/packager.py:606
+#: ../python/pakfire/packages/packager.py:615
 #, python-format
 msgid "Building source package %s:"
 msgstr "Construyendo paquete fuente %s:"
@@ -580,80 +580,92 @@ msgstr "    Solución: %s"
 msgid "    Solutions:"
 msgstr "    Soluciones:"
 
-#: ../python/pakfire/transaction.py:76
+#: ../python/pakfire/transaction.py:89
 #, python-format
 msgid "file %s from %s conflicts with file from package %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:82
+#: ../python/pakfire/transaction.py:95
 #, python-format
 msgid "file %s from %s conflicts with files from %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:208
+#: ../python/pakfire/transaction.py:104
+#, python-format
+msgid ""
+"There is not enough space left on %(name)s. Need at least %(size)s to "
+"perform transaction."
+msgstr ""
+
+#: ../python/pakfire/transaction.py:253
+#, python-format
+msgid "Not enough space to download %s of packages."
+msgstr ""
+
+#: ../python/pakfire/transaction.py:256
 msgid "Downloading packages:"
 msgstr "Descargando paquetes:"
 
-#: ../python/pakfire/transaction.py:273
+#: ../python/pakfire/transaction.py:316
 msgid "Package"
 msgstr "Paquete"
 
-#: ../python/pakfire/transaction.py:278
+#: ../python/pakfire/transaction.py:321
 msgid "Installing:"
 msgstr "Instalando:"
 
-#: ../python/pakfire/transaction.py:279
+#: ../python/pakfire/transaction.py:322
 msgid "Reinstalling:"
 msgstr "Reinstalando:"
 
-#: ../python/pakfire/transaction.py:280
+#: ../python/pakfire/transaction.py:323
 msgid "Updating:"
 msgstr "Actualizando:"
 
-#: ../python/pakfire/transaction.py:281
+#: ../python/pakfire/transaction.py:324
 msgid "Downgrading:"
 msgstr "Desactualizando:"
 
-#: ../python/pakfire/transaction.py:282
+#: ../python/pakfire/transaction.py:325
 msgid "Removing:"
 msgstr "Quitando:"
 
-#: ../python/pakfire/transaction.py:288
+#: ../python/pakfire/transaction.py:331
 msgid "Transaction Summary"
 msgstr "Sumario de la transacción"
 
-#: ../python/pakfire/transaction.py:295
+#: ../python/pakfire/transaction.py:338
 msgid "package"
 msgstr "paquete"
 
-#: ../python/pakfire/transaction.py:301
+#: ../python/pakfire/transaction.py:344
 #, python-format
 msgid "Total download size: %s"
 msgstr "Tamaño total descargado: %s"
 
-#: ../python/pakfire/transaction.py:305
+#: ../python/pakfire/transaction.py:348
 #, python-format
 msgid "Installed size: %s"
 msgstr "Tamaño instalado: %s"
 
-#: ../python/pakfire/transaction.py:307
+#: ../python/pakfire/transaction.py:350
 #, python-format
 msgid "Freed size: %s"
 msgstr "Tamaño liberado: %s"
 
-#: ../python/pakfire/transaction.py:316
+#: ../python/pakfire/transaction.py:359
 msgid "Is this okay?"
 msgstr "¿Es esto correcto?"
 
-#: ../python/pakfire/transaction.py:319
+#: ../python/pakfire/transaction.py:362
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:331
+#: ../python/pakfire/transaction.py:374
 msgid "Transaction Test Succeeded"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:347
+#: ../python/pakfire/transaction.py:390
 msgid "Running transaction"
 msgstr "Corriendo transacción"
 
@@ -661,6 +673,19 @@ msgstr "Corriendo transacción"
 #, python-format
 msgid "%s [y/N]"
 msgstr "%s[s/N]"
+
+#: ../python/pakfire/util.py:252
+msgid "Killing orphans..."
+msgstr ""
+
+#: ../python/pakfire/util.py:259
+#, python-format
+msgid "Process ID %s is still running in chroot. Killing..."
+msgstr ""
+
+#: ../python/pakfire/util.py:271
+msgid "Waiting for processes to terminate..."
+msgstr ""
 
 #: ../python/src/problem.c:159
 #, c-format

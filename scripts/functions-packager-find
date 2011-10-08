@@ -46,10 +46,6 @@ function find_requires() {
 	for require in $(listsort ${PKG_DEPS} ${interpreters} ${neededs} ${links} ${others}); do
 		[ "${require:0:3}" = "ld-" ] && continue
 
-		if [ -n "${PKG_REQUIRES_FILTER}" ]; then
-			grep -qE "${PKG_REQUIRES_FILTER}" <<< "${require}" && continue
-		fi
-
 		requires="${requires} ${require}"
 	done
 
@@ -75,10 +71,6 @@ function find_provides() {
 	local provide
 	local provides
 	for provide in $(listsort ${PKG_PROVIDES} ${sonames} ${others}); do
-		if [ -n "${PKG_PROVIDES_FILTER}" ]; then
-			grep -qE "${PKG_PROVIDES_FILTER}" <<< "${provide}" && continue
-		fi
-
 		provides="${provides} ${provide}"
 	done
 

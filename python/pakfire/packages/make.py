@@ -380,6 +380,9 @@ class MakefilePackage(MakefileBase):
 		return None
 
 	def track_dependencies(self, builder, path):
+		# Dependency types.
+		dep_types = ("prerequires", "requires", "provides", "conflicts", "obsoletes",)
+
 		result = builder.do("/usr/lib/pakfire/dependency-tracker %s" \
 			% path, returnOutput=True)
 
@@ -390,13 +393,43 @@ class MakefilePackage(MakefileBase):
 
 			key, val = m.groups()
 
-			if not key in ("prerequires", "requires", "provides", "conflicts", "obsoletes",):
+			if not key in dep_types:
 				continue
 
 			val = val.strip("\"")
 			val = val.split()
 
 			self._dependencies[key] = sorted(val)
+
+		# Filter dependencies.
+		for key in dep_types:
+			self._dependencies[key] = self.filter_deps(
+				self._dependencies.get(key, []),
+				self.lexer.get_var("filter_%s" % key)
+			)
+
+	@staticmethod
+	def filter_deps(deps, filters):
+		if not filters:
+			return deps
+
+		filters = filters.splitlines()
+		filtered_deps = []
+
+		for dep in deps:
+			filtered = False
+			for filter in filters:
+				m = re.search(filter, dep)
+				if not m:
+					continue
+
+				# Yes, we found a match.
+				filtered = True
+
+			if not filtered:
+				filtered_deps.append(dep)
+
+		return filtered_deps
 
 	def get_deps(self, key):
 		# Collect all dependencies that were set in the makefile by the user.

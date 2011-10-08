@@ -346,7 +346,8 @@ class Transaction(object):
 		if self.installsizechange > 0:
 			s.append(_("Installed size: %s") % util.format_size(self.installsizechange))
 		elif self.installsizechange < 0:
-			s.append(_("Freed size: %s") % util.format_size(self.installsizechange))
+			freed_size = abs(self.installsizechange)
+			s.append(_("Freed size: %s") % util.format_size(freed_size))
 		s.append("")
 
 		for line in s:

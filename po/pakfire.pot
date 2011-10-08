@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-03 22:36+0200\n"
+"POT-Creation-Date: 2011-10-05 15:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,7 +238,7 @@ msgstr ""
 msgid "Give name of at least one package to check."
 msgstr ""
 
-#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:317
+#: ../python/pakfire/cli.py:299 ../python/pakfire/transaction.py:316
 msgid "Repository"
 msgstr ""
 
@@ -349,7 +349,7 @@ msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:493
+#: ../python/pakfire/packages/packager.py:495
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -377,7 +377,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:381
+#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:380
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -390,11 +390,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:316
+#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:315
 msgid "Arch"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:316
+#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:315
 msgid "Version"
 msgstr ""
 
@@ -402,7 +402,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:317
+#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:316
 msgid "Size"
 msgstr ""
 
@@ -501,7 +501,7 @@ msgstr ""
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:615
+#: ../python/pakfire/packages/packager.py:617
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
@@ -564,92 +564,92 @@ msgstr ""
 msgid "    Solutions:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:89
+#: ../python/pakfire/transaction.py:88
 #, python-format
 msgid "file %s from %s conflicts with file from package %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:95
+#: ../python/pakfire/transaction.py:94
 #, python-format
 msgid "file %s from %s conflicts with files from %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:104
+#: ../python/pakfire/transaction.py:103
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:253
+#: ../python/pakfire/transaction.py:252
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:256
+#: ../python/pakfire/transaction.py:255
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:316
+#: ../python/pakfire/transaction.py:315
 msgid "Package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:321
+#: ../python/pakfire/transaction.py:320
 msgid "Installing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:322
+#: ../python/pakfire/transaction.py:321
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:323
+#: ../python/pakfire/transaction.py:322
 msgid "Updating:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:324
+#: ../python/pakfire/transaction.py:323
 msgid "Downgrading:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:325
+#: ../python/pakfire/transaction.py:324
 msgid "Removing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:331
+#: ../python/pakfire/transaction.py:330
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:338
+#: ../python/pakfire/transaction.py:337
 msgid "package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:344
+#: ../python/pakfire/transaction.py:343
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:348
+#: ../python/pakfire/transaction.py:347
 #, python-format
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:350
+#: ../python/pakfire/transaction.py:349
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:359
+#: ../python/pakfire/transaction.py:358
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:362
+#: ../python/pakfire/transaction.py:361
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:374
+#: ../python/pakfire/transaction.py:373
 msgid "Transaction Test Succeeded"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:390
+#: ../python/pakfire/transaction.py:389
 msgid "Running transaction"
 msgstr ""
 

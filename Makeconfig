@@ -23,6 +23,10 @@ endif
 
 # Get the version and configuration of the python interpreter.
 PYTHON_VERSION = $(shell python -c "import platform; print '.'.join(platform.python_version_tuple()[:2])")
+ifeq "$(PYTHON_VERSION)" ""
+  $(error Could not determine the version of the python interpreter.)
+endif
+
 PYTHON_CC      = $(CC) -pthread -fPIC
 PYTHON_CFLAGS  = $(shell python-config --cflags)
 PYTHON_MODULES = pakfire pakfire/packages pakfire/repository

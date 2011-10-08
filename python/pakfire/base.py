@@ -471,11 +471,7 @@ class Pakfire(object):
 			b.stop()
 
 	def dist(self, pkgs, resultdirs=None):
-		if not resultdirs:
-			resultdirs = []
-
-		# Always include local repository
-		resultdirs.append(self.repos.local_build.path)
+		assert resultdirs
 
 		for pkg in pkgs:
 			pkg = packages.Makefile(self, pkg)

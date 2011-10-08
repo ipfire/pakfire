@@ -511,7 +511,7 @@ class CliServer(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		self.server = server.Server()
+		self.server = server.Server(**self.pakfire_args)
 
 		self.action2func = {
 			"build"      : self.handle_build,

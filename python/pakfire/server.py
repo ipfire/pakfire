@@ -219,6 +219,8 @@ class Server(object):
 		self.conn = xmlrpclib.ServerProxy(server, transport=XMLRPCTransport(),
 			allow_none=True)
 
+		self.pakfire_args = pakfire_args
+
 	@property
 	def hostname(self):
 		"""
@@ -414,7 +416,8 @@ class Server(object):
 
 		source = Source(self, **build["source"])
 
-		repo = source.update_revision(build["revision"], build_id=build_id)
+		repo = source.update_revision(build["revision"], build_id=build_id,
+			**self.pakfire_args)
 
 		try:
 			# Upload all files in the repository.
