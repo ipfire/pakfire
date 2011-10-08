@@ -26,4 +26,4 @@ clean:
 .PHONY: install
 install: $(MODULENAME)
 	-mkdir -pv $(DESTDIR)$(PYTHON_DIR)/$(PACKAGE_NAME)
-	cp -vf $< $(DESTDIR)$(PYTHON_DIR)/$(PACKAGE_NAME)/
+	install -m 755 -v $< $(DESTDIR)$(PYTHON_DIR)/$(PACKAGE_NAME)/
