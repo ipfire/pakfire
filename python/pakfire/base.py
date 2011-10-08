@@ -366,7 +366,7 @@ class Pakfire(object):
 		# For all patterns we run a single search which returns us a bunch
 		# of solvables which are transformed into Package objects.
 		for pattern in patterns:
-			if os.path.exists(pattern):
+			if os.path.exists(pattern) and not os.path.isdir(pattern):
 				pkg = packages.open(self, self.repos.dummy, pattern)
 				if pkg:
 					pkgs.append(pkg)
