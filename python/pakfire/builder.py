@@ -60,7 +60,7 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pkg=None, distro_config=None, build_id=None, logfile=None,
+	def __init__(self, filename, distro_config=None, build_id=None, logfile=None,
 			builder_mode="release", **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
@@ -117,12 +117,21 @@ class BuildEnviron(object):
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
+		# Where do we put the result?
+		self.resultdir = os.path.join(self.path, "result")
+
 		# Open package.
-		if pkg.endswith(MAKEFILE_EXTENSION):
-			self.pkg = packages.Makefile(self.pakfire, pkg)
-		elif pkg.endswith(PACKAGE_EXTENSION):
-			self.pkg = packages.SourcePackage(self.pakfire, None, pkg)
-		assert self.pkg, pkg
+		# If we have a plain makefile, we first build a source package and go with that.
+		if filename.endswith(".%s" % MAKEFILE_EXTENSION):
+			pkg = packages.Makefile(self.pakfire, filename)
+			pkg.dist([self.resultdir,])
+
+			filename = os.path.join(self.resultdir, "src", pkg.package_filename)
+			assert os.path.exists(filename), filename
+
+		# Open source package.
+		self.pkg = packages.SourcePackage(self.pakfire, None, filename)
+		assert self.pkg, filename
 
 		# Log the package information.
 		self.log.info(_("Package information:"))
@@ -132,12 +141,6 @@ class BuildEnviron(object):
 
 		# Path where we extract the package and put all the source files.
 		self.build_dir = os.path.join(self.path, "usr/src", self.pkg.friendly_name)
-
-		# Download all package files.
-		# In case of a SourcePackage, we don't need to do that because
-		# it includes everyting we need.
-		if isinstance(self.pkg, packages.Makefile):
-			self.pkg.download()
 
 		# XXX need to make this configureable
 		self.settings = {
