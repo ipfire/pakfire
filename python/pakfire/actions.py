@@ -77,6 +77,38 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
+	def do(self, cmd, **kwargs):
+		# If we are running in /, we do not need to chroot there.
+		chroot_path = None
+		if not self.pakfire.path == "/":
+			chroot_path = self.pakfire.path
+
+		# Find suitable cwd.
+		cwd = "/"
+		for i in ("tmp", "root"):
+			_cwd = os.path.join(chroot_path, i)
+			if os.path.exists(_cwd):
+				cwd = _cwd
+				break
+
+		args = {
+			"cwd"         : cwd,
+			"logger"      : logging.getLogger(),
+			"personality" : self.pakfire.distro.personality,
+			"shell"       : False,
+			"timeout"     : SCRIPTLET_TIMEOUT,
+		}
+
+		# Overwrite by args that were passed.
+		args.update(kwargs)
+
+		# You can never overwrite chrootPath.
+		args.update({
+			"chrootPath"  : chroot_path,
+		})
+
+		return chroot.do(cmd, **args)
+
 
 class ActionScript(Action):
 	type = "script"
@@ -148,18 +180,8 @@ class ActionScript(Action):
 		# Generate the script command.
 		command = [script_file_chroot] + self.args
 
-		# If we are running in /, we do not need to chroot there.
-		chroot_path = None
-		if not self.pakfire.path == "/":
-			chroot_path = self.pakfire.path
-
 		try:
-			ret = chroot.do(command, cwd="/tmp",
-				chrootPath=chroot_path,
-				personality=self.pakfire.distro.personality,
-				shell=False,
-				timeout=SCRIPTLET_TIMEOUT,
-				logger=logging.getLogger())
+			self.do(command)
 
 		except Error, e:
 			raise ActionError, _("The scriptlet returned an error:\n%s" % e)
@@ -230,6 +252,28 @@ class ActionInstall(Action):
 		self.local.add_package(self.pkg)
 
 		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
+
+		# Check if shared objects were extracted. If this is the case, we need
+		# to run ldconfig.
+		ldconfig_needed = False
+		for file in self.pkg.filelist:
+			if ".so." in file.name:
+				ldconfig_needed = True
+				break
+
+			if "etc/ld.so.conf" in file.name:
+				ldconfig_needed = True
+				break
+
+		if ldconfig_needed:
+			# Check if ldconfig is present.
+			ldconfig = os.path.join(self.pakfire.path, LDCONFIG[1:])
+
+			if os.path.exists(ldconfig) and os.access(ldconfig, os.X_OK):
+				self.do(LDCONFIG)
+
+			else:
+				logging.debug("ldconfig is not present or not executable.")
 
 
 class ActionUpdate(Action):

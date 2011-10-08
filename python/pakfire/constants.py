@@ -185,3 +185,5 @@ SCRIPTS = (
 	"posttransun",
 	"posttransup",
 )
+
+LDCONFIG = "/sbin/ldconfig"
