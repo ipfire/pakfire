@@ -57,9 +57,9 @@ METADATA_DOWNLOAD_PATH  = "repodata"
 METADATA_DOWNLOAD_FILE  = "repomd.json"
 METADATA_DATABASE_FILE  = "packages.solv"
 
-PACKAGE_FORMAT = 1
+PACKAGE_FORMAT = 2
 # XXX implement this properly
-PACKAGE_FORMATS_SUPPORTED = [0, 1]
+PACKAGE_FORMATS_SUPPORTED = [0, 1, 2]
 PACKAGE_EXTENSION = "pfm"
 MAKEFILE_EXTENSION = "nm"
 
@@ -122,6 +122,7 @@ package
 %(description)s
 	end
 
+	type        = %(type)s
 	size        = %(inst_size)d
 end
 

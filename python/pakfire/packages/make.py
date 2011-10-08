@@ -183,10 +183,15 @@ class Makefile(MakefileBase):
 
 	@property
 	def arch(self):
-		"""
-			This is only used to create the name of the source package.
-		"""
 		return "src"
+
+	@property
+	def supported_arches(self):
+		"""
+			These are the supported arches. Which means, packages of these
+			architectures can be built out of this source package.
+		"""
+		return self.lexer.get_var("sup_arches", "all")
 
 	@property
 	def packages(self):

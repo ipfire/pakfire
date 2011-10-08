@@ -92,7 +92,16 @@ class Package(object):
 
 		items = [
 			(_("Name"), self.name),
-			(_("Arch"), self.arch),
+		]
+
+		# Show supported arches if available.
+		if hasattr(self, "supported_arches") and not self.supported_arches == "all":
+			arch = "%s (%s)" % (self.arch, self.supported_arches)
+		else:
+			arch = self.arch
+		items.append((_("Arch"), arch))
+
+		items += [
 			(_("Version"), self.version),
 			(_("Release"), self.release),
 		]

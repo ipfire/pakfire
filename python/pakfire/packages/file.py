@@ -454,7 +454,19 @@ class FilePackage(Package):
 			Calculate the hash1 of this package.
 		"""
 		return util.calc_hash1(self.filename)
-	
+
+	@property
+	def type(self):
+		if self.format >= 2:
+			type = self.lexer.package.get_ver("type")
+		elif self.format == 1:
+			type = self._type
+		else:
+			type = self.metadata.get("type")
+
+		assert type, self
+		return type
+
 	@property
 	def name(self):
 		if self.format >= 1:
@@ -685,10 +697,29 @@ class FilePackage(Package):
 
 
 class SourcePackage(FilePackage):
-	pass
+	_type = "source"
+
+	@property
+	def arch(self):
+		return "src"
+
+	@property
+	def supported_arches(self):
+		if self.format >= 2:
+			arches = self.lexer.package.get_var("arch", "all")
+		elif self.format == 1:
+			# Format 1 did not support "supported_arches", so we assume "all".
+			arches = "all"
+		else:
+			arches = self.metadata.get("PKG_SUPPORTED_ARCHES", "all")
+
+		assert arches, self
+		return arches
 
 
 class BinaryPackage(FilePackage):
+	_type = "binary"
+
 	def get_scriptlet(self, type):
 		a = self.open_archive()
 

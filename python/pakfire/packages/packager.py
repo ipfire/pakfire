@@ -200,6 +200,7 @@ class BinaryPackager(Packager):
 		info.update({
 			"pakfire_version" : PAKFIRE_VERSION,
 			"uuid"            : uuid.uuid4(),
+			"type"            : "binary",
 		})
 
 		# Include distribution information.
@@ -552,6 +553,7 @@ class SourcePackager(Packager):
 		# Generic package information including Pakfire information.
 		info.update({
 			"pakfire_version" : PAKFIRE_VERSION,
+			"type"            : "source",
 		})
 
 		# Include distribution information.
@@ -579,6 +581,9 @@ class SourcePackager(Packager):
 			"build_time" : int(time.time()),
 			"build_id"   : uuid.uuid4(),
 		})
+
+		# Arches equals supported arches.
+		info["arch"] = self.pkg.supported_arches
 
 		# Set UUID
 		# XXX replace this by the payload hash
