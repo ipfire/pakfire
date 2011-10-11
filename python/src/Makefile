@@ -16,7 +16,7 @@ all: $(MODULENAME)
 $(MODULENAME): $(OBJECTS)
 	$(PYTHON_CC) $(PYTHON_CFLAGS) -shared $^ $(MODULELIBS) -o $@
 
-%.o: %.c Makefile
+%.o: %.c Makefile config.h
 	$(PYTHON_CC) $(PYTHON_CFLAGS) -o $@ -c $<
 
 .PHONY: clean
