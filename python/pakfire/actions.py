@@ -86,7 +86,11 @@ class Action(object):
 		# Find suitable cwd.
 		cwd = "/"
 		for i in ("tmp", "root"):
-			_cwd = os.path.join(chroot_path, i)
+			if chroot_path:
+				_cwd = os.path.join(chroot_path, i)
+			else:
+				_cwd = i
+
 			if os.path.exists(_cwd):
 				cwd = _cwd
 				break
@@ -152,7 +156,7 @@ class ActionScript(Action):
 		script_file_chroot = os.path.join("/", LOCAL_TMP_PATH,
 			"scriptlet_%s" % util.random_string(10))
 		script_file = os.path.join(self.pakfire.path, script_file_chroot[1:])
-		assert script_file.startswith("%s/" % self.pakfire.path)
+		assert script_file.startswith(self.pakfire.path)
 
 		# Create script directory, if it does not exist.
 		script_dir = os.path.dirname(script_file)
