@@ -122,6 +122,15 @@ class SolvPackage(base.Package):
 		return self.solvable.get_downloadsize()
 
 	@property
+	def vendor(self):
+		vendor = self.solvable.get_vendor()
+
+		if vendor == "<NULL>":
+			return None
+
+		return vendor
+
+	@property
 	def uuid(self):
 		return self.solvable.get_uuid()
 

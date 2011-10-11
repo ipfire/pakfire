@@ -129,6 +129,8 @@ class Package(object):
 			if self.maintainer:
 				items.append((_("Maintainer"), self.maintainer))
 
+			items.append((_("Vendor"), self.vendor))
+
 			items.append((_("UUID"), self.uuid))
 			items.append((_("Build ID"), self.build_id))
 			items.append((_("Build date"), self.build_date))
@@ -236,7 +238,7 @@ class Package(object):
 
 	@property
 	def metadata(self):
-		raise NotImplementedError
+		raise NotImplementedError, self
 
 	@property
 	def friendly_name(self):

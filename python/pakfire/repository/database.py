@@ -29,6 +29,7 @@ import time
 import pakfire.packages as packages
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 class Cursor(sqlite3.Cursor):
 	def execute(self, *args, **kwargs):
@@ -53,6 +54,9 @@ class Database(object):
 	def create(self):
 		pass
 
+	def migrate(self):
+		pass
+
 	def open(self):
 		if self._db is None:
 			logging.debug("Open database %s" % self.filename)
@@ -67,8 +71,12 @@ class Database(object):
 			self._db = sqlite3.connect(self.filename)
 			self._db.row_factory = sqlite3.Row
 
-			# Create the database if it was not there, yet.
-			if not database_exists:
+			# In the case, the database was not existant, it is
+			# filled with content. In case it has been there
+			# we call the migrate method to update it if neccessary.
+			if database_exists:
+				self.migrate()
+			else:
 				self.create()
 
 	def close(self):
@@ -94,7 +102,14 @@ class DatabaseLocal(Database):
 		# Generate filename for package database
 		filename = os.path.join(pakfire.path, PACKAGES_DB)
 
+		# Cache format number.
+		self.__format = None
+
 		Database.__init__(self, pakfire, filename)
+
+		# Check if we actually can open the database.
+		if not self.format in DATABASE_FORMATS_SUPPORTED:
+			raise DatabaseFormatError, _("The format of the database is not supported by this version of pakfire.")
 
 	def __len__(self):
 		count = 0
@@ -107,6 +122,23 @@ class DatabaseLocal(Database):
 
 		return count
 
+	@property
+	def format(self):
+		if self.__format is None:
+			c = self.cursor()
+
+			c.execute("SELECT val FROM settings WHERE key = 'version' LIMIT 1")
+			for row in c:
+				try:
+					self.__format = int(row["val"])
+					break
+				except ValueError:
+					pass
+
+			c.close()
+
+		return self.__format
+
 	def create(self):
 		c = self.cursor()
 		c.executescript("""
@@ -114,7 +146,7 @@ class DatabaseLocal(Database):
 				key			TEXT,
 				val			TEXT
 			);
-			INSERT INTO settings(key, val) VALUES('version', '0');
+			INSERT INTO settings(key, val) VALUES('version', '%s');
 
 			CREATE TABLE files(
 				id			INTEGER PRIMARY KEY,
@@ -144,6 +176,7 @@ class DatabaseLocal(Database):
 				summary		TEXT,
 				description	TEXT,
 				uuid		TEXT,
+				vendor		TEXT,
 				build_id	TEXT,
 				build_host	TEXT,
 				build_date	TEXT,
@@ -166,9 +199,29 @@ class DatabaseLocal(Database):
 				dependency	TEXT,
 				scriptlet	TEXT
 			);
-		""")
+		""" % DATABASE_FORMAT)
 		# XXX add some indexes here
 		self.commit()
+		c.close()
+
+	def migrate(self):
+		# If we have already the latest version, there is nothing to do.
+		if self.format == DATABASE_FORMAT:
+			return
+
+		logging.info(_("Migrating database from format %s to %s.") % (self.format, DATABASE_FORMAT))
+
+		# Get a database cursor.
+		c = self.cursor()
+
+		# 1) The vendor column was added.
+		if self.format < 1:
+			c.execute("ALTER TABLE packages ADD COLUMN vendor TEXT AFTER uuid")
+
+		# In the end, we can easily update the version of the database.
+		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
+		self.__format = DATABASE_FORMAT
+
 		c.close()
 
 	def add_package(self, pkg, reason=None):
@@ -196,6 +249,7 @@ class DatabaseLocal(Database):
 					summary,
 					description,
 					uuid,
+					vendor,
 					build_id,
 					build_host,
 					build_date,
@@ -203,7 +257,7 @@ class DatabaseLocal(Database):
 					installed,
 					repository,
 					reason
-				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 				(
 					pkg.name,
 					pkg.epoch,
@@ -222,6 +276,7 @@ class DatabaseLocal(Database):
 					pkg.summary,
 					pkg.description,
 					pkg.uuid,
+					pkg.vendor or "",
 					pkg.build_id,
 					pkg.build_host,
 					pkg.build_date,

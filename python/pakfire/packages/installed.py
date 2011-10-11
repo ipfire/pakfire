@@ -127,6 +127,10 @@ class DatabasePackage(Package):
 		return self.metadata.get("build_id")
 
 	@property
+	def vendor(self):
+		return self.metadata.get("vendor")
+
+	@property
 	def uuid(self):
 		return self.metadata.get("uuid")
 
