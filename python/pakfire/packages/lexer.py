@@ -45,13 +45,13 @@ LEXER_DEFINE_END      = LEXER_BLOCK_END
 LEXER_PACKAGE_BEGIN   = re.compile(r"^package ([A-Za-z0-9_\-\+\%\{\}]+)$")
 LEXER_PACKAGE_LINE    = LEXER_BLOCK_LINE
 LEXER_PACKAGE_END     = LEXER_BLOCK_END
-LEXER_PACKAGE_INHERIT = re.compile(r"^template ([A-Z]+)$")
+LEXER_PACKAGE_INHERIT = re.compile(r"^template ([A-Z0-9]+)$")
 
 LEXER_SCRIPTLET_BEGIN = re.compile(r"^script ([a-z]+)\s?(/[A-Za-z0-9\-\_/]+)?$")
 LEXER_SCRIPTLET_LINE  = LEXER_BLOCK_LINE
 LEXER_SCRIPTLET_END   = LEXER_BLOCK_END
 
-LEXER_TEMPLATE_BEGIN  = re.compile(r"^template ([A-Z]+)$")
+LEXER_TEMPLATE_BEGIN  = re.compile(r"^template ([A-Z0-9]+)$")
 LEXER_TEMPLATE_LINE   = LEXER_BLOCK_LINE
 LEXER_TEMPLATE_END    = LEXER_BLOCK_END
 
@@ -675,7 +675,7 @@ class PackageLexer(TemplateLexer):
 
 		# Get template from parent.
 		try:
-			return self.root.templates[self._template]
+			return self.parent.templates[self._template]
 		except KeyError:
 			raise LexerError, "Template does not exist: %s" % self._template
 
