@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-05 15:12+0200\n"
+"POT-Creation-Date: 2011-10-11 21:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,53 +17,53 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../python/pakfire/actions.py:112
+#: ../python/pakfire/actions.py:148
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:116
+#: ../python/pakfire/actions.py:152
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:165
+#: ../python/pakfire/actions.py:191
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:168
+#: ../python/pakfire/actions.py:194
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr ""
 
-#: ../python/pakfire/actions.py:223 ../python/pakfire/actions.py:239
-#: ../python/pakfire/actions.py:262 ../python/pakfire/actions.py:285
-#: ../python/pakfire/actions.py:302 ../python/pakfire/actions.py:328
+#: ../python/pakfire/actions.py:249 ../python/pakfire/actions.py:287
+#: ../python/pakfire/actions.py:310 ../python/pakfire/actions.py:333
+#: ../python/pakfire/actions.py:350 ../python/pakfire/actions.py:376
 #, python-format
 msgid "Running transaction test for %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:232 ../python/pakfire/actions.py:314
+#: ../python/pakfire/actions.py:258 ../python/pakfire/actions.py:362
 msgid "Installing"
 msgstr ""
 
-#: ../python/pakfire/actions.py:248
+#: ../python/pakfire/actions.py:296
 msgid "Updating"
 msgstr ""
 
-#: ../python/pakfire/actions.py:268
+#: ../python/pakfire/actions.py:316
 msgid "Removing"
 msgstr ""
 
 #. Cleaning up leftover files and stuff.
-#: ../python/pakfire/actions.py:292
+#: ../python/pakfire/actions.py:340
 msgid "Cleanup"
 msgstr ""
 
-#: ../python/pakfire/actions.py:337
+#: ../python/pakfire/actions.py:385
 msgid "Downgrading"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgstr ""
 msgid "Build command has failed."
 msgstr ""
 
-#: ../python/pakfire/base.py:542
+#: ../python/pakfire/base.py:538
 msgid "Everything is fine."
 msgstr ""
 
@@ -349,7 +349,7 @@ msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:495
+#: ../python/pakfire/packages/packager.py:496
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -377,7 +377,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:380
+#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:381
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -390,91 +390,95 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:95 ../python/pakfire/transaction.py:315
+#: ../python/pakfire/packages/base.py:102 ../python/pakfire/transaction.py:315
 msgid "Arch"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:96 ../python/pakfire/transaction.py:315
+#: ../python/pakfire/packages/base.py:105 ../python/pakfire/transaction.py:315
 msgid "Version"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:97
+#: ../python/pakfire/packages/base.py:106
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:101 ../python/pakfire/transaction.py:316
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:316
 msgid "Size"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:105
+#: ../python/pakfire/packages/base.py:114
 msgid "Repo"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:108
+#: ../python/pakfire/packages/base.py:117
 msgid "Summary"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:109
+#: ../python/pakfire/packages/base.py:118
 msgid "Groups"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:110
+#: ../python/pakfire/packages/base.py:119
 msgid "URL"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:111
+#: ../python/pakfire/packages/base.py:120
 msgid "License"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:114
+#: ../python/pakfire/packages/base.py:123
 msgid "Description"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:121
+#: ../python/pakfire/packages/base.py:130
 msgid "Maintainer"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:123
+#: ../python/pakfire/packages/base.py:132
+msgid "Vendor"
+msgstr ""
+
+#: ../python/pakfire/packages/base.py:134
 msgid "UUID"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:124
+#: ../python/pakfire/packages/base.py:135
 msgid "Build ID"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:125
+#: ../python/pakfire/packages/base.py:136
 msgid "Build date"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:126
+#: ../python/pakfire/packages/base.py:137
 msgid "Build host"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:128
+#: ../python/pakfire/packages/base.py:139
 msgid "Provides"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:133
+#: ../python/pakfire/packages/base.py:144
 msgid "Pre-requires"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:138
+#: ../python/pakfire/packages/base.py:149
 msgid "Requires"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:143
+#: ../python/pakfire/packages/base.py:154
 msgid "Conflicts"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:148
+#: ../python/pakfire/packages/base.py:159
 msgid "Obsoletes"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:156
+#: ../python/pakfire/packages/base.py:167
 msgid "File"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:342
+#: ../python/pakfire/packages/base.py:353
 msgid "Not set"
 msgstr ""
 
@@ -497,13 +501,22 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:333
+#: ../python/pakfire/packages/packager.py:334
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:617
+#: ../python/pakfire/packages/packager.py:622
 #, python-format
 msgid "Building source package %s:"
+msgstr ""
+
+#: ../python/pakfire/repository/database.py:112
+msgid "The format of the database is not supported by this version of pakfire."
+msgstr ""
+
+#: ../python/pakfire/repository/database.py:212
+#, python-format
+msgid "Migrating database from format %s to %s."
 msgstr ""
 
 #: ../python/pakfire/repository/index.py:229
@@ -632,24 +645,24 @@ msgstr ""
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:349
+#: ../python/pakfire/transaction.py:350
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:358
+#: ../python/pakfire/transaction.py:359
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:361
+#: ../python/pakfire/transaction.py:362
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:373
+#: ../python/pakfire/transaction.py:374
 msgid "Transaction Test Succeeded"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:389
+#: ../python/pakfire/transaction.py:390
 msgid "Running transaction"
 msgstr ""
 
