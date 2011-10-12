@@ -250,6 +250,10 @@ class FilePackage(Package):
 			message = "%-10s : %s" % (message, self.friendly_name)
 			pb = util.make_progress(message, len(members), eta=False)
 
+		# Collect messages with errors and warnings, that are passed to
+		# the user.
+		messages = []
+
 		i = 0
 		for member in members:
 			# Update progress.
@@ -268,7 +272,10 @@ class FilePackage(Package):
 
 				else:
 					# Remove file if it has been existant
-					os.unlink(target)
+					try:
+						os.unlink(target)
+					except OSError:
+						messages.append(_("Could not remove file: /%s") % member.name)
 
 			#if self.pakfire.config.get("debug"):
 			#	msg = "Creating file (%s:%03d:%03d) " % \
@@ -293,6 +300,10 @@ class FilePackage(Package):
 
 		if pb:
 			pb.finish()
+
+		# Print messages.
+		for msg in messages:
+			logging.warning(msg)
 
 	@property
 	def metadata(self):
