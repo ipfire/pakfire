@@ -19,9 +19,11 @@
 #                                                                             #
 ###############################################################################
 
+import hashlib
 import logging
 import os
 import re
+import shutil
 import tarfile
 import tempfile
 import xattr
@@ -242,17 +244,18 @@ class FilePackage(Package):
 		# Open the tarball in the package.
 		payload_archive = InnerTarFile.open(fileobj=payload)
 
-		members = payload_archive.getmembers()
-
 		# Load progressbar.
 		pb = None
 		if message:
 			message = "%-10s : %s" % (message, self.friendly_name)
-			pb = util.make_progress(message, len(members), eta=False)
+			pb = util.make_progress(message, len(self.filelist), eta=False)
 
 		# Collect messages with errors and warnings, that are passed to
 		# the user.
 		messages = []
+
+		# Get a list of files in the archive.
+		members = payload_archive.getmembers()
 
 		i = 0
 		for member in members:
@@ -261,11 +264,73 @@ class FilePackage(Package):
 				i += 1
 				pb.update(i)
 
+			file = None
+			for f in self.filelist:
+				m_name = "/%s" % member.name
+				if f.is_dir():
+					m_name = "%s/" % m_name
+
+				if m_name == f.name:
+					file = f
+					break
+
+			if not file:
+				logging.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
+				continue
+
 			target = os.path.join(prefix, member.name)
+
+			# Check if a configuration file is already present. We don't want to
+			# overwrite that.
+			if file.is_config():
+				config_save = "%s%s" % (target, CONFIG_FILE_SUFFIX_SAVE)
+				config_new  = "%s%s" % (target, CONFIG_FILE_SUFFIX_NEW)
+
+				if os.path.exists(config_save) and not os.path.exists(target):
+					# Extract new configuration file, save it as CONFIG_FILE_SUFFIX_NEW,
+					# and reuse _SAVE.
+					payload_archive.extract(member, path=prefix)
+
+					shutil.move(target, config_new)
+					shutil.move(config_save, target)
+					continue
+
+				elif os.path.exists(target):
+					# If the files are identical, we skip the extraction of a
+					# new configuration file. We also do that when the new configuration file
+					# is a dummy file.
+					if file.size == 0:
+						continue
+
+					# Calc hash of the current configuration file.
+					config_hash1 = hashlib.sha512()
+					f = open(target)
+					while True:
+						buf = f.read(BUFFER_SIZE)
+						if not buf:
+							break
+						config_hash1.update(buf)
+					f.close()
+
+					if file.hash1 == config_hash1.hexdigest():
+						continue
+
+					# Backup old configuration file and extract new one.
+					shutil.move(target, config_save)
+					payload_archive.extract(member, path=prefix)
+
+					# Save new configuration file as CONFIG_FILE_SUFFIX_NEW and
+					# restore old configuration file.
+					shutil.move(target, config_new)
+					shutil.move(config_save, target)
+
+					if prefix:
+						config_new = os.path.relpath(config_new, prefix)
+					messages.append(_("Config file created as %s") % config_new)
+					continue
 
 			# If the member is a directory and if it already exists, we
 			# don't need to create it again.
-
 			if os.path.exists(target):
 				if member.isdir():
 					continue
@@ -357,32 +422,71 @@ class FilePackage(Package):
 		ret = []
 
 		a = self.open_archive()
-		f = a.extractfile("filelist")
 
+		# Cache configfiles.
+		configfiles = []
+		f = a.extractfile("configs")
+		for line in f.readlines():
+			line = line.rstrip()
+			if not line.startswith("/"):
+				line = "/%s" % line
+			configfiles.append(line)
+		f.close()
+
+		f = a.extractfile("filelist")
 		for line in f.readlines():
 			line = line.strip()
 
 			file = pakfire.filelist.File(self.pakfire)
 
 			if self.format >= 1:
+				line = line.rstrip()
 				line = line.split()
 				name = line[0]
+
+				if not name.startswith("/"):
+					name = "/%s" % name
+
+				# Check if configfiles.
+				if name in configfiles:
+					file.config = True
+
+				# Parse file type.
+				try:
+					file.type = int(line[1])
+				except ValueError:
+					file.type = 0
 
 				# Parse the size information.
 				try:
 					file.size = int(line[2])
 				except ValueError:
-					print "PARSE ERROR", line[2]
 					file.size = 0
 
-				# XXX need to parse the rest of the information from the
-				# file
+				# Parse user and group.
+				file.user, file.group = line[3], line[4]
+
+				# Parse mode.
+				try:
+					file.mode = int(line[5])
+				except ValueError:
+					file.mode = 0
+
+				# Parse time.
+				try:
+					file.mtime = line[6]
+				except ValueError:
+					file.mtime = 0
+
+				# Parse hash1 (sha512).
+				if not line[7] == "-":
+					file.hash1 = line[7]
 
 			else:
 				name = line
 
-			if not name.startswith("/"):
-				name = "/%s" % name
+				if not name.startswith("/"):
+					name = "/%s" % name
 
 			file.name = name
 			file.pkg  = self
@@ -403,15 +507,7 @@ class FilePackage(Package):
 
 	@property
 	def configfiles(self):
-		a = self.open_archive()
-
-		f = a.extractfile("configs")
-		for line in f.readlines():
-			if not line.startswith("/"):
-				line = "/%s" % line
-			yield line
-
-		a.close()
+		return [f for f in self.filelist if f.is_config()]
 
 	@property
 	def payload_compression(self):

@@ -22,9 +22,12 @@
 import datetime
 import logging
 import os
+import shutil
 import xml.sax.saxutils
 
 import pakfire.util as util
+
+from pakfire.constants import *
 from pakfire.i18n import _
 
 class Package(object):
@@ -456,6 +459,9 @@ class Package(object):
 		# a directory first and then check, if there are any files left.
 		files.sort(cmp=lambda x,y: cmp(len(x.name), len(y.name)), reverse=True)
 
+		# Messages to the user.
+		messages = []
+
 		i = 0
 		for _file in files:
 			# Update progress.
@@ -473,6 +479,20 @@ class Package(object):
 
 			# If the file was removed by the user, we can skip it.
 			if not os.path.exists(file):
+				continue
+
+			# Rename configuration files.
+			if _file.is_config():
+				file_save = "%s%s" % (file, CONFIG_FILE_SUFFIX_SAVE)
+
+				try:
+					shutil.move(file, file_save)
+				except shutil.Error, e:
+					print e
+
+				if prefix:
+					file_save = os.path.relpath(file_save, prefix)
+				messages.append(_("Config file saved as %s.") % file_save)
 				continue
 
 			# Handle regular files and symlinks.
@@ -494,9 +514,10 @@ class Package(object):
 
 			# Log all unhandled types.
 			else:
-				logging.warning("Cannot remove file: %s. Filetype is unhandled." % _file)
+				logging.warning("Cannot remove file: %s. Filetype is unhandled." % file)
 
 		if pb:
 			pb.finish()
 
-		# XXX Rename config files
+		for msg in messages:
+			logging.warning(msg)

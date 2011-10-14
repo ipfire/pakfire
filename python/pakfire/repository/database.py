@@ -149,16 +149,21 @@ class DatabaseLocal(Database):
 			INSERT INTO settings(key, val) VALUES('version', '%s');
 
 			CREATE TABLE files(
-				id			INTEGER PRIMARY KEY,
+				id		INTEGER PRIMARY KEY,
 				name		TEXT,
-				pkg			INTEGER,
+				pkg		INTEGER,
 				size		INTEGER,
 				type		INTEGER,
-				hash1		TEXT
+				config		INTEGER,
+				mode		INTEGER,
+				user		TEXT,
+				`group`		TEXT,
+				hash1		TEXT,
+				mtime		INTEGER
 			);
 
 			CREATE TABLE packages(
-				id			INTEGER PRIMARY KEY,
+				id		INTEGER PRIMARY KEY,
 				name		TEXT,
 				epoch		INTEGER,
 				version		TEXT,
@@ -218,10 +223,18 @@ class DatabaseLocal(Database):
 		if self.format < 1:
 			c.execute("ALTER TABLE packages ADD COLUMN vendor TEXT AFTER uuid")
 
+		if self.format < 2:
+			c.execute("ALTER TABLE files ADD COLUMN `config` INTEGER")
+			c.execute("ALTER TABLE files ADD COLUMN `mode` INTEGER")
+			c.execute("ALTER TABLE files ADD COLUMN `user` TEXT")
+			c.execute("ALTER TABLE files ADD COLUMN `group` TEXT")
+			c.execute("ALTER TABLE files ADD COLUMN `mtime` INTEGER")
+
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
 		self.__format = DATABASE_FORMAT
 
+		self.commit()
 		c.close()
 
 	def add_package(self, pkg, reason=None):
@@ -289,8 +302,9 @@ class DatabaseLocal(Database):
 
 			pkg_id = c.lastrowid
 
-			c.executemany("INSERT INTO files(name, pkg, size, hash1) VALUES(?, ?, ?, ?)",
-				((f.name, pkg_id, f.size, f.hash1) for f in pkg.filelist))
+			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`)"
+					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				((f.name, pkg_id, f.size, f.is_config(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime) for f in pkg.filelist))
 
 		except:
 			raise
