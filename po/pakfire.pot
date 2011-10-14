@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-14 20:51+0000\n"
+"POT-Creation-Date: 2011-10-14 23:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -502,12 +502,12 @@ msgstr ""
 msgid "File in archive is missing in file metadata: /%s. Skipping."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:330
+#: ../python/pakfire/packages/file.py:329
 #, python-format
 msgid "Config file created as %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:344
+#: ../python/pakfire/packages/file.py:343
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr ""
