@@ -673,9 +673,13 @@ class PackageLexer(TemplateLexer):
 		if not self._template:
 			return None
 
+		# Collect all templates.
+		templates = self.root.templates
+		templates.update(self.parent.templates)
+
 		# Get template from parent.
 		try:
-			return self.parent.templates[self._template]
+			return templates[self._template]
 		except KeyError:
 			raise LexerError, "Template does not exist: %s" % self._template
 
