@@ -425,13 +425,17 @@ class FilePackage(Package):
 
 		# Cache configfiles.
 		configfiles = []
-		f = a.extractfile("configs")
-		for line in f.readlines():
-			line = line.rstrip()
-			if not line.startswith("/"):
-				line = "/%s" % line
-			configfiles.append(line)
-		f.close()
+
+		try:
+			f = a.extractfile("configs")
+			for line in f.readlines():
+				line = line.rstrip()
+				if not line.startswith("/"):
+					line = "/%s" % line
+				configfiles.append(line)
+			f.close()
+		except KeyError:
+			pass # Package has no configuration files. Never mind.
 
 		f = a.extractfile("filelist")
 		for line in f.readlines():
@@ -442,6 +446,10 @@ class FilePackage(Package):
 			if self.format >= 1:
 				line = line.rstrip()
 				line = line.split()
+
+				if len(line) <= 6:
+					continue
+
 				name = line[0]
 
 				if not name.startswith("/"):
