@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-14 23:03+0200\n"
+"POT-Creation-Date: 2011-10-15 16:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -349,7 +349,7 @@ msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:496
+#: ../python/pakfire/packages/packager.py:495
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -487,27 +487,27 @@ msgstr ""
 msgid "Config file saved as %s."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:111
+#: ../python/pakfire/packages/file.py:95
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:164
+#: ../python/pakfire/packages/file.py:145
 #, python-format
 msgid "Filename: %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:278
+#: ../python/pakfire/packages/file.py:259
 #, python-format
 msgid "File in archive is missing in file metadata: /%s. Skipping."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:329
+#: ../python/pakfire/packages/file.py:310
 #, python-format
 msgid "Config file created as %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:343
+#: ../python/pakfire/packages/file.py:324
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr ""
@@ -521,11 +521,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:334
+#: ../python/pakfire/packages/packager.py:333
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:622
+#: ../python/pakfire/packages/packager.py:621
 #, python-format
 msgid "Building source package %s:"
 msgstr ""

@@ -5,7 +5,7 @@ include ../../Makeconfig
 MODULENAME = _pakfire.so
 
 # Libs that are to be linked into the module.
-MODULELIBS = -lpython$(PYTHON_VERSION) -lsolv -lsolvext
+MODULELIBS = -lcap -lpython$(PYTHON_VERSION) -lsolv -lsolvext
 
 SOURCES = $(wildcard *.c)
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))

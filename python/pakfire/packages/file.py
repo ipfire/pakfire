@@ -26,7 +26,6 @@ import re
 import shutil
 import tarfile
 import tempfile
-import xattr
 
 import pakfire.filelist
 import pakfire.util as util
@@ -43,8 +42,6 @@ PAYLOAD_COMPRESSION_MAGIC = {
 }
 
 class InnerTarFile(tarfile.TarFile):
-	SUPPORTED_XATTRS = ("security.capability",)
-
 	def __init__(self, *args, **kwargs):
 		# Force the PAX format.
 		kwargs["format"] = tarfile.PAX_FORMAT
@@ -53,31 +50,18 @@ class InnerTarFile(tarfile.TarFile):
 
 	def add(self, name, arcname=None, recursive=None, exclude=None, filter=None):
 		"""
-			Emulate the add function with xattrs support.
+			Emulate the add function with capability support.
 		"""
 		tarinfo = self.gettarinfo(name, arcname)
 
 		if tarinfo.isreg():
 			attrs = []
 
-			# Use new modules code...
-			if hasattr(xattr, "get_all"):
-				attrs = xattr.get_all(name)
-
-			# ...or use the deprecated API.
-			else:
-				for attr in xattr.listxattr(name):
-					val = xattr.getxattr(name, attr)
-					attrs.append((attr, val))
-
-			for attr, val in attrs:
-				# Skip all attrs that are not supported (e.g. selinux).
-				if not attr in self.SUPPORTED_XATTRS:
-					continue
-
-				logging.debug("Saving xattr %s=%s from %s" % (attr, val, name))
-
-				tarinfo.pax_headers[attr] = val
+			# Save capabilities.
+			caps = util.get_capabilities(name)
+			if caps:
+				logging.debug("Saving capabilities for %s: %s" % (name, caps))
+				tarinfo.pax_headers["PAKFIRE.capabilities"] = caps
 
 	        # Append the tar header and data to the archive.
 			f = tarfile.bltn_open(name, "rb")
@@ -111,19 +95,16 @@ class InnerTarFile(tarfile.TarFile):
 			logging.warning(_("Could not extract file: /%(src)s - %(dst)s") \
 				% { "src" : member.name, "dst" : e, })
 
-		# ...and then apply the extended attributes.
-		if member.pax_headers:
-			for attr, val in member.pax_headers.items():
-				# Skip all attrs that are not supported (e.g. selinux).
-				if not attr in self.SUPPORTED_XATTRS:
-					continue
+		if path:
+			target = os.path.join(path, member.name)
+		else:
+			target = "/%s" % member.name
 
-				logging.debug("Restoring xattr %s=%s to %s" % (attr, val, target))
-				if hasattr(xattr, "set"):
-					xattr.set(target, attr, val)
-
-				else:
-					xattr.setxattr(target, attr, val)
+		# ...and then apply the capabilities.
+		caps = member.pax_headers.get("PAKFIRE.capabilities", None)
+		if caps:
+			logging.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
+			util.set_capabilities(target, caps)
 
 
 class FilePackage(Package):

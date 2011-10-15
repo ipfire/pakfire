@@ -20,6 +20,7 @@
 
 #include <Python.h>
 
+#include "capabilities.h"
 #include "config.h"
 #include "pool.h"
 #include "problem.h"
@@ -35,6 +36,8 @@
 
 static PyMethodDef pakfireModuleMethods[] = {
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
+	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
+	{"set_capabilities", (PyCFunction)set_capabilities, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
