@@ -257,26 +257,26 @@ class FilePackage(Package):
 		# Get a list of files in the archive.
 		members = payload_archive.getmembers()
 
+		name2file = {}
+		for file in self.filelist:
+			name = file.name
+
+			if file.is_dir():
+				name = name[:-1]
+
+			name2file[name] = file
+
 		i = 0
 		for member in members:
+			file = name2file.get("/%s" % member.name, None)
+			if not file:
+				logging.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
+				continue
+
 			# Update progress.
 			if pb:
 				i += 1
 				pb.update(i)
-
-			file = None
-			for f in self.filelist:
-				m_name = "/%s" % member.name
-				if f.is_dir():
-					m_name = "%s/" % m_name
-
-				if m_name == f.name:
-					file = f
-					break
-
-			if not file:
-				logging.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
-				continue
 
 			target = os.path.join(prefix, member.name)
 
