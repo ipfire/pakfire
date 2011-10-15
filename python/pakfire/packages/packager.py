@@ -34,7 +34,6 @@ import tarfile
 import tempfile
 import time
 import uuid
-import xattr
 import zlib
 
 import pakfire.compress

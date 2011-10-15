@@ -39,8 +39,8 @@ import time
 from constants import *
 from i18n import _
 
-# Import binary version of version_compare
-from _pakfire import version_compare
+# Import binary version of version_compare and capability functions
+from _pakfire import version_compare, get_capabilities, set_capabilities
 
 def cli_is_interactive():
 	"""
