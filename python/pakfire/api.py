@@ -51,6 +51,12 @@ def update(pkgs, check=False, excludes=None, allow_vendorchange=False, allow_arc
 	return pakfire.update(pkgs, check=check, excludes=excludes,
 		allow_vendorchange=allow_vendorchange, allow_archchange=allow_archchange)
 
+def downgrade(pkgs, allow_vendorchange=False, allow_archchange=False, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.downgrade(pkgs,
+		allow_vendorchange=allow_vendorchange, allow_archchange=allow_archchange)
+
 def info(patterns, **pakfire_args):
 	# Create pakfire instance.
 	pakfire = Pakfire(**pakfire_args)

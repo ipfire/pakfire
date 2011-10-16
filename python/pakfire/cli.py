@@ -59,6 +59,7 @@ class Cli(object):
 		self.parse_command_search()
 		self.parse_command_check_update()
 		self.parse_command_update()
+		self.parse_command_downgrade()
 		self.parse_command_provides()
 		self.parse_command_grouplist()
 		self.parse_command_groupinstall()
@@ -76,6 +77,7 @@ class Cli(object):
 			"remove"       : self.handle_remove,
 			"check_update" : self.handle_check_update,
 			"update"       : self.handle_update,
+			"downgrade"    : self.handle_downgrade,
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
 			"provides"     : self.handle_provides,
@@ -172,6 +174,18 @@ class Cli(object):
 			help=_("Check, if there are any updates available."))
 		sub_check_update.add_argument("action", action="store_const", const="check_update")
 		self._parse_command_update(sub_check_update)
+
+	def parse_command_downgrade(self):
+		# Implement the "downgrade" command.
+		sub_downgrade = self.sub_commands.add_parser("downgrade",
+			help=_("Downgrade one or more packages."))
+		sub_downgrade.add_argument("package", nargs="*",
+			help=_("Give a name of a package to downgrade."))
+		sub_downgrade.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages."))
+		sub_downgrade.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages."))
+		sub_downgrade.add_argument("action", action="store_const", const="downgrade")
 
 	def parse_command_info(self):
 		# Implement the "info" command.
@@ -280,6 +294,14 @@ class Cli(object):
 
 	def handle_check_update(self):
 		self.handle_update(check=True)
+
+	def handle_downgrade(self, **args):
+		args.update(self.pakfire_args)
+
+		pakfire.downgrade(self.args.package,
+			allow_vendorchange=self.args.allow_vendorchange,
+			allow_archchange=self.args.allow_archchange,
+			**args)
 
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)

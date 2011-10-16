@@ -348,6 +348,46 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run()
 
+	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False):
+		assert pkgs
+
+		# Create a new request.
+		request = self.create_request()
+
+		# Fill request.
+		for pattern in pkgs:
+			best = None
+			for pkg in self.repos.whatprovides(pattern):
+				# Only consider installed packages.
+				if not pkg.is_installed():
+					continue
+
+				if best and pkg > best:
+					best = pkg
+				elif best is None:
+					best = pkg
+
+			if best is None:
+				logging.warning(_("\"%s\" package does not seem to be installed.") % pattern)
+			else:
+				rel = self.create_relation("%s<%s" % (best.name, best.friendly_version))
+				request.install(rel)
+
+		# Solve the request.
+		solver = self.create_solver()
+		t = solver.solve(request, allow_downgrade=True,
+			allow_vendorchange=allow_vendorchange,
+			allow_archchange=allow_archchange)
+
+		if not t:
+			logging.info(_("Nothing to do"))
+			return
+
+		if not t.cli_yesno():
+			return
+
+		t.run()
+
 	def remove(self, pkgs):
 		# Create a new request.
 		request = self.create_request()

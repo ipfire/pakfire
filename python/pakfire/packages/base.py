@@ -308,6 +308,9 @@ class Package(object):
 		"""
 		return "Critical" in self.groups
 
+	def is_installed(self):
+		return self.repo.name == "@system"
+
 	@property
 	def type(self):
 		return self.metadata.get("TYPE", "unknown")
