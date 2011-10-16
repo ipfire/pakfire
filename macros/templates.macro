@@ -26,18 +26,7 @@ packages
 		def configfiles
 		end
 
-		script postin
-			# Update linker cache.
-			/sbin/ldconfig 2>/dev/null || true
-		end
-
-		script postup
-			/sbin/ldconfig 2>/dev/null || true
-		end
-
-		script postun
-			/sbin/ldconfig 2>/dev/null || true
-		end
+		# Linker cache is updated automatically by pakfire.
 	end
 
 	template DEVEL
