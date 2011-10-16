@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-11 21:54+0200\n"
-"PO-Revision-Date: 2011-10-12 03:17+0000\n"
+"POT-Creation-Date: 2011-10-15 16:48+0200\n"
+"PO-Revision-Date: 2011-10-15 03:17+0000\n"
 "Last-Translator: CompWorm <compworm@ya.ru>\n"
 "Language-Team: Russian (http://www.transifex.net/projects/p/ipfire/team/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -352,7 +352,7 @@ msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:496
+#: ../python/pakfire/packages/packager.py:495
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -390,110 +390,130 @@ msgstr ""
 msgid "%(commas)s and %(last)s"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:94
+#: ../python/pakfire/packages/base.py:97
 msgid "Name"
 msgstr "Имя"
 
-#: ../python/pakfire/packages/base.py:102 ../python/pakfire/transaction.py:315
+#: ../python/pakfire/packages/base.py:105 ../python/pakfire/transaction.py:315
 msgid "Arch"
 msgstr "Архитектура"
 
-#: ../python/pakfire/packages/base.py:105 ../python/pakfire/transaction.py:315
+#: ../python/pakfire/packages/base.py:108 ../python/pakfire/transaction.py:315
 msgid "Version"
 msgstr "Версия"
 
-#: ../python/pakfire/packages/base.py:106
+#: ../python/pakfire/packages/base.py:109
 msgid "Release"
 msgstr "Релиз"
 
-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:316
+#: ../python/pakfire/packages/base.py:113 ../python/pakfire/transaction.py:316
 msgid "Size"
 msgstr "Размер"
 
-#: ../python/pakfire/packages/base.py:114
+#: ../python/pakfire/packages/base.py:117
 msgid "Repo"
 msgstr "Репозиторий"
 
-#: ../python/pakfire/packages/base.py:117
+#: ../python/pakfire/packages/base.py:120
 msgid "Summary"
 msgstr "Резюме"
 
-#: ../python/pakfire/packages/base.py:118
+#: ../python/pakfire/packages/base.py:121
 msgid "Groups"
 msgstr "Группы"
 
-#: ../python/pakfire/packages/base.py:119
+#: ../python/pakfire/packages/base.py:122
 msgid "URL"
 msgstr "URL"
 
-#: ../python/pakfire/packages/base.py:120
+#: ../python/pakfire/packages/base.py:123
 msgid "License"
 msgstr "Лицензия"
 
-#: ../python/pakfire/packages/base.py:123
+#: ../python/pakfire/packages/base.py:126
 msgid "Description"
 msgstr "Описание"
 
-#: ../python/pakfire/packages/base.py:130
+#: ../python/pakfire/packages/base.py:133
 msgid "Maintainer"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:132
+#: ../python/pakfire/packages/base.py:135
 msgid "Vendor"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:134
+#: ../python/pakfire/packages/base.py:137
 msgid "UUID"
 msgstr "UUID"
 
-#: ../python/pakfire/packages/base.py:135
+#: ../python/pakfire/packages/base.py:138
 msgid "Build ID"
 msgstr "ID сборки"
 
-#: ../python/pakfire/packages/base.py:136
+#: ../python/pakfire/packages/base.py:139
 msgid "Build date"
 msgstr "Дата сборки"
 
-#: ../python/pakfire/packages/base.py:137
+#: ../python/pakfire/packages/base.py:140
 msgid "Build host"
 msgstr "Хост сборки"
 
-#: ../python/pakfire/packages/base.py:139
+#: ../python/pakfire/packages/base.py:142
 msgid "Provides"
 msgstr "Обеспечивает"
 
-#: ../python/pakfire/packages/base.py:144
+#: ../python/pakfire/packages/base.py:147
 msgid "Pre-requires"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:149
+#: ../python/pakfire/packages/base.py:152
 msgid "Requires"
 msgstr "Требует"
 
-#: ../python/pakfire/packages/base.py:154
+#: ../python/pakfire/packages/base.py:157
 msgid "Conflicts"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:159
+#: ../python/pakfire/packages/base.py:162
 msgid "Obsoletes"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:167
+#: ../python/pakfire/packages/base.py:170
 msgid "File"
 msgstr "Файл"
 
-#: ../python/pakfire/packages/base.py:353
+#: ../python/pakfire/packages/base.py:356
 msgid "Not set"
 msgstr "Не установлено"
 
-#: ../python/pakfire/packages/file.py:109
+#: ../python/pakfire/packages/base.py:495
+#, python-format
+msgid "Config file saved as %s."
+msgstr ""
+
+#: ../python/pakfire/packages/file.py:95
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:162
+#: ../python/pakfire/packages/file.py:145
 #, python-format
 msgid "Filename: %s"
+msgstr ""
+
+#: ../python/pakfire/packages/file.py:259
+#, python-format
+msgid "File in archive is missing in file metadata: /%s. Skipping."
+msgstr ""
+
+#: ../python/pakfire/packages/file.py:310
+#, python-format
+msgid "Config file created as %s"
+msgstr ""
+
+#: ../python/pakfire/packages/file.py:324
+#, python-format
+msgid "Could not remove file: /%s"
 msgstr ""
 
 #: ../python/pakfire/packages/make.py:75
@@ -505,11 +525,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:334
+#: ../python/pakfire/packages/packager.py:333
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:622
+#: ../python/pakfire/packages/packager.py:621
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
@@ -519,7 +539,7 @@ msgid ""
 "The format of the database is not supported by this version of pakfire."
 msgstr ""
 
-#: ../python/pakfire/repository/database.py:212
+#: ../python/pakfire/repository/database.py:217
 #, python-format
 msgid "Migrating database from format %s to %s."
 msgstr ""
