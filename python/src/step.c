@@ -79,7 +79,7 @@ PyObject *Step_get_type(StepObject *self, PyObject *args) {
 	const char *type = "unknown";
 
 	int trans_type = transaction_type(self->_transaction, self->_id,
-		SOLVER_TRANSACTION_SHOW_ACTIVE);
+		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
 
 	switch(trans_type) {
 		case SOLVER_TRANSACTION_IGNORE:

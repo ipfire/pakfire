@@ -362,13 +362,6 @@ class ActionReinstall(Action):
 		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
 
 
-class ActionChange(ActionReinstall):
-	"""
-		The change action is like the reinstall action.
-	"""
-	type = "change"
-
-
 class ActionDowngrade(Action):
 	type = "downgrade"
 

@@ -157,7 +157,6 @@ class Transaction(object):
 		ActionUpdate.type    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
 		ActionCleanup.type   : [ActionCleanup,],
 		ActionDowngrade.type : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
-		ActionChange.type    : [ActionScriptPreIn, ActionChange, ActionScriptPostIn, ActionScriptPostTransIn],
 	}
 
 	def __init__(self, pakfire):
