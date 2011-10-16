@@ -644,7 +644,7 @@ class TemplateLexer(DefaultLexer):
 
 		self.scriptlets[name] = {
 			"lang"      : "shell",
-			"scriptlet" : "\n".join(lines),
+			"scriptlet" : self.expand_string("\n".join(lines)),
 		}
 
 
