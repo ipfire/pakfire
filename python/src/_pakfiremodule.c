@@ -20,6 +20,8 @@
 
 #include <Python.h>
 
+#include <sys/personality.h>
+
 #include "capabilities.h"
 #include "config.h"
 #include "pool.h"
@@ -38,6 +40,7 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
 	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
 	{"set_capabilities", (PyCFunction)set_capabilities, METH_VARARGS, NULL},
+	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -260,6 +263,10 @@ void init_pakfire(void) {
 
 	// Add constants
 	d = PyModule_GetDict(m);
+
+	// Personalities
+	PyDict_SetItemString(d, "PERSONALITY_LINUX",   Py_BuildValue("i", PER_LINUX));
+	PyDict_SetItemString(d, "PERSONALITY_LINUX32", Py_BuildValue("i", PER_LINUX32));
 
 	// Add constants for relations
 	PyDict_SetItemString(d, "REL_EQ", Py_BuildValue("i", REL_EQ));

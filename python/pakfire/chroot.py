@@ -19,18 +19,16 @@
 #                                                                             #
 ###############################################################################
 
-import ctypes
 import fcntl
 import os
 import select
 import subprocess
 import time
 
-from errors import *
+from _pakfire import PERSONALITY_LINUX, PERSONALITY_LINUX32
 
-_libc = ctypes.cdll.LoadLibrary(None)
-_libc.personality.argtypes = [ctypes.c_ulong]
-_libc.personality.restype = ctypes.c_int
+import pakfire.util as util
+from errors import *
 
 def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 	output=""
@@ -151,10 +149,9 @@ class ChildPreExec(object):
 			Return personality value if supported.
 			Otherwise return None.
 		"""
-		# taken from sys/personality.h
 		personality_defs = {
-			"linux64": 0x0000,
-			"linux32": 0x0008,
+			"linux64": PERSONALITY_LINUX,
+			"linux32": PERSONALITY_LINUX32,
 		}
 
 		try:
@@ -168,9 +165,7 @@ class ChildPreExec(object):
 
 		# Set new personality if we got one.
 		if self.personality:
-			res = _libc.personality(self.personality)
-			if res == -1:
-				raise OSError, "Could not set personality"
+			util.personality(self.personality)
 
 		# Change into new root.
 		if self.chrootPath:

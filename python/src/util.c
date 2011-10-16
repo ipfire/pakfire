@@ -20,7 +20,29 @@
 
 #include <Python.h>
 
+#include <sys/personality.h>
+
 #include "util.h"
+
+PyObject *_personality(PyObject *self, PyObject *args) {
+	unsigned long persona;
+	int ret = 0;
+
+	if (!PyArg_ParseTuple(args, "l", &persona)) {
+		/* XXX raise exception */
+		return NULL;
+	}
+
+	/* Change personality here. */
+	ret = personality(persona);
+
+	if (ret < 0) {
+		PyErr_SetString(PyExc_RuntimeError, "Could not set personality.");
+		return NULL;
+	}
+
+	return Py_BuildValue("i", ret);
+}
 
 PyObject *version_compare(PyObject *self, PyObject *args) {
 	Pool *pool;
