@@ -54,6 +54,7 @@ class Cli(object):
 
 		self.parse_command_install()
 		self.parse_command_localinstall()
+		self.parse_command_reinstall()
 		self.parse_command_remove()
 		self.parse_command_info()
 		self.parse_command_search()
@@ -74,6 +75,7 @@ class Cli(object):
 		self.action2func = {
 			"install"      : self.handle_install,
 			"localinstall" : self.handle_localinstall,
+			"reinstall"    : self.handle_reinstall,
 			"remove"       : self.handle_remove,
 			"check_update" : self.handle_check_update,
 			"update"       : self.handle_update,
@@ -141,6 +143,14 @@ class Cli(object):
 		sub_install.add_argument("package", nargs="+",
 			help=_("Give filename of at least one package."))
 		sub_install.add_argument("action", action="store_const", const="localinstall")
+
+	def parse_command_reinstall(self):
+		# Implement the "reinstall" command.
+		sub_install = self.sub_commands.add_parser("reinstall",
+			help=_("Reinstall one or more packages."))
+		sub_install.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to reinstall."))
+		sub_install.add_argument("action", action="store_const", const="reinstall")
 
 	def parse_command_remove(self):
 		# Implement the "remove" command.
@@ -308,6 +318,9 @@ class Cli(object):
 
 	def handle_localinstall(self):
 		pakfire.localinstall(self.args.package, **self.pakfire_args)
+
+	def handle_reinstall(self):
+		pakfire.reinstall(self.args.package, **self.pakfire_args)
 
 	def handle_remove(self):
 		pakfire.remove(self.args.package, **self.pakfire_args)

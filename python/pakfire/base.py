@@ -24,14 +24,16 @@ import os
 import random
 import string
 
+import actions
 import builder
 import config
 import distro
 import filelist
 import logger
-import repository
 import packages
+import repository
 import satsolver
+import transaction
 import util
 
 from constants import *
@@ -295,6 +297,111 @@ class Pakfire(object):
 			# Remove the temporary copy of the repository we have created earlier.
 			repo.remove()
 			self.repos.rem_repo(repo)
+
+	def reinstall(self, pkgs, strict=False):
+		"""
+			Reinstall one or more packages.
+
+			If strict is True, only a package with excatly the same UUID
+			will replace the currently installed one.
+		"""
+		# XXX it is possible to install packages without fulfulling
+		# all dependencies.
+
+		reinstall_pkgs = []
+		for pattern in pkgs:
+			_pkgs = []
+			for pkg in self.repos.whatprovides(pattern):
+				# Do not reinstall non-installed packages.
+				if not pkg.is_installed():
+					continue
+
+				_pkgs.append(pkg)
+
+			if not _pkgs:
+				logging.warning(_("Could not find any installed package providing \"%s\".") \
+					% pattern)
+			elif len(_pkgs) == 1:
+				reinstall_pkgs.append(_pkgs[0])
+				#t.add("reinstall", _pkgs[0])
+			else:
+				logging.warning(_("Multiple reinstall candidates for \"%s\": %s") \
+					% (pattern, ", ".join(p.friendly_name for p in sorted(_pkgs))))
+
+		if not reinstall_pkgs:
+			logging.info(_("Nothing to do"))
+			return
+
+		# Packages we want to replace.
+		# Contains a tuple with the old and the new package.
+		pkgs = []
+
+		# Find the package that is installed in a remote repository to
+		# download it again and re-install it. We need that.
+		for pkg in reinstall_pkgs:
+			# Collect all candidates in here.
+			_pkgs = []
+
+			provides = "%s=%s" % (pkg.name, pkg.friendly_version)
+			for _pkg in self.repos.whatprovides(provides):
+				if _pkg.is_installed():
+					continue
+
+				if strict:
+					if pkg.uuid == _pkg.uuid:
+						_pkgs.append(_pkg)
+				else:
+					_pkgs.append(_pkg)
+
+			if not _pkgs:
+				logging.warning(_("Could not find package %s in a remote repository.") % \
+					pkg.friendly_name)
+			else:
+				# Sort packages to reflect repository priorities, etc...
+				# and take the best (first) one.
+				_pkgs.sort()
+
+				# Re-install best package and cleanup the old one.
+				pkgs.append((pkg, _pkgs[0]))
+
+		# Eventually, create a request.
+		request = None
+
+		_pkgs = []
+		for old, new in pkgs:
+			if old.uuid == new.uuid:
+				_pkgs.append((old, new))
+			else:
+				if request is None:
+					# Create a new request.
+					request = self.create_request()
+
+				# Install the new package, the old will
+				# be cleaned up automatically.
+				request.install(new.solvable)
+
+		if request:
+			solver = self.create_solver()
+			t = solver.solve(request)
+		else:
+			# Create new transaction.
+			t = transaction.Transaction(self)
+
+		for old, new in _pkgs:
+			# Install the new package and remove the old one.
+			t.add(actions.ActionReinstall.type, new)
+			t.add(actions.ActionCleanup.type, old)
+
+		t.sort()
+
+		if not t:
+			logging.info(_("Nothing to do"))
+			return
+
+		if not t.cli_yesno():
+			return
+
+		t.run()
 
 	def update(self, pkgs, check=False, excludes=None, allow_vendorchange=False, allow_archchange=False):
 		"""

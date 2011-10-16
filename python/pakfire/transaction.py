@@ -166,6 +166,14 @@ class Transaction(object):
 
 		self.installsizechange = 0
 
+		self.__need_sort = False
+
+	def __nonzero__(self):
+		if self.actions:
+			return True
+
+		return False
+
 	@classmethod
 	def from_solver(cls, pakfire, solver, _transaction):
 		# Create a new instance of our own transaction class.
@@ -186,23 +194,44 @@ class Transaction(object):
 			action_name = step.get_type()
 			pkg = packages.SolvPackage(pakfire, step.get_solvable())
 
-			try:
-				classes = transaction.action_classes[action_name]
-			except KeyError:
-				raise Exception, "Unknown action required: %s" % action_name
+			transaction.add(action_name, pkg)
 
-			for action_cls in classes:
-				action = action_cls(pakfire, pkg)
-				assert isinstance(action, Action), action
-
-				if isinstance(action, ActionScriptPostTrans):
-					actions_post.append(action)
-				else:
-					actions.append(action)
-
-		transaction.actions += actions + actions_post
+		# Sort all previously added actions.
+		transaction.sort()
 
 		return transaction
+
+	def add(self, action_name, pkg):
+		assert isinstance(pkg, packages.SolvPackage), pkg
+
+		try:
+			classes = self.action_classes[action_name]
+		except KeyError:
+			raise Exception, "Unknown action requires: %s" % action_name
+
+		for cls in classes:
+			action = cls(self.pakfire, pkg)
+			assert isinstance(action, Action), action
+
+			self.actions.append(action)
+
+		self.__need_sort = True
+
+	def sort(self):
+		"""
+			Sort all actions.
+		"""
+		actions = []
+		actions_post = []
+
+		for action in self.actions:
+			if isinstance(action, ActionScriptPostTrans):
+				actions_post.append(action)
+			else:
+				actions.append(action)
+
+		self.actions = actions + actions_post
+		self.__need_sort = False
 
 	@property
 	def installs(self):
@@ -381,6 +410,8 @@ class Transaction(object):
 		raise TransactionCheckError, _("Transaction test was not successful")
 
 	def run(self):
+		assert not self.__need_sort, "Did you forget to sort the transaction?"
+
 		# Download all packages.
 		self.download()
 

@@ -40,6 +40,11 @@ def localinstall(files, **pakfire_args):
 
 	return pakfire.localinstall(files)
 
+def reinstall(pkgs, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.reinstall(pkgs)
+
 def remove(what, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
