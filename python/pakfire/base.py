@@ -296,7 +296,7 @@ class Pakfire(object):
 			repo.remove()
 			self.repos.rem_repo(repo)
 
-	def update(self, pkgs, check=False):
+	def update(self, pkgs, check=False, excludes=None):
 		"""
 			check indicates, if the method should return after calculation
 			of the transaction.
@@ -312,6 +312,14 @@ class Pakfire(object):
 				request.update(pkg)
 		else:
 			update = True
+
+		# Exclude packages that should not be updated.
+		if excludes:
+			for exclude in excludes:
+				logging.info(_("Excluding %s.") % exclude)
+
+				exclude = self.create_relation(exclude)
+				request.lock(exclude)
 
 		solver = self.create_solver()
 		t = solver.solve(request, update=update)

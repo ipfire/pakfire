@@ -154,6 +154,8 @@ class Cli(object):
 			help=_("Update the whole system or one specific package."))
 		sub_update.add_argument("package", nargs="*",
 			help=_("Give a name of a package to update or leave emtpy for all."))
+		sub_update.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update."))
 		sub_update.add_argument("action", action="store_const", const="update")
 
 	def parse_command_check_update(self):
@@ -162,6 +164,8 @@ class Cli(object):
 			help=_("Check, if there are any updates available."))
 		sub_check_update.add_argument("package", nargs="*",
 			help=_("Give a name of a package to update or leave emtpy for all."))
+		sub_check_update.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update."))
 		sub_check_update.add_argument("action", action="store_const", const="check_update")
 
 	def parse_command_info(self):
@@ -262,10 +266,11 @@ class Cli(object):
 			print pkg.dump(short=True)
 
 	def handle_update(self):
-		pakfire.update(self.args.package, **self.pakfire_args)
+		pakfire.update(self.args.package, excludes=self.args.exclude, **self.pakfire_args)
 
 	def handle_check_update(self):
-		pakfire.update(self.args.package, check=True, **self.pakfire_args)
+		pakfire.update(self.args.package, check=True, excludes=self.args.exclude,
+			**self.pakfire_args)
 
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)
