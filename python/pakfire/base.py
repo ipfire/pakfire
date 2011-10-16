@@ -415,7 +415,7 @@ class Pakfire(object):
 		return sorted(pkgs)
 
 	@staticmethod
-	def build(pkg, resultdirs=None, shell=False, install_test=True, **kwargs):
+	def build(pkg, resultdirs=None, shell=False, install_test=True, after_shell=False, **kwargs):
 		if not resultdirs:
 			resultdirs = []
 
@@ -430,22 +430,29 @@ class Pakfire(object):
 			# the filesystems and extracting files.
 			b.start()
 
-			# Build the package.
-			b.build(install_test=install_test)
+			try:
+				# Build the package.
+				b.build(install_test=install_test)
+			except BuildError:
+				# Raise the error, if the user does not want to
+				# have a shell.
+				if not shell:
+					raise
 
-			# Copy-out all resultfiles
+				# Run a shell to debug the issue.
+				b.shell()
+
+			# If the user requests a shell after a successful build,
+			# we run it here.
+			if after_shell:
+				b.shell()
+
+			# Copy-out all resultfiles if the build was successful.
 			for resultdir in resultdirs:
 				if not resultdir:
 					continue
 
 				b.copy_result(resultdir)
-
-		except BuildError:
-			if shell:
-				b.shell()
-			else:
-				raise
-
 		finally:
 			b.stop()
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-16 11:23+0200\n"
+"POT-Creation-Date: 2011-10-16 12:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,11 +77,11 @@ msgstr ""
 msgid "There are no packages to install."
 msgstr ""
 
-#: ../python/pakfire/base.py:458
+#: ../python/pakfire/base.py:465
 msgid "Build command has failed."
 msgstr ""
 
-#: ../python/pakfire/base.py:538
+#: ../python/pakfire/base.py:545
 msgid "Everything is fine."
 msgstr ""
 
@@ -262,7 +262,7 @@ msgstr ""
 msgid "You cannot run pakfire-builder in a pakfire chroot."
 msgstr ""
 
-#: ../python/pakfire/cli.py:330 ../python/pakfire/cli.py:585
+#: ../python/pakfire/cli.py:330 ../python/pakfire/cli.py:587
 msgid "Pakfire builder command line interface."
 msgstr ""
 
@@ -270,81 +270,85 @@ msgstr ""
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../python/pakfire/cli.py:391 ../python/pakfire/cli.py:605
+#: ../python/pakfire/cli.py:391 ../python/pakfire/cli.py:607
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:393 ../python/pakfire/cli.py:607
+#: ../python/pakfire/cli.py:393 ../python/pakfire/cli.py:609
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../python/pakfire/cli.py:397 ../python/pakfire/cli.py:611
+#: ../python/pakfire/cli.py:397 ../python/pakfire/cli.py:613
 msgid "Build the package for the given architecture."
 msgstr ""
 
-#: ../python/pakfire/cli.py:399 ../python/pakfire/cli.py:425
-#: ../python/pakfire/cli.py:613
+#: ../python/pakfire/cli.py:399 ../python/pakfire/cli.py:427
+#: ../python/pakfire/cli.py:615
 msgid "Path were the output files should be copied to."
 msgstr ""
 
-#: ../python/pakfire/cli.py:401 ../python/pakfire/cli.py:414
-#: ../python/pakfire/cli.py:615
+#: ../python/pakfire/cli.py:401 ../python/pakfire/cli.py:416
+#: ../python/pakfire/cli.py:617
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
-#: ../python/pakfire/cli.py:406
-msgid "Go into a shell."
+#: ../python/pakfire/cli.py:403
+msgid "Run a shell after a successful build."
 msgstr ""
 
 #: ../python/pakfire/cli.py:408
+msgid "Go into a shell."
+msgstr ""
+
+#: ../python/pakfire/cli.py:410
 msgid "Give name of a package."
 msgstr ""
 
-#: ../python/pakfire/cli.py:412
+#: ../python/pakfire/cli.py:414
 msgid "Emulated architecture in the shell."
 msgstr ""
 
-#: ../python/pakfire/cli.py:419
+#: ../python/pakfire/cli.py:421
 msgid "Generate a source package."
 msgstr ""
 
-#: ../python/pakfire/cli.py:421
+#: ../python/pakfire/cli.py:423
 msgid "Give name(s) of a package(s)."
 msgstr ""
 
-#: ../python/pakfire/cli.py:498
+#: ../python/pakfire/cli.py:500
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:535
+#: ../python/pakfire/cli.py:537
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../python/pakfire/cli.py:541
+#: ../python/pakfire/cli.py:543
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../python/pakfire/cli.py:548
+#: ../python/pakfire/cli.py:550
 msgid "Update all repositories."
 msgstr ""
 
-#: ../python/pakfire/cli.py:554
+#: ../python/pakfire/cli.py:556
 msgid "Repository management commands."
 msgstr ""
 
-#: ../python/pakfire/cli.py:562
+#: ../python/pakfire/cli.py:564
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../python/pakfire/cli.py:563
+#: ../python/pakfire/cli.py:565
 msgid "Path to the packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:564
+#: ../python/pakfire/cli.py:566
 msgid "Path to input packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:617
+#: ../python/pakfire/cli.py:619
 msgid "Do not verify build dependencies."
 msgstr ""
 

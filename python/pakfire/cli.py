@@ -399,6 +399,8 @@ class CliBuilder(Cli):
 			help=_("Path were the output files should be copied to."))
 		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
+		sub_build.add_argument("--after-shell", action="store_true",
+			help=_("Run a shell after a successful build."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -445,7 +447,7 @@ class CliBuilder(Cli):
 
 		pakfire.build(pkg, builder_mode=self.args.mode,
 			distro_config=distro_config, resultdirs=[self.args.resultdir,],
-			shell=True, **self.pakfire_args)
+			shell=True, after_shell=self.args.after_shell, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None
