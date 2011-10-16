@@ -152,7 +152,7 @@ class FilePackage(Package):
 		if not tarfile.is_tarfile(self.filename):
 			raise FileError, "Given file is not of correct format: %s" % self.filename
 
-		assert self.format in PACKAGE_FORMATS_SUPPORTED
+		assert self.format in PACKAGE_FORMATS_SUPPORTED, self.format
 
 	def get_format(self):
 		a = self.open_archive()
@@ -428,7 +428,10 @@ class FilePackage(Package):
 				line = line.rstrip()
 				line = line.split()
 
-				if len(line) <= 6:
+				# Check if fields do have the correct length.
+				if self.format >= 3 and len(line) <= 7:
+					continue
+				elif len(line) <= 6:
 					continue
 
 				name = line[0]
@@ -470,6 +473,9 @@ class FilePackage(Package):
 				# Parse hash1 (sha512).
 				if not line[7] == "-":
 					file.hash1 = line[7]
+
+				if self.format >= 3 and not line[8] == "-":
+					file.capabilities = line[8]
 
 			else:
 				name = line

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-15 16:48+0200\n"
+"POT-Creation-Date: 2011-10-16 10:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -349,7 +349,7 @@ msgid "Do not verify build dependencies."
 msgstr ""
 
 #: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:495
+#: ../python/pakfire/packages/packager.py:501
 #, python-format
 msgid "Compressing %s"
 msgstr ""
@@ -362,22 +362,22 @@ msgstr ""
 msgid "An unhandled error occured."
 msgstr ""
 
-#: ../python/pakfire/errors.py:51
+#: ../python/pakfire/errors.py:54
 msgid "One or more dependencies could not been resolved."
 msgstr ""
 
-#: ../python/pakfire/errors.py:66
+#: ../python/pakfire/errors.py:69
 msgid ""
 "The requested action cannot be done on offline mode.\n"
 "Please connect your system to the network, remove --offline from the command "
 "line and try again."
 msgstr ""
 
-#: ../python/pakfire/errors.py:78
+#: ../python/pakfire/errors.py:81
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:82 ../python/pakfire/transaction.py:381
+#: ../python/pakfire/errors.py:85 ../python/pakfire/transaction.py:381
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Filename: %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:259
+#: ../python/pakfire/packages/file.py:254
 #, python-format
 msgid "File in archive is missing in file metadata: /%s. Skipping."
 msgstr ""
@@ -521,11 +521,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:333
+#: ../python/pakfire/packages/packager.py:339
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:621
+#: ../python/pakfire/packages/packager.py:627
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
@@ -534,7 +534,12 @@ msgstr ""
 msgid "The format of the database is not supported by this version of pakfire."
 msgstr ""
 
-#: ../python/pakfire/repository/database.py:217
+#: ../python/pakfire/repository/database.py:220
+#, python-format
+msgid "Cannot use database with version greater than %s."
+msgstr ""
+
+#: ../python/pakfire/repository/database.py:222
 #, python-format
 msgid "Migrating database from format %s to %s."
 msgstr ""

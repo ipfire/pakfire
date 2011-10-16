@@ -159,7 +159,8 @@ class DatabaseLocal(Database):
 				user		TEXT,
 				`group`		TEXT,
 				hash1		TEXT,
-				mtime		INTEGER
+				mtime		INTEGER,
+				capabilities	TEXT
 			);
 
 			CREATE TABLE packages(
@@ -214,6 +215,10 @@ class DatabaseLocal(Database):
 		if self.format == DATABASE_FORMAT:
 			return
 
+		# Check if database version is supported.
+		if self.format > DATABASE_FORMAT:
+			raise DatabaseError, _("Cannot use database with version greater than %s.") % DATABASE_FORMAT
+
 		logging.info(_("Migrating database from format %s to %s.") % (self.format, DATABASE_FORMAT))
 
 		# Get a database cursor.
@@ -229,6 +234,9 @@ class DatabaseLocal(Database):
 			c.execute("ALTER TABLE files ADD COLUMN `user` TEXT")
 			c.execute("ALTER TABLE files ADD COLUMN `group` TEXT")
 			c.execute("ALTER TABLE files ADD COLUMN `mtime` INTEGER")
+
+		if self.format < 3:
+			c.execute("ALTER TABLE files ADD COLUMN `capabilities` TEXT")
 
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
@@ -302,9 +310,9 @@ class DatabaseLocal(Database):
 
 			pkg_id = c.lastrowid
 
-			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`)"
-					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				((f.name, pkg_id, f.size, f.is_config(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime) for f in pkg.filelist))
+			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`, `capabilities`)"
+					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				((f.name, pkg_id, f.size, f.is_config(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime, f.capabilities or "") for f in pkg.filelist))
 
 		except:
 			raise

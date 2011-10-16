@@ -158,11 +158,17 @@ class Packager(object):
 					h.update(buf)
 
 				mobj.close()
-				f.write(" %s\n" % h.hexdigest())
-
-			# For other files, just finish the line.
+				f.write(" %s" % h.hexdigest())
 			else:
-				f.write(" -\n")
+				f.write(" -")
+
+			caps = m.pax_headers.get("PAKFIRE.capabilities", None)
+			if caps:
+				f.write(" %s" % caps)
+			else:
+				f.write(" -")
+
+			f.write("\n")
 
 		logging.info("")
 

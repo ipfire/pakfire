@@ -45,6 +45,9 @@ class BuildRootLocked(Error):
 class ConfigError(Error):
 	pass
 
+class DatabaseError(Error):
+	pass
+
 class DependencyError(Error):
 	exit_code = 4
 

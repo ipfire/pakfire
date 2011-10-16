@@ -67,6 +67,7 @@ class File(_File):
 		self.user = 0
 		self.group = 0
 		self.mtime = 0
+		self.capabilities = None
 
 	def is_config(self):
 		return self.config
@@ -139,3 +140,7 @@ class FileDatabase(_File):
 	@property
 	def mtime(self):
 		return self.row["mtime"]
+
+	@property
+	def capabilities(self):
+		return self.row["capabilities"]
