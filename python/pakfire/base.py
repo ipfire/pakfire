@@ -296,7 +296,7 @@ class Pakfire(object):
 			repo.remove()
 			self.repos.rem_repo(repo)
 
-	def update(self, pkgs, check=False, excludes=None):
+	def update(self, pkgs, check=False, excludes=None, allow_vendorchange=False, allow_archchange=False):
 		"""
 			check indicates, if the method should return after calculation
 			of the transaction.
@@ -322,7 +322,9 @@ class Pakfire(object):
 				request.lock(exclude)
 
 		solver = self.create_solver()
-		t = solver.solve(request, update=update)
+		t = solver.solve(request, update=update,
+			allow_vendorchange=allow_vendorchange,
+			allow_archchange=allow_archchange)
 
 		if not t:
 			logging.info(_("Nothing to do"))

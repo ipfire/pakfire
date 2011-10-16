@@ -45,10 +45,11 @@ def remove(what, **pakfire_args):
 
 	return pakfire.remove(what)
 
-def update(pkgs, check=False, excludes=None, **pakfire_args):
+def update(pkgs, check=False, excludes=None, allow_vendorchange=False, allow_archchange=False, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.update(pkgs, check=check, excludes=excludes)
+	return pakfire.update(pkgs, check=check, excludes=excludes,
+		allow_vendorchange=allow_vendorchange, allow_archchange=allow_archchange)
 
 def info(patterns, **pakfire_args):
 	# Create pakfire instance.

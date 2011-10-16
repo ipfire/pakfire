@@ -148,25 +148,30 @@ class Cli(object):
 			help=_("Give name of at least one package to remove."))
 		sub_remove.add_argument("action", action="store_const", const="remove")
 
+	@staticmethod
+	def _parse_command_update(parser):
+		parser.add_argument("package", nargs="*",
+			help=_("Give a name of a package to update or leave emtpy for all."))
+		parser.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update."))
+		parser.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages."))
+		parser.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages."))
+
 	def parse_command_update(self):
 		# Implement the "update" command.
 		sub_update = self.sub_commands.add_parser("update",
 			help=_("Update the whole system or one specific package."))
-		sub_update.add_argument("package", nargs="*",
-			help=_("Give a name of a package to update or leave emtpy for all."))
-		sub_update.add_argument("--exclude", "-x", nargs="+",
-			help=_("Exclude package from update."))
 		sub_update.add_argument("action", action="store_const", const="update")
+		self._parse_command_update(sub_update)
 
 	def parse_command_check_update(self):
 		# Implement the "check-update" command.
 		sub_check_update = self.sub_commands.add_parser("check-update",
 			help=_("Check, if there are any updates available."))
-		sub_check_update.add_argument("package", nargs="*",
-			help=_("Give a name of a package to update or leave emtpy for all."))
-		sub_check_update.add_argument("--exclude", "-x", nargs="+",
-			help=_("Exclude package from update."))
 		sub_check_update.add_argument("action", action="store_const", const="check_update")
+		self._parse_command_update(sub_check_update)
 
 	def parse_command_info(self):
 		# Implement the "info" command.
@@ -265,12 +270,16 @@ class Cli(object):
 		for pkg in pkgs:
 			print pkg.dump(short=True)
 
-	def handle_update(self):
-		pakfire.update(self.args.package, excludes=self.args.exclude, **self.pakfire_args)
+	def handle_update(self, **args):
+		args.update(self.pakfire_args)
+
+		pakfire.update(self.args.package, excludes=self.args.exclude,
+			allow_vendorchange=self.args.allow_vendorchange,
+			allow_archchange=self.args.allow_archchange,
+			**args)
 
 	def handle_check_update(self):
-		pakfire.update(self.args.package, check=True, excludes=self.args.exclude,
-			**self.pakfire_args)
+		self.handle_update(check=True)
 
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)
