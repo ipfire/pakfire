@@ -286,8 +286,9 @@ class BinaryPackager(Packager):
 				if not os.path.exists(pattern):
 					continue
 
-				# Add directories recursively...
-				if os.path.isdir(pattern):
+				# Add directories recursively but skip those symlinks
+				# that point to a directory.
+				if os.path.isdir(pattern) and not os.path.islink(pattern):
 					# Add directory itself.
 					files.append(pattern)
 
@@ -303,7 +304,7 @@ class BinaryPackager(Packager):
 							file = os.path.join(dir, file)
 							files.append(file)
 
-				# all other files are just added.
+				# All other files are just added.
 				else:
 					files.append(pattern)
 
