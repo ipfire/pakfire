@@ -456,6 +456,12 @@ class Lexer(object):
 				lines.append("%s" % m.groups())
 				continue
 
+			m = re.match(LEXER_EMPTY_LINE, line)
+			if m:
+				self._lineno += 1
+				lines.append("")
+				continue
+
 			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
 
 		if not block_closed:
