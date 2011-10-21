@@ -271,6 +271,9 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 		logging.warning(_("Waiting for processes to terminate..."))
 		time.sleep(3)
 
+		# Calling ourself again to make sure all processes were killed.
+		orphans_kill(root, killsig=killsig)
+
 def scriptlet_interpreter(scriptlet):
 	"""
 		This function returns the interpreter of a scriptlet.
