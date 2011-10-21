@@ -17,7 +17,7 @@ def MACRO_INSTALL_SYSTEMD_TMPFILES
 	for file in %{DIR_SOURCE}/*.tmpfiles; do
 		[ -e "${file}" ] || continue
 		mkdir -p %{BUILDROOT}/%{SYSTEMD_TMPFILES_DIR}
-		cp -vf ${file} %{BUILDROOT}/%{SYSTEMD_TMPFILES_DIR}/$(basename ${file})
+		cp -vf ${file} %{BUILDROOT}/%{SYSTEMD_TMPFILES_DIR}/$(basename ${file%*.tmpfiles}).conf
 	done
 	unset file
 end
