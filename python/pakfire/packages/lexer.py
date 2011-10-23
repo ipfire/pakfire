@@ -650,8 +650,11 @@ class TemplateLexer(DefaultLexer):
 
 		self.scriptlets[name] = {
 			"lang"      : "shell",
-			"scriptlet" : self.expand_string("\n".join(lines)),
+			"scriptlet" : "\n".join(lines),
 		}
+
+	def get_scriptlet(self, name):
+		return self.scriptlets.get(name, None)
 
 
 class PackageLexer(TemplateLexer):
@@ -709,6 +712,18 @@ class PackageLexer(TemplateLexer):
 
 		# Check if template exists.
 		assert self.template
+
+	def get_scriptlet(self, name):
+		scriptlet = self.scriptlets.get(name, None)
+
+		if scriptlet is None and self.template:
+			scriptlet = self.template.get_scriptlet(name)
+
+		if scriptlet and scriptlet["lang"] == "shell":
+			scriptlet["scriptlet"] = \
+				self.expand_string(scriptlet["scriptlet"])
+
+		return scriptlet
 
 
 class ExportLexer(DefaultLexer):

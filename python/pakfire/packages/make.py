@@ -465,12 +465,7 @@ class MakefilePackage(MakefileBase):
 		return self.get_deps("conflicts")
 
 	def get_scriptlet(self, type):
-		scriptlet = self.lexer.scriptlets.get(type, None)
-
-		if scriptlet is None and self.lexer.template:
-			scriptlet = self.lexer.template.scriptlets.get(type, None)
-
-		return scriptlet
+		return self.lexer.get_scriptlet(type)
 
 	@property
 	def inst_size(self):
