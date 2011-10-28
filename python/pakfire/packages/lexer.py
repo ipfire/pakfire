@@ -684,7 +684,8 @@ class PackageLexer(TemplateLexer):
 
 		# Collect all templates.
 		templates = self.root.templates
-		templates.update(self.parent.templates)
+		if hasattr(self.parent, "templates"):
+			templates.update(self.parent.templates)
 
 		# Get template from parent.
 		try:
