@@ -49,7 +49,7 @@ class SolvPackage(base.Package):
 	@property
 	def evr(self):
 		if self.__evr is None:
-			m = re.match("^([0-9]+\:)?([0-9A-Za-z\.\-_]+)-([0-9]+\.?[a-z0-9]+|[0-9]+)$",
+			m = re.match("^([0-9]+\:)?([0-9A-Za-z\.\-_]+)-([0-9]+\.?[a-z0-9\.\-\_]+|[0-9]+)$",
 				self.solvable.get_evr())
 
 			if m:
