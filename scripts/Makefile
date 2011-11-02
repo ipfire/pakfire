@@ -10,6 +10,7 @@ SCRIPTS_SHELL = \
 	pakfire-multicall.py \
 	py-compile \
 	quality-agent \
+	remove-static-libs \
 	$(wildcard functions-*) \
 	$(wildcard *.prov) \
 	$(wildcard *.req)

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "Removing unwanted static libraries..."
+
+BUILDROOT=${1}
+shift
+
+for file in $(find ${BUILDROOT} -name "*.a" -or -name "*.la"); do
+	file=${file//${BUILDROOT}/}
+
+	keep=0
+	for skip in $@; do
+		if [ "${skip}" = "${file}" ]; then
+			keep=1
+			break
+		fi
+	done
+
+	if [ ${keep} -eq 0 ]; then
+		echo "  Removing ${file}..."
+		rm -f ${BUILDROOT}/${file}
+	fi
+done
+
+exit 0

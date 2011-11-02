@@ -28,6 +28,7 @@ from __version__ import PAKFIRE_VERSION
 PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 
 SYSCONFDIR = "/etc"
+SCRIPT_DIR = "/usr/lib/pakfire"
 
 CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire.repos.d")
 CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")

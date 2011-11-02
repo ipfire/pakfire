@@ -685,6 +685,9 @@ class Builder(object):
 		for stage in ("prepare", "build", "test", "install"):
 			self.build_stage(stage)
 
+		# Run post-build stuff.
+		self.post_remove_static_libs()
+
 		# Package the result.
 		# Make all these little package from the build environment.
 		logging.info(_("Creating packages:"))
@@ -716,6 +719,16 @@ class Builder(object):
 			# Remove the buildscript.
 			if os.path.exists(buildscript):
 				os.unlink(buildscript)
+
+	def post_remove_static_libs(self):
+		keep_libs = self.pkg.lexer.build.get_var("keep_libraries")
+		keep_libs = keep_libs.split()
+
+		try:
+			self.do("%s/remove-static-libs %s %s" % \
+				(SCRIPT_DIR, self.buildroot, " ".join(keep_libs)))
+		except Error, e:
+			logging.warning(_("Could not remove static libraries: %s") % e)
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):
