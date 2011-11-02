@@ -697,7 +697,7 @@ class FilePackage(Package):
 		elif self.format == 0:
 			uuid = self.metadata.get("PKG_UUID")
 
-		#assert uuid, self XXX re-enable this
+		assert uuid, self
 		return uuid
 
 	@property
