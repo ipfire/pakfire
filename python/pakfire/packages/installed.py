@@ -280,19 +280,23 @@ class DatabasePackage(Package):
 
 		# Fetch the whole filelist of the system from the database and create
 		# a diff. Exclude files from this package - of course.
-		c.execute("SELECT name FROM files WHERE pkg != ?", (self.id,))
+		c.execute("SELECT DISTINCT name FROM files WHERE pkg != ?", (self.id,))
 
+		installed_files = set()
 		for row in c:
-			# Check if file in filelist.
-			for f in files:
-				if not row["name"] == f.name:
-					continue
-
-				files.remove(f)
-				break
+			installed_files.add(row["name"])
 		c.close()
 
-		self._remove_files(files, message, prefix)
+		# List with files to be removed.
+		remove_files = []
+
+		for f in files:
+			if f.name in installed_files:
+				continue
+
+			remove_files.append(f)
+
+		self._remove_files(remove_files, message, prefix)
 
 
 # XXX maybe we can remove this later?
