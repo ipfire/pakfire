@@ -178,7 +178,7 @@ function find_elf_files() {
 
 	for dir in ${dirs}; do
 		dir="${prefix}${dir}"
-		for file in $(find ${dir} -type f 2>/dev/null); do
+		for file in $(find ${dir} -type f -not -name "*.ko" 2>/dev/null); do
 			if file_is_elf ${file} && ! file_is_static ${file}; then
 				files="${files} ${file}"
 			fi
