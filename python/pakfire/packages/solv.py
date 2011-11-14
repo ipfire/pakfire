@@ -157,7 +157,7 @@ class SolvPackage(base.Package):
 		try:
 			i = requires.index("solvable:prereqmarker")
 
-			return (requires[:i], requires[i:],)
+			return (requires[i+1:], requires[:i],)
 		except ValueError:
 			return ([], requires,)
 

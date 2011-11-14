@@ -33,6 +33,7 @@ import util
 
 from constants import *
 from i18n import _
+from pakfire._pakfire import sync
 
 PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
 
@@ -426,3 +427,6 @@ class Transaction(object):
 				logging.error("Action finished with an error: %s - %s" % (action, e))
 
 		logging.info("")
+
+		# Call sync to make sure all buffers are written to disk.
+		sync()

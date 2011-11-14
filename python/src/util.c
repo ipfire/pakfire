@@ -21,6 +21,7 @@
 #include <Python.h>
 
 #include <sys/personality.h>
+#include <unistd.h>
 
 #include "util.h"
 
@@ -42,6 +43,13 @@ PyObject *_personality(PyObject *self, PyObject *args) {
 	}
 
 	return Py_BuildValue("i", ret);
+}
+
+PyObject *_sync(PyObject *self, PyObject *args) {
+	/* Just sync everything to disks. */
+	sync();
+
+	Py_RETURN_NONE;
 }
 
 PyObject *version_compare(PyObject *self, PyObject *args) {

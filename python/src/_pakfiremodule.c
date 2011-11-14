@@ -41,6 +41,7 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
 	{"set_capabilities", (PyCFunction)set_capabilities, METH_VARARGS, NULL},
 	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
+	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
