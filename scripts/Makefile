@@ -6,6 +6,7 @@ SCRIPTS_BIN   =
 SCRIPTS_SHELL = \
 	chroot-shell \
 	cleanup \
+	compress-man-pages \
 	dependency-tracker \
 	pakfire-multicall.py \
 	py-compile \

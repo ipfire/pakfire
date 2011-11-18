@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "Compressing man pages..."
+
+BUILDROOT=${1}
+shift
+
+for file in $(find ${BUILDROOT}/usr/share/man -type f); do
+	case "${file}" in
+		*.gz)
+			gzip -d ${file}
+			file=${file%*.gz}
+			;;
+		*.bz2)
+			bzip2 -d ${file}
+			file=${file%*.bz2}
+			;;
+	esac
+
+	echo "  Compressing man page ${file//${BUILDROOT}/}..."
+	xz ${file}
+done
+
+exit 0

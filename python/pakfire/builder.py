@@ -686,6 +686,7 @@ class Builder(object):
 			self.build_stage(stage)
 
 		# Run post-build stuff.
+		self.post_compress_man_pages()
 		self.post_remove_static_libs()
 
 		# Package the result.
@@ -729,6 +730,12 @@ class Builder(object):
 				(SCRIPT_DIR, self.buildroot, " ".join(keep_libs)))
 		except Error, e:
 			logging.warning(_("Could not remove static libraries: %s") % e)
+
+	def post_compress_man_pages(self):
+		try:
+			self.do("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
+		except Error, e:
+			logging.warning(_("Compressing man pages did not complete successfully."))
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):
