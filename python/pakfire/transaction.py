@@ -339,7 +339,10 @@ class Transaction(object):
 		s.append("")
 		return s
 
-	def dump(self, logger=log):
+	def dump(self, logger=None):
+		if logger is None:
+			logger = log
+
 		width = 80
 		line = "=" * width
 
