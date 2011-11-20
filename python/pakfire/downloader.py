@@ -141,6 +141,12 @@ class SourceDownloader(object):
 				try:
 					self.grabber.urlgrab(os.path.basename(filename), filename=filename)
 				except URLGrabError, e:
+					# Remove partly downloaded file.
+					try:
+						os.unlink(filename)
+					except OSError:
+						pass
+
 					raise DownloadError, "%s %s" % (os.path.basename(filename), e)
 
 			log.info("")
