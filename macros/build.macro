@@ -1,14 +1,12 @@
 
 
 def MACRO_EXTRACT_TARBALL
-	set +x
 	for source in %{sources}; do
 		%{MACRO_EXTRACT} %{DIR_DL}/${source} || exit 1
 	done
 	unset source
 
 	[ -d "%{DIR_APP}" ] && cd %{DIR_APP}
-	set -x
 end
 
 def MACRO_INSTALL_FILES

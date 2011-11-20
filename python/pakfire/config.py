@@ -172,10 +172,15 @@ class Config(object):
 	@property
 	def supported_arches(self):
 		host_arches = {
-			"x86_64" : [ "x86_64", ],
-			"i686"   : [ "i686", "x86_64", ],
-			"i586"   : [ "i586", "i686", "x86_64", ],
-			"i486"   : [ "i486", "i586", "i686", "x86_64", ],
+			# x86
+			"x86_64"   : [ "x86_64", ],
+			"i686"     : [ "i686", "x86_64", ],
+			"i586"     : [ "i586", "i686", "x86_64", ],
+			"i486"     : [ "i486", "i586", "i686", "x86_64", ],
+
+			# ARM
+			"armv5tel" : [ "armv5tel", "armv5tejl", ],
+			"armv7hl " : [ "armv7l", ],
 		}
 
 		for host, can_be_built in host_arches.items():

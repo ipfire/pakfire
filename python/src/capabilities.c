@@ -29,7 +29,7 @@ PyObject *
 get_capabilities(PyObject *self, PyObject *args) {
 	const char *filename;
 	cap_t cap_d;
-	char *exception = NULL;
+	char exception[STRING_SIZE];
 
         if (!PyArg_ParseTuple(args, "s", &filename)) {
                 /* XXX raise exception */
@@ -38,7 +38,10 @@ get_capabilities(PyObject *self, PyObject *args) {
 
 	cap_d = cap_get_file(filename);
 	if (cap_d == NULL) {
-		if (errno != ENODATA) {
+		if (errno == EOPNOTSUPP) {
+			/* Return nothing, if the operation is not supported. */
+			Py_RETURN_NONE;
+		} else if (errno != ENODATA) {
 			snprintf(exception, STRING_SIZE - 1, "Failed to get capabilities of file %s (%s).",
 				filename, strerror(errno));
 			PyErr_SetString(PyExc_RuntimeError, exception);
