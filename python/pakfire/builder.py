@@ -62,7 +62,7 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pkg=None, distro_config=None, build_id=None, logfile=None,
+	def __init__(self, filename, distro_config=None, build_id=None, logfile=None,
 			builder_mode="release", **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
@@ -119,15 +119,30 @@ class BuildEnviron(object):
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
+		# Where do we put the result?
+		self.resultdir = os.path.join(self.path, "result")
+
+		# Open package.
+		# If we have a plain makefile, we first build a source package and go with that.
+		if filename.endswith(".%s" % MAKEFILE_EXTENSION):
+			pkg = packages.Makefile(self.pakfire, filename)
+			pkg.dist([self.resultdir,])
+
+			filename = os.path.join(self.resultdir, "src", pkg.package_filename)
+			assert os.path.exists(filename), filename
+
+		# Open source package.
+		self.pkg = packages.SourcePackage(self.pakfire, None, filename)
+		assert self.pkg, filename
+
 		# Log the package information.
-		self.pkg = packages.Makefile(self.pakfire, pkg)
 		self.log.info(_("Package information:"))
 		for line in self.pkg.dump(long=True).splitlines():
 			self.log.info("  %s" % line)
 		self.log.info("")
 
-		# Download all package files.
-		self.pkg.download()
+		# Path where we extract the package and put all the source files.
+		self.build_dir = os.path.join(self.path, "usr/src", self.pkg.friendly_name)
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -286,8 +301,7 @@ class BuildEnviron(object):
 		self.install(requires)
 
 		# Copy the makefile and load source tarballs.
-		self.pkg.extract(_("Extracting"),
-			prefix=os.path.join(self.path, "build"))
+		self.pkg.extract(_("Extracting"), prefix=self.build_dir)
 
 	def install(self, requires):
 		"""
@@ -385,10 +399,9 @@ class BuildEnviron(object):
 		self.log.debug("Cleaning environemnt.")
 
 		# Remove the build directory and buildroot.
-		dirs = ("build", "result")
+		dirs = (self.build_dir, self.chrootPath("result"),)
 
 		for d in dirs:
-			d = self.chrootPath(d)
 			if not os.path.exists(d):
 				continue
 
@@ -535,7 +548,12 @@ class BuildEnviron(object):
 	def build(self, install_test=True):
 		assert self.pkg
 
-		pkgfile = os.path.join("/build", os.path.basename(self.pkg.filename))
+		# Search for the package file in build_dir and raise BuildError if it is not present.
+		pkgfile = os.path.join(self.build_dir, "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION))
+		if not os.path.exists(pkgfile):
+			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
+		pkgfile = os.path.relpath(pkgfile, self.chrootPath())
+
 		resultdir = self.chrootPath("/result")
 
 		# Create the build command, that is executed in the chroot.

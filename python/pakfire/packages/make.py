@@ -54,6 +54,7 @@ class MakefileBase(Package):
 		# Update environment.
 		environ = self.pakfire.environ
 		environ.update({
+			"BASEDIR"          : os.path.dirname(self.filename),
 			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
 		})
 
