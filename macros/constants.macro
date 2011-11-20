@@ -1,6 +1,5 @@
 
 BUILDROOT   = %{DIR_TMP}/buildroot_%{name}-%{thisver}
-BASEDIR     = /build
 
 DIR_APP     = %{DIR_SRC}/%{thisapp}
 DIR_DL      = %{BASEDIR}/files

@@ -37,7 +37,7 @@ CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
 REPO_CACHE_DIR = os.path.join(CACHE_DIR, "repos")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
-LOCAL_TMP_PATH = "var/tmp/pakfire"
+LOCAL_TMP_PATH = "/var/tmp"
 
 PACKAGES_DB_DIR = "var/lib/pakfire"
 PACKAGES_DB = os.path.join(PACKAGES_DB_DIR, "packages.db")
