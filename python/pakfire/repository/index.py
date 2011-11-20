@@ -83,6 +83,12 @@ class Index(object):
 		"""
 		self.solver_repo.write(filename)
 
+	def commit(self):
+		"""
+			Commit index data to disk.
+		"""
+		pass
+
 	def create_relation(self, *args, **kwargs):
 		return self.pakfire.create_relation(*args, **kwargs)
 
@@ -406,6 +412,19 @@ class IndexDir(Index):
 class IndexLocal(Index):
 	def init(self):
 		self.db = database.DatabaseLocal(self.pakfire, self.repo)
+
+		if os.path.exists(PACKAGES_SOLV):
+			self.read(PACKAGES_SOLV)
+
+	def commit(self):
+		# Write SOLV cache file.
+		filename = os.path.join(self.pakfire.path, PACKAGES_SOLV)
+
+		dirname = os.path.dirname(filename)
+		if not os.path.exists(dirname):
+			os.makedirs(dirname)
+
+		self.write(filename)
 
 	def check(self):
 		# XXX Create the database and lock it or something.

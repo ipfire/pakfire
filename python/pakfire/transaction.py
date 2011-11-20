@@ -203,6 +203,11 @@ class Transaction(object):
 
 		return transaction
 
+	@property
+	def local(self):
+		# Shortcut to local repository.
+		return self.pakfire.repos.local
+
 	def add(self, action_name, pkg):
 		assert isinstance(pkg, packages.SolvPackage), pkg
 
@@ -426,6 +431,9 @@ class Transaction(object):
 				log.error("Action finished with an error: %s - %s" % (action, e))
 
 		log.info("")
+
+		# Commit repository metadata.
+		self.local.commit()
 
 		# Call sync to make sure all buffers are written to disk.
 		sync()

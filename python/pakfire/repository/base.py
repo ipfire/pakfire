@@ -127,6 +127,12 @@ class RepositoryFactory(object):
 		assert self.index
 		self.index.clear()
 
+	def commit(self):
+		"""
+			Commit repository data to disk.
+		"""
+		self.index.commit()
+
 	def dump(self, long=False, filelist=False):
 		dumps = []
 		# Dump all package information of the packages in this repository.
