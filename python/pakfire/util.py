@@ -23,7 +23,6 @@ from __future__ import division
 
 import fcntl
 import hashlib
-import logging
 import math
 import os
 import progressbar
@@ -35,6 +34,9 @@ import struct
 import sys
 import termios
 import time
+
+import logging
+log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
@@ -249,14 +251,14 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 	"""
 		kill off anything that is still chrooted.
 	"""
-	logging.debug(_("Killing orphans..."))
+	log.debug(_("Killing orphans..."))
 
 	killed = False
 	for fn in [d for d in os.listdir("/proc") if d.isdigit()]:
 		try:
 			r = os.readlink("/proc/%s/root" % fn)
 			if os.path.realpath(root) == os.path.realpath(r):
-				logging.warning(_("Process ID %s is still running in chroot. Killing...") % fn)
+				log.warning(_("Process ID %s is still running in chroot. Killing...") % fn)
 				killed = True
 
 				pid = int(fn, 10)
@@ -268,7 +270,7 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 	# If something was killed, wait a couple of seconds to make sure all file descriptors
 	# are closed and we can proceed with umounting the filesystems.
 	if killed:
-		logging.warning(_("Waiting for processes to terminate..."))
+		log.warning(_("Waiting for processes to terminate..."))
 		time.sleep(3)
 
 		# Calling ourself again to make sure all processes were killed.

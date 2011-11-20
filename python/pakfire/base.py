@@ -19,7 +19,6 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import random
 import string
@@ -35,6 +34,9 @@ import repository
 import satsolver
 import transaction
 import util
+
+import logging
+log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
@@ -202,11 +204,11 @@ class Pakfire(object):
 		if t:
 			t.dump()
 		else:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 
 	def install(self, requires, interactive=True, logger=None, **kwargs):
 		if not logger:
-			logger = logging.getLogger()
+			logger = logging.getLogger("pakfire")
 
 		# Create a new request.
 		request = self.create_request()
@@ -232,7 +234,7 @@ class Pakfire(object):
 			if not interactive:
 				raise DependencyError
 
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 			return
 
 		if interactive:
@@ -264,7 +266,7 @@ class Pakfire(object):
 
 			# Break if no packages were added at all.
 			if not len(repo):
-				logging.critical(_("There are no packages to install."))
+				log.critical(_("There are no packages to install."))
 				return
 
 			# Create a new request that installs all solvables from the
@@ -278,7 +280,7 @@ class Pakfire(object):
 
 			# If solving was not possible, we exit here.
 			if not t:
-				logging.info(_("Nothing to do"))
+				log.info(_("Nothing to do"))
 				return
 
 			if yes is None:
@@ -319,17 +321,17 @@ class Pakfire(object):
 				_pkgs.append(pkg)
 
 			if not _pkgs:
-				logging.warning(_("Could not find any installed package providing \"%s\".") \
+				log.warning(_("Could not find any installed package providing \"%s\".") \
 					% pattern)
 			elif len(_pkgs) == 1:
 				reinstall_pkgs.append(_pkgs[0])
 				#t.add("reinstall", _pkgs[0])
 			else:
-				logging.warning(_("Multiple reinstall candidates for \"%s\": %s") \
+				log.warning(_("Multiple reinstall candidates for \"%s\": %s") \
 					% (pattern, ", ".join(p.friendly_name for p in sorted(_pkgs))))
 
 		if not reinstall_pkgs:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 			return
 
 		# Packages we want to replace.
@@ -354,7 +356,7 @@ class Pakfire(object):
 					_pkgs.append(_pkg)
 
 			if not _pkgs:
-				logging.warning(_("Could not find package %s in a remote repository.") % \
+				log.warning(_("Could not find package %s in a remote repository.") % \
 					pkg.friendly_name)
 			else:
 				# Sort packages to reflect repository priorities, etc...
@@ -395,7 +397,7 @@ class Pakfire(object):
 		t.sort()
 
 		if not t:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 			return
 
 		if not t.cli_yesno():
@@ -423,7 +425,7 @@ class Pakfire(object):
 		# Exclude packages that should not be updated.
 		if excludes:
 			for exclude in excludes:
-				logging.info(_("Excluding %s.") % exclude)
+				log.info(_("Excluding %s.") % exclude)
 
 				exclude = self.create_relation(exclude)
 				request.lock(exclude)
@@ -434,7 +436,7 @@ class Pakfire(object):
 			allow_archchange=allow_archchange)
 
 		if not t:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 
 			# If we are running in check mode, we return a non-zero value to
 			# indicate, that there are no updates.
@@ -475,7 +477,7 @@ class Pakfire(object):
 					best = pkg
 
 			if best is None:
-				logging.warning(_("\"%s\" package does not seem to be installed.") % pattern)
+				log.warning(_("\"%s\" package does not seem to be installed.") % pattern)
 			else:
 				rel = self.create_relation("%s<%s" % (best.name, best.friendly_version))
 				request.install(rel)
@@ -487,7 +489,7 @@ class Pakfire(object):
 			allow_archchange=allow_archchange)
 
 		if not t:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 			return
 
 		if not t.cli_yesno():
@@ -507,7 +509,7 @@ class Pakfire(object):
 		t = solver.solve(request, uninstall=True)
 
 		if not t:
-			logging.info(_("Nothing to do"))
+			log.info(_("Nothing to do"))
 			return
 
 		# Ask the user if okay.
@@ -675,7 +677,7 @@ class Pakfire(object):
 		return [r for r in self.repos]
 
 	def clean_all(self):
-		logging.debug("Cleaning up everything...")
+		log.debug("Cleaning up everything...")
 
 		# Clean up repository caches.
 		self.repos.clean()
@@ -699,7 +701,7 @@ class Pakfire(object):
 			uninstall=uninstall)
 
 		if not t:
-			logging.info(_("Everything is fine."))
+			log.info(_("Everything is fine."))
 			return
 
 		# Ask the user if okay.

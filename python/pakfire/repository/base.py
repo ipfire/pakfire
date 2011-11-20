@@ -21,8 +21,10 @@
 
 import fnmatch
 import glob
-import logging
 import re
+
+import logging
+log = logging.getLogger("pakfire")
 
 import cache
 import pakfire.packages as packages
@@ -38,7 +40,7 @@ class RepositoryFactory(object):
 		self.solver_repo = satsolver.Repo(self.pool, self.name)
 		self.solver_repo.set_priority(self.priority)
 
-		logging.debug("Initialized new repository: %s" % self)
+		log.debug("Initialized new repository: %s" % self)
 
 		# Create an cache object
 		self.cache = cache.RepositoryCache(self.pakfire, self)
@@ -76,9 +78,9 @@ class RepositoryFactory(object):
 		self.solver_repo.set_enabled(val)
 
 		if val:
-			logging.debug("Enabled repository '%s'." % self.name)
+			log.debug("Enabled repository '%s'." % self.name)
 		else:
-			logging.debug("Disabled repository '%s'." % self.name)
+			log.debug("Disabled repository '%s'." % self.name)
 
 	enabled = property(get_enabled, set_enabled)
 
@@ -119,7 +121,7 @@ class RepositoryFactory(object):
 		"""
 			Cleanup all temporary files of this repository.
 		"""
-		logging.info("Cleaning up repository '%s'..." % self.name)
+		log.info("Cleaning up repository '%s'..." % self.name)
 		self.cache.destroy()
 
 		assert self.index

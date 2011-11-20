@@ -23,7 +23,6 @@ import collections
 import fnmatch
 import glob
 import hashlib
-import logging
 import lzma
 import os
 import progressbar
@@ -35,6 +34,9 @@ import tempfile
 import time
 import uuid
 import zlib
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.compress
 import pakfire.util as util
@@ -57,7 +59,7 @@ class Packager(object):
 			if not os.path.exists(file):
 				continue
 
-			logging.debug("Removing tmpfile: %s" % file)
+			log.debug("Removing tmpfile: %s" % file)
 
 			if os.path.isdir(file):
 				util.rm(file)
@@ -119,7 +121,7 @@ class Packager(object):
 		if not arcname:
 			arcname = os.path.basename(filename)
 
-		logging.debug("Adding %s (as %s) to tarball." % (filename, arcname))
+		log.debug("Adding %s (as %s) to tarball." % (filename, arcname))
 		self.files.append((arcname, filename))
 
 	def create_package_format(self):
@@ -138,7 +140,7 @@ class Packager(object):
 		datafile = InnerTarFile(datafile)
 
 		for m in datafile.getmembers():
-			logging.debug("  %s %-8s %-8s %s %6s %s" % \
+			log.debug("  %s %-8s %-8s %s %6s %s" % \
 				(tarfile.filemode(m.mode), m.uname, m.gname,
 				"%d-%02d-%02d %02d:%02d:%02d" % time.localtime(m.mtime)[:6],
 				util.format_size(m.size), m.name))
@@ -170,7 +172,7 @@ class Packager(object):
 
 			f.write("\n")
 
-		logging.info("")
+		log.info("")
 
 		datafile.close()
 		f.close()
@@ -320,7 +322,7 @@ class BinaryPackager(Packager):
 
 			# Skip orphan directories.
 			if file in orphan_directories and not os.listdir(file):
-				logging.debug("Found an orphaned directory: %s" % file)
+				log.debug("Found an orphaned directory: %s" % file)
 				continue
 
 			files.append(file)
@@ -543,7 +545,7 @@ class BinaryPackager(Packager):
 			os.makedirs(resultdir)
 
 		resultfile = os.path.join(resultdir, self.pkg.package_filename)
-		logging.info("Saving package to %s" % resultfile)
+		log.info("Saving package to %s" % resultfile)
 		try:
 			os.link(tempfile, resultfile)
 		except OSError:
@@ -625,7 +627,7 @@ class SourcePackager(Packager):
 	def run(self, resultdirs=[]):
 		assert resultdirs
 
-		logging.info(_("Building source package %s:") % self.pkg.package_filename)
+		log.info(_("Building source package %s:") % self.pkg.package_filename)
 
 		# Add datafile to package.
 		datafile = self.create_datafile()
@@ -656,7 +658,7 @@ class SourcePackager(Packager):
 				os.makedirs(resultdir)
 
 			resultfile = os.path.join(resultdir, self.pkg.package_filename)
-			logging.info("Saving package to %s" % resultfile)
+			log.info("Saving package to %s" % resultfile)
 			try:
 				os.link(tempfile, resultfile)
 			except OSError:
@@ -665,5 +667,5 @@ class SourcePackager(Packager):
 		# Dump package information.
 		pkg = SourcePackage(self.pakfire, self.pakfire.repos.dummy, tempfile)
 		for line in pkg.dump(long=True).splitlines():
-			logging.info(line)
-		logging.info("")
+			log.info(line)
+		log.info("")

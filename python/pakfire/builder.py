@@ -21,7 +21,6 @@
 
 import fcntl
 import grp
-import logging
 import math
 import os
 import re
@@ -37,6 +36,9 @@ import packages
 import packages.packager
 import repository
 import util
+
+import logging
+log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
@@ -96,7 +98,7 @@ class BuildEnviron(object):
 			h.setFormatter(f)
 		else:
 			# If no logile was given, we use the root logger.
-			self.log = logging.getLogger()
+			self.log = logging.getLogger("pakfire")
 
 		# Log information about pakfire and some more information, when we
 		# are running in release mode.
@@ -217,7 +219,7 @@ class BuildEnviron(object):
 		if not os.path.exists(dir_in):
 			os.makedirs(dir_in)
 
-		logging.debug("%s --> %s" % (file_out, file_in))
+		self.log.debug("%s --> %s" % (file_out, file_in))
 
 		shutil.copy2(file_out, file_in)
 
@@ -234,7 +236,7 @@ class BuildEnviron(object):
 		if not os.path.exists(dir_out):
 			os.makedirs(dir_out)
 
-		logging.debug("%s --> %s" % (file_in, file_out))
+		self.log.debug("%s --> %s" % (file_in, file_out))
 
 		shutil.copy2(file_in, file_out)
 
@@ -362,7 +364,7 @@ class BuildEnviron(object):
 			self.copyin(i, i)
 
 	def _create_node(self, filename, mode, device):
-		logging.debug("Create node: %s (%s)" % (filename, mode))
+		self.log.debug("Create node: %s (%s)" % (filename, mode))
 
 		filename = self.chrootPath(filename)
 
@@ -374,13 +376,13 @@ class BuildEnviron(object):
 		os.mknod(filename, mode, device)
 
 	def destroy(self):
-		logging.debug("Destroying environment %s" % self.path)
+		self.log.debug("Destroying environment %s" % self.path)
 
 		if os.path.exists(self.path):
 			util.rm(self.path)
 
 	def cleanup(self):
-		logging.debug("Cleaning environemnt.")
+		self.log.debug("Cleaning environemnt.")
 
 		# Remove the build directory and buildroot.
 		dirs = ("build", "result")
@@ -502,9 +504,9 @@ class BuildEnviron(object):
 		if kwargs.has_key("env"):
 			env.update(kwargs.pop("env"))
 
-		logging.debug("Environment:")
+		self.log.debug("Environment:")
 		for k, v in sorted(env.items()):
-			logging.debug("  %s=%s" % (k, v))
+			self.log.debug("  %s=%s" % (k, v))
 
 		# Update personality it none was set
 		if not personality:
@@ -555,7 +557,7 @@ class BuildEnviron(object):
 
 	def shell(self, args=[]):
 		if not util.cli_is_interactive():
-			logging.warning("Cannot run shell on non-interactive console.")
+			self.log.warning("Cannot run shell on non-interactive console.")
 			return
 
 		# Install all packages that are needed to run a shell.
@@ -575,7 +577,7 @@ class BuildEnviron(object):
 		# Empty the environment
 		command = "env -i - %s" % command
 
-		logging.debug("Shell command: %s" % command)
+		self.log.debug("Shell command: %s" % command)
 
 		shell = os.system(command)
 		return os.WEXITSTATUS(shell)
@@ -618,9 +620,9 @@ class Builder(object):
 
 	def do(self, command, shell=True, personality=None, cwd=None, *args, **kwargs):
 		# Environment variables
-		logging.debug("Environment:")
+		log.debug("Environment:")
 		for k, v in sorted(self.environ.items()):
-			logging.debug("  %s=%s" % (k, v))
+			log.debug("  %s=%s" % (k, v))
 
 		# Update personality it none was set
 		if not personality:
@@ -639,7 +641,7 @@ class Builder(object):
 			personality=personality,
 			shell=False,
 			env=self.environ,
-			logger=logging.getLogger(),
+			logger=logging.getLogger("pakfire"),
 			cwd=cwd,
 			*args,
 			**kwargs
@@ -691,27 +693,27 @@ class Builder(object):
 
 		# Package the result.
 		# Make all these little package from the build environment.
-		logging.info(_("Creating packages:"))
+		log.info(_("Creating packages:"))
 		pkgs = []
 		for pkg in reversed(self.pkg.packages):
 			packager = packages.packager.BinaryPackager(self.pakfire, pkg,
 				self, self.buildroot)
 			pkg = packager.run(self.resultdir)
 			pkgs.append(pkg)
-		logging.info("")
+		log.info("")
 
 		for pkg in sorted(pkgs):
 			for line in pkg.dump(long=True).splitlines():
-				logging.info(line)
-			logging.info("")
-		logging.info("")
+				log.info(line)
+			log.info("")
+		log.info("")
 
 	def build_stage(self, stage):
 		# Get the buildscript for this stage.
 		buildscript = self.create_buildscript(stage)
 
 		# Execute the buildscript of this stage.
-		logging.info(_("Running stage %s:") % stage)
+		log.info(_("Running stage %s:") % stage)
 
 		try:
 			self.do(buildscript, shell=False)
@@ -729,13 +731,13 @@ class Builder(object):
 			self.do("%s/remove-static-libs %s %s" % \
 				(SCRIPT_DIR, self.buildroot, " ".join(keep_libs)))
 		except Error, e:
-			logging.warning(_("Could not remove static libraries: %s") % e)
+			log.warning(_("Could not remove static libraries: %s") % e)
 
 	def post_compress_man_pages(self):
 		try:
 			self.do("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
 		except Error, e:
-			logging.warning(_("Compressing man pages did not complete successfully."))
+			log.warning(_("Compressing man pages did not complete successfully."))
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):

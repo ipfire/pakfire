@@ -20,7 +20,6 @@
 ###############################################################################
 
 import hashlib
-import logging
 import os
 import random
 import socket
@@ -28,6 +27,9 @@ import subprocess
 import tempfile
 import time
 import xmlrpclib
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.api
 import pakfire.base
@@ -90,7 +92,7 @@ class Source(object):
 
 		cmd = "cd %s && git %s" % (path, cmd)
 
-		logging.debug("Running command: %s" % cmd)
+		log.debug("Running command: %s" % cmd)
 
 		return subprocess.check_output(["/bin/sh", "-c", cmd])
 
@@ -181,13 +183,13 @@ class XMLRPCTransport(xmlrpclib.Transport):
 
 			except xmlrpclib.ProtocolError, e:
 				# Log all XMLRPC protocol errors.
-				logging.error("XMLRPC protocol error:")
-				logging.error("  URL: %s" % e.url)
-				logging.error("  HTTP headers:")
+				log.error("XMLRPC protocol error:")
+				log.error("  URL: %s" % e.url)
+				log.error("  HTTP headers:")
 				for header in e.headers.items():
-					logging.error("    %s: %s" % header)
-				logging.error("  Error code: %s" % e.errcode)
-				logging.error("  Error message: %s" % e.errmsg)
+					log.error("    %s: %s" % header)
+				log.error("  Error code: %s" % e.errcode)
+				log.error("  Error message: %s" % e.errmsg)
 				raise
 
 			else:
@@ -196,12 +198,12 @@ class XMLRPCTransport(xmlrpclib.Transport):
 
 			# If the request was not successful, we wait a little time to try
 			# it again.
-			logging.debug("Request was not successful, we wait a little bit and try it again.")
+			log.debug("Request was not successful, we wait a little bit and try it again.")
 			time.sleep(30)
 			tries -= 1
 
 		else:
-			logging.error("Maximum number of tries was reached. Giving up.")
+			log.error("Maximum number of tries was reached. Giving up.")
 			# XXX need better exception here.
 			raise Exception, "Could not fulfill request."
 
@@ -214,7 +216,7 @@ class Server(object):
 
 		server = self.config._slave.get("server")
 
-		logging.info("Establishing RPC connection to: %s" % server)
+		log.info("Establishing RPC connection to: %s" % server)
 
 		self.conn = xmlrpclib.ServerProxy(server, transport=XMLRPCTransport(),
 			allow_none=True)
@@ -293,7 +295,7 @@ class Server(object):
 					break
 
 				chunk += 1
-				logging.info("Uploading chunk %s/%s of %s." % (chunk, chunks,
+				log.info("Uploading chunk %s/%s of %s." % (chunk, chunks,
 					os.path.basename(filename)))
 
 				data = xmlrpclib.Binary(data)

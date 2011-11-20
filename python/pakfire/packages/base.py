@@ -20,10 +20,12 @@
 ###############################################################################
 
 import datetime
-import logging
 import os
 import shutil
 import xml.sax.saxutils
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.util as util
 
@@ -48,7 +50,7 @@ class Package(object):
 
 		# If UUIDs match, the packages are absolutely equal.
 		if self.uuid == other.uuid:
-			#logging.debug("%s is equal to %s by UUID" % (self, other))
+			#log.debug("%s is equal to %s by UUID" % (self, other))
 			return 0
 
 		ret = util.version_compare(self.pakfire.pool,
@@ -71,11 +73,11 @@ class Package(object):
 			ret = cmp(self.build_time, other.build_time)
 
 		#if ret == 0:
-		#	logging.debug("%s is equal to %s" % (self, other))
+		#	log.debug("%s is equal to %s" % (self, other))
 		#elif ret < 0:
-		#	logging.debug("%s is more recent than %s" % (other, self))
+		#	log.debug("%s is more recent than %s" % (other, self))
 		#elif ret > 0:
-		#	logging.debug("%s is more recent than %s" % (self, other))
+		#	log.debug("%s is more recent than %s" % (self, other))
 
 		# If no rank could be created, sort by repository priority
 		if not ret:
@@ -472,7 +474,7 @@ class Package(object):
 				i += 1
 				pb.update(i)
 
-			logging.debug("Removing file: %s" % _file)
+			log.debug("Removing file: %s" % _file)
 
 			if prefix:
 				file = os.path.join(prefix, _file.name[1:])
@@ -503,7 +505,7 @@ class Package(object):
 				try:
 					os.remove(file)
 				except OSError:
-					logging.error("Cannot remove file: %s. Remove manually." % _file)
+					log.error("Cannot remove file: %s. Remove manually." % _file)
 
 			# Handle directories.
 			# Skip removal if the directory is a mountpoint.
@@ -517,10 +519,10 @@ class Package(object):
 
 			# Log all unhandled types.
 			else:
-				logging.warning("Cannot remove file: %s. Filetype is unhandled." % file)
+				log.warning("Cannot remove file: %s. Filetype is unhandled." % file)
 
 		if pb:
 			pb.finish()
 
 		for msg in messages:
-			logging.warning(msg)
+			log.warning(msg)

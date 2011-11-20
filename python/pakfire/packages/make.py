@@ -19,7 +19,6 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import re
 import shutil
@@ -31,6 +30,9 @@ from urlgrabber.progress import TextMeter
 
 import lexer
 import packager
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.chroot as chroot
 import pakfire.downloader as downloader
@@ -325,7 +327,7 @@ class Makefile(MakefileBase):
 				pb.update(i)
 
 			_f = f[dir_len:]
-			logging.debug("%s/%s" % (prefix, _f))
+			log.debug("%s/%s" % (prefix, _f))
 	
 			path = "%s/%s" % (prefix, _f)
 

@@ -19,9 +19,11 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import re
+
+import logging
+log = logging.getLogger("pakfire")
 
 from errors import ConfigError
 from repository import Repositories
@@ -52,13 +54,13 @@ class Distribution(object):
 		return self.pakfire.config
 
 	def dump(self):
-		logging.debug("Distribution configuration:")
+		log.debug("Distribution configuration:")
 
 		attrs = ("name", "version", "release", "sname", "dist", "vendor",
 			"arch", "machine", "source_dl",)
 
 		for attr in attrs:
-			logging.debug(" %s : %s" % (attr, getattr(self, attr)))
+			log.debug(" %s : %s" % (attr, getattr(self, attr)))
 
 	def update(self, config):
 		if not config:

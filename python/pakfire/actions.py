@@ -19,12 +19,14 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 
 import chroot
 import packages
 import util
+
+import logging
+log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
@@ -97,7 +99,7 @@ class Action(object):
 
 		args = {
 			"cwd"         : cwd,
-			"logger"      : logging.getLogger(),
+			"logger"      : log,
 			"personality" : self.pakfire.distro.personality,
 			"shell"       : False,
 			"timeout"     : SCRIPTLET_TIMEOUT,
@@ -139,7 +141,7 @@ class ActionScript(Action):
 			return
 
 		# Actually run the scriplet.
-		logging.debug("Running scriptlet %s" % self)
+		log.debug("Running scriptlet %s" % self)
 
 		# Check if the interpreter does exist and is executable.
 		if self.interpreter:
@@ -199,7 +201,7 @@ class ActionScript(Action):
 			try:
 				os.unlink(script_file)
 			except OSError:
-				logging.debug("Could not remove scriptlet file: %s" % script_file)
+				log.debug("Could not remove scriptlet file: %s" % script_file)
 
 
 class ActionScriptPreIn(ActionScript):
@@ -246,7 +248,7 @@ class ActionInstall(Action):
 	type = "install"
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be installed.
 		check.install(self.pkg)
@@ -277,14 +279,14 @@ class ActionInstall(Action):
 				self.do(LDCONFIG)
 
 			else:
-				logging.debug("ldconfig is not present or not executable.")
+				log.debug("ldconfig is not present or not executable.")
 
 
 class ActionUpdate(Action):
 	type = "upgrade"
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be updated.
 		check.update(self.pkg)
@@ -307,7 +309,7 @@ class ActionRemove(Action):
 		assert self.pkg
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be removed.
 		check.remove(self.pkg)
@@ -330,7 +332,7 @@ class ActionCleanup(Action):
 		assert self.pkg
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be removed.
 		check.cleanup(self.pkg)
@@ -347,7 +349,7 @@ class ActionReinstall(Action):
 	type = "reinstall"
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be reinstalled.
 		check.remove(self.pkg)
@@ -366,7 +368,7 @@ class ActionDowngrade(Action):
 	type = "downgrade"
 
 	def check(self, check):
-		logging.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
+		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
 		# Check if this package can be downgraded.
 		check.install(self.pkg)

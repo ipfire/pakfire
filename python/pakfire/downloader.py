@@ -20,9 +20,11 @@
 ###############################################################################
 
 import json
-import logging
 import os
 import random
+
+import logging
+log = logging.getLogger("pakfire")
 
 from config import Config
 
@@ -57,7 +59,7 @@ class PakfireGrabber(URLGrabber):
 			try:
 				bandwidth_throttle = int(bandwidth_throttle)
 			except ValueError:
-				logging.error("Configuration value for bandwidth_throttle is invalid.")
+				log.error("Configuration value for bandwidth_throttle is invalid.")
 				bandwidth_throttle = 0
 
 			kwargs.update({ "throttle" : bandwidth_throttle })
@@ -129,7 +131,7 @@ class SourceDownloader(object):
 				download_files.append(filename)
 
 		if download_files:
-			logging.info(_("Downloading source files:"))
+			log.info(_("Downloading source files:"))
 
 			# Create source download directory.
 			if not os.path.exists(SOURCE_CACHE_DIR):
@@ -141,7 +143,7 @@ class SourceDownloader(object):
 				except URLGrabError, e:
 					raise DownloadError, "%s %s" % (os.path.basename(filename), e)
 
-			logging.info("")
+			log.info("")
 
 		return existant_files + download_files
 
@@ -186,7 +188,7 @@ class MirrorList(object):
 		if self.pakfire.offline:
 			return
 
-		logging.debug("Updating mirrorlist for repository '%s' (force=%s)" % (self.repo.name, force))
+		log.debug("Updating mirrorlist for repository '%s' (force=%s)" % (self.repo.name, force))
 
 		cache_filename = "mirrors/mirrorlist"
 
@@ -208,7 +210,7 @@ class MirrorList(object):
 			try:
 				mirrordata = g.urlread(self.mirrorlist, limit=MIRRORLIST_MAXSIZE)
 			except URLGrabError, e:
-				logging.warning("Could not update the mirrorlist for repo '%s': %s" % (self.repo.name, e))
+				log.warning("Could not update the mirrorlist for repo '%s': %s" % (self.repo.name, e))
 				return
 
 			# XXX check for empty files or damaged output

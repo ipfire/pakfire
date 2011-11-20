@@ -20,12 +20,14 @@
 ###############################################################################
 
 import hashlib
-import logging
 import os
 import re
 import shutil
 import tarfile
 import tempfile
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.filelist
 import pakfire.util as util
@@ -60,7 +62,7 @@ class InnerTarFile(tarfile.TarFile):
 			# Save capabilities.
 			caps = util.get_capabilities(name)
 			if caps:
-				logging.debug("Saving capabilities for %s: %s" % (name, caps))
+				log.debug("Saving capabilities for %s: %s" % (name, caps))
 				tarinfo.pax_headers["PAKFIRE.capabilities"] = caps
 
 	        # Append the tar header and data to the archive.
@@ -92,7 +94,7 @@ class InnerTarFile(tarfile.TarFile):
 		try:
 			tarfile.TarFile.extract(self, member, path)
 		except OSError, e:
-			logging.warning(_("Could not extract file: /%(src)s - %(dst)s") \
+			log.warning(_("Could not extract file: /%(src)s - %(dst)s") \
 				% { "src" : member.name, "dst" : e, })
 
 		if path:
@@ -103,7 +105,7 @@ class InnerTarFile(tarfile.TarFile):
 		# ...and then apply the capabilities.
 		caps = member.pax_headers.get("PAKFIRE.capabilities", None)
 		if caps:
-			logging.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
+			log.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
 			util.set_capabilities(target, caps)
 
 
@@ -184,7 +186,7 @@ class FilePackage(Package):
 		return tarfile.open(self.filename, format=tarfile.PAX_FORMAT)
 
 	def extract(self, message=None, prefix=None):
-		logging.debug("Extracting package %s" % self.friendly_name)
+		log.debug("Extracting package %s" % self.friendly_name)
 
 		if prefix is None:
 			prefix = ""
@@ -199,7 +201,7 @@ class FilePackage(Package):
 		payload = archive.extractfile("data.img")
 
 		# Decompress the payload if needed.
-		logging.debug("Compression: %s" % self.payload_compression)
+		log.debug("Compression: %s" % self.payload_compression)
 
 		# Create a temporary file to store the decompressed output.
 		garbage, tempf = tempfile.mkstemp(prefix="pakfire")
@@ -251,7 +253,7 @@ class FilePackage(Package):
 		for member in members:
 			file = name2file.get("/%s" % member.name, None)
 			if not file:
-				logging.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
+				log.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
 				continue
 
 			# Update progress.
@@ -332,7 +334,7 @@ class FilePackage(Package):
 			#		msg += "/%s link to /%s" % (member.name, member.linkname)
 			#	else:
 			#		msg += "/%s" % member.name
-			#	logging.debug(msg)
+			#	log.debug(msg)
 
 			payload_archive.extract(member, path=prefix)
 
@@ -349,7 +351,7 @@ class FilePackage(Package):
 
 		# Print messages.
 		for msg in messages:
-			logging.warning(msg)
+			log.warning(msg)
 
 	@property
 	def metadata(self):

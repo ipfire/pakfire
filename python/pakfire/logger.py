@@ -19,18 +19,20 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import time
+
+import logging
+log = logging.getLogger("pakfire")
 
 def setup_logging(config=None):
 	"""
 		This function initialized the logger that is enabled immediately.
 	"""
-
-	l = logging.getLogger()
+	l = logging.getLogger("pakfire")
+	l.propagate = 0
 
 	if len(l.handlers) > 1:
-		logging.debug("Logging was already set up. Don't do this again.")
+		l.debug("Logging was already set up. Don't do this again.")
 		return
 
 	# Remove all previous defined handlers.

@@ -19,7 +19,6 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import progressbar
 import sys
@@ -30,6 +29,9 @@ import packages
 import satsolver
 import system
 import util
+
+import logging
+log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
@@ -85,13 +87,13 @@ class TransactionCheck(object):
 			pkgs = [f.pkg.friendly_name for f in files]
 
 			if len(files) == 2:
-				logging.critical(
+				log.critical(
 					_("file %s from %s conflicts with file from package %s") % \
 						(name, pkgs[0], pkgs[1])
 				)
 
 			elif len(files) >= 3:
-				logging.critical(
+				log.critical(
 					_("file %s from %s conflicts with files from %s") % \
 						(name, pkgs[0], i18n.list(pkgs[1:]))
 				)
@@ -101,7 +103,7 @@ class TransactionCheck(object):
 				continue
 
 			print util.format_size(mp.free), util.format_size(mp.disk_usage)
-			logging.critical(_("There is not enough space left on %(name)s. Need at least %(size)s to perform transaction.") \
+			log.critical(_("There is not enough space left on %(name)s. Need at least %(size)s to perform transaction.") \
 				% { "name" : mp.path, "size" : util.format_size(mp.space_needed) })
 
 	def load_filelist(self):
@@ -281,7 +283,7 @@ class Transaction(object):
 			raise DownloadError, _("Not enough space to download %s of packages.") \
 				% util.format_size(download_size)
 
-		logging.info(_("Downloading packages:"))
+		log.info(_("Downloading packages:"))
 		time_start = time.time()
 
 		i = 0
@@ -293,7 +295,7 @@ class Transaction(object):
 		width, height = util.terminal_size()
 
 		# Print a nice line.
-		logging.info("-" * width)
+		log.info("-" * width)
 
 		# Format and calculate download information.
 		time_stop = time.time()
@@ -306,8 +308,8 @@ class Transaction(object):
 		line = "%s | %5sB     %s     " % \
 			(download_speed, download_size, download_time)
 		line = " " * (width - len(line)) + line
-		logging.info(line)
-		logging.info("")
+		log.info(line)
+		log.info("")
 
 	def dump_pkg(self, pkg):
 		ret = []
@@ -332,10 +334,7 @@ class Transaction(object):
 		s.append("")
 		return s
 
-	def dump(self, logger=None):
-		if not logger:
-			logger = logging.getLogger()
-
+	def dump(self, logger=log):
 		width = 80
 		line = "=" * width
 
@@ -388,7 +387,7 @@ class Transaction(object):
 		return util.ask_user(_("Is this okay?"))
 
 	def check(self):
-		logging.info(_("Running Transaction Test"))
+		log.info(_("Running Transaction Test"))
 
 		# Initialize the check object.
 		check = TransactionCheck(self.pakfire, self)
@@ -400,7 +399,7 @@ class Transaction(object):
 				raise
 
 		if check.successful:
-			logging.info(_("Transaction Test Succeeded"))
+			log.info(_("Transaction Test Succeeded"))
 			return
 
 		# In case of an unsuccessful transaction test, we print the error
@@ -418,15 +417,15 @@ class Transaction(object):
 		# Run the transaction test
 		self.check()
 
-		logging.info(_("Running transaction"))
+		log.info(_("Running transaction"))
 		# Run all actions in order and catch all kinds of ActionError.
 		for action in self.actions:
 			try:
 				action.run()
 			except ActionError, e:
-				logging.error("Action finished with an error: %s - %s" % (action, e))
+				log.error("Action finished with an error: %s - %s" % (action, e))
 
-		logging.info("")
+		log.info("")
 
 		# Call sync to make sure all buffers are written to disk.
 		sync()

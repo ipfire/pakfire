@@ -19,8 +19,10 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
+
+import logging
+log = logging.getLogger("pakfire")
 
 import base
 import index
@@ -88,7 +90,7 @@ class RepositorySolv(base.RepositoryFactory):
 
 		# Check if file already exists in cache.
 		if self.cache.exists(cache_filename):
-			logging.debug("File exists in cache: %s" % filename)
+			log.debug("File exists in cache: %s" % filename)
 
 			# If the file does already exist, we check if the hash1 matches.
 			if hash1 and self.cache.verify(cache_filename, hash1):
@@ -99,7 +101,7 @@ class RepositorySolv(base.RepositoryFactory):
 				cache.remove(cache_filename)
 
 		if download:
-			logging.debug("Going to download %s" % filename)
+			log.debug("Going to download %s" % filename)
 
 			# If we are in offline mode, we cannot download any files.
 			if self.pakfire.offline and not self.url.startswith("file://"):

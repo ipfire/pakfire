@@ -19,9 +19,11 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import shutil
+
+import logging
+log = logging.getLogger("pakfire")
 
 import base
 import index
@@ -93,7 +95,7 @@ class RepositoryDir(base.RepositoryFactory):
 				del pkg_exists
 
 			if copy:
-				logging.debug("Copying package '%s' to repository." % pkg)
+				log.debug("Copying package '%s' to repository." % pkg)
 				repo_dirname = os.path.dirname(repo_filename)
 				if not os.path.exists(repo_dirname):
 					os.makedirs(repo_dirname)

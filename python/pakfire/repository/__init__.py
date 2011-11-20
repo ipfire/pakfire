@@ -20,6 +20,7 @@
 ###############################################################################
 
 import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.packages as packages
 
@@ -116,7 +117,7 @@ class Repositories(object):
 		try:
 			del self.__repos[repo.name]
 		except KeyError:
-			logging.debug("Repository that was to be removed does not exist: %s" % repo.name)
+			log.debug("Repository that was to be removed does not exist: %s" % repo.name)
 
 	def get_repo(self, name):
 		"""
@@ -141,7 +142,7 @@ class Repositories(object):
 			pass
 
 	def update(self, force=False, offline=False):
-		logging.debug("Updating all repository indexes (force=%s)" % force)
+		log.debug("Updating all repository indexes (force=%s)" % force)
 
 		# update all indexes if necessary or forced
 		for repo in self:
@@ -154,7 +155,7 @@ class Repositories(object):
 			yield packages.SolvPackage(self.pakfire, solv)
 
 	def clean(self):
-		logging.info("Cleaning up all repository caches...")
+		log.info("Cleaning up all repository caches...")
 
 		for repo in self:
 			repo.clean()

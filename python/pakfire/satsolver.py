@@ -20,6 +20,7 @@
 ###############################################################################
 
 import logging
+log = logging.getLogger("pakfire")
 
 import _pakfire
 from _pakfire import *
@@ -117,7 +118,7 @@ class Solver(object):
 
 		# If no logger was provided, we use the root logger.
 		if logger is None:
-			logger = logging.getLogger()
+			logger = log
 
 		# Create a new solver.
 		solver = _pakfire.Solver(self.pool)

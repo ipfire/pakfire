@@ -19,12 +19,14 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 import random
 import shutil
 import sqlite3
 import time
+
+import logging
+log = logging.getLogger("pakfire")
 
 import pakfire.packages as packages
 
@@ -59,7 +61,7 @@ class Database(object):
 
 	def open(self):
 		if self._db is None:
-			logging.debug("Open database %s" % self.filename)
+			log.debug("Open database %s" % self.filename)
 
 			dirname = os.path.dirname(self.filename)
 			if not os.path.exists(dirname):
@@ -219,7 +221,7 @@ class DatabaseLocal(Database):
 		if self.format > DATABASE_FORMAT:
 			raise DatabaseError, _("Cannot use database with version greater than %s.") % DATABASE_FORMAT
 
-		logging.info(_("Migrating database from format %s to %s.") % (self.format, DATABASE_FORMAT))
+		log.info(_("Migrating database from format %s to %s.") % (self.format, DATABASE_FORMAT))
 
 		# Get a database cursor.
 		c = self.cursor()
@@ -246,7 +248,7 @@ class DatabaseLocal(Database):
 		c.close()
 
 	def add_package(self, pkg, reason=None):
-		logging.debug("Adding package to database: %s" % pkg.friendly_name)
+		log.debug("Adding package to database: %s" % pkg.friendly_name)
 
 		c = self.cursor()
 
@@ -323,7 +325,7 @@ class DatabaseLocal(Database):
 		c.close()
 
 	def rem_package(self, pkg):
-		logging.debug("Removing package from database: %s" % pkg.friendly_name)
+		log.debug("Removing package from database: %s" % pkg.friendly_name)
 
 		assert pkg.uuid
 

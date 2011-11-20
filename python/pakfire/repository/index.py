@@ -19,8 +19,10 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
+
+import logging
+log = logging.getLogger("pakfire")
 
 import database
 import metadata
@@ -87,12 +89,12 @@ class Index(object):
 	def add_package(self, pkg):
 		# XXX Skip packages without a UUID
 		#if not pkg.uuid:
-		#	logging.warning("Skipping package which lacks UUID: %s" % pkg)
+		#	log.warning("Skipping package which lacks UUID: %s" % pkg)
 		#	return
 		if not pkg.build_time:
 			return
 
-		logging.debug("Adding package to index %s: %s" % (self, pkg))
+		log.debug("Adding package to index %s: %s" % (self, pkg))
 
 		solvable = satsolver.Solvable(self.solver_repo, pkg.name,
 			pkg.friendly_version, pkg.arch)
@@ -209,7 +211,7 @@ class IndexSolv(Index):
 				age = self.cache.age(filename)
 				if age and age < TIME_10M:
 					download = False
-					logging.debug("Metadata is recent enough. I don't download it again.")
+					log.debug("Metadata is recent enough. I don't download it again.")
 
 				# Open old metadata for comparison.
 				old_metadata = metadata.Metadata(self.pakfire, self,
@@ -233,7 +235,7 @@ class IndexSolv(Index):
 			# We are supposed to download new metadata, but we are running in
 			# offline mode. That's okay. Just doing nothing.
 			if not offline:
-				logging.debug("Going to (re-)download the repository metadata.")
+				log.debug("Going to (re-)download the repository metadata.")
 
 				# Initialize a grabber for download.
 				grabber = downloader.MetadataDownloader(self.pakfire)
@@ -245,7 +247,7 @@ class IndexSolv(Index):
 				new_metadata = metadata.Metadata(self.pakfire, self, metadata=data)
 
 				if old_metadata and new_metadata < old_metadata:
-					logging.warning("The downloaded metadata was less recent than the current one. Trashing that.")
+					log.warning("The downloaded metadata was less recent than the current one. Trashing that.")
 
 				else:
 					# We explicitely rewrite the metadata if it is equal to have
@@ -331,7 +333,7 @@ class IndexDir(Index):
 		return path
 
 	def update(self, force=False, offline=False):
-		logging.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
+		log.debug("Updating repository index '%s' (force=%s)" % (self.path, force))
 
 		# Do nothing if the update is not forced but populate the database
 		# if no packages are present.
@@ -342,7 +344,7 @@ class IndexDir(Index):
 		self.collect_packages(self.path)
 
 	def collect_packages(self, path):
-		logging.debug("Collecting all packages from %s" % path)
+		log.debug("Collecting all packages from %s" % path)
 		pkgs = []
 
 		# Get a filelist of all files that could possibly be packages.
@@ -380,7 +382,7 @@ class IndexDir(Index):
 					# Check for binary packages if the architecture matches.
 					if isinstance(package, packages.BinaryPackage) and \
 							not package.arch in (self.repo.arch, "noarch"):
-						logging.warning("Skipped package with wrong architecture: %s (%s)" \
+						log.warning("Skipped package with wrong architecture: %s (%s)" \
 							% (package.filename, package.arch))
 						continue
 
