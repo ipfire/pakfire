@@ -413,8 +413,10 @@ class IndexLocal(Index):
 	def init(self):
 		self.db = database.DatabaseLocal(self.pakfire, self.repo)
 
-		if os.path.exists(PACKAGES_SOLV):
-			self.read(PACKAGES_SOLV)
+		# Read SOLV cache file.
+		filename = os.path.join(self.pakfire.path, PACKAGES_SOLV)
+		if os.path.exists(filename):
+			self.read(filename)
 
 	def commit(self):
 		# Write SOLV cache file.
