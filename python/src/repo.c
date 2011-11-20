@@ -19,11 +19,13 @@
 #############################################################################*/
 
 #include <Python.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <solv/repo.h>
 #include <solv/repo_solv.h>
 #include <solv/repo_write.h>
 
+#include "config.h"
 #include "pool.h"
 #include "repo.h"
 #include "solvable.h"
@@ -127,6 +129,7 @@ PyObject *Repo_set_priority(RepoObject *self, PyObject *args) {
 
 PyObject *Repo_write(RepoObject *self, PyObject *args) {
 	const char *filename;
+	char exception[STRING_SIZE];
 
 	if (!PyArg_ParseTuple(args, "s", &filename)) {
 		/* XXX raise exception */
@@ -136,7 +139,13 @@ PyObject *Repo_write(RepoObject *self, PyObject *args) {
 	_Pool_prepare(self->_repo->pool);
 
 	// XXX catch if file cannot be opened
-	FILE *fp = fopen(filename, "wb");
+	FILE *fp = NULL;
+	if ((fp = fopen(filename, "wb")) == NULL) {
+		snprintf(exception, STRING_SIZE - 1, "Could not open file for writing: %s (%s).",
+			filename, strerror(errno));
+		PyErr_SetString(PyExc_RuntimeError, exception);
+		return NULL;
+	}
 
 	repo_write(self->_repo, fp, NULL, NULL, 0);
 
