@@ -21,7 +21,7 @@ sources = %{thisapp}.tar.gz
 
 # Macro to extract tarballs.
 # Guesses the compression type automatically.
-MACRO_EXTRACT = tar xaf
+MACRO_EXTRACT = tar xvaf
 
 MACRO_PATCHES
 	patches="%{patches}"
