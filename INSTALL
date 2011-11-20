@@ -5,8 +5,8 @@ Requirements:
  * Python 2.6 or greater (not Python 3.x)
  * pyliblzma
  * python-progressbar
- * python-xattr
  * python-argsparse (included in Python 2.7)
+ * libcap
  * libsolv
 
 

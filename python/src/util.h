@@ -25,6 +25,8 @@
 
 #include <solv/evr.h>
 
+extern PyObject *_personality(PyObject *self, PyObject *args);
+extern PyObject *_sync(PyObject *self, PyObject *args);
 extern PyObject *version_compare(PyObject *self, PyObject *args);
 
 #endif

@@ -5,7 +5,7 @@ include ../../Makeconfig
 MODULENAME = _pakfire.so
 
 # Libs that are to be linked into the module.
-MODULELIBS = -lpython$(PYTHON_VERSION) -lsolv -lsolvext
+MODULELIBS = -lcap -lpython$(PYTHON_VERSION) -lsolv -lsolvext
 
 SOURCES = $(wildcard *.c)
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
@@ -16,7 +16,7 @@ all: $(MODULENAME)
 $(MODULENAME): $(OBJECTS)
 	$(PYTHON_CC) $(PYTHON_CFLAGS) -shared $^ $(MODULELIBS) -o $@
 
-%.o: %.c Makefile
+%.o: %.c Makefile config.h
 	$(PYTHON_CC) $(PYTHON_CFLAGS) -o $@ -c $<
 
 .PHONY: clean

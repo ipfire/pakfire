@@ -45,13 +45,13 @@ LEXER_DEFINE_END      = LEXER_BLOCK_END
 LEXER_PACKAGE_BEGIN   = re.compile(r"^package ([A-Za-z0-9_\-\+\%\{\}]+)$")
 LEXER_PACKAGE_LINE    = LEXER_BLOCK_LINE
 LEXER_PACKAGE_END     = LEXER_BLOCK_END
-LEXER_PACKAGE_INHERIT = re.compile(r"^template ([A-Z]+)$")
+LEXER_PACKAGE_INHERIT = re.compile(r"^template ([A-Z0-9]+)$")
 
 LEXER_SCRIPTLET_BEGIN = re.compile(r"^script ([a-z]+)\s?(/[A-Za-z0-9\-\_/]+)?$")
 LEXER_SCRIPTLET_LINE  = LEXER_BLOCK_LINE
 LEXER_SCRIPTLET_END   = LEXER_BLOCK_END
 
-LEXER_TEMPLATE_BEGIN  = re.compile(r"^template ([A-Z]+)$")
+LEXER_TEMPLATE_BEGIN  = re.compile(r"^template ([A-Z0-9]+)$")
 LEXER_TEMPLATE_LINE   = LEXER_BLOCK_LINE
 LEXER_TEMPLATE_END    = LEXER_BLOCK_END
 
@@ -456,6 +456,12 @@ class Lexer(object):
 				lines.append("%s" % m.groups())
 				continue
 
+			m = re.match(LEXER_EMPTY_LINE, line)
+			if m:
+				self._lineno += 1
+				lines.append("")
+				continue
+
 			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
 
 		if not block_closed:
@@ -647,6 +653,9 @@ class TemplateLexer(DefaultLexer):
 			"scriptlet" : "\n".join(lines),
 		}
 
+	def get_scriptlet(self, name):
+		return self.scriptlets.get(name, None)
+
 
 class PackageLexer(TemplateLexer):
 	def init(self, environ):
@@ -673,9 +682,14 @@ class PackageLexer(TemplateLexer):
 		if not self._template:
 			return None
 
+		# Collect all templates.
+		templates = self.root.templates
+		if hasattr(self.parent, "templates"):
+			templates.update(self.parent.templates)
+
 		# Get template from parent.
 		try:
-			return self.root.templates[self._template]
+			return templates[self._template]
 		except KeyError:
 			raise LexerError, "Template does not exist: %s" % self._template
 
@@ -699,6 +713,18 @@ class PackageLexer(TemplateLexer):
 
 		# Check if template exists.
 		assert self.template
+
+	def get_scriptlet(self, name):
+		scriptlet = self.scriptlets.get(name, None)
+
+		if scriptlet is None and self.template:
+			scriptlet = self.template.get_scriptlet(name)
+
+		if scriptlet and scriptlet["lang"] == "shell":
+			scriptlet["scriptlet"] = \
+				self.expand_string(scriptlet["scriptlet"])
+
+		return scriptlet
 
 
 class ExportLexer(DefaultLexer):

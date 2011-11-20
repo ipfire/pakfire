@@ -19,6 +19,18 @@
 #                                                                             #
 ###############################################################################
 
+import tarfile
+
+TYPE_REG  = tarfile.REGTYPE	# regular file
+TYPE_AREG = tarfile.AREGTYPE	# regular file
+TYPE_LNK  = tarfile.LNKTYPE	# link (inside tarfile)
+TYPE_SYM  = tarfile.SYMTYPE	# symbolic link
+TYPE_CHR  = tarfile.CHRTYPE	# character special device
+TYPE_BLK  = tarfile.BLKTYPE	# block special device
+TYPE_DIR  = tarfile.DIRTYPE	# directory
+TYPE_FIFO = tarfile.FIFOTYPE	# fifo special device
+TYPE_CONT = tarfile.CONTTYPE	# contiguous file
+
 class _File(object):
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
@@ -46,9 +58,19 @@ class File(_File):
 		_File.__init__(self, pakfire)
 
 		self.name = ""
+		self.config = False
 		self.pkg  = None
 		self.size = -1
-		self.hash1 = ""
+		self.hash1 = None
+		self.type = TYPE_REG
+		self.mode = 0
+		self.user = 0
+		self.group = 0
+		self.mtime = 0
+		self.capabilities = None
+
+	def is_config(self):
+		return self.config
 
 
 class FileDatabase(_File):
@@ -80,6 +102,9 @@ class FileDatabase(_File):
 
 		return self.__row
 
+	def is_config(self):
+		return self.row["config"] == 1
+
 	@property
 	def pkg(self):
 		return self.db.get_package_by_id(self.row["pkg"])
@@ -95,3 +120,27 @@ class FileDatabase(_File):
 	@property
 	def hash1(self):
 		return self.row["hash1"]
+
+	@property
+	def type(self):
+		return self.row["type"]
+
+	@property
+	def mode(self):
+		return self.row["mode"]
+
+	@property
+	def user(self):
+		return self.row["user"]
+
+	@property
+	def group(self):
+		return self.row["group"]
+
+	@property
+	def mtime(self):
+		return self.row["mtime"]
+
+	@property
+	def capabilities(self):
+		return self.row["capabilities"]

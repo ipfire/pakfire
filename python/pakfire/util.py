@@ -39,8 +39,8 @@ import time
 from constants import *
 from i18n import _
 
-# Import binary version of version_compare
-from _pakfire import version_compare
+# Import binary version of version_compare and capability functions
+from _pakfire import version_compare, get_capabilities, set_capabilities, personality
 
 def cli_is_interactive():
 	"""
@@ -270,6 +270,9 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 	if killed:
 		logging.warning(_("Waiting for processes to terminate..."))
 		time.sleep(3)
+
+		# Calling ourself again to make sure all processes were killed.
+		orphans_kill(root, killsig=killsig)
 
 def scriptlet_interpreter(scriptlet):
 	"""

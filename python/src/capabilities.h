@@ -1,5 +1,4 @@
-#!/usr/bin/python
-###############################################################################
+/*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
 # Copyright (C) 2011 Pakfire development team                                 #
@@ -17,69 +16,14 @@
 # You should have received a copy of the GNU General Public License           #
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
 #                                                                             #
-###############################################################################
+#############################################################################*/
 
-from i18n import _
+#ifndef PAKFIRE_CAPS_H
+#define PAKFIRE_CAPS_H
 
-class commandTimeoutExpired(Exception):
-	pass # XXX cannot be as is
+#include <Python.h>
 
-class Error(Exception):
-	exit_code = 1
+extern PyObject *get_capabilities(PyObject *self, PyObject *args);
+extern PyObject *set_capabilities(PyObject *self, PyObject *args);
 
-	message = _("An unhandled error occured.")
-
-
-class ActionError(Error):
-	pass
-
-class BuildAbortedException(Error):
-	pass
-
-class BuildError(Error):
-	pass
-
-class BuildRootLocked(Error):
-	pass
-
-class ConfigError(Error):
-	pass
-
-class DatabaseError(Error):
-	pass
-
-class DependencyError(Error):
-	exit_code = 4
-
-	message = _("One or more dependencies could not been resolved.")
-
-class DownloadError(Error):
-	pass
-
-class FileError(Error):
-	pass
-
-class FileNotFoundError(Error):
-	pass
-
-class NotAnIPFireSystemError(Error):
-	pass
-
-class OfflineModeError(Error):
-	message = _("The requested action cannot be done on offline mode.\n"
-		"Please connect your system to the network, remove --offline from the"
-		" command line and try again.")
-
-class PackageFormatUnsupportedError(Error):
-	pass
-
-class PakfireError(Error):
-	pass
-
-
-class PakfireContainerError(Error):
-	message = _("Running pakfire-build in a pakfire container?")
-
-
-class TransactionCheckError(Error):
-	message = _("Transaction test was not successful")
+#endif

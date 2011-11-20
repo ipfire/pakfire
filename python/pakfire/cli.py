@@ -54,11 +54,13 @@ class Cli(object):
 
 		self.parse_command_install()
 		self.parse_command_localinstall()
+		self.parse_command_reinstall()
 		self.parse_command_remove()
 		self.parse_command_info()
 		self.parse_command_search()
 		self.parse_command_check_update()
 		self.parse_command_update()
+		self.parse_command_downgrade()
 		self.parse_command_provides()
 		self.parse_command_grouplist()
 		self.parse_command_groupinstall()
@@ -73,9 +75,11 @@ class Cli(object):
 		self.action2func = {
 			"install"      : self.handle_install,
 			"localinstall" : self.handle_localinstall,
+			"reinstall"    : self.handle_reinstall,
 			"remove"       : self.handle_remove,
 			"check_update" : self.handle_check_update,
 			"update"       : self.handle_update,
+			"downgrade"    : self.handle_downgrade,
 			"info"         : self.handle_info,
 			"search"       : self.handle_search,
 			"provides"     : self.handle_provides,
@@ -140,6 +144,14 @@ class Cli(object):
 			help=_("Give filename of at least one package."))
 		sub_install.add_argument("action", action="store_const", const="localinstall")
 
+	def parse_command_reinstall(self):
+		# Implement the "reinstall" command.
+		sub_install = self.sub_commands.add_parser("reinstall",
+			help=_("Reinstall one or more packages."))
+		sub_install.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to reinstall."))
+		sub_install.add_argument("action", action="store_const", const="reinstall")
+
 	def parse_command_remove(self):
 		# Implement the "remove" command.
 		sub_remove = self.sub_commands.add_parser("remove",
@@ -148,21 +160,42 @@ class Cli(object):
 			help=_("Give name of at least one package to remove."))
 		sub_remove.add_argument("action", action="store_const", const="remove")
 
+	@staticmethod
+	def _parse_command_update(parser):
+		parser.add_argument("package", nargs="*",
+			help=_("Give a name of a package to update or leave emtpy for all."))
+		parser.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update."))
+		parser.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages."))
+		parser.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages."))
+
 	def parse_command_update(self):
 		# Implement the "update" command.
 		sub_update = self.sub_commands.add_parser("update",
 			help=_("Update the whole system or one specific package."))
-		sub_update.add_argument("package", nargs="*",
-			help=_("Give a name of a package to update or leave emtpy for all."))
 		sub_update.add_argument("action", action="store_const", const="update")
+		self._parse_command_update(sub_update)
 
 	def parse_command_check_update(self):
 		# Implement the "check-update" command.
 		sub_check_update = self.sub_commands.add_parser("check-update",
 			help=_("Check, if there are any updates available."))
-		sub_check_update.add_argument("package", nargs="*",
-			help=_("Give a name of a package to update or leave emtpy for all."))
 		sub_check_update.add_argument("action", action="store_const", const="check_update")
+		self._parse_command_update(sub_check_update)
+
+	def parse_command_downgrade(self):
+		# Implement the "downgrade" command.
+		sub_downgrade = self.sub_commands.add_parser("downgrade",
+			help=_("Downgrade one or more packages."))
+		sub_downgrade.add_argument("package", nargs="*",
+			help=_("Give a name of a package to downgrade."))
+		sub_downgrade.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages."))
+		sub_downgrade.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages."))
+		sub_downgrade.add_argument("action", action="store_const", const="downgrade")
 
 	def parse_command_info(self):
 		# Implement the "info" command.
@@ -261,17 +294,33 @@ class Cli(object):
 		for pkg in pkgs:
 			print pkg.dump(short=True)
 
-	def handle_update(self):
-		pakfire.update(self.args.package, **self.pakfire_args)
+	def handle_update(self, **args):
+		args.update(self.pakfire_args)
+
+		pakfire.update(self.args.package, excludes=self.args.exclude,
+			allow_vendorchange=self.args.allow_vendorchange,
+			allow_archchange=self.args.allow_archchange,
+			**args)
 
 	def handle_check_update(self):
-		pakfire.update(self.args.package, check=True, **self.pakfire_args)
+		self.handle_update(check=True)
+
+	def handle_downgrade(self, **args):
+		args.update(self.pakfire_args)
+
+		pakfire.downgrade(self.args.package,
+			allow_vendorchange=self.args.allow_vendorchange,
+			allow_archchange=self.args.allow_archchange,
+			**args)
 
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)
 
 	def handle_localinstall(self):
 		pakfire.localinstall(self.args.package, **self.pakfire_args)
+
+	def handle_reinstall(self):
+		pakfire.reinstall(self.args.package, **self.pakfire_args)
 
 	def handle_remove(self):
 		pakfire.remove(self.args.package, **self.pakfire_args)
@@ -399,6 +448,8 @@ class CliBuilder(Cli):
 			help=_("Path were the output files should be copied to."))
 		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
+		sub_build.add_argument("--after-shell", action="store_true",
+			help=_("Run a shell after a successful build."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -445,7 +496,7 @@ class CliBuilder(Cli):
 
 		pakfire.build(pkg, builder_mode=self.args.mode,
 			distro_config=distro_config, resultdirs=[self.args.resultdir,],
-			shell=True, **self.pakfire_args)
+			shell=True, after_shell=self.args.after_shell, **self.pakfire_args)
 
 	def handle_shell(self):
 		pkg = None

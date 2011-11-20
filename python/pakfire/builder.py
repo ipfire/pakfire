@@ -665,14 +665,14 @@ class Builder(object):
 
 	def create_icecream_toolchain(self):
 		try:
-			out = self.do("icecc --build-native 2>/dev/null", returnOutput=True)
+			out = self.do("icecc --build-native 2>/dev/null", returnOutput=True, cwd="/tmp")
 		except Error:
 			return
 
 		for line in out.splitlines():
 			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
 			if m:
-				self._environ["icecream_toolchain"] = "/%s" % m.group(1)
+				self._environ["ICECC_VERSION"] = "/tmp/%s" % m.group(1)
 
 	def create_buildscript(self, stage):
 		file = "/tmp/build_%s" % util.random_string()

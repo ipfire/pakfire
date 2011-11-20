@@ -49,7 +49,7 @@ class SolvPackage(base.Package):
 	@property
 	def evr(self):
 		if self.__evr is None:
-			m = re.match("^([0-9]+\:)?([0-9A-Za-z\.\-_]+)-([0-9]+\.?[a-z0-9]+|[0-9]+)$",
+			m = re.match("^([0-9]+\:)?([0-9A-Za-z\.\-_]+)-([0-9]+\.?[a-z0-9\.\-\_]+|[0-9]+)$",
 				self.solvable.get_evr())
 
 			if m:
@@ -122,6 +122,15 @@ class SolvPackage(base.Package):
 		return self.solvable.get_downloadsize()
 
 	@property
+	def vendor(self):
+		vendor = self.solvable.get_vendor()
+
+		if vendor == "<NULL>":
+			return None
+
+		return vendor
+
+	@property
 	def uuid(self):
 		return self.solvable.get_uuid()
 
@@ -148,7 +157,7 @@ class SolvPackage(base.Package):
 		try:
 			i = requires.index("solvable:prereqmarker")
 
-			return (requires[:i], requires[i:],)
+			return (requires[i+1:], requires[:i],)
 		except ValueError:
 			return ([], requires,)
 

@@ -57,11 +57,14 @@ METADATA_DOWNLOAD_PATH  = "repodata"
 METADATA_DOWNLOAD_FILE  = "repomd.json"
 METADATA_DATABASE_FILE  = "packages.solv"
 
-PACKAGE_FORMAT = 2
+PACKAGE_FORMAT = 3
 # XXX implement this properly
-PACKAGE_FORMATS_SUPPORTED = [0, 1, 2]
+PACKAGE_FORMATS_SUPPORTED = [0, 1, 2, 3]
 PACKAGE_EXTENSION = "pfm"
 MAKEFILE_EXTENSION = "nm"
+
+DATABASE_FORMAT = 3
+DATABASE_FORMATS_SUPPORTED = [0, 1, 2, 3]
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
@@ -187,3 +190,6 @@ SCRIPTS = (
 )
 
 LDCONFIG = "/sbin/ldconfig"
+
+CONFIG_FILE_SUFFIX_NEW  = ".paknew"
+CONFIG_FILE_SUFFIX_SAVE = ".paksave"

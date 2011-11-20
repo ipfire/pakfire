@@ -19,12 +19,13 @@
 #                                                                             #
 ###############################################################################
 
+import hashlib
 import logging
 import os
 import re
+import shutil
 import tarfile
 import tempfile
-import xattr
 
 import pakfire.filelist
 import pakfire.util as util
@@ -41,8 +42,6 @@ PAYLOAD_COMPRESSION_MAGIC = {
 }
 
 class InnerTarFile(tarfile.TarFile):
-	SUPPORTED_XATTRS = ("security.capability",)
-
 	def __init__(self, *args, **kwargs):
 		# Force the PAX format.
 		kwargs["format"] = tarfile.PAX_FORMAT
@@ -51,31 +50,18 @@ class InnerTarFile(tarfile.TarFile):
 
 	def add(self, name, arcname=None, recursive=None, exclude=None, filter=None):
 		"""
-			Emulate the add function with xattrs support.
+			Emulate the add function with capability support.
 		"""
 		tarinfo = self.gettarinfo(name, arcname)
 
 		if tarinfo.isreg():
 			attrs = []
 
-			# Use new modules code...
-			if hasattr(xattr, "get_all"):
-				attrs = xattr.get_all(name)
-
-			# ...or use the deprecated API.
-			else:
-				for attr in xattr.listxattr(name):
-					val = xattr.getxattr(name, attr)
-					attrs.append((attr, val))
-
-			for attr, val in attrs:
-				# Skip all attrs that are not supported (e.g. selinux).
-				if not attr in self.SUPPORTED_XATTRS:
-					continue
-
-				logging.debug("Saving xattr %s=%s from %s" % (attr, val, name))
-
-				tarinfo.pax_headers[attr] = val
+			# Save capabilities.
+			caps = util.get_capabilities(name)
+			if caps:
+				logging.debug("Saving capabilities for %s: %s" % (name, caps))
+				tarinfo.pax_headers["PAKFIRE.capabilities"] = caps
 
 	        # Append the tar header and data to the archive.
 			f = tarfile.bltn_open(name, "rb")
@@ -109,19 +95,16 @@ class InnerTarFile(tarfile.TarFile):
 			logging.warning(_("Could not extract file: /%(src)s - %(dst)s") \
 				% { "src" : member.name, "dst" : e, })
 
-		# ...and then apply the extended attributes.
-		if member.pax_headers:
-			for attr, val in member.pax_headers.items():
-				# Skip all attrs that are not supported (e.g. selinux).
-				if not attr in self.SUPPORTED_XATTRS:
-					continue
+		if path:
+			target = os.path.join(path, member.name)
+		else:
+			target = "/%s" % member.name
 
-				logging.debug("Restoring xattr %s=%s to %s" % (attr, val, target))
-				if hasattr(xattr, "set"):
-					xattr.set(target, attr, val)
-
-				else:
-					xattr.setxattr(target, attr, val)
+		# ...and then apply the capabilities.
+		caps = member.pax_headers.get("PAKFIRE.capabilities", None)
+		if caps:
+			logging.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
+			util.set_capabilities(target, caps)
 
 
 class FilePackage(Package):
@@ -169,7 +152,7 @@ class FilePackage(Package):
 		if not tarfile.is_tarfile(self.filename):
 			raise FileError, "Given file is not of correct format: %s" % self.filename
 
-		assert self.format in PACKAGE_FORMATS_SUPPORTED
+		assert self.format in PACKAGE_FORMATS_SUPPORTED, self.format
 
 	def get_format(self):
 		a = self.open_archive()
@@ -242,16 +225,35 @@ class FilePackage(Package):
 		# Open the tarball in the package.
 		payload_archive = InnerTarFile.open(fileobj=payload)
 
-		members = payload_archive.getmembers()
-
 		# Load progressbar.
 		pb = None
 		if message:
 			message = "%-10s : %s" % (message, self.friendly_name)
-			pb = util.make_progress(message, len(members), eta=False)
+			pb = util.make_progress(message, len(self.filelist), eta=False)
+
+		# Collect messages with errors and warnings, that are passed to
+		# the user.
+		messages = []
+
+		# Get a list of files in the archive.
+		members = payload_archive.getmembers()
+
+		name2file = {}
+		for file in self.filelist:
+			name = file.name
+
+			if file.is_dir():
+				name = name[:-1]
+
+			name2file[name] = file
 
 		i = 0
 		for member in members:
+			file = name2file.get("/%s" % member.name, None)
+			if not file:
+				logging.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
+				continue
+
 			# Update progress.
 			if pb:
 				i += 1
@@ -259,16 +261,67 @@ class FilePackage(Package):
 
 			target = os.path.join(prefix, member.name)
 
+			# Check if a configuration file is already present. We don't want to
+			# overwrite that.
+			if file.is_config():
+				config_save = "%s%s" % (target, CONFIG_FILE_SUFFIX_SAVE)
+				config_new  = "%s%s" % (target, CONFIG_FILE_SUFFIX_NEW)
+
+				if os.path.exists(config_save) and not os.path.exists(target):
+					# Extract new configuration file, save it as CONFIG_FILE_SUFFIX_NEW,
+					# and reuse _SAVE.
+					payload_archive.extract(member, path=prefix)
+
+					shutil.move(target, config_new)
+					shutil.move(config_save, target)
+					continue
+
+				elif os.path.exists(target):
+					# If the files are identical, we skip the extraction of a
+					# new configuration file. We also do that when the new configuration file
+					# is a dummy file.
+					if file.size == 0:
+						continue
+
+					# Calc hash of the current configuration file.
+					config_hash1 = hashlib.sha512()
+					f = open(target)
+					while True:
+						buf = f.read(BUFFER_SIZE)
+						if not buf:
+							break
+						config_hash1.update(buf)
+					f.close()
+
+					if file.hash1 == config_hash1.hexdigest():
+						continue
+
+					# Backup old configuration file and extract new one.
+					shutil.move(target, config_save)
+					payload_archive.extract(member, path=prefix)
+
+					# Save new configuration file as CONFIG_FILE_SUFFIX_NEW and
+					# restore old configuration file.
+					shutil.move(target, config_new)
+					shutil.move(config_save, target)
+
+					if prefix:
+						config_new = os.path.relpath(config_new, prefix)
+					messages.append(_("Config file created as %s") % config_new)
+					continue
+
 			# If the member is a directory and if it already exists, we
 			# don't need to create it again.
-
 			if os.path.exists(target):
 				if member.isdir():
 					continue
 
 				else:
 					# Remove file if it has been existant
-					os.unlink(target)
+					try:
+						os.unlink(target)
+					except OSError:
+						messages.append(_("Could not remove file: /%s") % member.name)
 
 			#if self.pakfire.config.get("debug"):
 			#	msg = "Creating file (%s:%03d:%03d) " % \
@@ -293,6 +346,10 @@ class FilePackage(Package):
 
 		if pb:
 			pb.finish()
+
+		# Print messages.
+		for msg in messages:
+			logging.warning(msg)
 
 	@property
 	def metadata(self):
@@ -346,32 +403,85 @@ class FilePackage(Package):
 		ret = []
 
 		a = self.open_archive()
-		f = a.extractfile("filelist")
 
+		# Cache configfiles.
+		configfiles = []
+
+		try:
+			f = a.extractfile("configs")
+			for line in f.readlines():
+				line = line.rstrip()
+				if not line.startswith("/"):
+					line = "/%s" % line
+				configfiles.append(line)
+			f.close()
+		except KeyError:
+			pass # Package has no configuration files. Never mind.
+
+		f = a.extractfile("filelist")
 		for line in f.readlines():
 			line = line.strip()
 
 			file = pakfire.filelist.File(self.pakfire)
 
 			if self.format >= 1:
+				line = line.rstrip()
 				line = line.split()
+
+				# Check if fields do have the correct length.
+				if self.format >= 3 and len(line) <= 7:
+					continue
+				elif len(line) <= 6:
+					continue
+
 				name = line[0]
+
+				if not name.startswith("/"):
+					name = "/%s" % name
+
+				# Check if configfiles.
+				if name in configfiles:
+					file.config = True
+
+				# Parse file type.
+				try:
+					file.type = int(line[1])
+				except ValueError:
+					file.type = 0
 
 				# Parse the size information.
 				try:
 					file.size = int(line[2])
 				except ValueError:
-					print "PARSE ERROR", line[2]
 					file.size = 0
 
-				# XXX need to parse the rest of the information from the
-				# file
+				# Parse user and group.
+				file.user, file.group = line[3], line[4]
+
+				# Parse mode.
+				try:
+					file.mode = int(line[5])
+				except ValueError:
+					file.mode = 0
+
+				# Parse time.
+				try:
+					file.mtime = line[6]
+				except ValueError:
+					file.mtime = 0
+
+				# Parse hash1 (sha512).
+				if not line[7] == "-":
+					file.hash1 = line[7]
+
+				if self.format >= 3 and not line[8] == "-":
+					file.capabilities = line[8]
 
 			else:
 				name = line
 
-			if not name.startswith("/"):
-				name = "/%s" % name
+				if not name.startswith("/"):
+					name = "/%s" % name
 
 			file.name = name
 			file.pkg  = self
@@ -392,15 +502,7 @@ class FilePackage(Package):
 
 	@property
 	def configfiles(self):
-		a = self.open_archive()
-
-		f = a.extractfile("configs")
-		for line in f.readlines():
-			if not line.startswith("/"):
-				line = "/%s" % line
-			yield line
-
-		a.close()
+		return [f for f in self.filelist if f.is_config()]
 
 	@property
 	def payload_compression(self):

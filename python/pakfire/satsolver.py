@@ -112,7 +112,9 @@ class Solver(object):
 		self.pool = pool
 
 	def solve(self, request, update=False, uninstall=False, allow_downgrade=False,
-			fix_system=False, interactive=False, logger=None):
+			allow_vendorchange=False, allow_archchange=False, fix_system=False,
+			interactive=False, logger=None):
+
 		# If no logger was provided, we use the root logger.
 		if logger is None:
 			logger = logging.getLogger()
@@ -123,6 +125,13 @@ class Solver(object):
 		solver.set_fix_system(fix_system)
 		solver.set_allow_uninstall(uninstall)
 		solver.set_allow_downgrade(allow_downgrade)
+
+		# Optionally allow packages to change their vendors.
+		# This is not recommended because it may have weird effects.
+		solver.set_allow_vendorchange(allow_vendorchange)
+
+		# Optionally allow packages ot change their architecture.
+		solver.set_allow_archchange(allow_archchange)
 
 		# Configure the solver for an update.
 		if update:
