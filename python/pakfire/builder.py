@@ -552,7 +552,7 @@ class BuildEnviron(object):
 		pkgfile = os.path.join(self.build_dir, "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION))
 		if not os.path.exists(pkgfile):
 			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
-		pkgfile = os.path.relpath(pkgfile, self.chrootPath())
+		pkgfile = "/%s" % os.path.relpath(pkgfile, self.chrootPath())
 
 		resultdir = self.chrootPath("/result")
 
