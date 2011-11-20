@@ -19,10 +19,12 @@
 #                                                                             #
 ###############################################################################
 
-import logging
 import os
 
 from ConfigParser import ConfigParser
+
+import logging
+log = logging.getLogger("pakfire")
 
 import base
 
@@ -50,13 +52,13 @@ class Config(object):
 			self.read(file)
 
 	def dump(self):
-		logging.debug("Configuration:")
+		log.debug("Configuration:")
 		for k, v in self._config.items():
-			logging.debug(" %s : %s" % (k, v))
+			log.debug(" %s : %s" % (k, v))
 
-		logging.debug("Loaded from files:")
+		log.debug("Loaded from files:")
 		for f in self._files:
-			logging.debug(" %s" % f)
+			log.debug(" %s" % f)
 
 	def read(self, filename):
 		# If filename does not exist we return silently
@@ -69,7 +71,7 @@ class Config(object):
 		if filename in self._files:
 			return
 
-		logging.debug("Reading configuration file: %s" % filename)
+		log.debug("Reading configuration file: %s" % filename)
 
 		config = ConfigParser()
 		config.read(filename)
@@ -115,7 +117,7 @@ class Config(object):
 		return self._config.get(key, default)
 
 	def set(self, key, val):
-		logging.debug("Updating configuration parameter: %s = %s" % (key, val))
+		log.debug("Updating configuration parameter: %s = %s" % (key, val))
 		self._config[key] = val
 
 	def update(self, values):

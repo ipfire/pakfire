@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-import logging
 import os
 import sys
+
+import logging
+log = logging.getLogger("pakfire")
 
 try:
 	from pakfire.cli import *
@@ -56,22 +58,22 @@ try:
 	cli.run()
 
 except KeyboardInterrupt:
-	logging.critical("Recieved keyboard interupt (Ctrl-C). Exiting.")
+	log.critical("Recieved keyboard interupt (Ctrl-C). Exiting.")
 	ret = 1
 
 # Catch all errors and show a user-friendly error message.
 except Error, e:
-	logging.critical("")
-	logging.critical(_("An error has occured when running Pakfire."))
-	logging.error("")
+	log.critical("")
+	log.critical(_("An error has occured when running Pakfire."))
+	log.error("")
 
-	logging.error(_("Error message:"))
-	logging.error("  %s: %s" % (e.__class__.__name__, e.message))
-	logging.error("")
+	log.error(_("Error message:"))
+	log.error("  %s: %s" % (e.__class__.__name__, e.message))
+	log.error("")
 
-	logging.error(_("Further description:"))
-	logging.error("  %s" % e)
-	logging.error("")
+	log.error(_("Further description:"))
+	log.error("  %s" % e)
+	log.error("")
 
 	ret = e.exit_code
 

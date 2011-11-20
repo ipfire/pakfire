@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-20 10:47+0100\n"
+"POT-Creation-Date: 2011-11-20 11:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,37 +111,43 @@ msgstr ""
 msgid "Everything is fine."
 msgstr ""
 
-#: ../python/pakfire/builder.py:124
+#. Log the package information.
+#: ../python/pakfire/builder.py:139
 msgid "Package information:"
 msgstr ""
 
 #. Copy the makefile and load source tarballs.
-#: ../python/pakfire/builder.py:289
+#: ../python/pakfire/builder.py:304
 msgid "Extracting"
 msgstr ""
 
-#: ../python/pakfire/builder.py:549
+#: ../python/pakfire/builder.py:554
+#, python-format
+msgid "Could not find makefile in build root: %s"
+msgstr ""
+
+#: ../python/pakfire/builder.py:567
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:696
+#: ../python/pakfire/builder.py:714
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:716
+#: ../python/pakfire/builder.py:734
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:734
+#: ../python/pakfire/builder.py:752
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:740
+#: ../python/pakfire/builder.py:758
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
@@ -579,11 +585,11 @@ msgstr ""
 msgid "Could not remove file: /%s"
 msgstr ""
 
-#: ../python/pakfire/packages/make.py:77
+#: ../python/pakfire/packages/make.py:78
 msgid "Package name is undefined."
 msgstr ""
 
-#: ../python/pakfire/packages/make.py:80
+#: ../python/pakfire/packages/make.py:81
 msgid "Package version is undefined."
 msgstr ""
 
@@ -947,28 +953,28 @@ msgid "allow replacement of %s with %s"
 msgstr ""
 
 #. XXX Maybe we can make a more beautiful message here?!
-#: ../scripts/pakfire-multicall.py:23
+#: ../scripts/pakfire-multicall.py:25
 msgid ""
 "There has been an error when trying to import one or more of the modules, "
 "that are required to run Pakfire."
 msgstr ""
 
-#: ../scripts/pakfire-multicall.py:25
+#: ../scripts/pakfire-multicall.py:27
 msgid "Please check your installation of Pakfire."
 msgstr ""
 
-#: ../scripts/pakfire-multicall.py:27
+#: ../scripts/pakfire-multicall.py:29
 msgid "The error that lead to this:"
 msgstr ""
 
-#: ../scripts/pakfire-multicall.py:65
+#: ../scripts/pakfire-multicall.py:67
 msgid "An error has occured when running Pakfire."
 msgstr ""
 
-#: ../scripts/pakfire-multicall.py:68
+#: ../scripts/pakfire-multicall.py:70
 msgid "Error message:"
 msgstr ""
 
-#: ../scripts/pakfire-multicall.py:72
+#: ../scripts/pakfire-multicall.py:74
 msgid "Further description:"
 msgstr ""
