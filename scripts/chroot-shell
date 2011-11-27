@@ -16,9 +16,12 @@ EOF
 export PS1="pakfire-chroot \w> "
 
 # Change to directory the user will most likely work in
-if [ -z "${SOURCE_DIR}" ]; then
-	SOURCE_DIR="/build"
-fi
-cd "${SOURCE_DIR}"
+for i in ${SOURCE_DIR} /root /; do
+	if [ -d "${i}" ]; then
+		cd ${i}
+		break
+	fi
+done
+unset i
 
 exec /bin/bash --login
