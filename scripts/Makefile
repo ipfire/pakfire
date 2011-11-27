@@ -1,13 +1,25 @@
 
 include ../Makeconfig
 
+# Elfutils
+LIBS_ELF = -lelf
+
+# Beecrypt
+LIBS_BEECRYPT = -lbeecrypt -lgomp
+
+# popt
+LIBS_POPT = -lpopt
+
 SCRIPTS = $(SCRIPTS_BIN) $(SCRIPTS_SHELL)
-SCRIPTS_BIN   =
+SCRIPTS_BIN   = \
+	debugedit
+
 SCRIPTS_SHELL = \
 	chroot-shell \
 	cleanup \
 	compress-man-pages \
 	dependency-tracker \
+	extract-debuginfo \
 	pakfire-multicall.py \
 	patch \
 	py-compile \
@@ -19,6 +31,12 @@ SCRIPTS_SHELL = \
 
 .PHONY: all
 all: $(SCRIPTS)
+
+%.o: %.c Makefile
+	$(CC) $(CFLAGS) -I. -o $@ -c $<
+
+debugedit: debugedit.o hashtab.o
+	$(CC) $(CFLAGS) $(LIBS_BEECRYPT) $(LIBS_ELF) $(LIBS_POPT) -o $@ $?
 
 .PHONY: install
 install: $(SCRIPTS)

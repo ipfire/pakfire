@@ -8,6 +8,8 @@ packages
 	template MAIN
 		def files
 			/
+			!/usr/lib/debug
+			!/usr/src/debug
 		end
 
 		def configfiles
@@ -50,6 +52,23 @@ packages
 		end
 
 		def configfiles
+		end
+	end
+
+	template DEBUGINFO
+		summary = Debug information for package %{thisapp}.
+		description
+			This package provides debug information for package %{thisapp}.
+
+			Debug information is useful when developing applications that use
+			this package or when debugging this package.
+		end
+
+		group = Development/Debug Debug
+
+		files
+			/usr/lib/debug
+			/usr/src/debug
 		end
 	end
 end

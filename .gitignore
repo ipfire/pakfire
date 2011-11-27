@@ -1,5 +1,6 @@
 /python/pakfire/__version__.py
 /tmp
+/scripts/debugedit
 *.py[co]
 *.o
 *.[ms]o

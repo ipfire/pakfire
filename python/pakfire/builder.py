@@ -156,7 +156,7 @@ class BuildEnviron(object):
 			self.log.info("")
 
 			# Path where we extract the package and put all the source files.
-			self.build_dir = os.path.join(self.path, "usr/src", self.pkg.friendly_name)
+			self.build_dir = os.path.join(self.path, "usr/src/packages", self.pkg.friendly_name)
 		else:
 			# No package :(
 			self.pkg = None
@@ -831,6 +831,7 @@ class Builder(object):
 		# Run post-build stuff.
 		self.post_compress_man_pages()
 		self.post_remove_static_libs()
+		self.post_extract_debuginfo()
 
 		# Package the result.
 		# Make all these little package from the build environment.
@@ -879,6 +880,27 @@ class Builder(object):
 			self.do("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
 		except Error, e:
 			log.warning(_("Compressing man pages did not complete successfully."))
+
+	def post_extract_debuginfo(self):
+		args = []
+
+		# Check if we need to run with strict build-id.
+		strict_id = self.pkg.lexer.build.get_var("debuginfo_strict_build_id", "true")
+		if strict_id in ("true", "yes", "1"):
+			args.append("--strict-build-id")
+
+		args.append("--buildroot=%s" % self.pkg.buildroot)
+		args.append("--sourcedir=%s" % self.pkg.sourcedir)
+
+		# Get additional options to pass to script.
+		options = self.pkg.lexer.build.get_var("debuginfo_options", "")
+		args += options.split()
+
+		try:
+			self.do("%s/extract-debuginfo %s %s" % (SCRIPT_DIR, " ".join(args), self.pkg.buildroot))
+		except Error, e:
+			log.error(_("Extracting debuginfo did not complete with success. Aborting build."))
+			raise
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):

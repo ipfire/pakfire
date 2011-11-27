@@ -153,6 +153,10 @@ class MakefileBase(Package):
 		return self.lexer.get_var("BUILDROOT")
 
 	@property
+	def sourcedir(self):
+		return self.lexer.get_var("DIR_SRC")
+
+	@property
 	def build_host(self):
 		return socket.gethostname()
 

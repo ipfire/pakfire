@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-09 20:38+0100\n"
+"POT-Creation-Date: 2011-12-10 23:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,23 +178,27 @@ msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:837
+#: ../python/pakfire/builder.py:838
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:857
+#: ../python/pakfire/builder.py:858
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:875
+#: ../python/pakfire/builder.py:876
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:881
+#: ../python/pakfire/builder.py:882
 msgid "Compressing man pages did not complete successfully."
+msgstr ""
+
+#: ../python/pakfire/builder.py:902
+msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
 #: ../python/pakfire/cli.py:43
@@ -641,17 +645,17 @@ msgstr ""
 msgid "Filename: %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:250
+#: ../python/pakfire/packages/file.py:256
 #, python-format
-msgid "File in archive is missing in file metadata: /%s. Skipping."
+msgid "File in archive is missing in file metadata: %s. Skipping."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:306
+#: ../python/pakfire/packages/file.py:312
 #, python-format
 msgid "Config file created as %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:320
+#: ../python/pakfire/packages/file.py:326
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr ""
@@ -665,11 +669,11 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:358
+#: ../python/pakfire/packages/packager.py:362
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:630
+#: ../python/pakfire/packages/packager.py:634
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
