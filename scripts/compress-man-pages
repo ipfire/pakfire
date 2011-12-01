@@ -1,5 +1,8 @@
 #!/bin/bash
 
+COMPRESSOR=xz
+COMPRESS_EXT=.xz
+
 echo "Compressing man pages..."
 
 BUILDROOT=${1}
@@ -18,7 +21,14 @@ for file in $(find ${BUILDROOT}/usr/share/man -type f); do
 	esac
 
 	echo "  Compressing man page ${file//${BUILDROOT}/}..."
-	xz ${file}
+	${COMPRESSOR} ${file}
+done
+
+for file in $(find ${BUILDROOT}/usr/share/man -type l); do
+	link=$(ls -l ${file} | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
+	rm -f ${file}
+	b=$(echo ${file} | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
+	ln -sf ${link}${COMPRESS_EXT} ${b}${COMPRESS_EXT}
 done
 
 exit 0
