@@ -58,6 +58,8 @@ MACRO_PERL_CLEANUP
 		xargs --no-run-if-empty rm -f
 end
 
+MACRO_PATCHES = /usr/lib/pakfire/patch %{patches}
+
 # Pre-defined build scripts.
 build
 	# These variables are used if you have to add some targets

@@ -1,0 +1,44 @@
+#!/bin/bash
+# Script that automatically applies patches.
+
+if [ -n "$@" ]; then
+	echo "Applying patches..."
+fi
+
+# Apply all patches given on command line.
+for patch in $@; do
+	# Check if patch file does exist.
+	if ! [ -e "${patch}" ]; then
+		echo >&2 "  ERROR: Patch file does not exist: ${patch}"
+		exit 1
+	fi
+
+	# Options applied to patch command.
+	options="-N"
+
+	# Get right -p1 option.
+	case "${patch}" in
+		*.patch[0-9])
+			# Get patch level from file name.
+			level=${patch:$(( ${#patch} - 1))}
+			options="${options} -p${level}"
+			;;
+		*.patch|*.diff)
+			# Default is -p1.
+			options="${options} -p1"
+			;;
+		*.off)
+			# Ignore disabled patches.
+			continue
+			;;
+		*)
+			echo >&2 "   ERROR: Unknown filetype: ${patch}"
+			exit 1
+			;;
+	esac
+
+	echo "  Applying ${patch} (${options})..."
+	patch ${options} -i ${patch} || exit $?
+done
+
+exit 0

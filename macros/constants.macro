@@ -14,7 +14,9 @@ configure_options = \
 	--build=%{DISTRO_MACHINE} \
 	--prefix=/usr
 
-patches =
+# By default, take all patches from the patches directory
+# in alphabetical order.
+patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort)
 sources = %{thisapp}.tar.gz
 
 # Macro definitions
@@ -22,38 +24,6 @@ sources = %{thisapp}.tar.gz
 # Macro to extract tarballs.
 # Guesses the compression type automatically.
 MACRO_EXTRACT = tar xvaf
-
-MACRO_PATCHES
-	patches="%{patches}"
-
-	if [ -n "${patches}" ]; then
-		_patches=""
-		for patch in ${patches}; do
-			_patches="${_patches} %{DIR_PATCHES}/${patch}"
-		done
-		patches="${_patches}"
-		unset _patches
-	else
-		for patch in %{DIR_PATCHES}/*.{diff,patch{,0}}; do
-			[ -e "${patch}" ] || continue
-			patches="${patches} ${patch}"
-		done
-	fi
-	
-	for patch in ${patches}; do
-		case "${patch}" in
-			*.patch0)
-				cmd="patch -Np0"
-				;;
-			*.patch|*.diff)
-				cmd="patch -Np1"
-				;;
-		esac
-
-		${cmd} -i ${patch}
-	done
-	unset cmd patch patches
-end
 
 # Remove rpath from libtool.
 MACRO_FIX_LIBTOOL

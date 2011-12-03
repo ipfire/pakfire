@@ -9,6 +9,7 @@ SCRIPTS_SHELL = \
 	compress-man-pages \
 	dependency-tracker \
 	pakfire-multicall.py \
+	patch \
 	py-compile \
 	quality-agent \
 	remove-static-libs \
