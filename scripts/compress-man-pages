@@ -8,7 +8,11 @@ echo "Compressing man pages..."
 BUILDROOT=${1}
 shift
 
-for file in $(find ${BUILDROOT}/usr/share/man -type f); do
+dir="${BUILDROOT}/usr/share/man"
+
+for file in $(find ${dir} -type f 2>/dev/null); do
+	[ -f "${file}" ] || continue
+
 	case "${file}" in
 		*.gz)
 			gzip -d ${file}
@@ -21,10 +25,24 @@ for file in $(find ${BUILDROOT}/usr/share/man -type f); do
 	esac
 
 	echo "  Compressing man page ${file//${BUILDROOT}/}..."
-	${COMPRESSOR} ${file}
+	${COMPRESSOR} ${file} </dev/null 2>/dev/null || {
+		# Handle files with hardlinks.
+		others=$(find ${dir} -type f -samefile ${file})
+		if [ -n "${others}" ]; then
+			for afile in ${others}; do
+				[ "${afile}" != "${file}" ] && rm -f ${afile}
+			done
+			${COMPRESSOR} -f ${file}
+			for afile in ${others}; do
+				[ "${afile}" != "${file}" ] && ln ${file}${COMPRESS_EXT} ${afile}${COMPRESS_EXT}
+			done
+		else
+	                ${COMPRESSOR} -f ${file}
+		fi
+	}
 done
 
-for file in $(find ${BUILDROOT}/usr/share/man -type l); do
+for file in $(find ${dir} -type l); do
 	link=$(ls -l ${file} | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
 	rm -f ${file}
 	b=$(echo ${file} | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
