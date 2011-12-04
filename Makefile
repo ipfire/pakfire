@@ -33,7 +33,9 @@ install: build
 
 	# Install example configuration.
 	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
-	cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
+	# Don't overwrite already installed configuration file.
+	[ -e "$(DESTDIR)/etc/pakfire.conf" ] || \
+		cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
 	cp -vf examples/pakfire.repos.d/* $(DESTDIR)/etc/pakfire.repos.d/
 
 .PHONY: check
