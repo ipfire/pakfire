@@ -15,8 +15,8 @@
 ;gpgkey = /not/yet/existant
 
 [testingbay]
-description = IPFire Testing Repository
+description = IPFire Testing Repository for %{arch}
 enabled = 1
 
-mirrorlist = http://people.ipfire.org/~ms/testingbay/mirrors
-url = http://people.ipfire.org/~ms/testingbay
+mirrorlist = http://people.ipfire.org/~ms/testingbay-%{arch}/mirrors
+url = http://people.ipfire.org/~ms/testingbay-%{arch}

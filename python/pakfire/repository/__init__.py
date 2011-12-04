@@ -19,6 +19,8 @@
 #                                                                             #
 ###############################################################################
 
+import re
+
 import logging
 log = logging.getLogger("pakfire")
 
@@ -90,8 +92,6 @@ class Repositories(object):
 		return self.pakfire.pool
 
 	def _parse(self, name, args):
-		# XXX need to make variable expansion
-
 		_args = {
 			"name" : name,
 			"enabled" : True,
@@ -100,8 +100,32 @@ class Repositories(object):
 		}
 		_args.update(args)
 
-		repo = RepositorySolv(self.pakfire, **_args)
+		# Handle variable expansion.
+		replaces = {
+			"name" : name,
+			"arch" : self.distro.arch,
+		}
 
+		for k, v in _args.items():
+			# Skip all non-strings.
+			if not type(v) == type("a"):
+				continue
+
+			while True:
+				m = re.search(packages.lexer.LEXER_VARIABLE, v)
+
+				# If we cannot find a match, we are done.
+				if not m:
+					_args[k] = v
+					break
+
+				# Get the name of the variable.
+				(var,) = m.groups()
+
+				# Replace the variable with its value.
+				v = v.replace("%%{%s}" % var, replaces.get(var, ""))
+
+		repo = RepositorySolv(self.pakfire, **_args)
 		self.add_repo(repo)
 
 	def add_repo(self, repo):

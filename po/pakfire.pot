@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-20 11:27+0100\n"
+"POT-Creation-Date: 2011-12-04 19:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Give name of at least one package to check."
 msgstr ""
 
-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:344
+#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:352
 msgid "Repository"
 msgstr ""
 
@@ -450,7 +450,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:85 ../python/pakfire/transaction.py:409
+#: ../python/pakfire/errors.py:85 ../python/pakfire/transaction.py:417
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -463,11 +463,11 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:107 ../python/pakfire/transaction.py:343
+#: ../python/pakfire/packages/base.py:107 ../python/pakfire/transaction.py:351
 msgid "Arch"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:343
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:351
 msgid "Version"
 msgstr ""
 
@@ -475,7 +475,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:344
+#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:352
 msgid "Size"
 msgstr ""
 
@@ -617,26 +617,26 @@ msgstr ""
 msgid "Migrating database from format %s to %s."
 msgstr ""
 
-#: ../python/pakfire/repository/index.py:231
+#: ../python/pakfire/repository/index.py:237
 #, python-format
 msgid ""
 "I cannot be forced to re-download the metadata for the repository '%s' when "
 "running in offline mode."
 msgstr ""
 
-#: ../python/pakfire/repository/index.py:281
+#: ../python/pakfire/repository/index.py:287
 #, python-format
 msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../python/pakfire/repository/index.py:369
+#: ../python/pakfire/repository/index.py:375
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../python/pakfire/repository/index.py:426
+#: ../python/pakfire/repository/index.py:447
 msgid "Loading installed packages"
 msgstr ""
 
@@ -692,75 +692,75 @@ msgid ""
 "perform transaction."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:283
+#: ../python/pakfire/transaction.py:288
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:286
+#: ../python/pakfire/transaction.py:291
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:343
+#: ../python/pakfire/transaction.py:351
 msgid "Package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:348
+#: ../python/pakfire/transaction.py:356
 msgid "Installing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:349
+#: ../python/pakfire/transaction.py:357
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:350
+#: ../python/pakfire/transaction.py:358
 msgid "Updating:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:351
+#: ../python/pakfire/transaction.py:359
 msgid "Downgrading:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:352
+#: ../python/pakfire/transaction.py:360
 msgid "Removing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:358
+#: ../python/pakfire/transaction.py:366
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:365
+#: ../python/pakfire/transaction.py:373
 msgid "package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:371
+#: ../python/pakfire/transaction.py:379
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:375
+#: ../python/pakfire/transaction.py:383
 #, python-format
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:378
+#: ../python/pakfire/transaction.py:386
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:387
+#: ../python/pakfire/transaction.py:395
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:390
+#: ../python/pakfire/transaction.py:398
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:402
+#: ../python/pakfire/transaction.py:410
 msgid "Transaction Test Succeeded"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:420
+#: ../python/pakfire/transaction.py:428
 msgid "Running transaction"
 msgstr ""
 
