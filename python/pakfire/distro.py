@@ -121,11 +121,20 @@ class Distribution(object):
 	def machine(self):
 		vendor = self.vendor.split()[0]
 
-		return "%s-%s-linux-gnu" % (self.arch, vendor.lower())
+		s = "%s-%s-linux-gnu" % (self.arch, vendor.lower())
+
+		if self.arch.startswith("arm"):
+			s += "eabi"
+
+		return s
 
 	@property
 	def buildtarget(self):
-		return self.machine.replace("-gnu", "")
+		# Cut off last segment of machine.
+		if not self.arch.startswith("arm"):
+			return self.machine.replace("-gnu", "")
+
+		return self.machine
 
 	@property
 	def source_dl(self):
