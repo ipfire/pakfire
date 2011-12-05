@@ -192,4 +192,9 @@ class Distribution(object):
 			"i486"   : "linux32",
 		}
 
-		return arch2personality[self.arch]
+		try:
+			personality = arch2personality[self.arch]
+		except KeyError:
+			personality = None
+
+		return personality
