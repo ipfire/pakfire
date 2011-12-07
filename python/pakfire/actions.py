@@ -196,6 +196,9 @@ class ActionScript(Action):
 			raise ActionError, _("The scriptlet ran more than %s seconds and was killed." \
 				% SCRIPTLET_TIMEOUT)
 
+		except Exception, e:
+			raise ActionError, _("The scriptlet returned with an unhandled error:\n%s" % e)
+
 		finally:
 			# Remove the script file.
 			try:
