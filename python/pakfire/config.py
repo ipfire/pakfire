@@ -158,7 +158,15 @@ class Config(object):
 		if not files:
 			# Return system configuration files
 			files += [CONFIG_FILE]
-			files += [os.path.join(CONFIG_DIR, f) for f in os.listdir(CONFIG_DIR)]
+
+			for f in os.listdir(CONFIG_DIR):
+				# Skip all files with wrong extensions.
+				if not f.endswith(CONFIG_DIR_EXT):
+					continue
+
+				# Create absolute path.
+				f = os.path.join(CONFIG_DIR, f)
+				files.append(f)
 
 		return files
 

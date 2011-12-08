@@ -31,6 +31,7 @@ SYSCONFDIR = "/etc"
 SCRIPT_DIR = "/usr/lib/pakfire"
 
 CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire.repos.d")
+CONFIG_DIR_EXT = ".repo"
 CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")
 
 CACHE_DIR = "/var/cache/pakfire"
