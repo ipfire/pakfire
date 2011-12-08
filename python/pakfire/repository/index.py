@@ -384,16 +384,7 @@ class IndexDir(Index):
 
 				# Find all packages with the given type and skip those of
 				# the other type.
-				if isinstance(package, self.pkg_type):
-					# Check for binary packages if the architecture matches.
-					if isinstance(package, packages.BinaryPackage) and \
-							not package.arch in (self.repo.arch, "noarch"):
-						log.warning("Skipped package with wrong architecture: %s (%s)" \
-							% (package.filename, package.arch))
-						continue
-
-				# Skip all source packages.
-				else:
+				if not isinstance(package, self.pkg_type):
 					continue
 
 				self.add_package(package)
