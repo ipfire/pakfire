@@ -405,7 +405,7 @@ class Pakfire(object):
 
 		t.run()
 
-	def update(self, pkgs, check=False, excludes=None, allow_vendorchange=False, allow_archchange=False):
+	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, **kwargs):
 		"""
 			check indicates, if the method should return after calculation
 			of the transaction.
@@ -431,9 +431,7 @@ class Pakfire(object):
 				request.lock(exclude)
 
 		solver = self.create_solver()
-		t = solver.solve(request, update=update,
-			allow_vendorchange=allow_vendorchange,
-			allow_archchange=allow_archchange)
+		t = solver.solve(request, update=update, **kwargs)
 
 		if not t:
 			log.info(_("Nothing to do"))
@@ -447,11 +445,11 @@ class Pakfire(object):
 
 		# Just exit here, because we won't do the transaction in this mode.
 		if check:
-			t.dump()
+			t.dump(logger=logger)
 			return
 
 		# Ask the user if the transaction is okay.
-		if not t.cli_yesno():
+		if interactive and not t.cli_yesno():
 			return
 
 		# Run the transaction.
@@ -710,3 +708,25 @@ class Pakfire(object):
 
 		# Process the transaction.
 		t.run()
+
+	@staticmethod
+	def cache_create(**kwargs):
+		# Create a build environment that we are going to pack into
+		# a shiny tarball.
+		b = builder.BuildEnviron(**kwargs)
+		p = b.pakfire
+
+		# Get filename of the file from builder instance.
+		filename = b.cache_file
+
+		try:
+			b.start()
+
+			# Create directory if not existant.
+			dirname = os.path.dirname(filename)
+			if not os.path.exists(dirname):
+				os.makedirs(dirname)
+
+			b.cache_export(filename)
+		finally:
+			b.stop()
