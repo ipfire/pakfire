@@ -131,3 +131,7 @@ def check(**pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
 	return pakfire.check()
+
+# Cache functions
+def cache_create(**pakfire_args):
+	return Pakfire.cache_create(**pakfire_args)

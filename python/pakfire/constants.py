@@ -36,6 +36,7 @@ CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")
 
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
+CACHE_ENVIRON_DIR = os.path.join(CACHE_DIR, "environments")
 REPO_CACHE_DIR = os.path.join(CACHE_DIR, "repos")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
