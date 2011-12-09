@@ -55,13 +55,9 @@ for patch in ${patches}; do
 			# Default is -p1.
 			options="${options} -p1"
 			;;
-		*.off)
-			# Ignore disabled patches.
-			continue
-			;;
 		*)
-			echo >&2 "   ERROR: Unknown filetype: ${patch}"
-			exit 1
+			echo >&2 "   WARNING: Ignoring unknown file: ${patch}"
+			continue
 			;;
 	esac
 
