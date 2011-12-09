@@ -57,7 +57,7 @@ class Distribution(object):
 		log.debug("Distribution configuration:")
 
 		attrs = ("name", "version", "release", "sname", "dist", "vendor",
-			"arch", "machine", "source_dl",)
+			"arch", "machine", "buildtarget", "source_dl",)
 
 		for attr in attrs:
 			log.debug(" %s : %s" % (attr, getattr(self, attr)))
@@ -133,10 +133,7 @@ class Distribution(object):
 	@property
 	def buildtarget(self):
 		# Cut off last segment of machine.
-		if not self.arch.startswith("arm"):
-			return self.machine.replace("-gnu", "")
-
-		return self.machine
+		return self.machine.replace("-gnu", "")
 
 	@property
 	def source_dl(self):
