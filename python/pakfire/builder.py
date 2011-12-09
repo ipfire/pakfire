@@ -297,7 +297,7 @@ class BuildEnviron(object):
 		if not requires:
 			requires = []
 
-		if self.use_cache:
+		if self.use_cache and os.path.exists(self.cache_file):
 			# If we are told to use the cache, we just import the
 			# file.
 			self.cache_extract()
