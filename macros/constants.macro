@@ -16,7 +16,7 @@ configure_options = \
 
 # By default, take all patches from the patches directory
 # in alphabetical order.
-patches = $(find . -not -type d 2>/dev/null | sort)
+patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort)
 sources = %{thisapp}.tar.gz
 
 # Macro definitions
