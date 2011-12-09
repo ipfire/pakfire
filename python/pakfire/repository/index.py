@@ -288,18 +288,39 @@ class IndexSolv(Index):
 			)
 			grabber = self.repo.mirrors.group(grabber)
 
-			data = grabber.urlread(filename)
+			# Open file on server.
+			print "OPENING FILE ON SERVER"
+			urlobj = fileobj = grabber.urlopen(filename)
+			print urlobj
 
-			with self.cache.open(filename, "w") as o:
-				o.write(data)
-
-			# decompress the database
 			if self.metadata.database_compression:
-				# Open input file and remove the file immediately.
-				# The fileobj is still open and the data will be removed
-				# when it is closed.
-				compress.decompress(self.cache.abspath(filename),
+				fileobj = compress.decompressobj(fileobj=fileobj,
 					algo=self.metadata.database_compression)
+
+			# Make a new file in the cache.
+			cacheobj = self.cache.open(filename, "w")
+
+			try:
+				while True:
+					buf = fileobj.read(BUFFER_SIZE)
+					if not buf:
+						break
+					cacheobj.write(buf)
+			except:
+				# XXX we should catch decompression errors
+
+				# Close all file descriptors.
+				cacheobj.close()
+				fileobj.close()
+				if not urlobj == fileobj:
+					urlobj.close()
+
+				raise
+
+			cacheobj.close()
+			fileobj.close()
+			if not urlobj == fileobj:
+				urlobj.close()
 
 			# check the hashsum of the downloaded file
 			if not util.calc_hash1(self.cache.abspath(filename)) == self.metadata.database_hash1:

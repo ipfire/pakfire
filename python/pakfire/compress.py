@@ -19,157 +19,81 @@
 #                                                                             #
 ###############################################################################
 
-import lzma
-import os
-import progressbar
-import zlib
+import pakfire.lzma as lzma
 
 from constants import *
 from i18n import _
 
-PROGRESS_WIDGETS = [
-	progressbar.Bar(left="[", right="]"),
-	"  ",
-	progressbar.Percentage(),
-	"  ",
-	progressbar.ETA(),
-	"  ",
-]
+ALGO_DEFAULT = "xz"
 
-def __compress_helper(i, o, comp, flush, progress=None):
-	if progress:
-		widgets = [ "%-30s  " % os.path.basename(filename)] + PROGRESS_WIDGETS
+# A dictionary with all compression types
+# we do support.
+# XXX add bzip2, and more here.
+MAGICS = {
+	#"gzip"  : "\037\213\010",
+	"xz"    : "\xfd7zXZ",
+}
 
-		maxval = os.path.getsize(filename)
+FILES = {
+	"xz"    : lzma.LZMAFile,
+}
 
-		progress = progressbar.ProgressBar(
-			widgets=widgets,
-			maxval=maxval,
-		)
+COMPRESSORS = {
+	"xz"    : lzma.LZMACompressor
+}
 
-		progress.start()
+DECOMPRESSORS = {
+	"xz"    : lzma.LZMADecompressor,
+}
 
-	size = 0
-	buf = i.read(BUFFER_SIZE)
-	while buf:
-		if progress:
-			size += len(buf)
-			progress.update(size)
-
-		o.write(comp(buf))
-
-		buf = i.read(BUFFER_SIZE)
-
-	o.write(flush())
-
-	if progress:
-		progress.finish()
-
-def compress(filename, filename2=None, algo="xz", progress=None):
-	i = open(filename)
-
-	if not filename2:
-		filename2 = filename
-		os.unlink(filename)
-
-	o = open(filename2, "w")
-
-	compressobj(i, o, algo="xz", progress=None)
-
-	i.close()
-	o.close()
-
-def compressobj(i, o, algo="xz", progress=None):
-	comp = None
-	if algo == "xz":
-		comp = lzma.LZMACompressor()
-
-	elif algo == "zlib":
-		comp = zlib.compressobj(9)
-
-	return __compress_helper(i, o, comp.compress, comp.flush, progress=progress)
-
-def decompress(filename, filename2=None, algo="xz", progress=None):
-	i = open(filename)
-
-	if not filename2:
-		filename2 = filename
-		os.unlink(filename)
-
-	o = open(filename2, "w")
-
-	decompressobj(i, o, algo="xz", progress=None)
-
-	i.close()
-	o.close()
-
-def decompressobj(i, o, algo="xz", progress=None):
-	comp = None
-	if algo == "xz":
-		comp = lzma.LZMADecompressor()
-
-	elif algo == "zlib":
-		comp = zlib.decompressobj(9)
-
-	return __compress_helper(i, o, comp.decompress, comp.flush, progress=progress)
-
-def compress_file(inputfile, outputfile, message="", algo="xz", progress=True):
+def guess_algo(name=None, fileobj=None):
 	"""
-		Compress a file in place.
+		This function takes a filename or a file descriptor
+		and tells the name of the algorithm the file was
+		compressed with.
+		If an unknown or no compression was used, None is returned.
 	"""
-	assert os.path.exists(inputfile)
+	ret = None
 
-	# Get total size of the file for the progressbar.
-	total_size = os.path.getsize(inputfile)
+	if name:
+		fileobj = open(file)
 
-	# Open the input file for reading.
-	i = open(inputfile, "r")
+	# Save position of pointer.
+	pos = fileobj.tell()
 
-	# Open the output file for wrinting.
-	o = open(outputfile, "w")
+	# Iterate over all algoriths and their magic values
+	# and check for a match.
+	for algo, magic in MAGICS.items():
+		fileobj.seek(0)
 
-	if progress:
-		if not message:
-			message = _("Compressing %s") % os.path.basename(filename)
-
-		progress = progressbar.ProgressBar(
-			widgets = ["%-40s" % message, " ",] + PROGRESS_WIDGETS,
-			maxval = total_size,
-		)
-
-		progress.start()
-
-	if algo == "xz":
-		compressor = lzma.LZMACompressor()
-	elif algo == "zlib":
-		comp = zlib.decompressobj(9)
-	else:
-		raise Exception, "Unknown compression choosen: %s" % algo
-
-	size = 0
-	while True:
-		buf = i.read(BUFFER_SIZE)
-		if not buf:
+		start_sequence = fileobj.read(len(magic))
+		if start_sequence == magic:
+			ret = algo
 			break
 
-		# Update progressbar.
-		size += len(buf)
-		if progress:
-			progress.update(size)
+	# Reset file pointer.
+	fileobj.seek(pos)
 
-		# Compress the bits in buf.
-		buf = compressor.compress(buf)
+	if name:
+		fileobj.close()
 
-		# Write the compressed output.
-		o.write(buf)
+	return ret
 
-	# Flush all buffers.
-	buf = compressor.flush()
-	o.write(buf)
+def decompressobj(name=None, fileobj=None, algo=ALGO_DEFAULT):
+	f_cls = FILES.get(algo, None)
+	if not f_cls:
+		raise CompressionError, _("Given algorithm '%s' is not supported.")
 
-	# Close the progress bar.
-	if progress:
-		progress.finish()
+	f = f_cls(name, fileobj=fileobj, mode="r")
 
-	i.close()
-	o.close()
+	return f
+
+
+def compressobj(name=None, fileobj=None, algo=ALGO_DEFAULT):
+	f_cls = FILES.get(algo, None)
+	if not f_cls:
+		raise CompressionError, _("Given algorithm '%s' is not supported.")
+
+	f = f_cls(name, fileobj=fileobj, mode="w")
+
+	return f

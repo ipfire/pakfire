@@ -38,13 +38,12 @@ import zlib
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.compress
 import pakfire.util as util
 
 from pakfire.constants import *
 from pakfire.i18n import _
 
-from file import BinaryPackage, InnerTarFile, SourcePackage
+from file import BinaryPackage, InnerTarFileXz, SourcePackage
 
 class Packager(object):
 	def __init__(self, pakfire, pkg):
@@ -137,7 +136,7 @@ class Packager(object):
 		filelist = self.mktemp()
 
 		f = open(filelist, "w")
-		datafile = InnerTarFile(datafile)
+		datafile = InnerTarFileXz.open(datafile)
 
 		for m in datafile.getmembers():
 			log.debug("  %s %-8s %-8s %s %6s %s" % \
@@ -182,6 +181,23 @@ class Packager(object):
 	def run(self):
 		raise NotImplementedError
 
+	def getsize(self, filename):
+		if tarfile.is_tarfile(filename):
+			return os.path.getsize(filename)
+
+		size = 0
+		f = lzma.LZMAFile(filename)
+
+		while True:
+			buf = f.read(BUFFER_SIZE)
+			if not buf:
+				break
+
+			size += len(buf)
+		f.close()
+
+		return size
+
 
 class BinaryPackager(Packager):
 	def __init__(self, pakfire, pkg, builder, buildroot):
@@ -196,7 +212,7 @@ class BinaryPackager(Packager):
 		# Extract datafile in temporary directory and scan for dependencies.
 		tmpdir = self.mktemp(directory=True)
 
-		tarfile = InnerTarFile(datafile)
+		tarfile = InnerTarFileXz.open(datafile)
 		tarfile.extractall(path=tmpdir)
 		tarfile.close()
 
@@ -243,7 +259,7 @@ class BinaryPackager(Packager):
 
 		# Installed size (equals size of the uncompressed tarball).
 		info.update({
-			"inst_size" : os.path.getsize(datafile),
+			"inst_size" : self.getsize(datafile),
 		})
 
 		metafile = self.mktemp()
@@ -343,7 +359,7 @@ class BinaryPackager(Packager):
 		pb = util.make_progress(message, len(files), eta=False)
 
 		datafile = self.mktemp()
-		tar = InnerTarFile(datafile, mode="w")
+		tar = InnerTarFileXz.open(datafile, mode="w")
 
 		# All files in the tarball are relative to this directory.
 		basedir = self.buildroot
@@ -450,7 +466,7 @@ class BinaryPackager(Packager):
 		return scriptlets
 
 	def create_configs(self, datafile):
-		datafile = InnerTarFile(datafile)
+		datafile = InnerTarFileXz.open(datafile)
 
 		members = datafile.getmembers()
 
@@ -496,19 +512,6 @@ class BinaryPackager(Packager):
 
 		return configsfile
 
-	def compress_datafile(self, datafile, algo="xz"):
-		outputfile = self.mktemp()
-
-		# Compress the datafile with the choosen algorithm.
-		pakfire.compress.compress_file(datafile, outputfile, algo=algo,
-			progress=True, message=_("Compressing %s") % self.pkg.friendly_name)
-
-		# We do not need the uncompressed output anymore.
-		os.unlink(datafile)
-
-		# The outputfile becomes out new datafile.
-		return outputfile
-
 	def run(self, resultdir):
 		# Add all files to this package.
 		datafile = self.create_datafile()
@@ -521,9 +524,6 @@ class BinaryPackager(Packager):
 		scriptlets = self.create_scriptlets()
 
 		metafile = self.create_metafile(datafile)
-
-		# XXX make xz in variable
-		datafile = self.compress_datafile(datafile, algo="xz")
 
 		# Add files to the tar archive in correct order.
 		self.add(metafile, "info")
@@ -569,7 +569,7 @@ class SourcePackager(Packager):
 		info.update(self.pkg.info)
 
 		# Size is the size of the (uncompressed) datafile.
-		info["inst_size"] = os.path.getsize(datafile)
+		info["inst_size"] = self.getsize(datafile)
 
 		# Update package information for string formatting.
 		requires = [PACKAGE_INFO_DEPENDENCY_LINE % r for r in self.pkg.requires]
@@ -609,7 +609,7 @@ class SourcePackager(Packager):
 
 	def create_datafile(self):
 		filename = self.mktemp()
-		datafile = InnerTarFile(filename, mode="w")
+		datafile = InnerTarFileXz.open(filename, mode="w")
 
 		# Add all downloaded files to the package.
 		for file in self.pkg.download():

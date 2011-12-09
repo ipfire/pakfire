@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-08 23:57+0100\n"
+"POT-Creation-Date: 2011-12-09 20:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -489,10 +489,9 @@ msgstr ""
 msgid "Do not verify build dependencies."
 msgstr ""
 
-#: ../python/pakfire/compress.py:133
-#: ../python/pakfire/packages/packager.py:504
+#: ../python/pakfire/compress.py:85 ../python/pakfire/compress.py:95
 #, python-format
-msgid "Compressing %s"
+msgid "Given algorithm '%s' is not supported."
 msgstr ""
 
 #: ../python/pakfire/downloader.py:134
@@ -503,22 +502,26 @@ msgstr ""
 msgid "An unhandled error occured."
 msgstr ""
 
-#: ../python/pakfire/errors.py:54
+#: ../python/pakfire/errors.py:46
+msgid "Could not compress/decompress data."
+msgstr ""
+
+#: ../python/pakfire/errors.py:58
 msgid "One or more dependencies could not been resolved."
 msgstr ""
 
-#: ../python/pakfire/errors.py:69
+#: ../python/pakfire/errors.py:73
 msgid ""
 "The requested action cannot be done on offline mode.\n"
 "Please connect your system to the network, remove --offline from the command "
 "line and try again."
 msgstr ""
 
-#: ../python/pakfire/errors.py:81
+#: ../python/pakfire/errors.py:85
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:85 ../python/pakfire/transaction.py:417
+#: ../python/pakfire/errors.py:89 ../python/pakfire/transaction.py:417
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -628,27 +631,27 @@ msgstr ""
 msgid "Config file saved as %s."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:97
+#: ../python/pakfire/packages/file.py:93
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:147
+#: ../python/pakfire/packages/file.py:159
 #, python-format
 msgid "Filename: %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:256
+#: ../python/pakfire/packages/file.py:250
 #, python-format
 msgid "File in archive is missing in file metadata: /%s. Skipping."
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:312
+#: ../python/pakfire/packages/file.py:306
 #, python-format
 msgid "Config file created as %s"
 msgstr ""
 
-#: ../python/pakfire/packages/file.py:326
+#: ../python/pakfire/packages/file.py:320
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr ""
@@ -662,7 +665,7 @@ msgid "Package version is undefined."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:342
+#: ../python/pakfire/packages/packager.py:358
 msgid "Packaging"
 msgstr ""
 
@@ -698,14 +701,19 @@ msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../python/pakfire/repository/index.py:375
+#: ../python/pakfire/repository/index.py:396
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../python/pakfire/repository/index.py:438
+#: ../python/pakfire/repository/index.py:459
 msgid "Loading installed packages"
+msgstr ""
+
+#. Make a nice progress bar.
+#: ../python/pakfire/repository/local.py:149
+msgid "Compressing database..."
 msgstr ""
 
 #: ../python/pakfire/repository/remote.py:108

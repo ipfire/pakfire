@@ -34,6 +34,7 @@ import pakfire.packages as packages
 import pakfire.util as util
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 class RepositoryDir(base.RepositoryFactory):
 	def __init__(self, pakfire, name, description, path, type="binary"):
@@ -140,12 +141,42 @@ class RepositoryDir(base.RepositoryFactory):
 
 		# Compress the database.
 		if algo:
-			compress.compress(db_path, algo=algo, progress=True)
+			# Open input file and get filesize of input file.
+			f = open(db_path)
+			filesize = os.path.getsize(db_path)
 
-		if not os.path.exists(db_path2):
-			shutil.move(db_path, db_path2)
+			# Make a nice progress bar.
+			p = util.make_progress(_("Compressing database..."), filesize)
+
+			# Create compressing file handler.
+			c = compress.compressobj(db_path2)
+
+			try:
+				size = 0
+				while True:
+					buf = f.read(BUFFER_SIZE)
+					if not buf:
+						break
+
+					if p:
+						size += len(buf)
+						p.update(size)
+
+					c.write(buf)
+			except:
+				# XXX catch compression errors
+				raise
+
+			finally:
+				f.close()
+				c.close()
+				p.finish()
+
+				# Remove old database.
+				os.unlink(db_path)
+
 		else:
-			os.unlink(db_path)
+			shutil.move(db_path, db_path2)
 
 		# Create a new metadata object and add out information to it.
 		md = metadata.Metadata(self.pakfire, self)

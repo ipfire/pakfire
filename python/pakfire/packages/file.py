@@ -30,6 +30,7 @@ import logging
 log = logging.getLogger("pakfire")
 
 import pakfire.filelist
+import pakfire.lzma as lzma
 import pakfire.util as util
 import pakfire.compress as compress
 from pakfire.constants import *
@@ -37,11 +38,6 @@ from pakfire.i18n import _
 
 from base import Package
 from lexer import FileLexer
-
-# XXX need to add zlib and stuff here.
-PAYLOAD_COMPRESSION_MAGIC = {
-	"xz" : "\xfd7zXZ",
-}
 
 class InnerTarFile(tarfile.TarFile):
 	def __init__(self, *args, **kwargs):
@@ -109,6 +105,21 @@ class InnerTarFile(tarfile.TarFile):
 			util.set_capabilities(target, caps)
 
 
+class InnerTarFileXz(InnerTarFile):
+	@classmethod
+	def open(cls, name=None, mode="r", fileobj=None, **kwargs):
+		fileobj = lzma.LZMAFile(name, mode, fileobj=fileobj)
+
+		try:
+			t = cls.taropen(name, mode, fileobj, **kwargs)
+		except lzma.LZMAError:
+			fileobj.close()
+			raise tarfile.ReadError("not an lzma file")
+
+		t._extfileobj = False
+		return t
+
+
 class FilePackage(Package):
 	"""
 		This class is a wrapper that reads package data from the (outer)
@@ -121,8 +132,9 @@ class FilePackage(Package):
 		# Place to cache the metadata
 		self._metadata = {}
 
-		# Place to cache the filelist
+		# Place to cache the filelist and payload compression algorithm.
 		self._filelist = None
+		self.__payload_compression = None
 
 		# Store the format of this package file.
 		self.format = self.get_format()
@@ -191,9 +203,6 @@ class FilePackage(Package):
 		if prefix is None:
 			prefix = ""
 
-		# A place to store temporary data.
-		tempf = None
-
 		# Open package data for read.
 		archive = self.open_archive()
 
@@ -201,31 +210,15 @@ class FilePackage(Package):
 		payload = archive.extractfile("data.img")
 
 		# Decompress the payload if needed.
-		log.debug("Compression: %s" % self.payload_compression)
+		if self.payload_compression == "xz":
+			payload_archive = InnerTarFileXz.open(fileobj=payload)
 
-		# Create a temporary file to store the decompressed output.
-		garbage, tempf = tempfile.mkstemp(prefix="pakfire")
-
-		i = payload
-		o = open(tempf, "w")
-
-		# Decompress the package payload.
-		if self.payload_compression:
-			compress.decompressobj(i, o, algo=self.payload_compression)
+		elif self.payload_compression == "none":
+			payload_archive = InnerTarFile.open(fileobj=payload)
 
 		else:
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(buf)
-				buf = i.read(BUFFER_SIZE)
-
-		i.close()
-		o.close()
-
-		payload = open(tempf)
-
-		# Open the tarball in the package.
-		payload_archive = InnerTarFile.open(fileobj=payload)
+			raise Exception, "Unhandled payload compression type: %s" \
+				% payload_compression
 
 		# Load progressbar.
 		pb = None
@@ -237,9 +230,6 @@ class FilePackage(Package):
 		# the user.
 		messages = []
 
-		# Get a list of files in the archive.
-		members = payload_archive.getmembers()
-
 		name2file = {}
 		for file in self.filelist:
 			name = file.name
@@ -250,7 +240,11 @@ class FilePackage(Package):
 			name2file[name] = file
 
 		i = 0
-		for member in members:
+		while True:
+			member = payload_archive.next()
+			if not member:
+				break
+
 			file = name2file.get("/%s" % member.name, None)
 			if not file:
 				log.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
@@ -342,9 +336,6 @@ class FilePackage(Package):
 		payload_archive.close()
 		payload.close()
 		archive.close()
-
-		if tempf:
-			os.unlink(tempf)
 
 		if pb:
 			pb.finish()
@@ -511,23 +502,18 @@ class FilePackage(Package):
 		"""
 			Return the (guessed) compression type of the payload.
 		"""
-		# Get the max. length of the magic values.
-		max_length = max([len(v) for v in PAYLOAD_COMPRESSION_MAGIC.values()])
+		# We cache that because this is costly.
+		if self.__payload_compression is None:
+			a = self.open_archive()
+			f = a.extractfile("data.img")
 
-		a = self.open_archive()
-		f = a.extractfile("data.img")
+			# Go and guess what we do have here.
+			self.__payload_compression = compress.guess_algo(fileobj=f)
 
-		# Read magic bytes from file.
-		magic = f.read(max_length)
+			f.close()
+			a.close()
 
-		f.close()
-		a.close()
-
-		for algo, m in PAYLOAD_COMPRESSION_MAGIC.items():
-			if not magic.startswith(m):
-				continue
-
-			return algo
+		return self.__payload_compression or "none"
 
 	@property
 	def signature(self):

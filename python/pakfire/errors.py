@@ -42,6 +42,10 @@ class BuildError(Error):
 class BuildRootLocked(Error):
 	pass
 
+class CompressionError(Error):
+	message = _("Could not compress/decompress data.")
+
+
 class ConfigError(Error):
 	pass
 
