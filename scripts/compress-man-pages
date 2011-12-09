@@ -42,7 +42,7 @@ for file in $(find ${dir} -type f 2>/dev/null); do
 	}
 done
 
-for file in $(find ${dir} -type l); do
+for file in $(find ${dir} -type l 2>/dev/null); do
 	link=$(ls -l ${file} | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
 	rm -f ${file}
 	b=$(echo ${file} | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//')
