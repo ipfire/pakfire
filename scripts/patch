@@ -1,12 +1,40 @@
 #!/bin/bash
 # Script that automatically applies patches.
 
-if [ -n "$@" ]; then
+paths=
+patches=
+
+while [ $# -gt 0 ]; do
+	case "${1}" in
+		--search-path=*)
+			paths="${paths} ${1#--search-path=}"
+			;;
+		*)
+			patches="${patches} ${1}"
+			;;
+	esac
+	shift
+done
+
+if [ -n "${patches}" ]; then
 	echo "Applying patches..."
 fi
 
 # Apply all patches given on command line.
-for patch in $@; do
+for patch in ${patches}; do
+	case "${patch}" in
+		/*)
+			;;
+		*)
+			for path in ${paths}; do
+				if [ -e "${path}/${patch}" ]; then
+					patch="${path}/${patch}"
+					break
+				fi
+			done
+			;;
+	esac
+
 	# Check if patch file does exist.
 	if ! [ -e "${patch}" ]; then
 		echo >&2 "  ERROR: Patch file does not exist: ${patch}"
@@ -27,13 +55,9 @@ for patch in $@; do
 			# Default is -p1.
 			options="${options} -p1"
 			;;
-		*.off)
-			# Ignore disabled patches.
-			continue
-			;;
 		*)
-			echo >&2 "   ERROR: Unknown filetype: ${patch}"
-			exit 1
+			echo >&2 "   WARNING: Ignoring unknown file: ${patch}"
+			continue
 			;;
 	esac
 

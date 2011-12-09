@@ -23,7 +23,7 @@ sources = %{thisapp}.tar.gz
 
 # Macro to extract tarballs.
 # Guesses the compression type automatically.
-MACRO_EXTRACT = tar xvaf
+MACRO_EXTRACT = tar xaf
 
 # Remove rpath from libtool.
 MACRO_FIX_LIBTOOL
