@@ -1,7 +1,7 @@
 
 include Makeconfig
 
-SUBDIRS = po python scripts
+SUBDIRS = po python tools
 
 all: build
 

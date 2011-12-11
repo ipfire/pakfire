@@ -44,4 +44,4 @@ TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 # A list of all files that contain translations and need to
 # be indexed.
 TRANS_FILES  = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
-TRANS_FILES += python/src/*.c scripts/pakfire-multicall.py
+TRANS_FILES += python/src/*.c tools/pakfire-multicall.py
