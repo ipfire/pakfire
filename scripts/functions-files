@@ -36,8 +36,15 @@ function file_get_interpreter() {
 function _file_get_elf_interpreter() {
 	local file=${1}
 
-	readelf -l ${file} | grep "program interpreter" | \
-		tr -d "]" | awk '{ print $NF }'
+	local interp=$(readelf -l ${file} | grep "program interpreter" | \
+		tr -d "]" | awk '{ print $NF }')
+
+	# Only return real file names. Debugging files do not
+	# have those starting with a /.
+	if [ "${interp:0:1}" = "/" ]; then
+		echo "${interp}"
+		return
+	fi
 }
 
 # Hidden fucntion that gets the interpreter from a script file.
