@@ -36,7 +36,7 @@ all: $(SCRIPTS)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
 
 debugedit: debugedit.o hashtab.o
-	$(CC) $(CFLAGS) $(LIBS_BEECRYPT) $(LIBS_ELF) $(LIBS_POPT) -o $@ $?
+	$(CC) $(CFLAGS) -o $@ $? $(LIBS_BEECRYPT) $(LIBS_ELF) $(LIBS_POPT)
 
 .PHONY: install
 install: $(SCRIPTS)
