@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: IPFire\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-20 11:27+0100\n"
-"PO-Revision-Date: 2011-11-21 03:22+0000\n"
+"PO-Revision-Date: 2011-12-10 19:31+0000\n"
 "Last-Translator: mstremer <michael.tremer@ipfire.org>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/ipfire/team/de/)\n"
 "MIME-Version: 1.0\n"
@@ -129,7 +129,7 @@ msgstr "Entpacke"
 #: ../python/pakfire/builder.py:554
 #, python-format
 msgid "Could not find makefile in build root: %s"
-msgstr ""
+msgstr "Makefile im Buildroot konnte nicht gefunden werden: %s"
 
 #: ../python/pakfire/builder.py:567
 msgid "The build command failed. See logfile for details."
@@ -150,11 +150,11 @@ msgstr "Starte Stage %s:"
 #: ../python/pakfire/builder.py:752
 #, python-format
 msgid "Could not remove static libraries: %s"
-msgstr ""
+msgstr "Konnte statische Bibliotheken nicht entfernen: %s"
 
 #: ../python/pakfire/builder.py:758
 msgid "Compressing man pages did not complete successfully."
-msgstr ""
+msgstr "Das Komprimieren der Man-pages schlug fehl."
 
 #: ../python/pakfire/cli.py:43
 msgid "Pakfire command line interface."

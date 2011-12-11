@@ -1,6 +1,9 @@
 
 
 def MACRO_EXTRACT_TARBALL
+	# Remove old data if existant.
+	rm -rf %{DIR_APP}
+
 	for source in %{sources}; do
 		%{MACRO_EXTRACT} %{DIR_DL}/${source} || exit 1
 	done
@@ -68,6 +71,7 @@ build
 	make_install_targets = install
 
 	def _prepare
+		rm -rf %{BUILDROOT}/*
 		mkdir -p %{DIR_SRC} && cd %{DIR_SRC}
 
 		%{prepare}
@@ -151,4 +155,9 @@ build
 	# XXX to be removed soon
 	def install_post
 	end
+
+	# Enable strict processing of build-id by default.
+	# The build will fail if a file is missing its build-id.
+	debuginfo_strict_build_id = true
+	debuginfo_options =
 end

@@ -1,10 +1,11 @@
 
-BUILDROOT   = %{DIR_TMP}/buildroot_%{name}-%{thisver}
+BUILDROOT   = %{DIR_BUILD}/%{name}-%{thisver}
 
+DIR_BUILD   = /builddir
 DIR_APP     = %{DIR_SRC}/%{thisapp}
 DIR_DL      = %{BASEDIR}/files
 DIR_PATCHES = %{BASEDIR}/patches
-DIR_SRC     = /usr/src
+DIR_SRC     = %{DIR_BUILD}/source
 DIR_TMP     = /tmp
 DIR_SOURCE  = %{BASEDIR}
 

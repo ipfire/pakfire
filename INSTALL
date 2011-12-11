@@ -8,6 +8,10 @@ Requirements:
  * libcap
  * libsolv
  * xz
+ * beecrypt (requires libgomp)
+ * popt
+ * libelf
+ * elfutils
 
 
 Install instructions:

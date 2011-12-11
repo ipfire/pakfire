@@ -138,7 +138,11 @@ class Packager(object):
 		f = open(filelist, "w")
 		datafile = InnerTarFileXz.open(datafile)
 
-		for m in datafile.getmembers():
+		while True:
+			m = datafile.next()
+			if not m:
+				break
+
 			log.debug("  %s %-8s %-8s %s %6s %s" % \
 				(tarfile.filemode(m.mode), m.uname, m.gname,
 				"%d-%02d-%02d %02d:%02d:%02d" % time.localtime(m.mtime)[:6],

@@ -232,10 +232,10 @@ class FilePackage(Package):
 
 		name2file = {}
 		for file in self.filelist:
-			name = file.name
-
 			if file.is_dir():
-				name = name[:-1]
+				name = file.name[:-1]
+			else:
+				name = file.name
 
 			name2file[name] = file
 
@@ -245,9 +245,15 @@ class FilePackage(Package):
 			if not member:
 				break
 
-			file = name2file.get("/%s" % member.name, None)
-			if not file:
-				log.warning(_("File in archive is missing in file metadata: /%s. Skipping.") % member.name)
+			# Check if file is also known in metadata.
+			name = member.name
+			if not name.startswith("/"):
+				name = "/%s" % name
+
+			try:
+				file = name2file[name]
+			except KeyError:
+				log.warning(_("File in archive is missing in file metadata: %s. Skipping.") % name)
 				continue
 
 			# Update progress.
@@ -467,7 +473,7 @@ class FilePackage(Package):
 				if not line[7] == "-":
 					file.hash1 = line[7]
 
-				if self.format >= 3 and not line[8] == "-":
+				if self.format >= 3 and len(line) >= 9 and not line[8] == "-":
 					file.capabilities = line[8]
 
 			else:
