@@ -17,7 +17,7 @@ $(LIB): $(OBJECTS)
 
 .PHONY: install
 install: all
-	-mkdir -pv $(DESTDIR)$(SCRIPT_DIR)
+	-mkdir -pv $(DESTDIR)$(LIBDIR)
 	install -p -m 755 $(LIB) $(DESTDIR)$(LIBDIR)
 
 .PHONY: clean
