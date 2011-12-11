@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 02:41+0100\n"
+"POT-Creation-Date: 2011-12-11 03:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,72 +132,72 @@ msgstr ""
 msgid "Extracting"
 msgstr ""
 
-#: ../python/pakfire/builder.py:575
+#: ../python/pakfire/builder.py:582
 msgid "You cannot run a build when no package was given."
 msgstr ""
 
-#: ../python/pakfire/builder.py:580
+#: ../python/pakfire/builder.py:587
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:594
+#: ../python/pakfire/builder.py:601
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
 #. Walk through the whole tree and collect all files
 #. that are on the same disk (not crossing mountpoints).
-#: ../python/pakfire/builder.py:652
+#: ../python/pakfire/builder.py:659
 msgid "Creating filelist..."
 msgstr ""
 
 #. Create a nice progressbar.
-#: ../python/pakfire/builder.py:671
+#: ../python/pakfire/builder.py:678
 msgid "Compressing files..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:690
+#: ../python/pakfire/builder.py:697
 #, python-format
 msgid "Cache file was successfully created at %s."
 msgstr ""
 
-#: ../python/pakfire/builder.py:691
+#: ../python/pakfire/builder.py:698
 #, python-format
 msgid "  Containing %(files)s files, it has a size of %(size)s."
 msgstr ""
 
 #. Make a nice progress bar as always.
-#: ../python/pakfire/builder.py:702
+#: ../python/pakfire/builder.py:709
 msgid "Extracting files..."
 msgstr ""
 
 #. Update all packages.
-#: ../python/pakfire/builder.py:722
+#: ../python/pakfire/builder.py:729
 msgid "Updating packages from cache..."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:838
+#: ../python/pakfire/builder.py:845
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:858
+#: ../python/pakfire/builder.py:865
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:876
+#: ../python/pakfire/builder.py:883
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:882
+#: ../python/pakfire/builder.py:889
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
-#: ../python/pakfire/builder.py:902
+#: ../python/pakfire/builder.py:909
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
