@@ -622,7 +622,17 @@ class SourcePackager(Packager):
 		# Add all files in the package directory.
 		for file in sorted(self.pkg.files):
 			arcname = os.path.relpath(file, self.pkg.path)
-			datafile.add(file, arcname)
+
+			# Get tarinfo from file that is to be added.
+			tarinfo = datafile.gettarinfo(file, arcname)
+
+			# Modify owner/group of the file. All source files belong
+			# to root (at least in this package).
+			tarinfo.uname = tarinfo.gname = "root"
+			tarinfo.uid = tarinfo.gid = 0
+
+			# Add file to tarball.
+			datafile.addfile(tarinfo)
 
 		datafile.close()
 
