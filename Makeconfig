@@ -12,7 +12,7 @@ PREFIX ?= /usr
 DEBIAN = $(shell test -e /etc/debian_version && echo 1 || echo 0)
 
 CC = gcc
-CFLAGS ?= -O2 -pipe
+CFLAGS ?= -O2 -fPIC -pipe
 MACHINE = $(shell uname -m)
 
 ifeq "$(MACHINE)" "x86_64"
