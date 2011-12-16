@@ -1,7 +1,7 @@
 
 include Makeconfig
 
-SUBDIRS = po python tools
+SUBDIRS = po python tools tools/fake-environ
 
 all: build
 
