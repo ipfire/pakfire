@@ -803,9 +803,6 @@ class RootLexer(ExportLexer):
 	def init(self, environ):
 		ExportLexer.init(self, environ)
 
-		# A place to store all packages and templates.
-		self.packages = PackagesLexer([], parent=self)
-
 		# Import all environment variables.
 		if environ:
 			for k, v in environ.items():
@@ -815,6 +812,12 @@ class RootLexer(ExportLexer):
 
 		# Place for build instructions
 		self.build = BuildLexer([], parent=self)
+
+		# A place to store all packages and templates.
+		# The parent of this is the build block because a lot
+		# of relevant variables are set there and need to be used
+		# later. That keeps us the root lexer a bit more clean.
+		self.packages = PackagesLexer([], parent=self.build)
 
 		# Place for quality-agent exceptions
 		self.quality_agent = QualityAgentLexer([], parent=self)
