@@ -529,7 +529,14 @@ class BuildEnviron(object):
 				env["ICECC_PREFERRED_HOST"] = \
 					self.settings.get("icecream_preferred_host")
 
-		# XXX what do we need else?
+		# Fake UTS_MACHINE, when we cannot use the personality syscall and
+		# if the host architecture is not equal to the target architecture.
+		if not self.pakfire.distro.personality and \
+				not self.pakfire.config.host_arch == self.pakfire.distro.arch:
+			env.update({
+				"LD_PRELOAD"  : "/usr/lib/libpakfire_preload.so",
+				"UTS_MACHINE" : self.pakfire.distro.arch,
+			})
 
 		return env
 

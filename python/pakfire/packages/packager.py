@@ -23,7 +23,6 @@ import collections
 import fnmatch
 import glob
 import hashlib
-import lzma
 import os
 import progressbar
 import re
@@ -38,6 +37,7 @@ import zlib
 import logging
 log = logging.getLogger("pakfire")
 
+import pakfire.lzma as lzma
 import pakfire.util as util
 
 from pakfire.constants import *
