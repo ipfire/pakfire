@@ -64,7 +64,7 @@ packages
 			this package or when debugging this package.
 		end
 
-		group = Development/Debug Debug
+		groups = Development/Debug Debug
 
 		files
 			/usr/lib/debug
