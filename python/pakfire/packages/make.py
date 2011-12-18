@@ -426,12 +426,18 @@ class MakefilePackage(MakefileBase):
 		for dep in deps:
 			filtered = False
 			for filter in filters:
+				# Convert to raw string to make escaping characters
+				# easy to the user.
+				filter = "%r" % filter
+
+				# Search for a match anywhere in the line.
 				m = re.search(filter, dep)
 				if not m:
 					continue
 
 				# Yes, we found a match.
 				filtered = True
+				break
 
 			if not filtered:
 				filtered_deps.append(dep)
