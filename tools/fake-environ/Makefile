@@ -22,4 +22,4 @@ install: all
 
 .PHONY: clean
 clean:
-	$(LIB)
+	rm -vf $(LIB)

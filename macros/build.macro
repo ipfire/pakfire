@@ -1,9 +1,6 @@
 
 
 def MACRO_EXTRACT_TARBALL
-	# Remove old data if existant.
-	rm -rf %{DIR_APP}
-
 	for source in %{sources}; do
 		%{MACRO_EXTRACT} %{DIR_DL}/${source} || exit 1
 	done
