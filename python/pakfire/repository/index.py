@@ -289,6 +289,7 @@ class IndexSolv(Index):
 			grabber = self.repo.mirrors.group(grabber)
 
 			# Open file on server.
+			filename = str(filename)
 			urlobj = fileobj = grabber.urlopen(filename)
 
 			if self.metadata.database_compression:
