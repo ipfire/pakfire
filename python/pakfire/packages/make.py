@@ -420,18 +420,37 @@ class MakefilePackage(MakefileBase):
 		if not filters:
 			return deps
 
-		filters = filters.splitlines()
+		_filters = []
 		filtered_deps = []
+
+		# Compile all filters.
+		for filter in filters.splitlines():
+			# Convert to raw string to make escaping characters
+			# easy to the user.
+			try:
+				_filter = re.compile("%r" % filter)
+			except re.error:
+				log.warning(_("Regular experession is invalid and has been skipped: %s") % filter)
+				continue
+
+			_filters.append(_filter)
+
+		filters = _filters
 
 		for dep in deps:
 			filtered = False
 			for filter in filters:
+				# Search for a match anywhere in the line.
 				m = re.search(filter, dep)
 				if not m:
 					continue
 
+				# Let the user know what has been done.
+				log.info(_("Filter %s filtered %s.") % (filter, dep))
+
 				# Yes, we found a match.
 				filtered = True
+				break
 
 			if not filtered:
 				filtered_deps.append(dep)
