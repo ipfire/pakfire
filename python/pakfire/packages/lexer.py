@@ -669,6 +669,9 @@ class PackageLexer(TemplateLexer):
 	def definitions(self):
 		definitions = {}
 
+		if self.parent:
+			definitions.update(self.parent.definitions)
+
 		if self.template:
 			definitions.update(self.template.definitions)
 
