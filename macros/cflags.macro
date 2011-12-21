@@ -9,3 +9,5 @@ CFLAGS_armv7hl  = -march=armv7-a -mfpu=vfpv3-d16  -mfloat-abi=hard -mthumb
 
 export CFLAGS   = %{GLOBAL_CFLAGS} %{CFLAGS_%{DISTRO_ARCH}}
 export CXXFLAGS = %{CFLAGS}
+
+export LDFLAGS  =
