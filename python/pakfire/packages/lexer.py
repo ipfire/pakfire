@@ -117,7 +117,14 @@ class Lexer(object):
 
 	@property
 	def definitions(self):
-		return self._definitions
+		definitions = {}
+
+		if self.parent:
+			definitions.update(self.parent.definitions)
+
+		definitions.update(self._definitions)
+
+		return definitions
 
 	@classmethod
 	def open(cls, filename, *args, **kwargs):
@@ -585,16 +592,6 @@ class TemplateLexer(DefaultLexer):
 
 		# Inherit all scriptlets.
 		self.scriptlets.update(other.scriptlets)
-
-	@property
-	def definitions(self):
-		definitions = {}
-
-		assert self.parent
-		definitions.update(self.parent.definitions)
-		definitions.update(self._definitions)
-
-		return definitions
 
 	def get_parsers(self):
 		return [
