@@ -741,7 +741,7 @@ class FilePackage(Package):
 		if not provides:
 			return []
 
-		return provides.split()
+		return provides.splitlines()
 
 	@property
 	def requires(self):
@@ -753,7 +753,7 @@ class FilePackage(Package):
 		if not requires:
 			return []
 
-		return requires.split()
+		return requires.splitlines()
 
 	@property
 	def prerequires(self):
@@ -765,7 +765,7 @@ class FilePackage(Package):
 		if not prerequires:
 			return []
 
-		return prerequires.split()
+		return prerequires.splitlines()
 
 	@property
 	def obsoletes(self):
@@ -777,7 +777,7 @@ class FilePackage(Package):
 		if not obsoletes:
 			return []
 
-		return obsoletes.split()
+		return obsoletes.splitlines()
 
 	@property
 	def conflicts(self):
@@ -789,7 +789,7 @@ class FilePackage(Package):
 		if not conflicts:
 			return []
 
-		return conflicts.split()
+		return conflicts.splitlines()
 
 
 class SourcePackage(FilePackage):

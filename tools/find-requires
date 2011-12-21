@@ -1,0 +1,140 @@
+#!/bin/bash
+
+# Include functions.
+BASEDIR=$(dirname ${0})
+source ${BASEDIR}/find-common
+
+# BUILDROOT is the first argument.
+BUILDROOT=${1}
+FILELIST=${2}
+
+# Determine libdir.
+if [ "$(uname -m)" = "x86_64" ]; then
+	libdir=/usr/lib64
+else
+	libdir=/usr/lib
+fi
+
+binary_files=
+perl_files=
+script_files=
+pkgconfig_files=
+
+# Walk through all file files and see what we have got here.
+while read file; do
+	case "${file}" in
+		*.pc)
+			# Find all pkg-config files.
+			pkgconfig_files="${pkgconfig_files} ${file}"
+			continue
+			;;
+		*.pm)
+			# Find all perl modules.
+			if [ -r "${file}" ]; then
+				perl_files="${perl_files} ${file}"
+				continue
+			fi
+			;;
+
+		# Python
+		*/usr/lib*/python*/*)
+			# Sort out all python files.
+			;;
+		*/usr/lib*/python*)
+			# This will only get the python directory.
+			file=$(basename ${file})
+
+			# Strip the python version from the string.
+			python_version="${file#python}"
+
+			echo "python-abi = ${python_version}"
+			continue
+			;;
+	esac
+
+	# Search for all binary files.
+	if file_is_elf ${file}; then
+		binary_files="${binary_files} ${file}"
+		continue
+	fi
+
+	# Search for script files.
+	if file_is_script ${file}; then
+		script_files="${script_files} ${file}"
+		continue
+	fi
+
+	# Unresolved symlinks.
+	if [ -L "${file}" ]; then
+		# Get destination.
+		link=$(readlink -m ${file})
+
+		# If destination does not exist, make
+		# a dependency for it.
+		if ! [ -e "${link}" ]; then
+			echo "${link#${BUILDROOT}}"
+		fi
+	fi
+done < ${FILELIST}
+
+# Process script files.
+interpreters=
+for file in ${script_files}; do
+	[ -r ${file} -a -x ${file} ] || continue
+
+	interp=$(head -n 1 ${file} | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1)
+	interpreters="${interpreters} ${interp}"
+
+	# Collect all perl files.
+	case ${interp} in
+		*/perl)
+			perl_files="${perl_files} ${file}"
+			;;
+	esac
+done
+
+# Output the list of needed interpreters.
+[ -n "${interpreters}" ] && { echo "${interpreters}" | tr '[:blank:]' \\n | sort -u ; }
+
+# Weak symbol versions (from glibc).
+[ -n "${mark64}" ] && mark64="(64bit)"
+for file in ${binary_files}; do
+	[ -r ${file} ] || continue
+
+	lib64=$(if file_is_64bit ${file}; then echo "${mark64}"; fi)
+	objdump -p ${file} | awk 'BEGIN { START=0; LIBNAME=""; }
+		/^$/ { START=0; }
+		/^Dynamic Section:$/ { START=1; }
+		(START==1) && /NEEDED/ {
+			if ("'${lib64}'" != "") {
+				sub(/$/, "()'${lib64}'", $2);
+			}
+			print $2;
+		}
+		(START==2) && /^[A-Za-z]/ { START=3; }
+		/^Version References:$/ { START=2; }
+		(START==2) && /required from/ {
+			sub(/:/, "", $3);
+			LIBNAME=$3;
+		}
+		(START==2) && (LIBNAME!="") && ($4!="") {
+			print LIBNAME "(" $4 ")'${lib64}'";
+		}'
+done | sort -u
+
+# Search for perl requires.
+if [ -n "${perl_files}" ] && [ -x /usr/bin/perl ]; then
+	perl ${BASEDIR}/perl.req ${perl_files} | sort -u
+fi
+
+# Search for pkg-config requires.
+pkgconfig=$(which pkg-config)
+if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
+	for file in ${pkgconfig_files}; do
+		${pkgconfig} --print-requires --print-requires-private "${file}" 2> /dev/null | while read n r v ; do
+			echo "pkgconfig(${n})" "${r}" "${v}"
+		done
+	done
+fi
+
+exit 0

@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Include functions.
+BASEDIR=$(dirname ${0})
+source ${BASEDIR}/find-common
+
+BUILDROOT=${1}
+FILELIST=${2}
+
+binary_files=
+perl_files=
+pkgconfig_files=
+
+# Walk through all file files and see what we have got here.
+while read file; do
+	case "${file}" in
+		*/lib/ld.so)
+			# Just ignore this file.
+			;;
+		*.so*)
+			binary_files="${binary_files} ${file}"
+			;;
+		*.pm)
+			# This file is a perl module. We check them later.
+			perl_files="${perl_files} ${file}"
+			;;
+		*.pc)
+			pkgconfig_files="${pkgconfig_files} ${file}"
+			;;
+	esac
+done < ${FILELIST}
+
+# Search for SONAMEs in all binary files.
+for file in ${binary_files}; do
+	[ -L ${file} ] && continue
+
+	soname=$(file_get_soname ${file})
+
+	# If the files does not have a SONAME, we will
+	# simply use the basename.
+	if [ -z "${soname}" ]; then
+		if [ -L ${file} ]; then
+			continue
+		fi
+		soname=$(basename ${file})
+	fi
+
+	if file_is_64bit ${file}; then
+		is_64=true
+		echo "${soname}${mark64}"
+	else
+		is_64=false
+		echo "${soname}"
+	fi
+
+	# Find weak symbol provides.
+	objdump -p ${file} 2>/dev/null | awk '
+		BEGIN { START=0 ; }
+		/Version definitions:/ { START=1; }
+		/^[0-9]/ && (START==1) { print $4; }
+		/^$/ { START=0; }' | \
+                grep -v ${soname} | \
+                while read symbol ; do
+                    echo "${soname}(${symbol})$(${is_64} && echo ${mark64} | sed 's/()//')"
+                done
+done
+
+# Search for perl provides.
+if [ -n "${perl_files}" ] && [ -x /usr/bin/perl ]; then
+	perl ${BASEDIR}/perl.prov ${perl_files} | sort -u
+fi
+
+# pkg-config files.
+pkgconfig=$(which pkg-config)
+
+if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
+	for file in ${pkgconfig_files}; do
+		# Query the dependencies of the package.
+		${pkgconfig} --print-provides "${file}" 2> /dev/null | while read n r v ; do
+			# We have a dependency.  Make a note that we need the pkgconfig
+			# tool for this package.
+			echo "pkgconfig(${n}) ${r} ${v}"
+
+			# The dependency on the pkgconfig package itself.
+			echo "pkgconfig"
+		done
+	done | sort -u
+fi
+
+exit 0

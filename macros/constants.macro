@@ -9,12 +9,6 @@ DIR_SRC     = %{DIR_BUILD}/source
 DIR_TMP     = /tmp
 DIR_SOURCE  = %{BASEDIR}
 
-CONFIGURE_SCRIPT = configure
-configure_options = \
-	--host=%{DISTRO_MACHINE} \
-	--build=%{DISTRO_MACHINE} \
-	--prefix=/usr
-
 # By default, take all patches from the patches directory
 # in alphabetical order.
 patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort)
@@ -28,9 +22,9 @@ MACRO_EXTRACT = tar xaf
 
 # Remove rpath from libtool.
 MACRO_FIX_LIBTOOL
-	if [ -e "%{DIR_APP}/libtool" ]; then
-		sed -e %{DIR_APP}/libtool \
-			-e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g'
+	if [ -e "libtool" ]; then
+		sed -i libtool \
+			-e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
 			-e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g'
 	fi
 end

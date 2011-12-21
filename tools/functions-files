@@ -14,9 +14,14 @@ function file_is_elf() {
 function file_is_script() {
 	local file=${1}
 
-	local first_line=$(head -n1 ${file})
+	file ${file} | egrep -q ":.* (commands|script) "
+}
 
-	[ "${first_line:0:2}" = "#!" ]
+# Check if file is an 64-bit binary.
+function file_is_64bit() {
+	local file=${1}
+
+	file -L ${file} 2>/dev/null | grep -q "ELF 64-bit"
 }
 
 # Get the interpreter of a file.
@@ -80,8 +85,10 @@ function file_is_static() {
 function file_get_needed() {
 	local file=${1}
 
-	readelf -d ${file} | grep NEEDED | \
-		tr -d "[]" | awk '{ print $NF }'
+	local out=$(readelf -d ${file} | grep NEEDED | \
+		tr -d "[]" | awk '{ print $NF }')
+
+	echo "${out}$(file_is_64bit ${file})"
 }
 
 # Get RPATH from a file.
@@ -104,8 +111,7 @@ function file_get_soname() {
 		return
 	fi
 
-	readelf -d ${file} | grep SONAME | \
-		tr -d "[]" | awk '{ print $NF }'
+	objdump -p ${file} 2>/dev/null | awk '/SONAME/ { print $2 }'
 }
 
 # Check if a file is a shared object.
