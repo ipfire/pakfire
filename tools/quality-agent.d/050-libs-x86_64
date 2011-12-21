@@ -1,0 +1,22 @@
+#!/bin/bash
+
+. $(dirname ${0})/qa-include
+
+DESC="Shared libs in /lib or /usr/lib are not allowed."
+
+check() {
+	local failed=0
+
+	# Do nothing on other platforms.
+	[ "$(uname -m)" = "x86_64" ] || return ${failed}
+
+	local file
+	for file in $(find ${BUILDROOT}/lib ${BUILDROOT}/usr/lib -name "*.so*" 2>/dev/null); do
+		log_error "  Unallowed location for library: ${file}"
+		failed=1
+	done
+
+	return ${failed}
+}
+
+run
