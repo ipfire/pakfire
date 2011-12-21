@@ -18,8 +18,10 @@ SCRIPTS_SHELL = \
 	chroot-shell \
 	cleanup \
 	compress-man-pages \
-	dependency-tracker \
 	extract-debuginfo \
+	find-common \
+	find-provides \
+	find-requires \
 	pakfire-multicall.py \
 	patch \
 	py-compile \

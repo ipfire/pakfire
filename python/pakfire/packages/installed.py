@@ -145,19 +145,19 @@ class DatabasePackage(Package):
 
 	@property
 	def provides(self):
-		return self.metadata.get("provides", "").split()
+		return self.metadata.get("provides", "").splitlines()
 
 	@property
 	def requires(self):
-		return self.metadata.get("requires", "").split()
+		return self.metadata.get("requires", "").splitlines()
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("conflicts", "").split()
+		return self.metadata.get("conflicts", "").splitlines()
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("obsoletes", "").split()
+		return self.metadata.get("obsoletes", "").splitlines()
 
 	@property
 	def hash1(self):

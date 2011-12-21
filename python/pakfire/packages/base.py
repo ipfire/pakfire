@@ -409,23 +409,23 @@ class Package(object):
 			if ret:
 				break
 
-		return ret.split()
+		return ret.splitlines()
 
 	@property
 	def provides(self):
-		return self.metadata.get("PKG_PROVIDES", "").split()
+		return self.metadata.get("PKG_PROVIDES", "").splitlines()
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("PKG_CONFLICTS", "").split()
+		return self.metadata.get("PKG_CONFLICTS", "").splitlines()
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("PKG_OBSOLETES", "").split()
+		return self.metadata.get("PKG_OBSOLETES", "").splitlines()
 
 	@property
 	def scriptlets(self):
-		return self.metadata.get("PKG_SCRIPTLETS", "").split()
+		return self.metadata.get("PKG_SCRIPTLETS", "").splitlines()
 
 	@property
 	def filelist(self):
