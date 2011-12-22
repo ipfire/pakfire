@@ -30,15 +30,15 @@ function file_get_interpreter() {
 	local file=${1}
 
 	if file_is_elf ${file}; then
-		_file_get_elf_interpreter ${file}
+		file_get_elf_interpreter ${file}
 	elif file_is_script ${file}; then
-		_file_get_script_interpreter ${file}
+		file_get_script_interpreter ${file}
 	fi
 }
 
 # Hidden function that gets the interpreter from an ELF file.
 #
-function _file_get_elf_interpreter() {
+function file_get_elf_interpreter() {
 	local file=${1}
 
 	local interp=$(readelf -l ${file} | grep "program interpreter" | \
@@ -54,7 +54,7 @@ function _file_get_elf_interpreter() {
 
 # Hidden fucntion that gets the interpreter from a script file.
 #
-function _file_get_script_interpreter() {
+function file_get_script_interpreter() {
 	local file=${1}
 
 	# If the file is not executeable, no interpreter will be needed
