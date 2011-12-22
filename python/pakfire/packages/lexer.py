@@ -681,14 +681,9 @@ class PackageLexer(TemplateLexer):
 		if not self._template:
 			return None
 
-		# Collect all templates.
-		templates = self.root.templates
-		if hasattr(self.parent, "templates"):
-			templates.update(self.parent.templates)
-
 		# Get template from parent.
 		try:
-			return templates[self._template]
+			return self.parent.templates[self._template]
 		except KeyError:
 			raise LexerError, "Template does not exist: %s" % self._template
 
@@ -938,17 +933,28 @@ class RootLexer(ExportLexer):
 class PackagesLexer(DefaultLexer):
 	def init(self, environ):
 		# A place to store all templates.
-		self.templates = {}
+		self._templates = {}
 
 		# A place to store all packages.
 		self.packages = []
+
+	@property
+	def templates(self):
+		templates = {}
+
+		if self.parent and hasattr(self.parent, "templates"):
+			templates.update(self.parent.templates)
+
+		templates.update(self._templates)
+
+		return templates
 
 	def inherit(self, other):
 		# Copy all templates and packages but make sure
 		# to update the parent lexer (for accessing each other).
 		for name, template in other.templates.items():
 			template.parent = self
-			self.templates[name] = template
+			self._templates[name] = template
 
 		for pkg in other.packages:
 			pkg.parent = self
@@ -996,8 +1002,7 @@ class PackagesLexer(DefaultLexer):
 				self._lineno += 1
 				continue
 
-		template = TemplateLexer(lines, parent=self)
-		self.templates[name] = template
+		self._templates[name] = TemplateLexer(lines, parent=self)
 
 	def parse_package(self):
 		line = self.get_line(self._lineno)
