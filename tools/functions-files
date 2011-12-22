@@ -105,12 +105,6 @@ function file_get_rpath() {
 function file_get_soname() {
 	local file=${1}
 
-	local file_basename=$(basename ${file})
-	if [ "${file_basename:0:3}" = "ld-" ]; then
-		log DEBUG "Don't return a SONAME for linkers: ${file}"
-		return
-	fi
-
 	objdump -p ${file} 2>/dev/null | awk '/SONAME/ { print $2 }'
 }
 
