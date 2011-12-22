@@ -17,6 +17,9 @@ while read file; do
 		*/lib/ld.so)
 			# Just ignore this file.
 			;;
+		*/usr/lib*/python*/*.so)
+			# Do not show python shared objects in provides list.
+			;;
 		*.so*)
 			binary_files="${binary_files} ${file}"
 			;;
