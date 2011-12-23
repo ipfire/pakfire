@@ -82,7 +82,7 @@ interpreters=
 for file in ${script_files}; do
 	[ -r ${file} -a -x ${file} ] || continue
 
-	interp=$(head -n 1 ${file} | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1)
+	interp=$(file_get_script_interpreter ${file})
 	interpreters="${interpreters} ${interp}"
 
 	# Collect all perl files.

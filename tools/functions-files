@@ -62,11 +62,17 @@ function file_get_script_interpreter() {
 
 	local first_line=$(head -n1 ${file})
 
+	# Return nothing if no shebang was found.
+	[ "${first_line:0:2}" = "#!" ] || return
+
 	first_line="${first_line:2:${#first_line}}"
 
 	# Choose the first argument and strip any parameters if available
 	local interpreter
 	for interpreter in ${first_line}; do
+		# Skip interpreters that do that have an absolute path.
+		[ "${interpreter:0:1}" = "/" ] || break
+
 		echo "${interpreter}"
 		return
 	done
