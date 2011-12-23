@@ -5,7 +5,7 @@
 function file_is_elf() {
 	local file=${1}
 
-	file "${file}" | grep -q "ELF"
+	file "${file}" 2>/dev/null | grep -q "ELF"
 }
 
 # Check if a file is a script.
@@ -14,7 +14,7 @@ function file_is_elf() {
 function file_is_script() {
 	local file=${1}
 
-	file ${file} | egrep -q ":.* (commands|script)"
+	file ${file} 2>/dev/null | egrep -q ":.* (commands|script)"
 }
 
 # Check if file is an 64-bit binary.
@@ -41,8 +41,8 @@ function file_get_interpreter() {
 function file_get_elf_interpreter() {
 	local file=${1}
 
-	local interp=$(readelf -l ${file} | grep "program interpreter" | \
-		tr -d "]" | awk '{ print $NF }')
+	local interp=$(readelf -l ${file} 2>/dev/null | \
+		grep "program interpreter" | tr -d "]" | awk '{ print $NF }')
 
 	# Only return real file names. Debugging files do not
 	# have those starting with a /.
@@ -77,7 +77,7 @@ function file_get_script_interpreter() {
 function file_is_static() {
 	local file=${1}
 
-	file ${file} | grep -q "statically linked"
+	file ${file} 2>/dev/null | grep -q "statically linked"
 }
 
 # Get NEEDED from a file.
@@ -85,7 +85,7 @@ function file_is_static() {
 function file_get_needed() {
 	local file=${1}
 
-	local out=$(readelf -d ${file} | grep NEEDED | \
+	local out=$(readelf -d ${file} 2>/dev/null | grep NEEDED | \
 		tr -d "[]" | awk '{ print $NF }')
 
 	echo "${out}$(file_is_64bit ${file})"
@@ -96,7 +96,7 @@ function file_get_needed() {
 function file_get_rpath() {
 	local file=${1}
 
-	readelf -d ${file} | grep RPATH | \
+	readelf -d ${file} 2>/dev/null | grep RPATH | \
 		tr -d "[]" | awk '{ print $NF }'
 }
 
@@ -113,7 +113,7 @@ function file_get_soname() {
 function file_is_shared_object() {
 	local file=${1}
 
-	file ${file} | grep -q "shared object"
+	file ${file} 2>/dev/null | grep -q "shared object"
 }
 
 # Check if a file has the canary.
@@ -121,7 +121,7 @@ function file_is_shared_object() {
 function file_has_canary() {
 	local file=${1}
 
-	readelf -s ${file} | grep -q "__stack_chk_fail"
+	readelf -s ${file} 2>/dev/null | grep -q "__stack_chk_fail"
 }
 
 # Check if a file has an executeable stack.
@@ -129,7 +129,7 @@ function file_has_canary() {
 function file_has_execstack() {
 	local file=${1}
 
-	readelf -h ${file} | grep -qE "Type:[[:space:]]*EXEC"
+	readelf -h ${file} 2>/dev/null | grep -qE "Type:[[:space:]]*EXEC"
 }
 
 # Check if a file has NX.
@@ -137,7 +137,7 @@ function file_has_execstack() {
 function file_has_nx() {
 	local file=${1}
 
-	readelf -l ${file} | grep "GNU_STACK" | grep -q "RWE"
+	readelf -l ${file} 2>/dev/null | grep "GNU_STACK" | grep -q "RWE"
 	[ $? != 0 ]
 }
 
@@ -146,7 +146,7 @@ function file_has_nx() {
 function file_is_relro_partly() {
 	local file=${1}
 
-	readelf -l ${file} | grep -q "GNU_RELRO"
+	readelf -l ${file} 2>/dev/null | grep -q "GNU_RELRO"
 }
 
 # Check if a file is fully RELRO.
@@ -155,7 +155,7 @@ function file_is_relro_full() {
 	local file=${1}
 
 	if file_is_relro_partly ${file}; then
-		readelf -d ${file} | grep -q "BIND_NOW"
+		readelf -d ${file} 2>/dev/null | grep -q "BIND_NOW"
 		return $?
 	fi
 	return 1
