@@ -598,6 +598,7 @@ class CliServer(Cli):
 		self.parse_command_keepalive()
 		self.parse_command_repoupdate()
 		self.parse_command_repo()
+		self.parse_command_info()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -606,6 +607,7 @@ class CliServer(Cli):
 
 		self.action2func = {
 			"build"      : self.handle_build,
+			"info"       : self.handle_info,
 			"keepalive"  : self.handle_keepalive,
 			"repoupdate" : self.handle_repoupdate,
 			"repo_create": self.handle_repo_create,
@@ -655,6 +657,11 @@ class CliServer(Cli):
 		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
 		sub_create.add_argument("action", action="store_const", const="repo_create")
 
+	def parse_command_info(self):
+		sub_info = self.sub_commands.add_parser("info",
+			help=_("Dump some information about this machine."))
+		sub_info.add_argument("action", action="store_const", const="info")
+
 	def handle_keepalive(self):
 		self.server.update_info()
 
@@ -668,6 +675,11 @@ class CliServer(Cli):
 		path = self.args.path[0]
 
 		pakfire.repo_create(path, self.args.inputs, **self.pakfire_args)
+
+	def handle_info(self):
+		info = self.server.info()
+
+		print "\n".join(info)
 
 
 class CliBuilderIntern(Cli):

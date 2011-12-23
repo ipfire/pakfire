@@ -40,6 +40,7 @@ import pakfire.repository
 import pakfire.util
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 CHUNK_SIZE = 1024**2 # 1M
 
@@ -230,14 +231,12 @@ class Server(object):
 		"""
 		return socket.gethostname()
 
-	def update_info(self):
-		# Get the current load average.
-		loadavg = ", ".join(["%.2f" % l for l in os.getloadavg()])
+	@property
+	def uname(self):
+		return os.uname()[4]
 
-		# Get all supported architectures.
-		arches = sorted([a for a in self.config.supported_arches])
-		arches = " ".join(arches)
-
+	@property
+	def cpu_model(self):
 		# Determine CPU model
 		cpuinfo = {}
 		with open("/proc/cpuinfo") as f:
@@ -256,8 +255,19 @@ class Server(object):
 
 				cpuinfo[key] = value
 
-		cpu_model = cpuinfo.get("model name", "Could not be determined")
+		ret = None
+		if self.uname.startswith("arm"):
+			try:
+				ret = "%(Hardware)s - %(Processor)s" % cpuinfo
+			except KeyError:
+				pass
+		else:
+			ret = cpuinfo.get("model name", None)
 
+		return ret or _("Could not be determined")
+
+	@property
+	def memory(self):
 		# Determine memory size
 		memory = 0
 		with open("/proc/meminfo") as f:
@@ -268,9 +278,42 @@ class Server(object):
 			except:
 				pass
 			else:
-				memory = int(b)
+				memory = int(b) * 1024
 
-		self.conn.update_host_info(loadavg, cpu_model, memory, arches)
+		return memory
+
+	def info(self):
+		ret = []
+
+		ret.append("")
+		ret.append("  PAKFIRE %s" % PAKFIRE_VERSION)
+		ret.append("")
+		ret.append("  %-20s: %s" % (_("Hostname"), self.hostname))
+		ret.append("")
+
+		# Hardware information
+		ret.append("  %s:" % _("Hardware information"))
+		ret.append("      %-16s: %s" % (_("CPU model"), self.cpu_model))
+		ret.append("      %-16s: %s" % (_("Memory"),    pakfire.util.format_size(self.memory)))
+		ret.append("")
+		ret.append("      %-16s: %s" % (_("Native arch"), self.config.host_arch))
+
+		header = _("Supported arches")
+		for arch in self.config.supported_arches:
+			ret.append("      %-16s: %s" % (header, arch))
+			header = ""
+		ret.append("")
+
+		return ret
+
+	def update_info(self):
+		# Get the current load average.
+		loadavg = ", ".join(["%.2f" % l for l in os.getloadavg()])
+
+		# Get all supported architectures.
+		arches = " ".join([a for a in self.config.supported_arches])
+
+		self.conn.update_host_info(loadavg, self.cpu_model, self.memory, arches)
 
 	def upload_file(self, filename, build_id):
 		# Get the hash of the file.

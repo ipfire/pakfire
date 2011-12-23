@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-16 16:00+0100\n"
+"POT-Creation-Date: 2011-12-23 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -381,7 +381,7 @@ msgstr ""
 msgid "You cannot run pakfire-builder in a pakfire chroot."
 msgstr ""
 
-#: ../python/pakfire/cli.py:379 ../python/pakfire/cli.py:676
+#: ../python/pakfire/cli.py:379 ../python/pakfire/cli.py:688
 msgid "Pakfire builder command line interface."
 msgstr ""
 
@@ -389,25 +389,25 @@ msgstr ""
 msgid "Update the package indexes."
 msgstr ""
 
-#: ../python/pakfire/cli.py:443 ../python/pakfire/cli.py:696
+#: ../python/pakfire/cli.py:443 ../python/pakfire/cli.py:708
 msgid "Build one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:445 ../python/pakfire/cli.py:698
+#: ../python/pakfire/cli.py:445 ../python/pakfire/cli.py:710
 msgid "Give name of at least one package to build."
 msgstr ""
 
-#: ../python/pakfire/cli.py:449 ../python/pakfire/cli.py:702
+#: ../python/pakfire/cli.py:449 ../python/pakfire/cli.py:714
 msgid "Build the package for the given architecture."
 msgstr ""
 
 #: ../python/pakfire/cli.py:451 ../python/pakfire/cli.py:479
-#: ../python/pakfire/cli.py:704
+#: ../python/pakfire/cli.py:716
 msgid "Path were the output files should be copied to."
 msgstr ""
 
 #: ../python/pakfire/cli.py:453 ../python/pakfire/cli.py:468
-#: ../python/pakfire/cli.py:706
+#: ../python/pakfire/cli.py:718
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr ""
 
@@ -461,35 +461,39 @@ msgstr ""
 msgid "Pakfire server command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:626
+#: ../python/pakfire/cli.py:628
 msgid "Request a build job from the server."
 msgstr ""
 
-#: ../python/pakfire/cli.py:632
+#: ../python/pakfire/cli.py:634
 msgid "Send a keepalive to the server."
 msgstr ""
 
-#: ../python/pakfire/cli.py:639
+#: ../python/pakfire/cli.py:641
 msgid "Update all repositories."
 msgstr ""
 
-#: ../python/pakfire/cli.py:645
+#: ../python/pakfire/cli.py:647
 msgid "Repository management commands."
 msgstr ""
 
-#: ../python/pakfire/cli.py:653
+#: ../python/pakfire/cli.py:655
 msgid "Create a new repository index."
 msgstr ""
 
-#: ../python/pakfire/cli.py:654
+#: ../python/pakfire/cli.py:656
 msgid "Path to the packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:655
+#: ../python/pakfire/cli.py:657
 msgid "Path to input packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:708
+#: ../python/pakfire/cli.py:662
+msgid "Dump some information about this machine."
+msgstr ""
+
+#: ../python/pakfire/cli.py:720
 msgid "Do not verify build dependencies."
 msgstr ""
 
@@ -705,13 +709,13 @@ msgid "%s: package database"
 msgstr ""
 
 #. Create progress bar.
-#: ../python/pakfire/repository/index.py:394
+#: ../python/pakfire/repository/index.py:395
 #, python-format
 msgid "Loading from %s"
 msgstr ""
 
 #. Add all packages from the database to the index.
-#: ../python/pakfire/repository/index.py:457
+#: ../python/pakfire/repository/index.py:458
 msgid "Loading installed packages"
 msgstr ""
 
@@ -753,6 +757,35 @@ msgstr ""
 
 #: ../python/pakfire/satsolver.py:224
 msgid "    Solutions:"
+msgstr ""
+
+#: ../python/pakfire/server.py:267
+msgid "Could not be determined"
+msgstr ""
+
+#: ../python/pakfire/server.py:291
+msgid "Hostname"
+msgstr ""
+
+#. Hardware information
+#: ../python/pakfire/server.py:295
+msgid "Hardware information"
+msgstr ""
+
+#: ../python/pakfire/server.py:296
+msgid "CPU model"
+msgstr ""
+
+#: ../python/pakfire/server.py:297
+msgid "Memory"
+msgstr ""
+
+#: ../python/pakfire/server.py:299
+msgid "Native arch"
+msgstr ""
+
+#: ../python/pakfire/server.py:301
+msgid "Supported arches"
 msgstr ""
 
 #: ../python/pakfire/transaction.py:91

@@ -187,13 +187,17 @@ class Config(object):
 			"i486"     : [ "i486", "i586", "i686", "x86_64", ],
 
 			# ARM
-			"armv5tel" : [ "armv5tel", "armv5tejl", ],
+			"armv5tel" : [ "armv5tel", "armv5tejl", "armv7l", ],
 			"armv7hl " : [ "armv7l", ],
 		}
 
+		ret = []
 		for host, can_be_built in host_arches.items():
 			if self.host_arch in can_be_built:
-				yield host
+				ret.append(host)
+
+		ret.sort()
+		return reversed(ret)
 
 	def host_supports_arch(self, arch):
 		"""
