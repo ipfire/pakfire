@@ -388,6 +388,32 @@ class Package(object):
 	def vendor(self):
 		return self.metadata.get("PKG_VENDOR", "")
 
+	@staticmethod
+	def filter_deps(deps):
+		"""
+			Filter out invalid dependencies.
+
+			This is just for reading packages and skipping comments
+			or empty lines.
+		"""
+		ret = []
+
+		for dep in deps:
+			# Remove any leading or trailing spaces.
+			dep = dep.strip()
+
+			# Skip empty strings.
+			if not dep:
+				continue
+
+			# Skip comment lines.
+			if dep.startswith("#"):
+				continue
+
+			ret.append(dep)
+
+		return ret
+
 	@property
 	def prerequires(self):
 		requires = self.metadata.get("PKG_PREREQUIRES", "")
@@ -409,23 +435,23 @@ class Package(object):
 			if ret:
 				break
 
-		return ret.split()
+		return ret.splitlines()
 
 	@property
 	def provides(self):
-		return self.metadata.get("PKG_PROVIDES", "").split()
+		return self.metadata.get("PKG_PROVIDES", "").splitlines()
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("PKG_CONFLICTS", "").split()
+		return self.metadata.get("PKG_CONFLICTS", "").splitlines()
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("PKG_OBSOLETES", "").split()
+		return self.metadata.get("PKG_OBSOLETES", "").splitlines()
 
 	@property
 	def scriptlets(self):
-		return self.metadata.get("PKG_SCRIPTLETS", "").split()
+		return self.metadata.get("PKG_SCRIPTLETS", "").splitlines()
 
 	@property
 	def filelist(self):

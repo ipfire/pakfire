@@ -99,7 +99,7 @@ build
 			./%{CONFIGURE_SCRIPT} \
 				%{configure_options}
 
-			${MACRO_FIX_LIBTOOL}
+			%{MACRO_FIX_LIBTOOL}
 		fi
 
 		# Run custom commands.

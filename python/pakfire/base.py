@@ -123,6 +123,10 @@ class Pakfire(object):
 
 			name, version = s.split(pattern, 1)
 
+			# Trim spaces from strings.
+			name = name.strip()
+			version = version.strip()
+
 			return satsolver.Relation(self.pool, name, version, type)
 
 		return satsolver.Relation(self.pool, s)

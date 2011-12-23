@@ -741,7 +741,8 @@ class FilePackage(Package):
 		if not provides:
 			return []
 
-		return provides.split()
+		provides = provides.splitlines()
+		return self.filter_deps(provides)
 
 	@property
 	def requires(self):
@@ -753,7 +754,8 @@ class FilePackage(Package):
 		if not requires:
 			return []
 
-		return requires.split()
+		requires = requires.splitlines()
+		return self.filter_deps(requires)
 
 	@property
 	def prerequires(self):
@@ -765,7 +767,8 @@ class FilePackage(Package):
 		if not prerequires:
 			return []
 
-		return prerequires.split()
+		prerequires = prerequires.splitlines()
+		return self.filter_deps(prerequires)
 
 	@property
 	def obsoletes(self):
@@ -777,7 +780,8 @@ class FilePackage(Package):
 		if not obsoletes:
 			return []
 
-		return obsoletes.split()
+		obsoletes = obsoletes.splitlines()
+		return self.filter_deps(obsoletes)
 
 	@property
 	def conflicts(self):
@@ -789,7 +793,8 @@ class FilePackage(Package):
 		if not conflicts:
 			return []
 
-		return conflicts.split()
+		conflicts = conflicts.splitlines()
+		return self.filter_deps(conflicts)
 
 
 class SourcePackage(FilePackage):

@@ -270,7 +270,12 @@ class Makefile(MakefileBase):
 
 	@property
 	def requires(self):
-		return self.lexer.build.get_var("requires", "").split()
+		reqs = []
+
+		for line in self.lexer.build.get_var("requires", "").splitlines():
+			reqs += [r.strip() for r in line.split(",")]
+
+		return self.filter_deps(reqs)
 
 	@property
 	def provides(self):
@@ -387,32 +392,48 @@ class MakefilePackage(MakefileBase):
 		return None
 
 	def track_dependencies(self, builder, path):
-		# Dependency types.
-		dep_types = ("prerequires", "requires", "provides", "conflicts", "obsoletes",)
+		# Build filelist with all files that have been installed.
+		filelist = builder.mktemp()
 
-		result = builder.do("/usr/lib/pakfire/dependency-tracker %s" \
-			% path, returnOutput=True)
+		try:
+			f = open(filelist, "w")
+			for dir, subdirs, files in os.walk(path):
+				f.write("%s\n" % dir)
 
-		for line in result.splitlines():
-			m = re.match(r"^(\w+)=(.*)$", line)
-			if m is None:
-				continue
+				for file in files:
+					f.write("%s\n" % os.path.join(dir, file))
+			f.close()
 
-			key, val = m.groups()
+			log.info(_("Searching for automatic dependencies for %s...") % self.friendly_name)
 
-			if not key in dep_types:
-				continue
+			# Search for provides.
+			res = builder.do("/usr/lib/pakfire/find-provides %s %s" \
+				% (path, filelist), returnOutput=True)
+			provides = set(res.splitlines())
 
-			val = val.strip("\"")
-			val = val.split()
+			# Search for requires.
+			res = builder.do("/usr/lib/pakfire/find-requires %s %s" \
+				% (path, filelist), returnOutput=True)
+			requires = set(res.splitlines()) - provides
 
-			self._dependencies[key] = sorted(val)
+		finally:
+			if os.path.exists(filelist):
+				os.unlink(filelist)
+
+		self._dependencies["provides"] = provides
+		self._dependencies["requires"] = requires
 
 		# Filter dependencies.
-		for key in dep_types:
+		for key in ("prerequires", "requires", "provides", "conflicts", "obsoletes"):
+			# Make sure this is a list.
+			try:
+				self._dependencies[key] = list(self._dependencies[key])
+			except KeyError:
+				self._dependencies[key] = []
+
+			# Filter out unwanted elements.
 			self._dependencies[key] = self.filter_deps(
-				self._dependencies.get(key, []),
-				self.lexer.get_var("filter_%s" % key)
+				self._dependencies[key], self.lexer.get_var("filter_%s" % key)
 			)
 
 	@staticmethod
@@ -446,7 +467,7 @@ class MakefilePackage(MakefileBase):
 
 	def get_deps(self, key):
 		# Collect all dependencies that were set in the makefile by the user.
-		deps = self.lexer.get_var(key).split()
+		deps = self.lexer.get_var(key).splitlines()
 
 		# Collect all dependencies that were discovered by the tracker.
 		deps += self._dependencies.get(key, [])

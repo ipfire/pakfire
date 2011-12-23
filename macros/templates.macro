@@ -5,6 +5,14 @@ thisapp = %{name}-%{version}
 thisver = %{version}-%{_release}
 
 packages
+	# Don't inherit dependency information from somewhere else
+	# (like build dependencies).
+	prerequires =
+	requires =
+	provides =
+	conflicts =
+	obsoletes =
+
 	template MAIN
 		def files
 			/
@@ -21,8 +29,8 @@ packages
 		description = Runtime library files of the package %{thisapp}.
 
 		def files
-			/lib/lib*.so.*
-			/usr/lib*/lib*.so.*
+			/%{lib}/*.so.*
+			${libdir}/lib*.so.*
 		end
 
 		def configfiles
@@ -38,17 +46,17 @@ packages
 		requires = %{name}=%{thisver}
 
 		def files
-			/usr/bin/*-config
-			/usr/include
-			/usr/lib/*.a
-			/usr/lib/pkgconfig
-			/usr/share/aclocal
-			/usr/lib/*.so
-			/usr/share/*/cmake
-			/usr/share/man/man2
-			/usr/share/man/man3
-			/usr/share/pkgconfig
-			/usr/share/vala
+			%{bindir}/*-config
+			%{includedir}
+			%{libdir}//*.a
+			%{libdir}/pkgconfig
+			%{datadir}/aclocal
+			%{libdir}/*.so
+			%{datadir}/*/cmake
+			%{mandir}/man2
+			%{mandir}/man3
+			%{datadir}/pkgconfig
+			%{datadir}/vala
 		end
 
 		def configfiles

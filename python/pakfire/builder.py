@@ -746,6 +746,18 @@ class Builder(object):
 			"LANG"             : "C",
 		}
 
+	def mktemp(self):
+		"""
+			Create a temporary file in the build environment.
+		"""
+		file = "/tmp/pakfire_%s" % util.random_string()
+
+		# Touch the file.
+		f = open(file, "w")
+		f.close()
+
+		return file
+
 	@property
 	def buildroot(self):
 		return self.pkg.buildroot

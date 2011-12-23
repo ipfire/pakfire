@@ -1,0 +1,41 @@
+
+# Definitions for architectures.
+
+prefix            = /usr
+exec_prefix       = %{prefix}
+bindir            = %{exec_prefix}/bin
+sbindir           = %{exec_prefix}/sbin
+libexecdir        = %{exec_prefix}/lib
+datadir           = %{prefix}/share
+sysconfdir        = /etc
+sharedstatedir    = %{prefix}/com
+localstatedir     = /var
+lib               = lib
+libdir            = %{exec_prefix}/%{lib}
+includedir        = %{prefix}/include
+infodir           = %{datadir}/info
+mandir            = %{datadir}/man
+
+if "%{DISTRO_ARCH}" == "x86_64"
+	# Libs are installed in /lib64 and %{prefix}/lib64 on x86_64
+	lib = lib64
+end
+
+CONFIGURE_SCRIPT = configure
+configure_options = \
+	--host=%{DISTRO_MACHINE} \
+	--build=%{DISTRO_MACHINE} \
+	--prefix=%{prefix} \
+	--exec-prefix=%{exec_prefix} \
+	--bindir=%{bindir} \
+	--sbindir=%{sbindir} \
+	--sysconfdir=%{sysconfdir} \
+	--datadir=%{datadir} \
+	--includedir=%{includedir} \
+	--libdir=%{libdir} \
+	--libexecdir=%{libexecdir} \
+	--localstatedir=%{localstatedir} \
+	--sharedstatedir=%{sharedstatedir} \
+	--mandir=%{mandir} \
+	--infodir=%{infodir} \
+	--disable-dependency-tracking
