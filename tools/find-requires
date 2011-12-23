@@ -94,7 +94,7 @@ for file in ${script_files}; do
 done
 
 # Output the list of needed interpreters.
-[ -n "${interpreters}" ] && { echo "${interpreters}" | tr '[:blank:]' \\n | sort -u ; }
+[ -n "${interpreters}" ] && { echo ${interpreters} | tr '[:blank:]' \\n | sort -u ; }
 
 # Search for binary interpreters.
 for file in ${binary_files}; do
