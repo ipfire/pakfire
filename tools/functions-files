@@ -14,7 +14,7 @@ function file_is_elf() {
 function file_is_script() {
 	local file=${1}
 
-	file ${file} | egrep -q ":.* (commands|script) "
+	file ${file} | egrep -q ":.* (commands|script)"
 }
 
 # Check if file is an 64-bit binary.

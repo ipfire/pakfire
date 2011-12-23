@@ -86,7 +86,7 @@ for file in ${script_files}; do
 	interpreters="${interpreters} ${interp}"
 
 	# Collect all perl files.
-	case ${interp} in
+	case "${interp}" in
 		*/perl)
 			perl_files="${perl_files} ${file}"
 			;;
