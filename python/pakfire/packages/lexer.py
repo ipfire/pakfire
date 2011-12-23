@@ -323,6 +323,8 @@ class Lexer(object):
 
 		raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
 
+	DEP_DEFINITIONS = ("prerequires", "requires", "provides", "conflicts", "obsoletes",)
+
 	def parse_definition(self, pattern=LEXER_DEFINITION):
 		line = self.get_line(self._lineno)
 
@@ -338,7 +340,11 @@ class Lexer(object):
 		if o == "+":
 			prev = self.get_var(k, default=None, raw=True)
 			if prev:
-				v = " ".join((prev or "", v))
+				# Add a newline for all dependencies.
+				if k in self.DEP_DEFINITIONS:
+					prev += "\n"
+
+				v = " ".join((prev or "", v.strip()))
 
 		elif o == ":":
 			# Expand the value immediately and save it.

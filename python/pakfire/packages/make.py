@@ -270,7 +270,10 @@ class Makefile(MakefileBase):
 
 	@property
 	def requires(self):
-		reqs = self.lexer.build.get_var("requires", "").splitlines()
+		reqs = []
+
+		for line in self.lexer.build.get_var("requires", "").splitlines():
+			reqs += [r.strip() for r in line.split(",")]
 
 		return self.filter_deps(reqs)
 
