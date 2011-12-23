@@ -5,6 +5,14 @@ thisapp = %{name}-%{version}
 thisver = %{version}-%{_release}
 
 packages
+	# Don't inherit dependency information from somewhere else
+	# (like build dependencies).
+	prerequires =
+	requires =
+	provides =
+	conflicts =
+	obsoletes =
+
 	template MAIN
 		def files
 			/

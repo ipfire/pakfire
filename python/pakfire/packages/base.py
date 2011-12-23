@@ -388,6 +388,32 @@ class Package(object):
 	def vendor(self):
 		return self.metadata.get("PKG_VENDOR", "")
 
+	@staticmethod
+	def filter_deps(deps):
+		"""
+			Filter out invalid dependencies.
+
+			This is just for reading packages and skipping comments
+			or empty lines.
+		"""
+		ret = []
+
+		for dep in deps:
+			# Remove any leading or trailing spaces.
+			dep = dep.strip()
+
+			# Skip empty strings.
+			if not dep:
+				continue
+
+			# Skip comment lines.
+			if dep.startswith("#"):
+				continue
+
+			ret.append(dep)
+
+		return ret
+
 	@property
 	def prerequires(self):
 		requires = self.metadata.get("PKG_PREREQUIRES", "")

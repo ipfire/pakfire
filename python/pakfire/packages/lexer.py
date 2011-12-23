@@ -956,6 +956,8 @@ class PackagesLexer(DefaultLexer):
 		return templates
 
 	def inherit(self, other):
+		DefaultLexer.inherit(self, other)
+
 		# Copy all templates and packages but make sure
 		# to update the parent lexer (for accessing each other).
 		for name, template in other.templates.items():

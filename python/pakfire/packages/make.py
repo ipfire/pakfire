@@ -275,8 +275,7 @@ class Makefile(MakefileBase):
 		for line in self.lexer.build.get_var("requires", "").splitlines():
 			reqs += [r.strip() for r in line.split(",")]
 
-		# Remove all empty items.
-		return [r for r in reqs if r]
+		return self.filter_deps(reqs)
 
 	@property
 	def provides(self):
