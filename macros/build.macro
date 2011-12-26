@@ -58,7 +58,7 @@ MACRO_PERL_CLEANUP
 		xargs --no-run-if-empty rm -f
 end
 
-MACRO_PATCHES = /usr/lib/pakfire/patch --search-path=%{DIR_PATCHES} %{patches}
+MACRO_PATCHES = /usr/lib/pakfire/patch --search-path=%{DIR_PATCHES} "%{patches}"
 
 # Pre-defined build scripts.
 build
