@@ -51,7 +51,7 @@ end
 
 MACRO_PERL_CLEANUP
 	# Remove perllocal.pod.
-	rm -f %{BUILDROOT}/usr/lib/perl*/perllocal.pod
+	rm -f %{BUILDROOT}/usr/lib*/perl*/perllocal.pod
 
 	# Remove all .packlist files.
 	find %{BUILDROOT}/usr/{lib,share}/perl* -name ".packlist" 2>/dev/null | \
