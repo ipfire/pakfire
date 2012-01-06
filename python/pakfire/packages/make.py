@@ -468,7 +468,7 @@ class MakefilePackage(MakefileBase):
 					continue
 
 				# Let the user know what has been done.
-				log.info(_("Filter %s filtered %s.") % (filter, dep))
+				log.info(_("Filter '%s' filtered %s.") % (filter.pattern, dep))
 
 				# Yes, we found a match.
 				filtered = True
