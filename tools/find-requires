@@ -108,7 +108,7 @@ for file in ${binary_files}; do
 	[ -r ${file} ] || continue
 
 	lib64=$(if file_is_64bit ${file}; then echo "${mark64}"; fi)
-	objdump -p ${file} | awk 'BEGIN { START=0; LIBNAME=""; }
+	objdump -p ${file} 2>/dev/null | awk 'BEGIN { START=0; LIBNAME=""; }
 		/^$/ { START=0; }
 		/^Dynamic Section:$/ { START=1; }
 		(START==1) && /NEEDED/ {
