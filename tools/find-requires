@@ -23,6 +23,9 @@ pkgconfig_files=
 # Walk through all file files and see what we have got here.
 while read file; do
 	case "${file}" in
+		*/usr/lib/debug/*|*/usr/src/debug/*)
+			# Skip all debuginfo files.
+			;;
 		*.pc)
 			# Find all pkg-config files.
 			pkgconfig_files="${pkgconfig_files} ${file}"
