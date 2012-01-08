@@ -46,10 +46,24 @@ for patch in ${patches}; do
 
 	# Get right -p1 option.
 	case "${patch}" in
-		*.patch[0-9])
+		*.patch[0-9]|*.patch[0-9]R)
+			_patch="${patch}"
 			# Get patch level from file name.
-			level=${patch:$(( ${#patch} - 1))}
-			options="${options} -p${level}"
+			while [ ${#_patch} -gt 0 ]; do
+				last_pos=$(( ${#_patch} - 1 ))
+				last_char=${_patch:${last_pos}}
+				_patch=${_patch:0:${last_pos}}
+
+				case "${last_char}" in
+					[0-9])
+						options="${options} -p${last_char}"
+						break
+						;;
+					R)
+						options="${options} -R"
+						;;
+				esac
+			done
 			;;
 		*.patch|*.diff)
 			# Default is -p1.
