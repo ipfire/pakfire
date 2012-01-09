@@ -36,6 +36,10 @@ install: build
 	# Don't overwrite already installed configuration file.
 	[ -e "$(DESTDIR)/etc/pakfire.conf" ] || \
 		cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
+	[ -e "$(DESTDIR)/etc/pakfire-client.conf" ] || \
+		cp -vf examples/pakfire-client.conf $(DESTDIR)/etc/pakfire-client.conf
+	[ -e "$(DESTDIR)/etc/pakfire-daemon.conf" ] || \
+		cp -vf examples/pakfire-daemon.conf $(DESTDIR)/etc/pakfire-daemon.conf
 	cp -vf examples/pakfire.repos.d/* $(DESTDIR)/etc/pakfire.repos.d/
 
 .PHONY: check

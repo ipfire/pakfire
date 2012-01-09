@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import socket
 
 from ConfigParser import ConfigParser
 
@@ -27,8 +28,10 @@ import logging
 log = logging.getLogger("pakfire")
 
 import base
+from system import system
 
 from constants import *
+from i18n import _
 
 class Config(object):
 	def __init__(self, type=None):
@@ -138,6 +141,7 @@ class Config(object):
 		if self.type == "builder":
 			path = os.getcwd()
 
+			_path = None
 			while not path == "/":
 				_path = os.path.join(path, "config")
 				if os.path.exists(_path):
@@ -204,3 +208,142 @@ class Config(object):
 			Check if this host can build for the target architecture "arch".
 		"""
 		return arch in self.supported_arches
+
+class _Config(object):
+	files = []
+
+	# A dict with default settings for this config class.
+	default_settings = {}
+
+	def __init__(self, path="/etc"):
+		# Configuration settings.
+		self._config = self.default_settings.copy()
+
+		# List of files that were already loaded.
+		self._files = []
+
+		# Read default configuration file.
+		self.read(*[os.path.join(path, f) for f in self.files])
+
+		# Dump read configuration.
+		self.dump()
+
+	def _read_hook(self, config):
+		"""
+			Method to be overwritten when addition stuff
+			should be done with the ConfigParser object.
+		"""
+		pass
+
+	def read(self, *files):
+		# Do nothing for no files.
+		if not files:
+			return
+
+		# Create configparser and read the content of the file
+		# to parse it.
+		config = ConfigParser()
+		for f in files:
+			# Normalize filename.
+			f = os.path.abspath(f)
+
+			# Check if file has already been read or
+			# does not exist. Then skip it.
+			if f in self._files or not os.path.exists(f):
+				continue
+
+			# Parse the file.
+			log.debug(_("Reading from configuration file: %s") % f)
+			config.read(f)
+
+			# Save the filename to the list of read files.
+			self._files.append(f)
+
+		# Read all data from the configuration file in the _config dict.
+		for section in config.sections():
+			items = dict(config.items(section))
+
+			try:
+				self._config[section].update(items)
+			except KeyError:
+				self._config[section] = items
+
+	def set(self, section, key, value):
+		try:
+			self._config[section][key] = value
+		except KeyError:
+			self._config[section] = { key : value }
+
+	def get(self, section, key, default=None):
+		try:
+			return self._config[section][key]
+		except KeyError:
+			return default
+
+	def get_int(self, section, key, default=None):
+		val = self.get(section=section, key=key, default=default)
+		try:
+			val = int(val)
+		except ValueError:
+			return default
+
+	def get_bool(self, section, key, default=None):
+		val = self.get(section=section, key=key, default=default)
+
+		if val in (True, "true", "1", "on"):
+			return True
+		elif val in (False, "false", "0", "off"):
+			return False
+
+		return default
+
+	def dump(self):
+		"""
+			Dump the configuration that was read.
+
+			(Only in debugging mode.)
+		"""
+		log.debug(_("Configuration:"))
+		for section, settings in self._config.items():
+			log.debug("  " + _("Section: %s") % section)
+
+			for k, v in settings.items():
+				log.debug("    %-20s: %s" % (k, v))
+			else:
+				log.debug("    " + _("No settings in this section."))
+
+		log.debug("  " + _("Loaded from files:"))
+		for f in self._files:
+			log.debug("    %s" % f)
+
+
+class ConfigBuilder(_Config):
+	files = ["pakfire.conf", "pakfire-builder.conf"]
+
+
+class ConfigClient(_Config):
+	files = ["pakfire.conf", "pakfire-client.conf"]
+
+	default_settings = {
+		"client" : {
+			# The default server is the official Pakfire
+			# server.
+			"server"   : "https://pakfire.ipfire.org",
+		},
+	}
+
+
+class ConfigDaemon(_Config):
+	files = ["pakfire.conf", "pakfire-daemon.conf"]
+
+	default_settings = {
+		"daemon" : {
+			# The default server is the official Pakfire
+			# server.
+			"server"   : "https://pakfire.ipfire.org",
+
+			# The default hostname is the host name of this
+			# machine.
+			"hostname" : system.hostname,
+		},
+	}

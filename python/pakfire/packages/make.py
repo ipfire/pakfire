@@ -24,6 +24,7 @@ import re
 import shutil
 import socket
 import tarfile
+import uuid
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.progress import TextMeter
@@ -174,6 +175,19 @@ class MakefileBase(Package):
 		# Not existant for Makefiles
 		return None
 
+	@property
+	def supported_arches(self):
+		"""
+			These are the supported arches. Which means, packages of these
+			architectures can be built out of this source package.
+		"""
+		# If the package architecture is "noarch", the package
+		# needs only to be built for that.
+		if self.arch == "noarch":
+			return "noarch"
+
+		return self.lexer.get_var("sup_arches", "all")
+
 
 class Makefile(MakefileBase):
 	@property
@@ -191,14 +205,6 @@ class Makefile(MakefileBase):
 	@property
 	def arch(self):
 		return "src"
-
-	@property
-	def supported_arches(self):
-		"""
-			These are the supported arches. Which means, packages of these
-			architectures can be built out of this source package.
-		"""
-		return self.lexer.get_var("sup_arches", "all")
 
 	@property
 	def packages(self):
@@ -371,6 +377,9 @@ class MakefilePackage(MakefileBase):
 		# Store additional dependencies in here.
 		self._dependencies = {}
 
+		# Generate a random identifier.
+		self._uuid = "%s" % uuid.uuid4()
+
 	@property
 	def name(self):
 		return self._name
@@ -389,7 +398,7 @@ class MakefilePackage(MakefileBase):
 
 	@property
 	def uuid(self):
-		return None
+		return self._uuid
 
 	def track_dependencies(self, builder, path):
 		# Build filelist with all files that have been installed.
@@ -485,6 +494,10 @@ class MakefilePackage(MakefileBase):
 		# Collect all dependencies that were discovered by the tracker.
 		deps += self._dependencies.get(key, [])
 
+		# Add the UUID.
+		if key == "provides":
+			deps.append("uuid(%s)" % self.uuid)
+
 		# Remove duplicates.
 		deps = set(deps)
 		deps = list(deps)
@@ -497,7 +510,11 @@ class MakefilePackage(MakefileBase):
 
 	@property
 	def requires(self):
-		return self.get_deps("requires")
+		# Make sure that no self-provides are in the list
+		# of requirements.
+		provides = self.provides
+
+		return [r for r in self.get_deps("requires") if not r in provides]
 
 	@property
 	def provides(self):

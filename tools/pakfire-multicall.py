@@ -36,6 +36,8 @@ except ImportError, e:
 basename2cls = {
 	"pakfire"         : Cli,
 	"pakfire-builder" : CliBuilder,
+	"pakfire-client"  : CliClient,
+	"pakfire-daemon"  : CliDaemon,
 	"pakfire-server"  : CliServer,
 	"builder"         : CliBuilderIntern,
 }

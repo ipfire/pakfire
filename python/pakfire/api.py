@@ -20,6 +20,7 @@
 ###############################################################################
 
 import base
+import client
 
 from errors import *
 
@@ -85,7 +86,7 @@ def grouplist(group, **pakfire_args):
 	return pakfire.grouplist(group)
 
 def _build(pkg, resultdir, **kwargs):
-	pakfire = Pakfire(**kwargs)
+	pakfire = Pakfire(mode="builder", **kwargs)
 
 	return pakfire._build(pkg, resultdir, **kwargs)
 

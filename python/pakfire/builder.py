@@ -42,6 +42,7 @@ import _pakfire
 import logging
 log = logging.getLogger("pakfire")
 
+from system import system
 from constants import *
 from i18n import _
 from errors import BuildError, BuildRootLocked, Error
@@ -54,9 +55,9 @@ BUILD_LOG_HEADER = """
 |  __/ (_| |   <|  _| | | |  __/ | |_) | |_| | | | (_| |  __/ |
 |_|   \__,_|_|\_\_| |_|_|  \___| |_.__/ \__,_|_|_|\__,_|\___|_|
 
-	Time    : %(time)s
-	Host    : %(host)s
 	Version : %(version)s
+	Host    : %(hostname)s (%(host_arch)s)
+	Time    : %(time)s
 
 """
 
@@ -85,7 +86,7 @@ class BuildEnviron(object):
 
 		# Setup the logging.
 		if logfile:
-			self.log = logging.getLogger(self.build_id)
+			self.log = log.getChild(self.build_id)
 			# Propage everything to the root logger that we will see something
 			# on the terminal.
 			self.log.propagate = 1
@@ -106,9 +107,10 @@ class BuildEnviron(object):
 		# are running in release mode.
 		if self.mode == "release":
 			logdata = {
-				"host"    : socket.gethostname(),
-				"time"    : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
-				"version" : "Pakfire %s" % PAKFIRE_VERSION,
+				"host_arch"  : system.arch,
+				"hostname"   : system.hostname,
+				"time"       : time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()),
+				"version"    : "Pakfire %s" % PAKFIRE_VERSION,
 			}
 
 			for line in BUILD_LOG_HEADER.splitlines():
@@ -336,8 +338,13 @@ class BuildEnviron(object):
 		if not requires:
 			return
 
-		self.pakfire.install(requires, interactive=False,
-			allow_downgrade=True, logger=self.log)
+		try:
+			self.pakfire.install(requires, interactive=False,
+				allow_downgrade=True, logger=self.log)
+
+		# Catch dependency errors and log it.
+		except DependencyError, e:
+			raise
 
 	def install_test(self):
 		pkgs = []
@@ -539,6 +546,17 @@ class BuildEnviron(object):
 			})
 
 		return env
+
+	@property
+	def installed_packages(self):
+		"""
+			Returns an iterator over all installed packages in this build environment.
+		"""
+		# Get the repository of all installed packages.
+		repo = self.pakfire.repos.get_repo("@system")
+
+		# Return an iterator over the packages.
+		return iter(repo)
 
 	def do(self, command, shell=True, personality=None, logger=None, *args, **kwargs):
 		ret = None

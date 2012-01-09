@@ -49,6 +49,10 @@ REPOSITORY_DB = "index.db"
 
 BUFFER_SIZE = 102400
 
+# The size of the data chunks that are uploaded to the
+# pakfire hub.
+CHUNK_SIZE  = BUFFER_SIZE
+
 MIRRORLIST_MAXSIZE = 1024**2
 
 MACRO_FILE_DIR = "/usr/lib/pakfire/macros"
