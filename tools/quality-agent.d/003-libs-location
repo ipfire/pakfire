@@ -16,10 +16,12 @@ esac
 
 # Find gcc libdir.
 gcc_libdir=$(gcc -print-libgcc-file-name)
-gcc_libdir=$(basename ${gcc_libdir})
+gcc_libdir=$(dirname ${gcc_libdir})
 
 function check() {
 	local failed=0
+	local found
+
 	for lib in $(find ${BUILDROOT}/${libdir} -type f -name "lib*.so.*" 2>/dev/null); do
 		lib=${lib##*/}
 		lib=${lib%%.so*}
