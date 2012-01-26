@@ -123,6 +123,10 @@ class BuildEnviron(object):
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
+		# Check if this host can build the requested architecture.
+		if not self.arch in self.pakfire.config.supported_arches:
+			raise BuildError, _("Cannot build for %s on this host.") % self.arch
+
 		# Where do we put the result?
 		self.resultdir = os.path.join(self.path, "result")
 

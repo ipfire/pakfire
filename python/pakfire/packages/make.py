@@ -458,7 +458,8 @@ class MakefilePackage(MakefileBase):
 			# Convert to raw string to make escaping characters
 			# easy to the user.
 			try:
-				_filter = re.compile("%r" % filter)
+				filter = "%r" % filter
+				_filter = re.compile(filter[1:-1])
 			except re.error:
 				log.warning(_("Regular experession is invalid and has been skipped: %s") % filter)
 				continue
@@ -476,7 +477,7 @@ class MakefilePackage(MakefileBase):
 					continue
 
 				# Let the user know what has been done.
-				log.info(_("Filter %s filtered %s.") % (filter, dep))
+				log.info(_("Filter '%s' filtered %s.") % (filter.pattern, dep))
 
 				# Yes, we found a match.
 				filtered = True

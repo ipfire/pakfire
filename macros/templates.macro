@@ -30,7 +30,7 @@ packages
 
 		def files
 			/%{lib}/*.so.*
-			${libdir}/lib*.so.*
+			%{libdir}/lib*.so.*
 		end
 
 		def configfiles
