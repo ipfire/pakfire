@@ -4,6 +4,11 @@ import os
 import re
 
 from pakfire.constants import *
+from pakfire.i18n import _
+
+import logging
+#log = logging.getLogger("pakfire.lexer")
+log = logging.getLogger("pakfire")
 
 class LexerError(Exception):
 	pass
@@ -128,6 +133,8 @@ class Lexer(object):
 
 	@classmethod
 	def open(cls, filename, *args, **kwargs):
+		log.debug("Opening file for parsing: %s" % filename)
+
 		f = open(filename)
 		lines = f.readlines()
 		f.close()
@@ -688,10 +695,7 @@ class PackageLexer(TemplateLexer):
 			return None
 
 		# Get template from parent.
-		try:
-			return self.parent.templates[self._template]
-		except KeyError:
-			raise LexerError, "Template does not exist: %s" % self._template
+		return self.parent.templates.get(self._template, None)
 
 	def get_parsers(self):
 		parsers = [
@@ -712,7 +716,8 @@ class PackageLexer(TemplateLexer):
 		self._template = m.group(1)
 
 		# Check if template exists.
-		assert self.template
+		if not self.template:
+			log.warning(_("Template does not exist: %s") % self._template)
 
 	def get_scriptlet(self, name):
 		scriptlet = self.scriptlets.get(name, None)
@@ -825,12 +830,23 @@ class RootLexer(ExportLexer):
 
 		# Include all macros.
 		if not self.parent:
-			for macro in MACRO_FILES:
-				self.include(macro)
+			self.include_macros()
 
-	def include(self, file):
+	def include_macros(self):
+		log.debug("Including all macros...")
+
+		for file in sorted(os.listdir(MACRO_FILE_DIR)):
+			if not file.endswith(MACRO_EXTENSION):
+				continue
+
+			file = os.path.join(MACRO_FILE_DIR, file)
+			self.include(file)
+
+	def include(self, filename):
+		log.debug("Including file: %s" % filename)
+
 		# Create a new lexer, and parse the whole file.
-		include = RootLexer.open(file, parent=self)
+		include = RootLexer.open(filename, parent=self)
 
 		# Copy all data from the included file.
 		self.inherit(include)
