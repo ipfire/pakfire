@@ -20,6 +20,7 @@
 
 #include <Python.h>
 
+#include <locale.h>
 #include <sys/personality.h>
 
 #include "capabilities.h"
