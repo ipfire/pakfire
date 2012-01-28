@@ -554,7 +554,7 @@ class FilePackage(Package):
 	@property
 	def type(self):
 		if self.format >= 2:
-			type = self.lexer.package.get_ver("type")
+			type = self.lexer.package.get_var("type")
 		elif self.format == 1:
 			type = self._type
 		else:
