@@ -23,13 +23,17 @@ import argparse
 import os
 import sys
 
+import pakfire.api as pakfire
+
+import client
+import config
 import logger
 import packages
 import repository
 import server
 import util
 
-import pakfire.api as pakfire
+from system import system
 from constants import *
 from i18n import _
 
@@ -109,7 +113,7 @@ class Cli(object):
 
 		return ret
 
-	def parse_common_arguments(self):
+	def parse_common_arguments(self, repo_manage_switches=True, offline_switch=True):
 		self.parser.add_argument("--version", action="version",
 			version="%(prog)s " + PAKFIRE_VERSION)
 
@@ -119,14 +123,16 @@ class Cli(object):
 		self.parser.add_argument("-c", "--config", nargs="?",
 			help=_("Path to a configuration file to load."))
 
-		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
-			help=_("Disable a repository temporarily."))
+		if repo_manage_switches:
+			self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
+				help=_("Disable a repository temporarily."))
 
-		self.parser.add_argument("--enabled-repo", nargs="*", metavar="REPO",
-			help=_("Enable a repository temporarily."))
+			self.parser.add_argument("--enabled-repo", nargs="*", metavar="REPO",
+				help=_("Enable a repository temporarily."))
 
-		self.parser.add_argument("--offline", action="store_true",
-			help=_("Run pakfire in offline mode."))
+		if offline_switch:
+			self.parser.add_argument("--offline", action="store_true",
+				help=_("Run pakfire in offline mode."))
 
 	def parse_command_install(self):
 		# Implement the "install" command.
@@ -272,13 +278,10 @@ class Cli(object):
 	def run(self):
 		action = self.args.action
 
-		if not self.action2func.has_key(action):
-			raise
-
 		try:
 			func = self.action2func[action]
 		except KeyError:
-			raise # XXX catch and return better error message
+			raise Exception, "Unhandled action: %s" % action
 
 		return func()
 
@@ -624,9 +627,13 @@ class CliServer(Cli):
 
 	def parse_command_build(self):
 		# Implement the "build" command.
-		sub_keepalive = self.sub_commands.add_parser("build",
-			help=_("Request a build job from the server."))
-		sub_keepalive.add_argument("action", action="store_const", const="build")
+		sub_build = self.sub_commands.add_parser("build",
+			help=_("Send a scrach build job to the server."))
+		sub_build.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to build."))
+		sub_build.add_argument("--arch", "-a",
+			help=_("Limit build to only these architecture(s)."))
+		sub_build.add_argument("action", action="store_const", const="build")
 
 	def parse_command_keepalive(self):
 		# Implement the "keepalive" command.
@@ -666,7 +673,31 @@ class CliServer(Cli):
 		self.server.update_info()
 
 	def handle_build(self):
-		self.server.build_job()
+		# Arch.
+		if self.args.arch:
+			arches = self.args.arch.split()
+
+		(package,) = self.args.package
+
+		self.server.create_scratch_build({})
+		return
+
+		# Temporary folter for source package.
+		tmpdir = "/tmp/pakfire-%s" % util.random_string()
+
+		try:
+			os.makedirs(tmpdir)
+
+			pakfire.dist(package, resultdir=[tmpdir,])
+
+			for file in os.listdir(tmpdir):
+				file = os.path.join(tmpdir, file)
+
+				print file
+
+		finally:
+			if os.path.exists(tmpdir):
+				util.rm(tmpdir)
 
 	def handle_repoupdate(self):
 		self.server.update_repositories()
@@ -735,5 +766,172 @@ class CliBuilderIntern(Cli):
 		}
 
 		pakfire._build(pkg, builder_mode=self.args.mode,
-			distro_config=distro_config, resultdir=self.args.resultdir,
-			nodeps=self.args.nodeps, **self.pakfire_args)
+			distro_config=distro_config, resultdir=self.args.resultdir,)
+
+
+class CliClient(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire client command line interface."),
+		)
+
+		self.parse_common_arguments(repo_manage_switches=True, offline_switch=True)
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_build()
+		self.parse_command_connection_check()
+		self.parse_command_info()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		self.action2func = {
+			"build"       : self.handle_build,
+			"conn-check"  : self.handle_connection_check,
+			"info"        : self.handle_info,
+		}
+
+		# Read configuration for the pakfire client.
+		self.conf = conf = config.ConfigClient()
+
+		# Create connection to pakfire hub.
+		self.client = client.PakfireUserClient(
+			conf.get("client", "server"),
+			conf.get("client", "username"),
+			conf.get("client", "password"),
+		)
+
+	def parse_command_build(self):
+		# Parse "build" command.
+		sub_build = self.sub_commands.add_parser("build",
+			help=_("Build a package remotely."))
+		sub_build.add_argument("package", nargs=1,
+			help=_("Give name of a package to build."))
+		sub_build.add_argument("action", action="store_const", const="build")
+
+		sub_build.add_argument("-a", "--arch",
+			help=_("Build the package for the given architecture."))
+
+	def parse_command_info(self):
+		# Implement the "info" command.
+		sub_info = self.sub_commands.add_parser("info",
+			help=_("Print some information about this host."))
+		sub_info.add_argument("action", action="store_const", const="info")
+
+	def parse_command_connection_check(self):
+		# Implement the "conn-check" command.
+		sub_conn_check = self.sub_commands.add_parser("conn-check",
+			help=_("Check the connection to the hub."))
+		sub_conn_check.add_argument("action", action="store_const", const="conn-check")
+
+	def handle_build(self):
+		(package,) = self.args.package
+
+		# XXX just for now, we do only upload source pfm files.
+		assert os.path.exists(package)
+
+		# Format arches.
+		if self.args.arch:
+			arches = self.args.arch.replace(",", " ")
+		else:
+			arches = None
+
+		# Create a new build on the server.
+		build = self.client.build_create(package, arches=arches)
+
+		# XXX Print the resulting build.
+		print build
+
+	def handle_info(self):
+		ret = []
+
+		ret.append("")
+		ret.append("  PAKFIRE %s" % PAKFIRE_VERSION)
+		ret.append("")
+		ret.append("  %-20s: %s" % (_("Hostname"), system.hostname))
+		ret.append("  %-20s: %s" % (_("Pakfire hub"), self.conf.get("client", "server")))
+		if self.conf.get("client", "username") and self.conf.get("client", "password"):
+			ret.append("  %-20s: %s" % \
+				(_("Username"), self.conf.get("client", "username")))
+		ret.append("")
+
+		# Hardware information
+		ret.append("  %s:" % _("Hardware information"))
+		ret.append("      %-16s: %s" % (_("CPU model"), system.cpu_model))
+		ret.append("      %-16s: %s" % (_("Memory"),    util.format_size(system.memory)))
+		ret.append("")
+		ret.append("      %-16s: %s" % (_("Native arch"), system.arch))
+
+		header = _("Supported arches")
+		for arch in system.supported_arches:
+			ret.append("      %-16s: %s" % (header, arch))
+			header = ""
+		ret.append("")
+
+		for line in ret:
+			print line
+
+	def handle_connection_check(self):
+		ret = []
+
+		address = self.client.get_my_address()
+		ret.append("  %-20s: %s" % (_("Your IP address"), address))
+		ret.append("")
+
+		authenticated = self.client.check_auth()
+		if authenticated:
+			ret.append("  %s" % _("You are authenticated to the build service:"))
+
+			user = self.client.get_user_profile()
+			assert user, "Could not fetch user infomation"
+
+			keys = [
+				("name",       _("User name")),
+				("realname",   _("Real name")),
+				("email",      _("Email address")),
+				("registered", _("Registered")),
+			]
+
+			for key, desc in keys:
+				ret.append("    %-18s: %s" % (desc, user.get(key)))
+
+		else:
+			ret.append(_("You could not be authenticated to the build service."))
+
+		for line in ret:
+			print line
+
+
+class CliDaemon(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire daemon command line interface."),
+		)
+
+		self.parse_common_arguments(repo_manage_switches=True, offline_switch=True)
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+	def run(self):
+		"""
+			Runs the pakfire daemon with provided settings.
+		"""
+		# Read the configuration file for the daemon.
+		conf = config.ConfigDaemon()
+
+		# Create daemon instance.
+		d = pakfire.client.PakfireDaemon(
+			server   = conf.get("daemon", "server"),
+			hostname = conf.get("daemon", "hostname"),
+			secret   = conf.get("daemon", "secret"),
+		)
+
+		try:
+			d.run()
+
+		# We cannot just kill the daemon, it needs a smooth shutdown.
+		except (SystemExit, KeyboardInterrupt):
+			d.shutdown()

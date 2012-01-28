@@ -211,6 +211,18 @@ class XMLRPCTransport(xmlrpclib.Transport):
 		return ret
 
 
+class ServerProxy(xmlrpclib.ServerProxy):
+	def __init__(self, server, *args, **kwargs):
+
+		# Some default settings.
+		if not kwargs.has_key("transport"):
+			kwargs["transport"] = XMLRPCTransport()
+
+		kwargs["allow_none"] = True
+
+		xmlrpclib.ServerProxy.__init__(self, server, *args, **kwargs)
+
+
 class Server(object):
 	def __init__(self, **pakfire_args):
 		self.config = pakfire.config.Config()
@@ -219,8 +231,7 @@ class Server(object):
 
 		log.info("Establishing RPC connection to: %s" % server)
 
-		self.conn = xmlrpclib.ServerProxy(server, transport=XMLRPCTransport(),
-			allow_none=True)
+		self.conn = ServerProxy(server)
 
 		self.pakfire_args = pakfire_args
 
@@ -483,3 +494,6 @@ class Server(object):
 					(repo["distro"]["sname"], repo["name"], arch)
 
 				pakfire.api.repo_create(path, files)
+
+	def create_scratch_build(self, *args, **kwargs):
+		return self.conn.create_scratch_build(*args, **kwargs)

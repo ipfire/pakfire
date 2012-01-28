@@ -188,6 +188,9 @@ PyObject *Repo_get_all(RepoObject *self) {
 	Id p;
 	Repo *r = self->_repo;
 
+	assert(r != NULL);
+	assert(r->pool != NULL);
+
 	PyObject *list = PyList_New(0);
 
 	FOR_REPO_SOLVABLES(r, p, s) {
@@ -197,12 +200,12 @@ PyObject *Repo_get_all(RepoObject *self) {
 		if (solv == NULL)
 			return NULL;
 
-		solv->_pool = self->_repo->pool;
+		solv->_pool = r->pool;
 		solv->_id = p;
 
 		PyList_Append(list, (PyObject *)solv);
+		Py_DECREF(solv);
 	}
 
-	Py_INCREF(list);
 	return list;
 }
