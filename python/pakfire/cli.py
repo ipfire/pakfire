@@ -862,7 +862,9 @@ class CliClient(Cli):
 		ret.append("      %-16s: %s" % (_("CPU model"), system.cpu_model))
 		ret.append("      %-16s: %s" % (_("Memory"),    util.format_size(system.memory)))
 		ret.append("")
-		ret.append("      %-16s: %s" % (_("Native arch"), system.arch))
+		ret.append("      %-16s: %s" % (_("Native arch"), system.native_arch))
+		if not system.arch == system.native_arch:
+			ret.append("      %-16s: %s" % (_("Default arch"), system.arch))
 
 		header = _("Supported arches")
 		for arch in system.supported_arches:

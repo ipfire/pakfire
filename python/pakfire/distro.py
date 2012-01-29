@@ -27,13 +27,14 @@ log = logging.getLogger("pakfire")
 
 from errors import ConfigError
 from repository import Repositories
+from system import system
 
 class Distribution(object):
 	def __init__(self, pakfire, distro_config=None):
 		self.pakfire = pakfire
 
 		self._data = {
-			"arch" : self.config.host_arch,
+			"arch" : system.arch,
 			"name" : "unknown",
 			"slogan" : "---",
 			"vendor" : "unknown",
