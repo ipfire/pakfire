@@ -37,11 +37,22 @@ class System(object):
 		return socket.gethostname()
 
 	@property
+	def native_arch(self):
+		"""
+			Return the native architecture of the host we
+			are running on.
+		"""
+		return os.uname()[4]
+
+	@property
 	def arch(self):
 		"""
 			Return the architecture of the host we are running on.
 		"""
-		return os.uname()[4]
+		if not self.native_arch in self.supported_arches:
+			return self.supported_arches[0]
+
+		return self.native_arch
 
 	@property
 	def supported_arches(self):
@@ -58,12 +69,12 @@ class System(object):
 			# ARM
 			"armv5tel"  : ["armv5tel",],
 			"armv5tejl" : ["armv5tel",],
-			"armv7l"    : ["armv5tel",],
+			"armv7l"    : ["armv7hl", "armv5tel",],
 			"armv7hl"   : ["armv7hl", "armv5tel",],
 		}
 
 		try:
-			return host_can_build[self.arch]
+			return host_can_build[self.native_arch]
 		except KeyError:
 			return []
 
