@@ -694,8 +694,10 @@ class PackageLexer(TemplateLexer):
 		if not self._template:
 			return None
 
-		# Get template from parent.
-		return self.parent.templates.get(self._template, None)
+		# Get template from parent (if exists).
+		templates = getattr(self.parent, "templates", None)
+		if templates:
+			return templates.get(self._template, None)
 
 	def get_parsers(self):
 		parsers = [
