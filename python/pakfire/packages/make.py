@@ -183,7 +183,7 @@ class MakefileBase(Package):
 		"""
 		# If the package architecture is "noarch", the package
 		# needs only to be built for that.
-		if self.arch == "noarch":
+		if self.lexer.get_var("arch", "all") == "noarch":
 			return "noarch"
 
 		return self.lexer.get_var("sup_arches", "all")
