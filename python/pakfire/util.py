@@ -182,7 +182,7 @@ def format_size(s):
 		s /= 1024
 		unit += 1
 
-	return "%d %s" % (int(s) * sign, units[unit])
+	return "%d%s" % (round(s) * sign, units[unit])
 
 def format_time(s):
 	return "%02d:%02d" % (s // 60, s % 60)

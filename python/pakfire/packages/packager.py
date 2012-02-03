@@ -226,7 +226,7 @@ class BinaryPackager(Packager):
 		# Generic package information including Pakfire information.
 		info.update({
 			"pakfire_version" : PAKFIRE_VERSION,
-			"uuid"            : uuid.uuid4(),
+			"uuid"            : self.pkg.uuid,
 			"type"            : "binary",
 		})
 

@@ -190,6 +190,7 @@ class Package(object):
 			"release"     : self.release,
 			"epoch"       : self.epoch,
 			"arch"        : self.arch,
+			"supported_arches" : self.supported_arches,
 			"groups"      : self.groups,
 			"summary"     : self.summary,
 			"description" : self.description,

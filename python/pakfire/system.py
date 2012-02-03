@@ -21,7 +21,128 @@
 
 from __future__ import division
 
+import multiprocessing
 import os
+import socket
+
+from i18n import _
+
+class System(object):
+	"""
+		Class that grants access to several information about
+		the system this software is running on.
+	"""
+	@property
+	def hostname(self):
+		return socket.gethostname()
+
+	@property
+	def native_arch(self):
+		"""
+			Return the native architecture of the host we
+			are running on.
+		"""
+		return os.uname()[4]
+
+	@property
+	def arch(self):
+		"""
+			Return the architecture of the host we are running on.
+		"""
+		if not self.native_arch in self.supported_arches:
+			return self.supported_arches[0]
+
+		return self.native_arch
+
+	@property
+	def supported_arches(self):
+		"""
+			Check what architectures can be built on this host.
+		"""
+		host_can_build = {
+			# Host arch : Can build these arches.
+
+			# x86
+			"x86_64"    : ["x86_64", "i686",],
+			"i686"      : ["i686",],
+
+			# ARM
+			"armv5tel"  : ["armv5tel",],
+			"armv5tejl" : ["armv5tel",],
+			"armv7l"    : ["armv7hl", "armv5tel",],
+			"armv7hl"   : ["armv7hl", "armv5tel",],
+		}
+
+		try:
+			return host_can_build[self.native_arch]
+		except KeyError:
+			return []
+
+	def host_supports_arch(self, arch):
+		"""
+			Check if this host can build for the target architecture "arch".
+		"""
+		return arch in self.supported_arches
+
+	@property
+	def cpu_count(self):
+		"""
+			Count the number of CPU cores.
+		"""
+		return multiprocessing.cpu_count()
+
+	@property
+	def cpu_model(self):
+		# Determine CPU model
+		cpuinfo = {}
+		with open("/proc/cpuinfo") as f:
+			for line in f.readlines():
+				# Break at an empty line, because all information after that
+				# is redundant.
+				if not line:
+					break
+
+				try:
+					key, value = line.split(":")
+				except:
+					pass # Skip invalid lines
+
+				key, value = key.strip(), value.strip()
+				cpuinfo[key] = value
+
+		ret = None
+		if self.arch.startswith("arm"):
+			try:
+				ret = "%(Hardware)s - %(Processor)s" % cpuinfo
+			except KeyError:
+				pass
+		else:
+			ret = cpuinfo.get("model name", None)
+
+		# Remove too many spaces.
+		ret = " ".join(ret.split())
+
+		return ret or _("Could not be determined")
+
+	@property
+	def memory(self):
+		# Determine memory size
+		memory = 0
+		with open("/proc/meminfo") as f:
+			line = f.readline()
+
+			try:
+				a, b, c = line.split()
+			except:
+				pass
+			else:
+				memory = int(b) * 1024
+
+		return memory
+
+
+# Create an instance of this class to only keep it once in memory.
+system = System()
 
 class Mountpoints(object):
 	def __init__(self, pakfire, root="/"):
@@ -172,3 +293,13 @@ class Mountpoint(object):
 		assert file.name.startswith(self.path)
 
 		self.disk_usage += file.size
+
+
+if __name__ == "__main__":
+	print "Hostname", system.hostname
+	print "Arch", system.arch
+	print "Supported arches", system.supported_arches
+
+	print "CPU Model", system.cpu_model
+	print "CPU count", system.cpu_count
+	print "Memory", system.memory

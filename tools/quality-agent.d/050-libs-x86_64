@@ -12,6 +12,8 @@ check() {
 
 	local file
 	for file in $(find ${BUILDROOT}/lib ${BUILDROOT}/usr/lib -name "*.so*" 2>/dev/null); do
+		file_is_elf ${file} >/dev/null 2>&1 || continue
+
 		log_error "  Unallowed location for library: ${file}"
 		failed=1
 	done
