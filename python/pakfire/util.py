@@ -301,5 +301,5 @@ def calc_parallelism():
 	num = os.sysconf("SC_NPROCESSORS_CONF")
 	if num == 1:
 		return 2
-	else:
-		return int(round(math.log10(num) * 26))
+
+	return num
