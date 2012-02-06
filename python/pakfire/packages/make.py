@@ -225,8 +225,7 @@ class Makefile(MakefileBase):
 		if self.pakfire.distro.source_dl:
 			dls.append(self.pakfire.distro.source_dl)
 
-		dl = self.lexer.get_var("source_dl")
-		if dl:
+		for dl in self.lexer.get_var("source_dl").split():
 			dls.append(dl)
 
 		return dls
