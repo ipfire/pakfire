@@ -124,10 +124,13 @@ class SourceDownloader(object):
 
 		for file in files:
 			filename = os.path.join(SOURCE_CACHE_DIR, file)
+			log.debug("Checking existance of %s..." % filename)
 
 			if os.path.exists(filename) and os.path.getsize(filename):
+				log.debug("...exists!")
 				existant_files.append(filename)
 			else:
+				log.debug("...does not exist!")
 				download_files.append(filename)
 
 		if download_files:
@@ -138,8 +141,6 @@ class SourceDownloader(object):
 				os.makedirs(SOURCE_CACHE_DIR)
 
 			for filename in download_files:
-				self.grabber.urlgrab(os.path.basename(filename), filename=filename)
-
 				try:
 					self.grabber.urlgrab(os.path.basename(filename), filename=filename)
 				except URLGrabError, e:

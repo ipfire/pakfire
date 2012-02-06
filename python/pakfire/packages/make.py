@@ -245,9 +245,6 @@ class Makefile(MakefileBase):
 		"""
 			Create a source package.
 		"""
-		# Download all files we need for this package.
-		self.download()
-
 		p = packager.SourcePackager(self.pakfire, self)
 		p.run(resultdirs)
 
