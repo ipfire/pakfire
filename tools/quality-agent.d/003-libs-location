@@ -37,7 +37,7 @@ function check() {
 			fi
 		done
 
-		if [ "${found}" = "1" ]; then
+		if [ "${found}" = "0" ]; then
 			log ERROR "  ${lib}.so cannot be found in the linker's search path:"
 			log ERROR "    /usr/${libdir} ${gcc_libdir}"
 			failed=1
