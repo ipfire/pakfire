@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-11 12:47+0100\n"
+"POT-Creation-Date: 2012-02-11 13:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -605,94 +605,102 @@ msgstr ""
 msgid "Pakfire key command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:996
+#: ../python/pakfire/cli.py:998
 msgid "Initialize the local keyring."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1002 ../python/pakfire/cli.py:1012
+#: ../python/pakfire/cli.py:1004 ../python/pakfire/cli.py:1014
 msgid "Import a key from file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1004
+#: ../python/pakfire/cli.py:1006
 msgid "The real name of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1006
+#: ../python/pakfire/cli.py:1008
 msgid "The email address of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1014
+#: ../python/pakfire/cli.py:1016
 msgid "Filename of that key to import."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1020
+#: ../python/pakfire/cli.py:1022
 msgid "Export a key to a file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1022
+#: ../python/pakfire/cli.py:1024
 msgid "The ID of the key to export."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1024
+#: ../python/pakfire/cli.py:1026
 msgid "Write the key to this file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1030
-msgid "List all imported keys."
+#: ../python/pakfire/cli.py:1032
+msgid "Delete a key from the local keyring."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1036
-msgid "Sign one or more packages."
-msgstr ""
-
-#: ../python/pakfire/cli.py:1038
-msgid "Key that is used sign the package(s)."
+#: ../python/pakfire/cli.py:1034
+msgid "The ID of the key to delete."
 msgstr ""
 
 #: ../python/pakfire/cli.py:1040
-msgid "Package(s) to sign."
+msgid "List all imported keys."
 msgstr ""
 
 #: ../python/pakfire/cli.py:1046
-msgid "Verify one or more packages."
+msgid "Sign one or more packages."
+msgstr ""
+
+#: ../python/pakfire/cli.py:1048
+msgid "Key that is used sign the package(s)."
 msgstr ""
 
 #: ../python/pakfire/cli.py:1050
+msgid "Package(s) to sign."
+msgstr ""
+
+#: ../python/pakfire/cli.py:1056
+msgid "Verify one or more packages."
+msgstr ""
+
+#: ../python/pakfire/cli.py:1060
 msgid "Package(s) to verify."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1061
+#: ../python/pakfire/cli.py:1071
 msgid "Generating the key may take a moment..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1108
+#: ../python/pakfire/cli.py:1123
 #, python-format
 msgid "Signing %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1125
+#: ../python/pakfire/cli.py:1140
 #, python-format
 msgid "Verifying %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1135
+#: ../python/pakfire/cli.py:1150
 msgid "This signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1138
+#: ../python/pakfire/cli.py:1153
 msgid "Unknown key"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1139
+#: ../python/pakfire/cli.py:1154
 msgid "Could not check if this signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1142 ../python/pakfire/keyring.py:94
+#: ../python/pakfire/cli.py:1157 ../python/pakfire/keyring.py:94
 #, python-format
 msgid "Created: %s"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1146 ../python/pakfire/keyring.py:97
+#: ../python/pakfire/cli.py:1161 ../python/pakfire/keyring.py:97
 #, python-format
 msgid "Expires: %s"
 msgstr ""
@@ -735,8 +743,13 @@ msgstr ""
 msgid "Loaded from files:"
 msgstr ""
 
-#: ../python/pakfire/downloader.py:134
+#: ../python/pakfire/downloader.py:137
 msgid "Downloading source files:"
+msgstr ""
+
+#: ../python/pakfire/downloader.py:160
+#, python-format
+msgid "Downloaded empty file: %s"
 msgstr ""
 
 #: ../python/pakfire/errors.py:30
@@ -928,6 +941,11 @@ msgstr ""
 msgid "Could not remove file: /%s"
 msgstr ""
 
+#: ../python/pakfire/packages/lexer.py:722
+#, python-format
+msgid "Template does not exist: %s"
+msgstr ""
+
 #: ../python/pakfire/packages/make.py:79
 msgid "Package name is undefined."
 msgstr ""
@@ -936,18 +954,18 @@ msgstr ""
 msgid "Package version is undefined."
 msgstr ""
 
-#: ../python/pakfire/packages/make.py:416
+#: ../python/pakfire/packages/make.py:412
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
 msgstr ""
 
-#: ../python/pakfire/packages/make.py:464
+#: ../python/pakfire/packages/make.py:460
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
 msgstr ""
 
 #. Let the user know what has been done.
-#: ../python/pakfire/packages/make.py:480
+#: ../python/pakfire/packages/make.py:476
 #, python-format
 msgid "Filter '%s' filtered %s."
 msgstr ""

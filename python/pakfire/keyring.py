@@ -156,6 +156,12 @@ class Keyring(object):
 		f.write(keydata.getvalue())
 		f.close()
 
+	def delete_key(self, keyid):
+		ctx = gpgme.Context()
+
+		key = ctx.get_key(keyid)
+		ctx.delete(key, True)
+
 	def list_keys(self):
 		ret = []
 

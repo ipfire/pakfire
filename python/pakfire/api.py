@@ -160,6 +160,11 @@ def key_export(keyid, keyfile, **pakfire_args):
 
 	return pakfire.keyring.export_key(keyid, keyfile)
 
+def key_delete(keyid, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.delete_key(keyid)
+
 def key_list(**pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 

@@ -962,6 +962,7 @@ class CliKey(Cli):
 		self.parse_command_generate()
 		self.parse_command_import()
 		self.parse_command_export()
+		self.parse_command_delete()
 		self.parse_command_list()
 		self.parse_command_sign()
 		self.parse_command_verify()
@@ -977,6 +978,7 @@ class CliKey(Cli):
 			"generate"    : self.handle_generate,
 			"import"      : self.handle_import,
 			"export"      : self.handle_export,
+			"delete"      : self.handle_delete,
 			"list"        : self.handle_list,
 			"sign"        : self.handle_sign,
 			"verify"      : self.handle_verify,
@@ -1023,6 +1025,14 @@ class CliKey(Cli):
 		sub_export.add_argument("filename", nargs=1,
 			help=_("Write the key to this file."))
 		sub_export.add_argument("action", action="store_const", const="export")
+
+	def parse_command_delete(self):
+		# Parse "delete" command.
+		sub_del = self.sub_commands.add_parser("delete",
+			help=_("Delete a key from the local keyring."))
+		sub_del.add_argument("keyid", nargs=1,
+			help=_("The ID of the key to delete."))
+		sub_del.add_argument("action", action="store_const", const="delete")
 
 	def parse_command_list(self):
 		# Parse "list" command.
@@ -1079,6 +1089,11 @@ class CliKey(Cli):
 		filename = self.args.filename[0]
 
 		pakfire.key_export(keyid, filename, **self.pakfire_args)
+
+	def handle_delete(self):
+		keyid = self.args.keyid[0]
+
+		pakfire.key_delete(keyid, **self.pakfire_args)
 
 	def handle_list(self):
 		lines = pakfire.key_list(**self.pakfire_args)
