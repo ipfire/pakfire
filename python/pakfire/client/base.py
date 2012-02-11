@@ -15,6 +15,7 @@ from pakfire.system import system
 import transport
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 import logging
 log = logging.getLogger("pakfire.client")
@@ -103,9 +104,13 @@ class BuildMixin(object):
 		upload_id = self.conn.upload_create(os.path.basename(filename),
 			size, hash)
 
+		# Make a nice progressbar.
+		pb = pakfire.util.make_progress(os.path.basename(filename), size, speed=True, eta=True)
+
 		try:
 			# Calculate the number of chunks.
 			chunks = (size // CHUNK_SIZE) + 1
+			transferred = 0
 
 			# Cut the file in pieces and upload them one after another.
 			with open(filename) as f:
@@ -116,8 +121,9 @@ class BuildMixin(object):
 						break
 
 					chunk += 1
-					log.info("Uploading chunk %s/%s of %s." % (chunk, chunks,
-						os.path.basename(filename)))
+					if pb:
+						transferred += len(data)
+						pb.update(transferred)
 
 					data = xmlrpclib.Binary(data)
 					self.conn.upload_chunk(upload_id, data)
@@ -132,11 +138,13 @@ class BuildMixin(object):
 
 			raise
 
+		finally:
+			if pb:
+				pb.finish()
+
 		# If the server sends false, something happened with the upload that
 		# could not be recovered.
-		if ret:
-			logging.info("Upload of %s succeeded." % filename)
-		else:
+		if not ret:
 			logging.error("Upload of %s was not successful." % filename)
 			raise Exception, "Upload failed."
 
@@ -192,4 +200,7 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 
 			# Amount of memory in bytes.
 			system.memory / 1024,
+
+			# Send the currently running version of Pakfire.
+			PAKFIRE_VERSION,
 		)

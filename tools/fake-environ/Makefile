@@ -22,4 +22,4 @@ install: all
 
 .PHONY: clean
 clean:
-	rm -vf $(LIB)
+	rm -vf $(OBJECTS) $(LIB)

@@ -92,7 +92,7 @@ class Bar(progressbar.Bar):
 		bar = (self.left + (m*marked_width).ljust(cwidth) + self.right)
 		return bar
 
-def make_progress(message, maxval, eta=True):
+def make_progress(message, maxval, eta=True, speed=False):
 	# Return nothing if stdout is not a terminal.
 	if not sys.stdout.isatty():
 		return
@@ -104,6 +104,12 @@ def make_progress(message, maxval, eta=True):
 		Bar(left="[", right="]"),
 		"  ",
 	]
+
+	if speed:
+		widgets += [
+			progressbar.Percentage(), " ",
+			progressbar.FileTransferSpeed(), "  "
+		]
 
 	if eta:
 		widgets += [progressbar.ETA(), "  ",]
@@ -301,5 +307,5 @@ def calc_parallelism():
 	num = os.sysconf("SC_NPROCESSORS_CONF")
 	if num == 1:
 		return 2
-	else:
-		return int(round(math.log10(num) * 26))
+
+	return num

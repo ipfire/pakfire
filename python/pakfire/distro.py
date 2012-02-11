@@ -105,7 +105,13 @@ class Distribution(object):
 		return self._data.get("maintainer")
 
 	def get_arch(self):
-		return self._data.get("arch") or self.config.host_arch
+		arch = self._data.get("arch") or self.config.host_arch
+
+		# We can not set up a build environment for noarch.
+		if arch == "noarch":
+			arch = system.arch
+
+		return arch
 	
 	def set_arch(self, arch):
 		# XXX check if we are allowed to set this arch

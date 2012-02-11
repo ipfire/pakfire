@@ -183,7 +183,7 @@ class MakefileBase(Package):
 		"""
 		# If the package architecture is "noarch", the package
 		# needs only to be built for that.
-		if self.arch == "noarch":
+		if self.lexer.get_var("arch", "all") == "noarch":
 			return "noarch"
 
 		return self.lexer.get_var("sup_arches", "all")
@@ -225,8 +225,7 @@ class Makefile(MakefileBase):
 		if self.pakfire.distro.source_dl:
 			dls.append(self.pakfire.distro.source_dl)
 
-		dl = self.lexer.get_var("source_dl")
-		if dl:
+		for dl in self.lexer.get_var("source_dl").split():
 			dls.append(dl)
 
 		return dls
@@ -246,9 +245,6 @@ class Makefile(MakefileBase):
 		"""
 			Create a source package.
 		"""
-		# Download all files we need for this package.
-		self.download()
-
 		p = packager.SourcePackager(self.pakfire, self)
 		return p.run(resultdir)
 
