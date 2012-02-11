@@ -200,4 +200,7 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 
 			# Amount of memory in bytes.
 			system.memory / 1024,
+
+			# Send the currently running version of Pakfire.
+			PAKFIRE_VERSION,
 		)
