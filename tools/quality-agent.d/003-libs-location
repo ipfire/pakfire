@@ -4,14 +4,42 @@
 
 DESC="Checking correct installation of libraries"
 
+# Find the system's libdir.
+case "$(uname -m)" in
+	x86_86)
+		libdir="lib64"
+		;;
+	*)
+		libdir="lib"
+		;;
+esac
+
+# Find gcc libdir.
+gcc_libdir=$(gcc -print-libgcc-file-name)
+gcc_libdir=$(dirname ${gcc_libdir})
+
 function check() {
 	local failed=0
-	for lib in $(find ${BUILDROOT}/lib -type f -name "lib*.so.*" 2>/dev/null); do
+	local found
+
+	for lib in $(find ${BUILDROOT}/${libdir} -type f -name "lib*.so.*" 2>/dev/null); do
 		lib=${lib##*/}
 		lib=${lib%%.so*}
 
-		if [ ! -e "${BUILDROOT}/usr/lib/${lib}.so" ]; then
-			log ERROR "  /usr/lib/${lib}.so is missing"
+		# Indicates if the library in question has been found.
+		found=0
+
+		# Check if ${lib}.so is in the linker's search path.
+		for path in /usr/${libdir} ${gcc_libdir}; do
+			if [ -e "${BUILDROOT}${path}/${lib}.so" ]; then
+				found=1
+				break
+			fi
+		done
+
+		if [ "${found}" = "0" ]; then
+			log ERROR "  ${lib}.so cannot be found in the linker's search path:"
+			log ERROR "    /usr/${libdir} ${gcc_libdir}"
 			failed=1
 		fi
 	done
