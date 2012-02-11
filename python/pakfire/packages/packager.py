@@ -612,26 +612,52 @@ class SourcePackager(Packager):
 		return metafile
 
 	def create_datafile(self):
+		# Create a list of all files that have to be put into the
+		# package.
+		files = []
+
+		# Download all files that go into the package.
+		for file in self.pkg.download():
+			assert os.path.getsize(file), "Don't package empty files"
+			files.append(("files/%s" % os.path.basename(file), file))
+
+		# Add all files in the package directory.
+		for file in self.pkg.files:
+			files.append((os.path.relpath(file, self.pkg.path), file))
+
+		# Add files in alphabetical order.
+		files.sort()
+
+		# Load progressbar.
+		message = "%-10s : %s" % (_("Packaging"), self.pkg.friendly_name)
+		pb = util.make_progress(message, len(files), eta=False)
+
 		filename = self.mktemp()
 		datafile = InnerTarFileXz.open(filename, mode="w")
 
-		# Add all downloaded files to the package.
-		for file in self.pkg.download():
-			datafile.add(file, "files/%s" % os.path.basename(file))
+		i = 0
+		for arcname, file in files:
+			if pb:
+				i += 1
+				pb.update(i)
 
-		# Add all files in the package directory.
-		for file in sorted(self.pkg.files):
-			arcname = os.path.relpath(file, self.pkg.path)
 			datafile.add(file, arcname)
-
 		datafile.close()
+
+		if pb:
+			pb.finish()
 
 		return filename
 
-	def run(self, resultdirs=[]):
-		assert resultdirs
+	def run(self, resultdir):
+		# Create resultdir if it does not exist yet.
+		if not os.path.exists(resultdir):
+			os.makedirs(resultdir)
 
 		log.info(_("Building source package %s:") % self.pkg.package_filename)
+
+		# The filename where this source package is saved at.
+		target_filename = os.path.join(resultdir, self.pkg.package_filename)
 
 		# Add datafile to package.
 		datafile = self.create_datafile()
@@ -648,28 +674,11 @@ class SourcePackager(Packager):
 		self.add(datafile, "data.img")
 
 		# Build the final tarball.
-		tempfile = self.mktemp()
-		self.save(tempfile)
+		try:
+			self.save(target_filename)
+		except:
+			# Remove the target file when anything went wrong.
+			os.unlink(target_filename)
+			raise
 
-		for resultdir in resultdirs:
-			# XXX sometimes, there has been a None in resultdirs
-			if not resultdir:
-				continue
-
-			resultdir = "%s/%s" % (resultdir, self.pkg.arch)
-
-			if not os.path.exists(resultdir):
-				os.makedirs(resultdir)
-
-			resultfile = os.path.join(resultdir, self.pkg.package_filename)
-			log.info("Saving package to %s" % resultfile)
-			try:
-				os.link(tempfile, resultfile)
-			except OSError:
-				shutil.copy2(tempfile, resultfile)
-
-		# Dump package information.
-		pkg = SourcePackage(self.pakfire, self.pakfire.repos.dummy, tempfile)
-		for line in pkg.dump(long=True).splitlines():
-			log.info(line)
-		log.info("")
+		return target_filename

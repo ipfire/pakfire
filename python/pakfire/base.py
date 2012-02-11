@@ -641,13 +641,10 @@ class Pakfire(object):
 		finally:
 			b.stop()
 
-	def dist(self, pkgs, resultdirs=None):
-		assert resultdirs
+	def dist(self, pkg, resultdir):
+		pkg = packages.Makefile(self, pkg)
 
-		for pkg in pkgs:
-			pkg = packages.Makefile(self, pkg)
-
-			pkg.dist(resultdirs)
+		return pkg.dist(resultdir=resultdir)
 
 	def provides(self, patterns):
 		pkgs = []

@@ -241,12 +241,12 @@ class Makefile(MakefileBase):
 
 		return grabber.download(self.sources)
 
-	def dist(self, resultdirs):
+	def dist(self, resultdir):
 		"""
 			Create a source package.
 		"""
 		p = packager.SourcePackager(self.pakfire, self)
-		p.run(resultdirs)
+		return p.run(resultdir)
 
 	def dump(self, *args, **kwargs):
 		dump = MakefileBase.dump(self, *args, **kwargs)
