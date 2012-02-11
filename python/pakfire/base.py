@@ -232,7 +232,7 @@ class Pakfire(object):
 
 		# Do the solving.
 		solver = self.create_solver()
-		t = solver.solve(request, **kwargs)
+		t = solver.solve(request, logger=logger, **kwargs)
 
 		if not t:
 			if not interactive:
@@ -435,7 +435,7 @@ class Pakfire(object):
 				request.lock(exclude)
 
 		solver = self.create_solver()
-		t = solver.solve(request, update=update, **kwargs)
+		t = solver.solve(request, update=update, logger=logger, **kwargs)
 
 		if not t:
 			log.info(_("Nothing to do"))
