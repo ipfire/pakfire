@@ -38,6 +38,7 @@ basename2cls = {
 	"pakfire-builder" : CliBuilder,
 	"pakfire-client"  : CliClient,
 	"pakfire-daemon"  : CliDaemon,
+	"pakfire-key"     : CliKey,
 	"pakfire-server"  : CliServer,
 	"builder"         : CliBuilderIntern,
 }

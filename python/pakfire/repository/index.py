@@ -52,9 +52,6 @@ class Index(object):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.repo)
 
-	def __len(self):
-		return len(self.repo)
-
 	@property
 	def cache(self):
 		return self.repo.cache

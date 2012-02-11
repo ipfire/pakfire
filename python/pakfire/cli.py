@@ -20,6 +20,7 @@
 ###############################################################################
 
 import argparse
+import datetime
 import os
 import sys
 
@@ -481,6 +482,7 @@ class CliBuilder(Cli):
 		sub_dist.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
 
+
 	def parse_command_cache(self):
 		# Implement the "cache" command.
 		sub_cache = self.sub_commands.add_parser("cache",
@@ -660,8 +662,12 @@ class CliServer(Cli):
 	def parse_command_repo_create(self, sub_commands):
 		sub_create = sub_commands.add_parser("create",
 			help=_("Create a new repository index."))
-		sub_create.add_argument("path", nargs=1, help=_("Path to the packages."))
-		sub_create.add_argument("inputs", nargs="+", help=_("Path to input packages."))
+		sub_create.add_argument("path", nargs=1,
+			help=_("Path to the packages."))
+		sub_create.add_argument("inputs", nargs="+",
+			help=_("Path to input packages."))
+		sub_create.add_argument("--key", "-k", nargs="?",
+			help=_("Key to sign the repository with."))
 		sub_create.add_argument("action", action="store_const", const="repo_create")
 
 	def parse_command_info(self):
@@ -705,7 +711,8 @@ class CliServer(Cli):
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
-		pakfire.repo_create(path, self.args.inputs, **self.pakfire_args)
+		pakfire.repo_create(path, self.args.inputs, key_id=self.args.key,
+			**self.pakfire_args)
 
 	def handle_info(self):
 		info = self.server.info()
@@ -937,3 +944,205 @@ class CliDaemon(Cli):
 		# We cannot just kill the daemon, it needs a smooth shutdown.
 		except (SystemExit, KeyboardInterrupt):
 			d.shutdown()
+
+
+class CliKey(Cli):
+	def __init__(self):
+		self.parser = argparse.ArgumentParser(
+			description = _("Pakfire key command line interface."),
+		)
+
+		self.parse_common_arguments(repo_manage_switches=False,
+			offline_switch=True)
+
+		# Add sub-commands.
+		self.sub_commands = self.parser.add_subparsers()
+
+		self.parse_command_init()
+		self.parse_command_generate()
+		self.parse_command_import()
+		self.parse_command_export()
+		self.parse_command_list()
+		self.parse_command_sign()
+		self.parse_command_verify()
+
+		# Finally parse all arguments from the command line and save them.
+		self.args = self.parser.parse_args()
+
+		# Create a pakfire instance.
+		self.pakfire = pakfire.Pakfire(**self.pakfire_args)
+
+		self.action2func = {
+			"init"        : self.handle_init,
+			"generate"    : self.handle_generate,
+			"import"      : self.handle_import,
+			"export"      : self.handle_export,
+			"list"        : self.handle_list,
+			"sign"        : self.handle_sign,
+			"verify"      : self.handle_verify,
+		}
+
+	@property
+	def pakfire_args(self):
+		ret = {
+			"mode" : "server",
+		}
+
+		return ret
+
+	def parse_command_init(self):
+		# Parse "init" command.
+		sub_init = self.sub_commands.add_parser("init",
+			help=_("Initialize the local keyring."))
+		sub_init.add_argument("action", action="store_const", const="init")
+
+	def parse_command_generate(self):
+		# Parse "generate" command.
+		sub_gen = self.sub_commands.add_parser("generate",
+			help=_("Import a key from file."))
+		sub_gen.add_argument("--realname", nargs=1,
+			help=_("The real name of the owner of this key."))
+		sub_gen.add_argument("--email", nargs=1,
+			help=_("The email address of the owner of this key."))
+		sub_gen.add_argument("action", action="store_const", const="generate")
+
+	def parse_command_import(self):
+		# Parse "import" command.
+		sub_import = self.sub_commands.add_parser("import",
+			help=_("Import a key from file."))
+		sub_import.add_argument("filename", nargs=1,
+			help=_("Filename of that key to import."))
+		sub_import.add_argument("action", action="store_const", const="import")
+
+	def parse_command_export(self):
+		# Parse "export" command.
+		sub_export = self.sub_commands.add_parser("export",
+			help=_("Export a key to a file."))
+		sub_export.add_argument("keyid", nargs=1,
+			help=_("The ID of the key to export."))
+		sub_export.add_argument("filename", nargs=1,
+			help=_("Write the key to this file."))
+		sub_export.add_argument("action", action="store_const", const="export")
+
+	def parse_command_list(self):
+		# Parse "list" command.
+		sub_list = self.sub_commands.add_parser("list",
+			help=_("List all imported keys."))
+		sub_list.add_argument("action", action="store_const", const="list")
+
+	def parse_command_sign(self):
+		# Implement the "sign" command.
+		sub_sign = self.sub_commands.add_parser("sign",
+			help=_("Sign one or more packages."))
+		sub_sign.add_argument("--key", "-k", nargs=1,
+			help=_("Key that is used sign the package(s)."))
+		sub_sign.add_argument("package", nargs="+",
+			help=_("Package(s) to sign."))
+		sub_sign.add_argument("action", action="store_const", const="sign")
+
+	def parse_command_verify(self):
+		# Implement the "verify" command.
+		sub_verify = self.sub_commands.add_parser("verify",
+			help=_("Verify one or more packages."))
+		#sub_verify.add_argument("--key", "-k", nargs=1,
+		#	help=_("Key that is used verify the package(s)."))
+		sub_verify.add_argument("package", nargs="+",
+			help=_("Package(s) to verify."))
+		sub_verify.add_argument("action", action="store_const", const="verify")
+
+	def handle_init(self):
+		# Initialize the keyring...
+		pakfire.key_init(**self.pakfire_args)
+
+	def handle_generate(self):
+		realname = self.args.realname[0]
+		email    = self.args.email[0]
+
+		print _("Generating the key may take a moment...")
+		print
+
+		# Generate the key.
+		fpr = pakfire.key_generate(realname, email, **self.pakfire_args)
+
+		# Dump all information about the new key.
+		for line in self.dump_key(fpr):
+			print line
+
+	def handle_import(self):
+		filename = self.args.filename[0]
+
+		# Simply import the file.
+		pakfire.key_import(filename, **self.pakfire_args)
+
+	def handle_export(self):
+		keyid    = self.args.keyid[0]
+		filename = self.args.filename[0]
+
+		pakfire.key_export(keyid, filename, **self.pakfire_args)
+
+	def handle_list(self):
+		lines = pakfire.key_list(**self.pakfire_args)
+
+		for line in lines:
+			print line
+
+	def handle_sign(self):
+		# Get the files from the command line options
+		files = []
+
+		for file in self.args.package:
+			# Check, if we got a regular file
+			if os.path.exists(file):
+				file = os.path.abspath(file)
+				files.append(file)
+
+			else:
+				raise FileNotFoundError, file
+
+		key = self.args.key[0]
+
+		for file in files:
+			# Open the package.
+			pkg = packages.open(self.pakfire, None, file)
+
+			print _("Signing %s...") % pkg.friendly_name
+			pkg.sign(key)
+
+	def handle_verify(self):
+		# Get the files from the command line options
+		files = []
+
+		for file in self.args.package:
+			# Check, if we got a regular file
+			if os.path.exists(file) and not os.path.isdir(file):
+				file = os.path.abspath(file)
+				files.append(file)
+
+		for file in files:
+			# Open the package.
+			pkg = packages.open(self.pakfire, None, file)
+
+			print _("Verifying %s...") % pkg.friendly_name
+			sigs = pkg.verify()
+
+			for sig in sigs:
+				key = self.pakfire.keyring.get_key(sig.fpr)
+				if key:
+					subkey = key.subkeys[0]
+
+					print "  %s %s" % (subkey.fpr[-16:], key.uids[0].uid)
+					if sig.validity:
+						print "    %s" % _("This signature is valid.")
+
+				else:
+					print "  %s <%s>" % (sig.fpr, _("Unknown key"))
+					print "    %s" % _("Could not check if this signature is valid.")
+
+				created = datetime.datetime.fromtimestamp(sig.timestamp)
+				print "    %s" % _("Created: %s") % created
+
+				if sig.exp_timestamp:
+					expires = datetime.datetime.fromtimestamp(sig.exp_timestamp)
+					print "    %s" % _("Expires: %s") % expires
+
+			print # Empty line

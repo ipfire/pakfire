@@ -53,6 +53,7 @@ install: $(SCRIPTS)
 	ln -svf ../..$(SCRIPT_DIR)/pakfire-multicall.py $(DESTDIR)/usr/bin/pakfire-builder
 	ln -svf ../..$(SCRIPT_DIR)/pakfire-multicall.py $(DESTDIR)/usr/bin/pakfire-client
 	ln -svf ../..$(SCRIPT_DIR)/pakfire-multicall.py $(DESTDIR)/usr/bin/pakfire-daemon
+	ln -svf ../..$(SCRIPT_DIR)/pakfire-multicall.py $(DESTDIR)/usr/bin/pakfire-key
 	ln -svf ../..$(SCRIPT_DIR)/pakfire-multicall.py $(DESTDIR)/usr/bin/pakfire-server
 	ln -svf pakfire-multicall.py                    $(DESTDIR)$(SCRIPT_DIR)/builder
 

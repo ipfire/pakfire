@@ -28,6 +28,7 @@ import builder
 import config
 import distro
 import filelist
+import keyring
 import logger
 import packages
 import repository
@@ -84,6 +85,9 @@ class Pakfire(object):
 		# Setup the logger
 		logger.setup_logging(self.config)
 		self.config.dump()
+
+		# Initialize the keyring.
+		self.keyring = keyring.Keyring(self)
 
 		# Get more information about the distribution we are running
 		# or building
@@ -181,9 +185,8 @@ class Pakfire(object):
 
 		raise BuildError, arch
 
+	@staticmethod
 	def check_is_ipfire(self):
-		return # XXX disabled for now
-
 		ret = os.path.exists("/etc/ipfire-release")
 
 		if not ret:
@@ -657,7 +660,7 @@ class Pakfire(object):
 
 		return sorted(pkgs)
 
-	def repo_create(self, path, input_paths, type="binary"):
+	def repo_create(self, path, input_paths, key_id=None, type="binary"):
 		assert type in ("binary", "source",)
 
 		repo = repository.RepositoryDir(
@@ -670,6 +673,10 @@ class Pakfire(object):
 
 		for input_path in input_paths:
 			repo.collect_packages(input_path)
+
+		# Sign the repository with the given key.
+		if key_id:
+			repo.sign(key_id)
 
 		repo.save()
 

@@ -75,38 +75,53 @@ class RepositoryDir(base.RepositoryFactory):
 			# The path of the package in the repository
 			repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
 
-			# Do we need to copy the package files?
-			copy = True
-
 			# Check, if the package does already exists and check if the
 			# files are really equal.
 			if os.path.exists(repo_filename):
 				pkg_exists = packages.open(self.pakfire, self, repo_filename)
-				copy = False
 
-				# Check UUID at first (faster) and check the file hash to be
-				# absolutely sure.
-				# Otherwise, unlink the existing file and replace it with the
-				# new one.
-				if pkg.uuid != pkg_exists.uuid and pkg.hash1 != pkg_exists.hash1:
-					# Do not copy the file if it is already okay.
-					copy = True
-					os.unlink(repo_filename)
+				# Check UUID to see if the file needs to be copied.
+				if pkg.uuid == pkg_exists.uuid:
+					continue
 
-				del pkg_exists
+			log.debug("Copying package '%s' to repository." % pkg)
+			repo_dirname = os.path.dirname(repo_filename)
+			if not os.path.exists(repo_dirname):
+				os.makedirs(repo_dirname)
 
-			if copy:
-				log.debug("Copying package '%s' to repository." % pkg)
-				repo_dirname = os.path.dirname(repo_filename)
-				if not os.path.exists(repo_dirname):
-					os.makedirs(repo_dirname)
+			# Try to use a hard link if possible, if we cannot do that we simply
+			# copy the file.
+			try:
+				os.link(pkg.filename, repo_filename)
+			except OSError:
+				shutil.copy2(pkg.filename, repo_filename)
 
-				# Try to use a hard link if possible, if we cannot do that we simply
-				# copy the file.
-				try:
-					os.link(pkg.filename, repo_filename)
-				except OSError:
-					shutil.copy2(pkg.filename, repo_filename)
+	def sign(self, key_id):
+		"""
+			Sign all packages with the given key.
+		"""
+		# Create progressbar.
+		pb = util.make_progress(_("Signing packages..."), len(self), eta=True)
+		i = 0
+
+		# Create a new index (because package checksums will change).
+		for pkg in self:
+			if pb:
+				i += 1
+				pb.update(i)
+
+			# Create the full path to the file.
+			filename = os.path.join(self.path, pkg.filename)
+			pkg = packages.open(self.pakfire, self, filename)
+
+			# Sign the package.
+			pkg.sign(key_id)
+
+		if pb:
+			pb.finish()
+
+		# Recreate the index because file checksums may have changed.
+		self.index.update(force=True)
 
 	def save(self, path=None, algo="xz"):
 		"""
@@ -123,7 +138,6 @@ class RepositoryDir(base.RepositoryFactory):
 
 		# Remove all pre-existing metadata.
 		if os.path.exists(metapath):
-			print "Removing", metapath
 			util.rm(metapath)
 
 		# Create directory for metdadata.
