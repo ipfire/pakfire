@@ -76,7 +76,8 @@ class XMLRPCMixin:
 			if timeout > 60:
 				timeout = 60
 
-			log.warning(_("Trying again in %s seconds. %s tries left.") % (timeout, tries))
+			log.warning(_("Trying again in %(timeout)s second(s). %(tries)s tries left.") \
+				% { "timeout" : timeout, "tries" : tries })
 			time.sleep(timeout)
 
 		else:

@@ -331,8 +331,8 @@ class Pakfire(object):
 				reinstall_pkgs.append(_pkgs[0])
 				#t.add("reinstall", _pkgs[0])
 			else:
-				log.warning(_("Multiple reinstall candidates for \"%s\": %s") \
-					% (pattern, ", ".join(p.friendly_name for p in sorted(_pkgs))))
+				log.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
+					% { "pattern" : pattern, "pkgs" : ", ".join(p.friendly_name for p in sorted(_pkgs)) })
 
 		if not reinstall_pkgs:
 			log.info(_("Nothing to do"))

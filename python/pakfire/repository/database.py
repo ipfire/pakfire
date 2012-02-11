@@ -221,7 +221,8 @@ class DatabaseLocal(Database):
 		if self.format > DATABASE_FORMAT:
 			raise DatabaseError, _("Cannot use database with version greater than %s.") % DATABASE_FORMAT
 
-		log.info(_("Migrating database from format %s to %s.") % (self.format, DATABASE_FORMAT))
+		log.info(_("Migrating database from format %(old)s to %(new)s.") % \
+			{ "old" : self.format, "new" : DATABASE_FORMAT })
 
 		# Get a database cursor.
 		c = self.cursor()
