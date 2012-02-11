@@ -124,10 +124,13 @@ class SourceDownloader(object):
 
 		for file in files:
 			filename = os.path.join(SOURCE_CACHE_DIR, file)
+			log.debug("Checking existance of %s..." % filename)
 
-			if os.path.exists(filename):
+			if os.path.exists(filename) and os.path.getsize(filename):
+				log.debug("...exists!")
 				existant_files.append(filename)
 			else:
+				log.debug("...does not exist!")
 				download_files.append(filename)
 
 		if download_files:
@@ -148,6 +151,14 @@ class SourceDownloader(object):
 						pass
 
 					raise DownloadError, "%s %s" % (os.path.basename(filename), e)
+
+				# Check if the downloaded file was empty.
+				if os.path.getsize(filename) == 0:
+					# Remove the file and raise an error.
+					os.unlink(filename)
+
+					raise DownloadError, _("Downloaded empty file: %s") \
+						% os.path.basename(filename)
 
 			log.info("")
 

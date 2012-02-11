@@ -56,8 +56,7 @@ CHUNK_SIZE  = BUFFER_SIZE
 MIRRORLIST_MAXSIZE = 1024**2
 
 MACRO_FILE_DIR = "/usr/lib/pakfire/macros"
-MACRO_FILES = \
-	(os.path.join(MACRO_FILE_DIR, f) for f in sorted(os.listdir(MACRO_FILE_DIR)) if f.endswith(".macro"))
+MACRO_EXTENSION = ".macro"
 
 METADATA_FORMAT = 0
 METADATA_DOWNLOAD_LIMIT = 1024**2
