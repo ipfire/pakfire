@@ -560,8 +560,17 @@ class CliBuilder(Cli):
 			else:
 				raise FileNotFoundError, pkg
 
-		pakfire.dist(pkgs, resultdirs=[self.args.resultdir,],
-			**self.pakfire_args)
+		# Put packages to where the user said or our
+		# current working directory.
+		resultdir = self.args.resultdir or os.getcwd()
+
+		# Change the default pakfire configuration, because
+		# packaging source packages can be done in server mode.
+		pakfire_args = self.pakfire_args
+		pakfire_args["mode"] = "server"
+
+		for pkg in pkgs:
+			pakfire.dist(pkg, resultdir=resultdir, **pakfire_args)
 
 	def handle_provides(self):
 		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)

@@ -96,10 +96,10 @@ def build(pkg, **kwargs):
 def shell(pkg, **kwargs):
 	return Pakfire.shell(pkg, **kwargs)
 
-def dist(pkgs, resultdirs=None, **pakfire_args):
+def dist(pkg, resultdir, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.dist(pkgs, resultdirs=resultdirs)
+	return pakfire.dist(pkg, resultdir)
 
 def provides(patterns, **pakfire_args):
 	# Create pakfire instance.
