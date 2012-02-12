@@ -146,9 +146,8 @@ class BuildEnviron(object):
 		if filename:
 			if filename.endswith(".%s" % MAKEFILE_EXTENSION):
 				pkg = packages.Makefile(self.pakfire, filename)
-				pkg.dist([self.resultdir,])
+				filename = pkg.dist(os.path.join(self.resultdir, "src"))
 
-				filename = os.path.join(self.resultdir, "src", pkg.package_filename)
 				assert os.path.exists(filename), filename
 
 			# Open source package.
