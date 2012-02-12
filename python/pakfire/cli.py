@@ -21,7 +21,9 @@
 
 import argparse
 import os
+import shutil
 import sys
+import tempfile
 
 import pakfire.api as pakfire
 
@@ -841,17 +843,38 @@ class CliClient(Cli):
 		# XXX just for now, we do only upload source pfm files.
 		assert os.path.exists(package)
 
-		# Format arches.
-		if self.args.arch:
-			arches = self.args.arch.replace(",", " ")
-		else:
-			arches = None
+		# Create a temporary directory.
+		temp_dir = tempfile.mkdtemp()
 
-		# Create a new build on the server.
-		build = self.client.build_create(package, arches=arches)
+		try:
+			if package.endswith(".%s" % MAKEFILE_EXTENSION):
+				pakfire_args = { "mode" : "server" }
 
-		# XXX Print the resulting build.
-		print build
+				# Create a source package from the makefile.
+				package = pakfire.dist(package, temp_dir, **pakfire_args)
+
+			elif package.endswith(".%s" % PACKAGE_EXTENSION):
+				pass
+
+			else:
+				raise Exception, "Unknown filetype: %s" % package
+
+			# Format arches.
+			if self.args.arch:
+				arches = self.args.arch.replace(",", " ")
+			else:
+				arches = None
+
+			# Create a new build on the server.
+			build = self.client.build_create(package, arches=arches)
+
+			# XXX Print the resulting build.
+			print build
+
+		finally:
+			# Cleanup the temporary directory and all files.
+			if os.path.exists(temp_dir):
+				shutil.rmtree(temp_dir, ignore_errors=True)
 
 	def handle_info(self):
 		ret = []
