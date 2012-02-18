@@ -14,27 +14,25 @@ packages
 	obsoletes =
 
 	template MAIN
-		def files
+		files
 			/
 			!/usr/lib/debug
 			!/usr/src/debug
 		end
 
-		def configfiles
-		end
+		configfiles =
 	end
 
 	template LIBS
 		summary = Library files of %{thisapp}.
 		description = Runtime library files of the package %{thisapp}.
 
-		def files
+		files
 			/%{lib}/*.so.*
 			%{libdir}/lib*.so.*
 		end
 
-		def configfiles
-		end
+		configfiles =
 
 		# Linker cache is updated automatically by pakfire.
 	end
@@ -43,9 +41,11 @@ packages
 		summary = Development files of %{thisapp}.
 		description = %{summary}
 
-		requires = %{name}=%{thisver}
+		requires
+			%{name} = %{thisver}
+		end
 
-		def files
+		files
 			%{bindir}/*-config
 			%{includedir}
 			%{libdir}//*.a
@@ -59,8 +59,7 @@ packages
 			%{datadir}/vala
 		end
 
-		def configfiles
-		end
+		configfiles =
 	end
 
 	template DEBUGINFO
