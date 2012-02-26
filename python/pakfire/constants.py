@@ -30,9 +30,8 @@ PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 SYSCONFDIR = "/etc"
 SCRIPT_DIR = "/usr/lib/pakfire"
 
-CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire.repos.d")
-CONFIG_DIR_EXT = ".repo"
-CONFIG_FILE = os.path.join(SYSCONFDIR, "pakfire.conf")
+CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire")
+CONFIG_REPOS_DIR = os.path.join(CONFIG_DIR, "repos")
 
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")

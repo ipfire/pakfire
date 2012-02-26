@@ -33,11 +33,12 @@ from pakfire.constants import *
 from pakfire.i18n import _
 
 class RepositorySolv(base.RepositoryFactory):
-	def __init__(self, pakfire, name, description, url, mirrorlist, gpgkey, enabled=True):
+	def __init__(self, pakfire, name, description, baseurl, mirrors, gpgkey, priority=100, enabled=True):
 		# Parse arguments.
-		self.url = url
-		self.gpgkey = gpgkey
-		self.mirrorlist = mirrorlist
+		self.baseurl  = baseurl
+		self.gpgkey   = gpgkey
+		self._mirrors = mirrors
+		self._priority = priority
 
 		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
@@ -55,7 +56,7 @@ class RepositorySolv(base.RepositoryFactory):
 
 	@property
 	def priority(self):
-		priority = 100
+		priority = self._priority
 
 		url2priority = {
 			"file://" : 50,
@@ -63,7 +64,7 @@ class RepositorySolv(base.RepositoryFactory):
 		}
 
 		for url, prio in url2priority.items():
-			if self.url.startswith(url):
+			if self.baseurl.startswith(url):
 				priority = prio
 				break
 
@@ -104,7 +105,7 @@ class RepositorySolv(base.RepositoryFactory):
 			log.debug("Going to download %s" % filename)
 
 			# If we are in offline mode, we cannot download any files.
-			if self.pakfire.offline and not self.url.startswith("file://"):
+			if self.pakfire.offline and not self.baseurl.startswith("file://"):
 				raise OfflineModeError, _("Cannot download this file in offline mode: %s") \
 					% filename
 

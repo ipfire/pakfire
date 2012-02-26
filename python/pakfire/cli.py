@@ -518,13 +518,8 @@ class CliBuilder(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		# Create distribution configuration from command line.
-		distro_config = {
-			"arch" : self.args.arch,
-		}
-
 		pakfire.build(pkg, builder_mode=self.args.mode,
-			distro_config=distro_config, resultdirs=[self.args.resultdir,],
+			arch=self.args.arch, resultdirs=[self.args.resultdir,],
 			shell=True, after_shell=self.args.after_shell, **self.pakfire_args)
 
 	def handle_shell(self):
@@ -541,13 +536,8 @@ class CliBuilder(Cli):
 			else:
 				raise FileNotFoundError, pkg
 
-		# Create distribution configuration from command line.
-		distro_config = {
-			"arch" : self.args.arch,
-		}
-
 		pakfire.shell(pkg, builder_mode=self.args.mode,
-			distro_config=distro_config, **self.pakfire_args)
+			arch=self.args.arch, **self.pakfire_args)
 
 	def handle_dist(self):
 		# Get the packages from the command line options
@@ -771,13 +761,8 @@ class CliBuilderIntern(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		# Create distribution configuration from command line.
-		distro_config = {
-			"arch" : self.args.arch,
-		}
-
 		pakfire._build(pkg, builder_mode=self.args.mode,
-			distro_config=distro_config, resultdir=self.args.resultdir,)
+			arch=self.args.arch, resultdir=self.args.resultdir,)
 
 
 class CliClient(Cli):

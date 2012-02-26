@@ -26,7 +26,7 @@ import random
 import logging
 log = logging.getLogger("pakfire")
 
-from config import Config
+from config import _Config
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
 from urlgrabber.mirror import MirrorGroup
@@ -43,18 +43,21 @@ class PakfireGrabber(URLGrabber):
 		kwargs.update({
 			"quote" : 0,
 			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
+
+			"ssl_verify_host" : False,
+			"ssl_verify_peer" : False,
 		})
 
-		if isinstance(pakfire, Config):
+		if isinstance(pakfire, _Config):
 			config = pakfire
 		else:
 			config = pakfire.config
 
-		if config.get("offline"):
+		if config.get("downloader", "offline"):
 			raise OfflineModeError, "Cannot use %s in offline mode." % self.__class__.__name__
 
 		# Set throttle setting.
-		bandwidth_throttle = config.get("bandwidth_throttle")
+		bandwidth_throttle = config.get("downloader", "bandwidth_throttle")
 		if bandwidth_throttle:
 			try:
 				bandwidth_throttle = int(bandwidth_throttle)
@@ -65,7 +68,7 @@ class PakfireGrabber(URLGrabber):
 			kwargs.update({ "throttle" : bandwidth_throttle })
 
 		# Configure HTTP proxy.
-		http_proxy = config.get("http_proxy")
+		http_proxy = config.get("downloader", "http_proxy")
 		if http_proxy:
 			kwargs.update({ "proxies" : { "http" : http_proxy }})
 
@@ -185,7 +188,7 @@ class MirrorList(object):
 		self.__mirrors = []
 
 		# Save URL to more mirrors.
-		self.mirrorlist = repo.mirrorlist
+		self.mirrorlist = repo._mirrors
 
 		self.update(force=False)
 

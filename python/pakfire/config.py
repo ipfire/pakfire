@@ -19,6 +19,7 @@
 #                                                                             #
 ###############################################################################
 
+import io
 import os
 import socket
 
@@ -27,246 +28,117 @@ from ConfigParser import ConfigParser
 import logging
 log = logging.getLogger("pakfire")
 
-import base
+import logger
 from system import system
 
 from constants import *
 from i18n import _
 
-class Config(object):
-	def __init__(self, type=None):
-		self.type = type
-
-		self._config = {
-			"debug" : False,
-			"logfile" : "/var/log/pakfire.log",
-			"source_download_url" : SOURCE_DOWNLOAD_URL,
-			"local_build_repo_path" : LOCAL_BUILD_REPO_PATH,
-		}
-
-		self._config_repos = {}
-		self._distro = {}
-		self._master = {}
-		self._slave = {}
-		self._files = []
-
-		# Read default configuration files
-		for file in self.config_files:
-			self.read(file)
-
-	def dump(self):
-		log.debug("Configuration:")
-		for k, v in self._config.items():
-			log.debug(" %s : %s" % (k, v))
-
-		log.debug("Loaded from files:")
-		for f in self._files:
-			log.debug(" %s" % f)
-
-	def read(self, filename):
-		# If filename does not exist we return silently
-		if not filename or not os.path.exists(filename):
-			return
-
-		filename = os.path.abspath(filename)
-
-		# If the file was already loaded, we return silently, too
-		if filename in self._files:
-			return
-
-		log.debug("Reading configuration file: %s" % filename)
-
-		config = ConfigParser()
-		config.read(filename)
-
-		# Read the main section from the file if any
-		if "main" in config.sections():
-			for k,v in config.items("main"):
-				self._config[k] = v
-			config.remove_section("main")
-
-		# Read distribution information from the file
-		if "distro" in config.sections():
-			for k,v in config.items("distro"):
-				self._distro[k] = v
-			config.remove_section("distro")
-
-		# Read master settings from file
-		if "master" in config.sections():
-			for k,v in config.items("master"):
-				self._master[k] = v
-			config.remove_section("master")
-
-		# Read slave settings from file
-		if "slave" in config.sections():
-			for k,v in config.items("slave"):
-				self._slave[k] = v
-			config.remove_section("slave")
-
-		# Read repository definitions
-		for section in config.sections():
-			if not self._config_repos.has_key(section):
-				self._config_repos[section] = {}
-
-			options = {}
-			for option in config.options(section):
-				options[option] = config.get(section, option)
-
-			self._config_repos[section].update(options)
-
-		self._files.append(filename)
-
-	def get(self, key, default=None):
-		return self._config.get(key, default)
-
-	def set(self, key, val):
-		log.debug("Updating configuration parameter: %s = %s" % (key, val))
-		self._config[key] = val
-
-	def update(self, values):
-		"""
-			This function takes a dictionary which configuration
-			parameters and applies them to the configuration.
-		"""
-		for key, val in values.items():
-			self.set(key, val)
-
-	def get_repos(self):
-		return self._config_repos.items()
-
-	@property
-	def config_files(self):
-		files = []
-
-		if self.type == "builder":
-			path = os.getcwd()
-
-			_path = None
-			while not path == "/":
-				_path = os.path.join(path, "config")
-				if os.path.exists(_path):
-					break
-
-				_path = None
-				path = os.path.dirname(path)
-
-			if _path:
-				files.append(os.path.join(_path, "pakfire.conf"))
-				files.append(os.path.join(_path, "default.conf"))
-
-			# Remove non-existant files
-			for f in files:
-				if not os.path.exists(f):
-					files.remove(f)
-
-		if not files:
-			# Return system configuration files
-			files += [CONFIG_FILE]
-
-			for f in os.listdir(CONFIG_DIR):
-				# Skip all files with wrong extensions.
-				if not f.endswith(CONFIG_DIR_EXT):
-					continue
-
-				# Create absolute path.
-				f = os.path.join(CONFIG_DIR, f)
-				files.append(f)
-
-		return files
-
-	@property
-	def host_arch(self):
-		"""
-			Return the architecture of the host we are running on.
-		"""
-		return os.uname()[4]
-
-	@property
-	def supported_arches(self):
-		host_arches = {
-			# x86
-			"x86_64"   : [ "x86_64", ],
-			"i686"     : [ "i686", "x86_64", ],
-			"i586"     : [ "i586", "i686", "x86_64", ],
-			"i486"     : [ "i486", "i586", "i686", "x86_64", ],
-
-			# ARM
-			"armv5tel" : [ "armv5tel", "armv5tejl", "armv7l", ],
-			"armv7hl " : [ "armv7l", ],
-		}
-
-		ret = []
-		for host, can_be_built in host_arches.items():
-			if self.host_arch in can_be_built:
-				ret.append(host)
-
-		ret.sort()
-		return reversed(ret)
-
-	def host_supports_arch(self, arch):
-		"""
-			Check if this host can build for the target architecture "arch".
-		"""
-		return arch in self.supported_arches
-
 class _Config(object):
 	files = []
+
+	global_default_settings = {
+		"logger" : {
+			"file"  : "/var/log/pakfire.log",
+			"level" : "normal",
+			"mode"  : "rotate",
+			"rotation_threshold" : 10485760,
+		},
+	}
 
 	# A dict with default settings for this config class.
 	default_settings = {}
 
-	def __init__(self, path="/etc"):
+	def __init__(self, files=None):
 		# Configuration settings.
-		self._config = self.default_settings.copy()
+		self._config = self.global_default_settings.copy()
+		self._config.update(self.default_settings)
 
 		# List of files that were already loaded.
 		self._files = []
 
-		# Read default configuration file.
-		self.read(*[os.path.join(path, f) for f in self.files])
+		# If no files were given, load the default files.
+		if files is None:
+			# Read default configuration file.
+			self.read(*self.files)
 
-		# Dump read configuration.
-		self.dump()
+			repo_path = self.get(None, "repo_path", CONFIG_REPOS_DIR)
+			if repo_path:
+				self.read_dir(repo_path, ext=".repo")
 
-	def _read_hook(self, config):
-		"""
-			Method to be overwritten when addition stuff
-			should be done with the ConfigParser object.
-		"""
-		pass
+	def get_repos(self):
+		repos = []
+
+		for name, settings in self._config.items():
+			if not name.startswith("repo:"):
+				continue
+
+			# Strip "repo:" from name of the repository.
+			name = name[5:]
+
+			repos.append((name, settings))
+
+		return repos
+
+	def read_dir(self, where, ext=".conf"):
+		for file in os.listdir(where):
+			if not file.endswith(ext):
+				continue
+
+			file = os.path.join(where, file)
+			self.read(file)
 
 	def read(self, *files):
 		# Do nothing for no files.
 		if not files:
 			return
 
-		# Create configparser and read the content of the file
-		# to parse it.
-		config = ConfigParser()
-		for f in files:
+		for file in files:
+			if not file.startswith("/"):
+				file = os.path.join(CONFIG_DIR, file)
+
+			if not os.path.exists(file):
+				continue
+
 			# Normalize filename.
-			f = os.path.abspath(f)
+			file = os.path.abspath(file)
 
 			# Check if file has already been read or
 			# does not exist. Then skip it.
-			if f in self._files or not os.path.exists(f):
+			if file in self._files or not os.path.exists(file):
 				continue
 
 			# Parse the file.
-			log.debug(_("Reading from configuration file: %s") % f)
-			config.read(f)
+			with open(file) as f:
+				self.parse(f.read())
 
 			# Save the filename to the list of read files.
-			self._files.append(f)
+			self._files.append(file)
+
+	def parse(self, s):
+		if not s:
+			return
+
+		buf = io.BytesIO(s)
+
+		config = ConfigParser()
+		config.readfp(buf)
 
 		# Read all data from the configuration file in the _config dict.
 		for section in config.sections():
 			items = dict(config.items(section))
 
+			if section == "DEFAULT":
+				section = "main"
+
 			try:
 				self._config[section].update(items)
 			except KeyError:
 				self._config[section] = items
+
+		# Update the logger, because the logging configuration may
+		# have been altered.
+		logger.setup_logging(self)
 
 	def set(self, section, key, value):
 		try:
@@ -274,9 +146,17 @@ class _Config(object):
 		except KeyError:
 			self._config[section] = { key : value }
 
-	def get(self, section, key, default=None):
+	def get_section(self, section):
 		try:
-			return self._config[section][key]
+			return self._config[section]
+		except KeyError:
+			return {}
+
+	def get(self, section, key, default=None):
+		s = self.get_section(section)
+
+		try:
+			return s[key]
 		except KeyError:
 			return default
 
@@ -296,6 +176,12 @@ class _Config(object):
 			return False
 
 		return default
+
+	def update(self, section, what):
+		try:
+			self._config[section].update(what)
+		except KeyError:
+			self._config[section] = what
 
 	def dump(self):
 		"""
@@ -317,12 +203,16 @@ class _Config(object):
 			log.debug("    %s" % f)
 
 
+class Config(_Config):
+	files = ["general.conf"]
+
+
 class ConfigBuilder(_Config):
-	files = ["pakfire.conf", "pakfire-builder.conf"]
+	files = ["general.conf", "builder.conf", "default.conf"]
 
 
 class ConfigClient(_Config):
-	files = ["pakfire.conf", "pakfire-client.conf"]
+	files = ["general.conf", "client.conf"]
 
 	default_settings = {
 		"client" : {
@@ -334,7 +224,7 @@ class ConfigClient(_Config):
 
 
 class ConfigDaemon(_Config):
-	files = ["pakfire.conf", "pakfire-daemon.conf"]
+	files = ["general.conf", "daemon.conf"]
 
 	default_settings = {
 		"daemon" : {

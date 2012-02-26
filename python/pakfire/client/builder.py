@@ -342,6 +342,11 @@ class ClientBuilder(object):
 		if self.build_job:
 			return self.build_job.get("type", None)
 
+	@property
+	def build_config(self):
+		if self.build_job:
+			return self.build_job.get("config", None)
+
 	def build(self):
 		# Cannot go on if I got no build job.
 		if not self.build_job:
@@ -356,6 +361,7 @@ class ClientBuilder(object):
 			tmpdir  = tempfile.mkdtemp()
 			tmpfile = os.path.join(tmpdir, self.build_source_filename)
 			logfile = os.path.join(tmpdir, "build.log")
+			cfgfile = os.path.join(tmpdir, "job-%s.conf" % self.build_id)
 
 			# Get a package grabber and add mirror download capabilities to it.
 			grabber = pakfire.downloader.PackageDownloader(pakfire.config.Config())
@@ -379,7 +385,13 @@ class ClientBuilder(object):
 					if not self.build_source_hash512 == h.hexdigest():
 						raise DownloadError, "Hash check did not succeed."
 
-				# Create dist with arguments that are passed to the pakfire
+				# Write configuration to file.
+				f = open(cfgfile, "w")
+				f.write(self.build_config)
+				print self.build_config
+				f.close()
+
+				# Create dict with arguments that are passed to the pakfire
 				# builder.
 				kwargs = {
 					# Of course this is a release build.
@@ -392,10 +404,14 @@ class ClientBuilder(object):
 					# Files and directories (should be self explaining).
 					"logfile"       : logfile,
 
-					# Distro configuration.
-					"distro_config" : {
-						"arch" : self.build_arch,
-					},
+					# Configuration files to load.
+					"configs"       : [
+						os.path.join(CONFIG_DIR, "general.conf"),
+						cfgfile,
+					],
+
+					# Perform the build for this architecture.
+					"arch"          : self.build_arch,
 				}
 
 				# Create a new instance of the builder.

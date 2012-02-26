@@ -96,7 +96,7 @@ class Repositories(object):
 			"name" : name,
 			"enabled" : True,
 			"gpgkey" : None,
-			"mirrorlist" : None,
+			"mirrors" : None,
 		}
 		_args.update(args)
 
@@ -170,6 +170,10 @@ class Repositories(object):
 
 		# update all indexes if necessary or forced
 		for repo in self:
+			# Skip disabled repositories.
+			if not repo.enabled:
+				continue
+
 			repo.update(force=force, offline=offline)
 
 	def whatprovides(self, what):

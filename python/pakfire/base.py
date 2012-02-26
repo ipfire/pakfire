@@ -50,9 +50,11 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, mode=None, path="/", configs=[],
-			enable_repos=None, disable_repos=None,
-			distro_config=None, **kwargs):
+	def __init__(self, mode=None, path="/", configs=None, arch=None,
+			enable_repos=None, disable_repos=None, **kwargs):
+
+		if kwargs:
+			print _("Ignored arguments:"), kwargs
 
 		# Set the mode.
 		assert mode in ("normal", "builder", "server",)
@@ -73,21 +75,21 @@ class Pakfire(object):
 			if self.path == "/":
 				self.check_is_ipfire()
 
-		# Read configuration file(s)
-		self.config = config.Config(type=mode)
-		for filename in configs:
-			self.config.read(filename)
-		# Assume, that all other keyword arguments are configuration
-		# parameters.
-		self.config.update(kwargs)
+		# Read configuration file(s).
+		if mode == "builder":
+			self.config = config.ConfigBuilder(files=configs)
+		else:
+			self.config = config.Config(files=configs)
 
-		# Setup the logger
-		logger.setup_logging(self.config)
+		# Dump the configuration.
 		self.config.dump()
 
 		# Get more information about the distribution we are running
 		# or building
-		self.distro = distro.Distribution(self, distro_config)
+		self.distro = distro.Distribution(self)
+		if arch:
+			self.distro.arch = arch
+
 		self.pool   = satsolver.Pool(self.distro.arch)
 		self.repos  = repository.Repositories(self,
 			enable_repos=enable_repos, disable_repos=disable_repos)
@@ -146,7 +148,7 @@ class Pakfire(object):
 
 	@property
 	def supported_arches(self):
-		return self.config.supported_arches
+		return system.supported_arches
 
 	@property
 	def offline(self):
@@ -176,7 +178,7 @@ class Pakfire(object):
 		if not arch:
 			return True
 
-		if not self.config.host_supports_arch(arch):
+		if not system.host_supports_arch(arch):
 			raise BuildError, "Cannot build for the target architecture: %s" % arch
 
 		raise BuildError, arch

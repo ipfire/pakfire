@@ -193,7 +193,10 @@ class RepositoryDir(base.RepositoryFactory):
 class RepositoryBuild(RepositoryDir):
 	def __init__(self, pakfire):
 		# XXX need to add distro information to this path
-		path = pakfire.config.get("local_build_repo_path")
+		# XXX it is also hardcoded
+		path = pakfire.config.get(None, "local_build_repo_path",
+			"/var/lib/pakfire/local")
+		assert path
 
 		# Create path if it does not exist.
 		if not os.path.exists(path):

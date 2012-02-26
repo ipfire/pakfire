@@ -32,15 +32,11 @@ install: build
 	cp -vf macros/*.macro $(DESTDIR)$(PREFIX)/lib/pakfire/macros
 
 	# Install example configuration.
-	-mkdir -pv $(DESTDIR)/etc/pakfire.repos.d
-	# Don't overwrite already installed configuration file.
-	[ -e "$(DESTDIR)/etc/pakfire.conf" ] || \
-		cp -vf examples/pakfire.conf $(DESTDIR)/etc/pakfire.conf
-	[ -e "$(DESTDIR)/etc/pakfire-client.conf" ] || \
-		cp -vf examples/pakfire-client.conf $(DESTDIR)/etc/pakfire-client.conf
-	[ -e "$(DESTDIR)/etc/pakfire-daemon.conf" ] || \
-		cp -vf examples/pakfire-daemon.conf $(DESTDIR)/etc/pakfire-daemon.conf
-	cp -vf examples/pakfire.repos.d/* $(DESTDIR)/etc/pakfire.repos.d/
+	-mkdir -pv $(DESTDIR)/etc/pakfire
+	for file in general.conf builder.conf client.conf daemon.conf distros repos; do \
+		[ -e "$(DESTDIR)/etc/pakfire/$${file}" ] && continue; \
+		cp -rvf examples/$${file} $(DESTDIR)/etc/pakfire/; \
+	done
 
 .PHONY: check
 check:

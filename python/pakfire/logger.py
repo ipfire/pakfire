@@ -22,6 +22,8 @@
 import time
 
 import logging
+import logging.handlers
+
 log = logging.getLogger("pakfire")
 
 def setup_logging(config=None):
@@ -31,32 +33,43 @@ def setup_logging(config=None):
 	l = logging.getLogger("pakfire")
 	l.propagate = 0
 
-	if len(l.handlers) > 1:
-		l.debug("Logging was already set up. Don't do this again.")
-		return
-
 	# Remove all previous defined handlers.
 	for handler in l.handlers:
 		l.removeHandler(handler)
+	l.handlers = []
 
 	# Set level of logger always to DEBUG.
 	l.setLevel(logging.DEBUG)
 
-	# But only log all the debugging stuff on console if
-	# we are running in debugging mode.
+	# Add output to console (but never dump debugging stuff there).
 	handler = logging.StreamHandler()
-
-	if config and config.get("debug"):
-		handler.setLevel(logging.DEBUG)
-	else:
-		handler.setLevel(logging.INFO)
-
+	handler.setLevel(logging.INFO)
 	l.addHandler(handler)
 
 	# The configuration file always logs all messages.
 	if config:
-		handler = logging.FileHandler(config.get("logfile"))
-		handler.setLevel(logging.DEBUG)
+		file = config.get("logger", "file", None)
+		if not file:
+			return
+
+		level = logging.INFO
+		if config.get("logger", "level") == "debug":
+			level = logging.DEBUG
+
+		mode = config.get("logger", "mode", "normal")
+		if mode == "rotate":
+			threshold = config.get("logger", "rotation_threshold", 0)
+			try:
+				threshold = int(threshold)
+			except ValueError:
+				threshold = 0
+
+			handler = logging.handlers.RotatingFileHandler(file,
+				maxBytes=threshold, backupCount=9)
+		else:
+			handler = logging.FileHandler(file)
+
+		handler.setLevel(level)
 		l.addHandler(handler)
 
 

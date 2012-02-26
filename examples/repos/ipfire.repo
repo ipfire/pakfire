@@ -1,11 +1,11 @@
-;[ipfire]
+;[repo:ipfire]
 ;description = IPFire Main Repository
 ;
 ;url = http://mirror0.ipfire.org/pakfire3/$name/$arch
 ;
 ;gpgkey = /not/yet/existant
 
-;[ipfire-development]
+;[repo:ipfire-development]
 ;description = IPFire Development Repository
 
 #url = http://mirror0.ipfire.org/pakfire3/$name/$arch
@@ -14,9 +14,9 @@
 
 ;gpgkey = /not/yet/existant
 
-[testingbay]
+[repo:testingbay]
 description = IPFire Testing Repository for %{arch}
 enabled = 1
 
-mirrorlist = http://people.ipfire.org/~ms/testingbay-%{arch}/mirrors
-url = http://people.ipfire.org/~ms/testingbay-%{arch}
+mirrors = http://people.ipfire.org/~ms/testingbay-%{arch}/mirrors
+baseurl = http://people.ipfire.org/~ms/testingbay-%{arch}

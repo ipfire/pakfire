@@ -65,7 +65,7 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, filename=None, distro_config=None, build_id=None, logfile=None,
+	def __init__(self, filename=None, configs=None, arch=None, build_id=None, logfile=None,
 			builder_mode="release", use_cache=None, **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
@@ -119,12 +119,19 @@ class BuildEnviron(object):
 		# Create pakfire instance.
 		if pakfire_args.has_key("mode"):
 			del pakfire_args["mode"]
-		self.pakfire = base.Pakfire(mode="builder", distro_config=distro_config, **pakfire_args)
+
+		self.pakfire = base.Pakfire(
+			mode="builder",
+			configs=configs,
+			arch=arch,
+			**pakfire_args
+		)
+
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path
 
 		# Check if this host can build the requested architecture.
-		if not self.arch in self.pakfire.config.supported_arches:
+		if not system.host_supports_arch(self.arch):
 			raise BuildError, _("Cannot build for %s on this host.") % self.arch
 
 		# Where do we put the result?
@@ -542,7 +549,7 @@ class BuildEnviron(object):
 		# Fake UTS_MACHINE, when we cannot use the personality syscall and
 		# if the host architecture is not equal to the target architecture.
 		if not self.pakfire.distro.personality and \
-				not self.pakfire.config.host_arch == self.pakfire.distro.arch:
+				not system.native_arch == self.pakfire.distro.arch:
 			env.update({
 				"LD_PRELOAD"  : "/usr/lib/libpakfire_preload.so",
 				"UTS_MACHINE" : self.pakfire.distro.arch,
@@ -608,12 +615,23 @@ class BuildEnviron(object):
 			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
 		pkgfile = "/%s" % os.path.relpath(pkgfile, self.chrootPath())
 
-		resultdir = self.chrootPath("/result")
+		# Create pakfire configuration file.
+		cfgfile = "/tmp/pakfire.conf"
+		f = open(self.chrootPath(cfgfile), "w")
+		f.write(self.distro.get_config())
+		f.close()
 
 		# Create the build command, that is executed in the chroot.
-		build_command = ["/usr/lib/pakfire/builder", "--offline",
-			"build", pkgfile, "--arch", self.arch, "--nodeps",
-			"--resultdir=/result",]
+		build_command = [
+			"/usr/lib/pakfire/builder",
+			"--offline",
+			"build",
+			pkgfile,
+			"--arch", self.arch,
+			"--nodeps",
+			"--config=%s" % cfgfile,
+			"--resultdir=/result",
+		]
 
 		try:
 			self.do(" ".join(build_command), logger=self.log)
@@ -624,9 +642,6 @@ class BuildEnviron(object):
 		# Perform install test.
 		if install_test:
 			self.install_test()
-
-		# Copy the final packages and stuff.
-		# XXX TODO resultdir
 
 	def shell(self, args=[]):
 		if not util.cli_is_interactive():

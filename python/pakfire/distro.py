@@ -20,7 +20,6 @@
 ###############################################################################
 
 import os
-import re
 
 import logging
 log = logging.getLogger("pakfire")
@@ -30,22 +29,12 @@ from repository import Repositories
 from system import system
 
 class Distribution(object):
-	def __init__(self, pakfire, distro_config=None):
+	def __init__(self, pakfire):
 		self.pakfire = pakfire
-
-		self._data = {
-			"arch" : system.arch,
-			"name" : "unknown",
-			"slogan" : "---",
-			"vendor" : "unknown",
-			"version" : "0.0",
-		}
+		self._data = {}
 
 		# Inherit configuration from Pakfire configuration.
-		self.update(self.pakfire.config._distro)
-
-		# Update my configuration from the constructor.
-		self.update(distro_config)
+		self.update(self.pakfire.config.get_section("distro"))
 
 		# Dump all data
 		self.dump()
@@ -57,11 +46,24 @@ class Distribution(object):
 	def dump(self):
 		log.debug("Distribution configuration:")
 
-		attrs = ("name", "version", "release", "sname", "dist", "vendor",
+		attrs = ("name", "release", "sname", "dist", "vendor", "contact",
 			"arch", "machine", "buildtarget", "source_dl",)
 
 		for attr in attrs:
 			log.debug(" %s : %s" % (attr, getattr(self, attr)))
+
+	def get_config(self):
+		lines = [
+			"[distro]",
+			"name = %s" % self.name,
+			"release = %s" % self.release,
+			"slogan = %s" % self.slogan,
+			"",
+			"vendor = %s" % self.vendor,
+			"contact = %s" % self.contact,
+		]
+
+		return "\n".join(lines)
 
 	def update(self, config):
 		if not config:
@@ -76,17 +78,11 @@ class Distribution(object):
 
 	@property
 	def name(self):
-		return self._data.get("name")
-
-	@property
-	def version(self):
-		return self._data.get("version")
+		return self._data.get("name", "unknown")
 
 	@property
 	def release(self):
-		m = re.match(r"^([0-9]+)\..*", self.version)
-
-		return m.group(1)
+		return self._data.get("release", "0")
 
 	@property
 	def sname(self):
@@ -94,18 +90,18 @@ class Distribution(object):
 
 	@property
 	def slogan(self):
-		return self._data.get("slogan")
+		return self._data.get("slogan", "N/A")
 
 	@property
 	def vendor(self):
-		return self._data.get("vendor")
+		return self._data.get("vendor", "N/A")
 
 	@property
-	def maintainer(self):
-		return self._data.get("maintainer")
+	def contact(self):
+		return self._data.get("contact", "N/A")
 
 	def get_arch(self):
-		arch = self._data.get("arch") or self.config.host_arch
+		arch = self._data.get("arch", None) or system.arch
 
 		# We can not set up a build environment for noarch.
 		if arch == "noarch":
@@ -155,14 +151,13 @@ class Distribution(object):
 		env = {
 			"DISTRO_NAME"         : self.name,
 			"DISTRO_SNAME"        : self.sname,
-			"DISTRO_VERSION"      : self.version,
 			"DISTRO_RELEASE"      : self.release,
 			"DISTRO_DISTTAG"      : self.dist,
 			"DISTRO_ARCH"         : self.arch,
 			"DISTRO_MACHINE"      : self.machine,
 			"DISTRO_BUILDTARGET"  : self.buildtarget,
-			"DISTRO_MAINTAINER"   : self.maintainer,
 			"DISTRO_VENDOR"       : self.vendor,
+			"DISTRO_CONTACT"      : self.contact,
 			"DISTRO_SLOGAN"       : self.slogan,
 		}
 
@@ -186,7 +181,7 @@ class Distribution(object):
 			None to skip the setting of the personality in the build chroot.
 		"""
 
-		if self.arch == self.config.host_arch:
+		if self.arch == system.native_arch:
 			return None
 
 		arch2personality = {

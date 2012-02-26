@@ -39,6 +39,7 @@ import pakfire.packages
 import pakfire.repository
 import pakfire.util
 
+from pakfire.system import system
 from pakfire.constants import *
 from pakfire.i18n import _
 
@@ -307,7 +308,7 @@ class Server(object):
 		ret.append("      %-16s: %s" % (_("CPU model"), self.cpu_model))
 		ret.append("      %-16s: %s" % (_("Memory"),    pakfire.util.format_size(self.memory)))
 		ret.append("")
-		ret.append("      %-16s: %s" % (_("Native arch"), self.config.host_arch))
+		ret.append("      %-16s: %s" % (_("Native arch"), system.native_arch))
 
 		header = _("Supported arches")
 		for arch in self.config.supported_arches:
