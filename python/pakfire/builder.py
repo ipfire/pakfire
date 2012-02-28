@@ -66,8 +66,8 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, filename=None, distro_name=None, configs=None, arch=None, build_id=None, logfile=None,
-			builder_mode="release", use_cache=None, **pakfire_args):
+	def __init__(self, filename=None, distro_name=None, config=None, configs=None, arch=None,
+			build_id=None, logfile=None, builder_mode="release", use_cache=None, **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
 		self.mode = builder_mode
@@ -121,12 +121,13 @@ class BuildEnviron(object):
 		if pakfire_args.has_key("mode"):
 			del pakfire_args["mode"]
 
-		config = ConfigBuilder(files=configs)
-		if not configs:
-			if distro_name is None:
-				distro_name = config.get("builder", "distro", None)
+		if config is None:
+			config = ConfigBuilder(files=configs)
 
-			config.load_distro_config(distro_name)
+			if not configs:
+				if distro_name is None:
+					distro_name = config.get("builder", "distro", None)
+				config.load_distro_config(distro_name)
 
 		if not config.has_distro():
 			log.error(_("You have not set the distribution for which you want to build."))

@@ -385,15 +385,17 @@ class ClientBuilder(object):
 					if not self.build_source_hash512 == h.hexdigest():
 						raise DownloadError, "Hash check did not succeed."
 
-				# Write configuration to file.
-				f = open(cfgfile, "w")
-				f.write(self.build_config)
-				print self.build_config
-				f.close()
+				# Build configuration.
+				config = pakfire.config.Config(files=["general.conf"])
+
+				# Parse the configuration received from the build service.
+				config.parse(self.build_config)
 
 				# Create dict with arguments that are passed to the pakfire
 				# builder.
 				kwargs = {
+					"config"        : config,
+
 					# Of course this is a release build.
 					# i.e. don't use local packages.
 					"builder_mode"  : "release",
@@ -403,12 +405,6 @@ class ClientBuilder(object):
 
 					# Files and directories (should be self explaining).
 					"logfile"       : logfile,
-
-					# Configuration files to load.
-					"configs"       : [
-						os.path.join(CONFIG_DIR, "general.conf"),
-						cfgfile,
-					],
 
 					# Perform the build for this architecture.
 					"arch"          : self.build_arch,
