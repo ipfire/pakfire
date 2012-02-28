@@ -113,6 +113,11 @@ class Cli(object):
 		if hasattr(self.args, "offline"):
 			ret["offline"] = self.args.offline
 
+		if hasattr(self.args, "config"):
+			ret["configs"] = self.args.config
+		else:
+			ret["configs"] = None
+
 		return ret
 
 	def parse_common_arguments(self, repo_manage_switches=True, offline_switch=True):
@@ -761,8 +766,10 @@ class CliBuilderIntern(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		pakfire._build(pkg, builder_mode=self.args.mode,
-			arch=self.args.arch, resultdir=self.args.resultdir,)
+		conf = config.ConfigBuilder()
+
+		pakfire._build(pkg, builder_mode=self.args.mode, config=conf,
+			arch=self.args.arch, resultdir=self.args.resultdir)
 
 
 class CliClient(Cli):

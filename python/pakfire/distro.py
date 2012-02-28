@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import re
 
 import logging
 log = logging.getLogger("pakfire")
@@ -29,15 +30,51 @@ from repository import Repositories
 from system import system
 
 class Distribution(object):
-	def __init__(self, pakfire):
+	def __init__(self, pakfire, data=None):
 		self.pakfire = pakfire
 		self._data = {}
 
-		# Inherit configuration from Pakfire configuration.
-		self.update(self.pakfire.config.get_section("distro"))
+		if data is None:
+			# Inherit configuration from Pakfire configuration.
+			self.update(self.pakfire.config.get_section("distro"))
+		else:
+			self._data = data
 
 		# Dump all data
 		self.dump()
+
+	@classmethod
+	def from_osrelease(cls, pakfire, path="/"):
+		filename = os.path.join(path, "etc", "os-release")
+
+		if not os.path.exists(filename):
+			raise Exception, "Could not find %s." % filename
+
+		keymap = {
+			"NAME"       : "name",
+			"VERSION_ID" : "release",
+		}
+
+		data = {}
+
+		f = open(filename)
+		for line in f.readlines():
+			m = re.match(r"^(.*)=(.*)$", line)
+			if m:
+				k, v = m.groups()
+
+				v = v.replace("\"", "")
+				v = v.strip()
+
+				try:
+					k = keymap[k]
+				except KeyError:
+					continue
+
+				data[k] = v
+		f.close()
+
+		return cls(pakfire, data)
 
 	@property
 	def config(self):

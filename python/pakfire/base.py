@@ -25,7 +25,6 @@ import string
 
 import actions
 import builder
-import config
 import distro
 import filelist
 import logger
@@ -38,6 +37,7 @@ import util
 import logging
 log = logging.getLogger("pakfire")
 
+from config import Config
 from constants import *
 from i18n import _
 
@@ -50,7 +50,7 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, mode=None, path="/", configs=None, arch=None,
+	def __init__(self, mode=None, path="/", config=None, configs=None, arch=None,
 			enable_repos=None, disable_repos=None, **kwargs):
 
 		if kwargs:
@@ -75,11 +75,13 @@ class Pakfire(object):
 			if self.path == "/":
 				self.check_is_ipfire()
 
-		# Read configuration file(s).
-		if mode == "builder":
-			self.config = config.ConfigBuilder(files=configs)
+		# Get the configuration.
+		if config:
+			assert configs is None, "You cannot pass configs and config."
+			self.config = config
 		else:
-			self.config = config.Config(files=configs)
+			# Read configuration file(s).
+			self.config = Config(files=configs)
 
 		# Dump the configuration.
 		self.config.dump()

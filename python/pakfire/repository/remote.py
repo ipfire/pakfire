@@ -137,3 +137,21 @@ class RepositorySolv(base.RepositoryFactory):
 				raise Exception, "XXX this should never happen..."
 
 		return os.path.join(self.cache.path, cache_filename)
+
+	def get_config(self):
+		if self.enabled:
+			enabled = "1"
+		else:
+			enabled = "0"
+
+		lines = [
+			"[repo:%s]" % self.name,
+			"description = %s" % self.description,
+			"enabled = %s" % enabled,
+			"baseurl = %s" % self.baseurl,
+			"mirrors = %s" % self._mirrors,
+			#"gpgkey = %s" % self.gpgkey,
+			"priority = %s" % self._priority,
+		]
+
+		return lines

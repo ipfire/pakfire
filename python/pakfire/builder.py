@@ -42,6 +42,7 @@ import _pakfire
 import logging
 log = logging.getLogger("pakfire")
 
+from config import ConfigBuilder
 from system import system
 from constants import *
 from i18n import _
@@ -65,7 +66,7 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, filename=None, configs=None, arch=None, build_id=None, logfile=None,
+	def __init__(self, filename=None, distro_name=None, configs=None, arch=None, build_id=None, logfile=None,
 			builder_mode="release", use_cache=None, **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
@@ -120,9 +121,21 @@ class BuildEnviron(object):
 		if pakfire_args.has_key("mode"):
 			del pakfire_args["mode"]
 
+		config = ConfigBuilder(files=configs)
+		if not configs:
+			if distro_name is None:
+				distro_name = config.get("builder", "distro", None)
+
+			config.load_distro_config(distro_name)
+
+		if not config.has_distro():
+			log.error(_("You have not set the distribution for which you want to build."))
+			log.error(_("Please do so in builder.conf or on the CLI."))
+			raise ConfigError, _("Distribution configuration is missing.")
+
 		self.pakfire = base.Pakfire(
 			mode="builder",
-			configs=configs,
+			config=config,
 			arch=arch,
 			**pakfire_args
 		)
@@ -568,6 +581,36 @@ class BuildEnviron(object):
 		# Return an iterator over the packages.
 		return iter(repo)
 
+	def write_config(self):
+		# Cleanup everything in /etc/pakfire.
+		util.rm(self.chrootPath(CONFIG_DIR))
+
+		for i in (CONFIG_DIR, CONFIG_REPOS_DIR):
+			i = self.chrootPath(i)
+			if not os.path.exists(i):
+				os.makedirs(i)
+
+		# Write general.conf.
+		f = open(self.chrootPath(CONFIG_DIR, "general.conf"), "w")
+		f.close()
+
+		# Write builder.conf.
+		f = open(self.chrootPath(CONFIG_DIR, "builder.conf"), "w")
+		f.write(self.distro.get_config())
+		f.close()
+
+		# Create pakfire configuration files.
+		for repo in self.pakfire.repos:
+			conf = repo.get_config()
+
+			if not conf:
+				continue
+
+			filename = self.chrootPath(CONFIG_REPOS_DIR, "%s.repo" % repo.name)
+			f = open(filename, "w")
+			f.write("\n".join(conf))
+			f.close()
+
 	def do(self, command, shell=True, personality=None, logger=None, *args, **kwargs):
 		ret = None
 
@@ -615,11 +658,8 @@ class BuildEnviron(object):
 			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
 		pkgfile = "/%s" % os.path.relpath(pkgfile, self.chrootPath())
 
-		# Create pakfire configuration file.
-		cfgfile = "/tmp/pakfire.conf"
-		f = open(self.chrootPath(cfgfile), "w")
-		f.write(self.distro.get_config())
-		f.close()
+		# Write pakfire configuration into the chroot.
+		self.write_config()
 
 		# Create the build command, that is executed in the chroot.
 		build_command = [
@@ -629,7 +669,6 @@ class BuildEnviron(object):
 			pkgfile,
 			"--arch", self.arch,
 			"--nodeps",
-			"--config=%s" % cfgfile,
 			"--resultdir=/result",
 		]
 

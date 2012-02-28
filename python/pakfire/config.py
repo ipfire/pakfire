@@ -66,6 +66,10 @@ class _Config(object):
 			if repo_path:
 				self.read_dir(repo_path, ext=".repo")
 
+		# Always read overwrite.conf.
+		# This is a undocumented feature to make bootstrapping easier.
+		self.read("overwrite.conf")
+
 	def get_repos(self):
 		repos = []
 
@@ -202,13 +206,28 @@ class _Config(object):
 		for f in self._files:
 			log.debug("    %s" % f)
 
+	def has_distro(self):
+		return self._config.has_key("distro")
+
 
 class Config(_Config):
 	files = ["general.conf"]
 
 
 class ConfigBuilder(_Config):
-	files = ["general.conf", "builder.conf", "default.conf"]
+	files = ["general.conf", "builder.conf"]
+
+	def load_distro_config(self, distro_name):
+		if distro_name is None:
+			return False
+
+		filename = os.path.join(CONFIG_DISTRO_DIR, "%s.conf" % distro_name)
+
+		if not os.path.exists(filename):
+			return False
+
+		self.read(filename)
+		return True
 
 
 class ConfigClient(_Config):
