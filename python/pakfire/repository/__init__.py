@@ -68,6 +68,10 @@ class Repositories(object):
 
 		# Disable all repositories here as demanded on commandline
 		if disable_repos:
+			# * is magic to disable all repositories.
+			if "*" in disable_repos:
+				disable_repos = [r.name for r in self]
+
 			for repo in disable_repos:
 				self.disable_repo(repo)
 

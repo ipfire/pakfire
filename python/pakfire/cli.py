@@ -768,8 +768,14 @@ class CliBuilderIntern(Cli):
 
 		conf = config.ConfigBuilder()
 
+		if self.args.nodeps:
+			disable_repos = ["*"]
+		else:
+			disable_repos = None
+
 		pakfire._build(pkg, builder_mode=self.args.mode, config=conf,
-			arch=self.args.arch, resultdir=self.args.resultdir)
+			disable_repos=disable_repos, arch=self.args.arch,
+			resultdir=self.args.resultdir)
 
 
 class CliClient(Cli):

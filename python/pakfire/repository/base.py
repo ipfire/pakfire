@@ -115,7 +115,8 @@ class RepositoryFactory(object):
 		"""
 		assert self.index
 
-		self.index.update(force, offline=offline)
+		if force or self.enabled:
+			self.index.update(force, offline=offline)
 
 	def clean(self):
 		"""
