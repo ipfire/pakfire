@@ -51,7 +51,7 @@ class PakfireClient(object):
 			ret += "%s:%s@" % (username, password)
 
 		# Add host and path components.
-		ret += "%s/pakfirehub/%s" % (url.netloc, self.type)
+		ret += "/".join((url.netloc, self.type))
 
 		return ret
 

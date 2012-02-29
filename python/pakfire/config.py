@@ -237,7 +237,7 @@ class ConfigClient(_Config):
 		"client" : {
 			# The default server is the official Pakfire
 			# server.
-			"server"   : "https://pakfire.ipfire.org",
+			"server"   : PAKFIRE_HUB,
 		},
 	}
 
@@ -249,7 +249,7 @@ class ConfigDaemon(_Config):
 		"daemon" : {
 			# The default server is the official Pakfire
 			# server.
-			"server"   : "https://pakfire.ipfire.org",
+			"server"   : PAKFIRE_HUB,
 
 			# The default hostname is the host name of this
 			# machine.

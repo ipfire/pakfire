@@ -27,6 +27,9 @@ from __version__ import PAKFIRE_VERSION
 
 PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 
+# The default hub to connect to.
+PAKFIRE_HUB = "https://pakfirehub.ipfire.org/"
+
 SYSCONFDIR = "/etc"
 SCRIPT_DIR = "/usr/lib/pakfire"
 
