@@ -31,6 +31,7 @@ class RepositoryCache(object):
 		An object that is able to cache all data that is loaded from a
 		remote repository.
 	"""
+	path = REPO_CACHE_DIR
 
 	def __init__(self, pakfire, repo):
 		self.pakfire = pakfire
@@ -48,11 +49,6 @@ class RepositoryCache(object):
 
 		return self.__created
 
-	@property
-	def path(self):
-		return os.path.join(REPO_CACHE_DIR, self.pakfire.distro.release, \
-			self.repo.name, self.repo.arch)
-
 	def abspath(self, path, create=True):
 		if create:
 			self.create()
@@ -67,11 +63,8 @@ class RepositoryCache(object):
 		if self.created:
 			return
 
-		for path in ("mirrors", "packages", "repodata"):
-			path = self.abspath(path, create=False)
-
-			if not os.path.exists(path):
-				os.makedirs(path)
+		if not os.path.exists(self.path):
+			os.makedirs(self.path)
 
 		self.__created = True
 
@@ -98,6 +91,11 @@ class RepositoryCache(object):
 
 	def open(self, filename, *args, **kwargs):
 		filename = self.abspath(filename)
+
+		# Create directory if not existant.
+		dirname = os.path.dirname(filename)
+		if not os.path.exists(dirname):
+			os.makedirs(dirname)
 
 		return open(filename, *args, **kwargs)
 

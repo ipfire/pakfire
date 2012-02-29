@@ -191,12 +191,21 @@ class SolvPackage(base.Package):
 		return ["%s does not support filelists, yet." % self.__class__.__name__,]
 
 	@property
+	def cache_filename(self):
+		"""
+			The path to this file in the cache.
+		"""
+		h = self.hash1
+
+		return os.path.join(h[0:2], h[2:], os.path.basename(self.filename))
+
+	@property
 	def is_in_cache(self):
 		# Local files are always kinda cached.
 		if self.repo.local:
 			return True
 
-		return self.repo.cache.exists("package/%s" % self.filename)
+		return self.repo.cache.exists(self.cache_filename)
 
 	def get_from_cache(self):
 		path = None
@@ -206,17 +215,16 @@ class SolvPackage(base.Package):
 			# the root directory of the repository or in a subdirectory that
 			# is named by the architecture.
 			for i in ("", self.arch,):
-				path = os.path.join(self.repo.path, i, self.filename)
+				p = os.path.join(self.repo.path, i, self.filename)
 
-				if os.path.exists(path):
-					return file.BinaryPackage(self.pakfire, self.repo, path)
+				if os.path.exists(p):
+					path = p
+					break
 		else:
-			filename = "packages/%s" % self.filename
+			if self.repo.cache.exists(self.cache_filename):
+				path = self.repo.cache.abspath(self.cache_filename)
 
-			if self.repo.cache.exists(filename):
-				path = self.repo.cache.abspath(filename)
-
-		if path:
+		if path and self.repo.cache.verify(path, self.hash1):
 			return file.BinaryPackage(self.pakfire, self.repo, path)
 
 	def download(self, text=""):

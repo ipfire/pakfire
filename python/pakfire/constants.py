@@ -37,7 +37,7 @@ CONFIG_DISTRO_DIR = os.path.join(CONFIG_DIR, "distros")
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
 CACHE_ENVIRON_DIR = os.path.join(CACHE_DIR, "environments")
-REPO_CACHE_DIR = os.path.join(CACHE_DIR, "repos")
+REPO_CACHE_DIR = os.path.join(CACHE_DIR, "downloads")
 
 LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
 LOCAL_TMP_PATH = "/var/tmp"

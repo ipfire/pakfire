@@ -56,6 +56,10 @@ class Index(object):
 		return len(self.repo)
 
 	@property
+	def distro(self):
+		return self.repo.distro
+
+	@property
 	def cache(self):
 		return self.repo.cache
 
@@ -204,6 +208,8 @@ class IndexSolv(Index):
 
 	def _update_metadata(self, force, offline=False):
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
+		cache_filename = os.path.join("repodata", self.distro.sname, self.distro.release,
+			self.repo.name, self.distro.arch, os.path.basename(filename))
 
 		# Marker if we need to do the download.
 		download = True
@@ -213,15 +219,15 @@ class IndexSolv(Index):
 
 		if not force:
 			# Check if file does exists and is not too old.
-			if self.cache.exists(filename):
-				age = self.cache.age(filename)
+			if self.cache.exists(cache_filename):
+				age = self.cache.age(cache_filename)
 				if age and age < TIME_10M:
 					download = False
 					log.debug("Metadata is recent enough. I don't download it again.")
 
 				# Open old metadata for comparison.
 				old_metadata = metadata.Metadata(self.pakfire, self,
-					self.cache.abspath(filename))
+					self.cache.abspath(cache_filename))
 
 			# If no metadata was downloaded and we are in offline mode.
 			elif offline:
@@ -258,21 +264,23 @@ class IndexSolv(Index):
 				else:
 					# We explicitely rewrite the metadata if it is equal to have
 					# a new timestamp and do not download it over and over again.
-					with self.cache.open(filename, "w") as o:
+					with self.cache.open(cache_filename, "w") as o:
 						o.write(data)
 
 		# Parse the metadata that we just downloaded or load it from cache.
 		self.metadata = metadata.Metadata(self.pakfire, self,
-			self.cache.abspath(filename))
+			self.cache.abspath(cache_filename))
 
 	def _update_database(self, force, offline=False):
 		if not hasattr(self, "metadata"):
 			return
 
 		# Construct cache and download filename.
+		cache_filename = os.path.join("repodata", self.distro.sname, self.distro.release,
+			self.repo.name, self.distro.arch, "database", self.metadata.database)
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
 
-		if not self.cache.exists(filename):
+		if not self.cache.exists(cache_filename):
 			if offline:
 				# If there is not database and we are in offline mode, we cannot
 				# download anything so we just skip the rest of this function.
@@ -297,7 +305,7 @@ class IndexSolv(Index):
 					algo=self.metadata.database_compression)
 
 			# Make a new file in the cache.
-			cacheobj = self.cache.open(filename, "w")
+			cacheobj = self.cache.open(cache_filename, "w")
 
 			try:
 				while True:
@@ -322,17 +330,17 @@ class IndexSolv(Index):
 				urlobj.close()
 
 			# check the hashsum of the downloaded file
-			if not util.calc_hash1(self.cache.abspath(filename)) == self.metadata.database_hash1:
-				# XXX an exception is not a very good idea because this file could
-				# be downloaded from another mirror. need a better way to handle this.
-
-				# Remove bad file from cache.
-				self.cache.remove(filename)
-
-				raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
+			#if self.cache.verify(self.cache.abspath(cache_filename), self.metadata.database_hash1):
+			#	# XXX an exception is not a very good idea because this file could
+			#	# be downloaded from another mirror. need a better way to handle this.
+			#
+			#	# Remove bad file from cache.
+			#	self.cache.remove(cache_filename)
+			#
+			#	raise Exception, "Downloaded file did not match the hashsum. Need to re-download it."
 
 		# (Re-)open the database.
-		self.read(self.cache.abspath(filename))
+		self.read(self.cache.abspath(cache_filename))
 
 
 class IndexDir(Index):

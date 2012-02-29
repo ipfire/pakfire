@@ -193,6 +193,10 @@ class MirrorList(object):
 		self.update(force=False)
 
 	@property
+	def distro(self):
+		return self.repo.distro
+
+	@property
 	def cache(self):
 		"""
 			Shortcut to cache from repository.
@@ -209,8 +213,8 @@ class MirrorList(object):
 			return
 
 		log.debug("Updating mirrorlist for repository '%s' (force=%s)" % (self.repo.name, force))
-
-		cache_filename = "mirrors/mirrorlist"
+		cache_filename = os.path.join("repodata", self.distro.sname, self.distro.release,
+			self.repo.name, self.distro.arch, "mirrors")
 
 		# Force the update if no mirrorlist is available.
 		if not self.cache.exists(cache_filename):

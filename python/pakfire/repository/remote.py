@@ -79,15 +79,7 @@ class RepositorySolv(base.RepositoryFactory):
 		# Marker, if we need to download the package.
 		download = True
 
-		cache_prefix = ""
-		if filename.endswith(PACKAGE_EXTENSION):
-			cache_prefix = "packages"
-		elif filename == METADATA_DOWNLOAD_FILE:
-			cache_prefix = "repodata"
-		elif filename.endswith(METADATA_DATABASE_FILE):
-			cache_prefix = "repodata"
-
-		cache_filename = os.path.join(cache_prefix, os.path.basename(filename))
+		cache_filename = pkg.cache_filename
 
 		# Check if file already exists in cache.
 		if self.cache.exists(cache_filename):
@@ -101,23 +93,23 @@ class RepositorySolv(base.RepositoryFactory):
 				# The file in cache has a wrong hash. Remove it and repeat download.
 				cache.remove(cache_filename)
 
-		if download:
+		# Get a package grabber and add mirror download capabilities to it.
+		grabber = downloader.PackageDownloader(
+			self.pakfire,
+			text=text + os.path.basename(filename),
+		)
+		grabber = self.mirrors.group(grabber)
+
+		# Make sure filename is of type string (and not unicode)
+		filename = str(filename)
+
+		while download:
 			log.debug("Going to download %s" % filename)
 
 			# If we are in offline mode, we cannot download any files.
 			if self.pakfire.offline and not self.baseurl.startswith("file://"):
 				raise OfflineModeError, _("Cannot download this file in offline mode: %s") \
 					% filename
-
-			# Make sure filename is of type string (and not unicode)
-			filename = str(filename)
-
-			# Get a package grabber and add mirror download capabilities to it.
-			grabber = downloader.PackageDownloader(
-				self.pakfire,
-				text=text + os.path.basename(filename),
-			)
-			grabber = self.mirrors.group(grabber)
 
 			i = grabber.urlopen(filename)
 
@@ -132,9 +124,15 @@ class RepositorySolv(base.RepositoryFactory):
 			i.close()
 			o.close()
 
-			# Verify if the download was okay.
-			if hash1 and not self.cache.verify(cache_filename, hash1):
-				raise Exception, "XXX this should never happen..."
+			if self.cache.verify(cache_filename, hash1):
+				log.debug("Successfully downloaded %s (%s)." % (filename, hash1))
+				break
+
+			log.warning(_("The checksum of the downloaded file did not match."))
+			log.warning(_("Trying an other mirror."))
+
+			# Go to the next mirror.
+			grabber.increment_mirror()
 
 		return os.path.join(self.cache.path, cache_filename)
 
