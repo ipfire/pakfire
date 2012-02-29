@@ -190,8 +190,6 @@ class MirrorList(object):
 		# Save URL to more mirrors.
 		self.mirrorlist = repo._mirrors
 
-		self.update(force=False)
-
 	@property
 	def distro(self):
 		return self.repo.distro
@@ -245,6 +243,7 @@ class MirrorList(object):
 			f.close()
 
 		# Read mirrorlist from cache and parse it.
+		self.forget_mirrors()
 		with self.cache.open(cache_filename) as f:
 			self.parse_mirrordata(f.read())
 
@@ -258,6 +257,9 @@ class MirrorList(object):
 		mirror = Mirror(*args, **kwargs)
 
 		self.__mirrors.append(mirror)
+
+	def forget_mirrors(self):
+		self.__mirrors = []
 
 	@property
 	def preferred(self):
@@ -289,6 +291,9 @@ class MirrorList(object):
 		"""
 			Return a MirrorGroup object for the given grabber.
 		"""
+		# Make sure the mirrorlist is up to date.
+		self.update()
+
 		# A list of mirrors that is passed to MirrorGroup.
 		mirrors = []
 
