@@ -20,6 +20,7 @@
 ###############################################################################
 
 import socket
+import ssl
 import time
 import xmlrpclib
 
@@ -43,28 +44,32 @@ class XMLRPCMixin:
 			try:
 				ret = xmlrpclib.Transport.single_request(self, *args, **kwargs)
 
-			except socket.error, e:
-				# These kinds of errors are not fatal, but they can happen on
-				# a bad internet connection or whatever.
-				#   32 Broken pipe
-				#  110 Connection timeout
-				#  111 Connection refused
-				if not e.errno in (32, 110, 111,):
-					raise
+			except (socket.error, ssl.SSLError, \
+				xmlrpclib.Fault, xmlrpclib.ProtocolError, xmlrpclib.ResponseError), error_code:
+				pass
 
-				log.warning(_("Socket error: %s") % e)
-
-			except xmlrpclib.ProtocolError, e:
-				# Log all XMLRPC protocol errors.
-				log.error("XMLRPC protocol error:")
-				log.error("  URL: %s" % e.url)
-				log.error("  HTTP headers:")
-				for header in e.headers.items():
-					log.error("    %s: %s" % header)
-				log.error("  Error code: %s" % e.errcode)
-				log.error("  Error message: %s" % e.errmsg)
-				raise
-
+			#except socket.error, e:
+			#	# These kinds of errors are not fatal, but they can happen on
+			#	# a bad internet connection or whatever.
+			#	#   32 Broken pipe
+			#	#  110 Connection timeout
+			#	#  111 Connection refused
+			#	if not e.errno in (32, 110, 111,):
+			#		raise
+			#
+			#	log.warning(_("Socket error: %s") % e)
+			#
+			#except xmlrpclib.ProtocolError, e:
+			#	# Log all XMLRPC protocol errors.
+			#	log.error("XMLRPC protocol error:")
+			#	log.error("  URL: %s" % e.url)
+			#	log.error("  HTTP headers:")
+			#	for header in e.headers.items():
+			#		log.error("    %s: %s" % header)
+			#	log.error("  Error code: %s" % e.errcode)
+			#	log.error("  Error message: %s" % e.errmsg)
+			#	raise
+			#
 			else:
 				# If request was successful, we can break the loop.
 				break

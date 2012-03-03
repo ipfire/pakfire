@@ -63,6 +63,9 @@ class PakfireDaemon(object):
 			# Save when last keepalive was sent.
 			self._last_keepalive = 0
 
+			# Send an initial keepalive message.
+			self.send_keepalive()
+
 		def run(self, heartbeat=1, max_processes=None):
 			# By default do not start more than two processes per CPU core.
 			if max_processes is None:
