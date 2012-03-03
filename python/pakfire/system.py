@@ -140,14 +140,15 @@ class System(object):
 
 		return memory
 
+	def get_mountpoint(self, path):
+		return Mountpoint(path)
+
 
 # Create an instance of this class to only keep it once in memory.
 system = System()
 
 class Mountpoints(object):
-	def __init__(self, pakfire, root="/"):
-		self.pakfire = pakfire
-
+	def __init__(self, root="/"):
 		self._mountpoints = []
 
 		# Scan for all mountpoints on the system.
@@ -163,7 +164,7 @@ class Mountpoints(object):
 		# If root is not equal to /, we are in a chroot and
 		# our root must be a mountpoint to count files.
 		if not root == "/":
-			mp = Mountpoint(self.pakfire, "/", root=root)
+			mp = Mountpoint("/", root=root)
 			self._mountpoints.append(mp)
 
 		f = open("/proc/mounts")
@@ -184,7 +185,7 @@ class Mountpoints(object):
 			else:
 				mountpoint = os.path.join("/", mountpoint)
 
-			mp = Mountpoint(self.pakfire, mountpoint, root=root)
+			mp = Mountpoint(mountpoint, root=root)
 
 			if not mp in self._mountpoints:
 				self._mountpoints.append(mp)
@@ -224,8 +225,7 @@ class Mountpoints(object):
 
 
 class Mountpoint(object):
-	def __init__(self, pakfire, path, root="/"):
-		self.pakfire = pakfire
+	def __init__(self, path, root="/"):
 		self.path = path
 		self.root = root
 

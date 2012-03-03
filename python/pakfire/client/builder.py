@@ -155,10 +155,20 @@ class PakfireDaemon(object):
 			# Return the number of processes.
 			return len(self.processes)
 
+		@property
+		def free_space(self):
+			mp = system.get_mountpoint(BUILD_ROOT)
+
+			return mp.space_left
+
 		def get_job(self):
 			"""
 				Get a build job from the hub.
 			"""
+			if not self.free_space >= 2 * 1024**3:
+				log.warning(_("Less than 2GB of free space. Cannot request a new job."))
+				return
+
 			log.info("Requesting a new job from the server...")
 
 			# Get some information about this system.
@@ -193,7 +203,12 @@ class PakfireDaemon(object):
 			if time.time() - self._last_keepalive < 30:
 				return
 
-			self.client.send_keepalive(overload=self.has_overload())
+			free_space = self.free_space / 1024**2
+
+			self.client.send_keepalive(
+				overload=self.has_overload(),
+				free_space=free_space,
+			)
 			self._last_keepalive = time.time()
 
 		def remove_finished_builders(self):
