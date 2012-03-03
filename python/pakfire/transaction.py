@@ -54,7 +54,7 @@ class TransactionCheck(object):
 		self.filelist = self.load_filelist()
 
 		# Get information about the mounted filesystems.
-		self.mountpoints = system.Mountpoints(root=self.pakfire.path)
+		self.mountpoints = system.Mountpoints(self.pakfire.path)
 
 	@property
 	def error_files(self):
