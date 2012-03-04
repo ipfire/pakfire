@@ -256,7 +256,7 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run(logger=logger)
 
-	def localinstall(self, files, yes=None, allow_uninstall=False):
+	def localinstall(self, files, yes=None, allow_uninstall=False, logger=None):
 		repo_name = repo_desc = "localinstall"
 
 		# Create a new repository that holds all packages we passed on
