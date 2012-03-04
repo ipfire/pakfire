@@ -63,11 +63,11 @@ class Action(object):
 		return self.type in ("install", "reinstall", "upgrade", "downgrade", "change",) \
 			and not isinstance(self.pkg, packages.BinaryPackage)
 
-	def download(self, text):
+	def download(self, text, logger=None):
 		if not self.needs_download:
 			return
 
-		self.pkg = self.pkg.download(text)
+		self.pkg = self.pkg.download(text, logger=logger)
 
 	def run(self):
 		raise NotImplementedError

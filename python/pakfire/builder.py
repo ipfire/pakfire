@@ -677,6 +677,8 @@ class BuildEnviron(object):
 			self.do(" ".join(build_command), logger=self.log)
 
 		except Error:
+			self.log.error(_("Build failed."), exc_info=True)
+
 			raise BuildError, _("The build command failed. See logfile for details.")
 
 		# Perform install test.

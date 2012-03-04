@@ -58,7 +58,8 @@ class DependencyError(Error):
 	message = _("One or more dependencies could not been resolved.")
 
 class DownloadError(Error):
-	pass
+	message = _("An error occured when pakfire tried to download files.")
+
 
 class FileError(Error):
 	pass

@@ -80,20 +80,23 @@ class TransactionCheck(object):
 
 		return True
 
-	def print_errors(self):
+	def print_errors(self, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		for name, files in sorted(self.error_files.items()):
 			assert len(files) >= 2
 
 			pkgs = [f.pkg.friendly_name for f in files]
 
 			if len(files) == 2:
-				log.critical(
+				logger.critical(
 					_("file %s from %s conflicts with file from package %s") % \
 						(name, pkgs[0], pkgs[1])
 				)
 
 			elif len(files) >= 3:
-				log.critical(
+				logger.critical(
 					_("file %s from %s conflicts with files from %s") % \
 						(name, pkgs[0], i18n.list(pkgs[1:]))
 				)
@@ -102,8 +105,7 @@ class TransactionCheck(object):
 			if mp.space_left >= 0:
 				continue
 
-			print util.format_size(mp.free), util.format_size(mp.disk_usage)
-			log.critical(_("There is not enough space left on %(name)s. Need at least %(size)s to perform transaction.") \
+			logger.critical(_("There is not enough space left on %(name)s. Need at least %(size)s to perform transaction.") \
 				% { "name" : mp.path, "size" : util.format_size(mp.space_needed) })
 
 	def load_filelist(self):
@@ -264,7 +266,10 @@ class Transaction(object):
 	def downloads(self):
 		return sorted([a for a in self.actions if a.needs_download])
 
-	def download(self):
+	def download(self, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		# Get all download actions as a list.
 		downloads = [d for d in self.downloads]
 		downloads.sort()
@@ -288,19 +293,19 @@ class Transaction(object):
 			raise DownloadError, _("Not enough space to download %s of packages.") \
 				% util.format_size(download_size)
 
-		log.info(_("Downloading packages:"))
+		logger.info(_("Downloading packages:"))
 		time_start = time.time()
 
 		i = 0
 		for action in downloads:
 			i += 1
-			action.download(text="(%d/%d): " % (i, len(downloads)))
+			action.download(text="(%d/%d): " % (i, len(downloads)), logger=logger)
 
 		# Write an empty line to the console when there have been any downloads.
 		width, height = util.terminal_size()
 
 		# Print a nice line.
-		log.info("-" * width)
+		logger.info("-" * width)
 
 		# Format and calculate download information.
 		time_stop = time.time()
@@ -313,8 +318,8 @@ class Transaction(object):
 		line = "%s | %5sB     %s     " % \
 			(download_speed, download_size, download_time)
 		line = " " * (width - len(line)) + line
-		log.info(line)
-		log.info("")
+		logger.info(line)
+		logger.info("")
 
 	def dump_pkg(self, pkg):
 		ret = []
@@ -341,7 +346,7 @@ class Transaction(object):
 
 	def dump(self, logger=None):
 		if logger is None:
-			logger = log
+			logger = logging.getLogger("pakfire")
 
 		width = 80
 		line = "=" * width
@@ -394,8 +399,11 @@ class Transaction(object):
 
 		return util.ask_user(_("Is this okay?"))
 
-	def check(self):
-		log.info(_("Running Transaction Test"))
+	def check(self, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
+		logger.info(_("Running Transaction Test"))
 
 		# Initialize the check object.
 		check = TransactionCheck(self.pakfire, self)
@@ -407,33 +415,38 @@ class Transaction(object):
 				raise
 
 		if check.successful:
-			log.info(_("Transaction Test Succeeded"))
+			logger.info(_("Transaction Test Succeeded"))
 			return
 
 		# In case of an unsuccessful transaction test, we print the error
 		# and raise TransactionCheckError.
-		check.print_errors()
+		check.print_errors(logger=logger)
 
 		raise TransactionCheckError, _("Transaction test was not successful")
 
-	def run(self):
+	def run(self, logger=None):
 		assert not self.__need_sort, "Did you forget to sort the transaction?"
 
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		# Download all packages.
+		# (don't add logger here because I do not want to see downloads
+		# in the build logs on the build service)
 		self.download()
 
 		# Run the transaction test
-		self.check()
+		self.check(logger=logger)
 
-		log.info(_("Running transaction"))
+		logger.info(_("Running transaction"))
 		# Run all actions in order and catch all kinds of ActionError.
 		for action in self.actions:
 			try:
 				action.run()
 			except ActionError, e:
-				log.error("Action finished with an error: %s - %s" % (action, e))
+				logger.error("Action finished with an error: %s - %s" % (action, e))
 
-		log.info("")
+		logger.info("")
 
 		# Commit repository metadata.
 		self.local.commit()

@@ -70,10 +70,13 @@ class RepositorySolv(base.RepositoryFactory):
 
 		return priority
 
-	def download(self, pkg, text=""):
+	def download(self, pkg, text="", logger=None):
 		"""
 			Downloads 'filename' from repository and returns the local filename.
 		"""
+		if logger is None:
+			logger = log
+
 		filename, hash1 = pkg.filename, pkg.hash1
 
 		# Marker, if we need to download the package.
@@ -83,7 +86,7 @@ class RepositorySolv(base.RepositoryFactory):
 
 		# Check if file already exists in cache.
 		if self.cache.exists(cache_filename):
-			log.debug("File exists in cache: %s" % filename)
+			logger.debug("File exists in cache: %s" % filename)
 
 			# If the file does already exist, we check if the hash1 matches.
 			if hash1 and self.cache.verify(cache_filename, hash1):
@@ -104,7 +107,7 @@ class RepositorySolv(base.RepositoryFactory):
 		filename = str(filename)
 
 		while download:
-			log.debug("Going to download %s" % filename)
+			logger.debug("Going to download %s" % filename)
 
 			# If we are in offline mode, we cannot download any files.
 			if self.pakfire.offline and not self.baseurl.startswith("file://"):
@@ -125,11 +128,11 @@ class RepositorySolv(base.RepositoryFactory):
 			o.close()
 
 			if self.cache.verify(cache_filename, hash1):
-				log.debug("Successfully downloaded %s (%s)." % (filename, hash1))
+				logger.debug("Successfully downloaded %s (%s)." % (filename, hash1))
 				break
 
-			log.warning(_("The checksum of the downloaded file did not match."))
-			log.warning(_("Trying an other mirror."))
+			logger.warning(_("The checksum of the downloaded file did not match."))
+			logger.warning(_("Trying an other mirror."))
 
 			# Go to the next mirror.
 			grabber.increment_mirror()

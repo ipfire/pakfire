@@ -254,7 +254,7 @@ class Pakfire(object):
 			t.dump(logger=logger)
 
 		# Run the transaction.
-		t.run()
+		t.run(logger=logger)
 
 	def localinstall(self, files, yes=None, allow_uninstall=False):
 		repo_name = repo_desc = "localinstall"
@@ -296,12 +296,12 @@ class Pakfire(object):
 				if not t.cli_yesno():
 					return
 			elif yes:
-				t.dump()
+				t.dump(logger=logger)
 			else:
 				return
 
 			# If okay, run the transcation.
-			t.run()
+			t.run(logger=logger)
 
 		finally:
 			# Remove the temporary copy of the repository we have created earlier.
@@ -461,7 +461,7 @@ class Pakfire(object):
 			return
 
 		# Run the transaction.
-		t.run()
+		t.run(logger=logger)
 
 	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False):
 		assert pkgs

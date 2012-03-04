@@ -227,9 +227,9 @@ class SolvPackage(base.Package):
 		if path and self.repo.cache.verify(path, self.hash1):
 			return file.BinaryPackage(self.pakfire, self.repo, path)
 
-	def download(self, text=""):
+	def download(self, text="", logger=None):
 		if not self.repo.local:
-			self.repo.download(self, text=text)
+			self.repo.download(self, text=text, logger=logger)
 
 		return self.get_from_cache()
 
