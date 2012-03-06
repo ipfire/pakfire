@@ -18,6 +18,7 @@ from pakfire.system import system
 import base
 
 from pakfire.constants import *
+from pakfire.i18n import _
 
 import logging
 log = logging.getLogger("pakfire.client")
