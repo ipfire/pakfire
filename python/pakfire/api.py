@@ -31,10 +31,10 @@ def install(requires, **pakfire_args):
 
 	return pakfire.install(requires)
 
-def resolvdep(requires, **pakfire_args):
+def resolvdep(pkgs, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.resolvdep(requires)
+	return pakfire.resolvdep(pkgs)
 
 def localinstall(files, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)

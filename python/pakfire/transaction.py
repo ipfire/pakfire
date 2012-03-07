@@ -35,7 +35,8 @@ log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
-from pakfire._pakfire import sync
+from pakfire._pakfire import Transaction, sync
+_Transaction = Transaction
 
 PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
 
@@ -179,17 +180,18 @@ class Transaction(object):
 		return False
 
 	@classmethod
-	def from_solver(cls, pakfire, solver, _transaction):
+	def from_solver(cls, pakfire, solver):
 		# Create a new instance of our own transaction class.
 		transaction = cls(pakfire)
+
+		# Get transaction data from the solver.
+		_transaction = _Transaction(solver.solver)
 
 		# Save installsizechange.
 		transaction.installsizechange = _transaction.get_installsizechange()
 
 		# Get all steps that need to be done from the solver.
 		steps = _transaction.steps()
-		if not steps:
-			return
 
 		actions = []
 		actions_post = []

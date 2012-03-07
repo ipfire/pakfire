@@ -19,16 +19,17 @@
 #                                                                             #
 ###############################################################################
 
+import time
+
 import logging
 log = logging.getLogger("pakfire")
 
 import _pakfire
 from _pakfire import *
+from i18n import _
 
 import transaction
 import util
-
-from i18n import _
 
 class Request(_pakfire.Request):
 	def install(self, what):
@@ -108,42 +109,134 @@ class Request(_pakfire.Request):
 
 
 class Solver(object):
-	def __init__(self, pakfire, pool):
-		self.pakfire = pakfire
-		self.pool = pool
-
-	def solve(self, request, update=False, uninstall=False, allow_downgrade=False,
-			allow_vendorchange=False, allow_archchange=False, fix_system=False,
-			interactive=False, logger=None):
-
-		# If no logger was provided, we use the root logger.
+	def __init__(self, pakfire, request, logger=None):
 		if logger is None:
-			logger = log
+			logger = logging.getLogger("pakfire")
+		self.logger = logger
+
+		self.pakfire = pakfire
+		self.pool = self.pakfire.pool
+
+		# Default settings.
+		self.settings = {
+			# Update all installed packages?
+			"update" : False,
+
+			# Allow to uninstall any packages?
+			"uninstall" : False,
+
+			# Allow to downgrade any packages?
+			"allow_downgrade" : False,
+
+			# Allow packages to change their vendors?
+			"allow_vendorchange" : False,
+
+			# Allow packages to change their arch?
+			"allow_archchange" : False,
+
+			# Fix system?
+			"fix_system" : False,
+		}
+
+		self.request = request
+		assert self.request, "Empty request?"
 
 		# Create a new solver.
-		solver = _pakfire.Solver(self.pool)
+		self.solver = _pakfire.Solver(self.pool)
 
-		solver.set_fix_system(fix_system)
-		solver.set_allow_uninstall(uninstall)
-		solver.set_allow_downgrade(allow_downgrade)
+		# The status of the solver.
+		#   None when the solving was not done, yet.
+		#   True when the request could be solved.
+		#   False when the request could not be solved.
+		self.status = None
+
+		# Time that was needed to solve the request.
+		self.time = None
+
+		# Cache the transaction and problems.
+		self.__problems = None
+		self.__transaction = None
+
+	def set(self, key, value):
+		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
+		assert value in (True, False), "Invalid value: %s" % value
+
+		try:
+			self.settings[key] = value
+		except KeyError:
+			pass
+
+	def get(self, key):
+		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
+
+		return self.settings.get(key)
+
+	def solve(self):
+		assert self.status is None, "Solver did already solve something."
+
+		# Apply solver configuration.
+		self.solver.set_fix_system(self.get("fix_system"))
+		self.solver.set_allow_uninstall(self.get("uninstall"))
+		self.solver.set_allow_downgrade(self.get("allow_downgrade"))
 
 		# Optionally allow packages to change their vendors.
 		# This is not recommended because it may have weird effects.
-		solver.set_allow_vendorchange(allow_vendorchange)
+		self.solver.set_allow_vendorchange(self.get("allow_vendorchange"))
 
 		# Optionally allow packages ot change their architecture.
-		solver.set_allow_archchange(allow_archchange)
+		self.solver.set_allow_archchange(self.get("allow_archchange"))
 
 		# Configure the solver for an update.
-		if update:
+		if self.get("update"):
 			solver.set_updatesystem(True)
 			solver.set_do_split_provides(True)
 
 		# Actually solve the request.
-		res = solver.solve(request)
+		start_time = time.time()
+		self.status = self.solver.solve(self.request)
 
-		logger.debug("Solver status: %s" % res)
+		# Save the amount of time that was needed to solve the request.
+		self.time = time.time() - start_time
 
+		self.logger.debug("Solver status: %s (%.2f ms)" % (self.status, self.time / 1000))
+
+	@property
+	def transaction(self):
+		if not self.status is True:
+			return
+
+		if self.__transaction is None:
+			self.__transaction = \
+				transaction.Transaction.from_solver(self.pakfire, self)
+
+		return self.__transaction
+
+	@property
+	def problems(self):
+		if self.__problems is None:
+			self.__problems = self.solver.get_problems(self.request)
+
+		return self.__problems
+
+	def get_problem_string(self):
+		assert self.status is False
+
+		lines = [
+			_("The solver returned one problem:", "The solver returned %(num)s problems:",
+				len(self.problems)) % { "num" : len(self.problems) },
+		]
+
+		i = 0
+		for problem in self.problems:
+			i += 1
+
+			# Print information about the problem.
+			lines.append("  #%d: %s" % (i, problem))
+
+		return "\n".join(lines)
+
+
+	def DEADCODE(self):
 		# If the solver succeeded, we return the transaction and return.
 		if res:
 			# Return a resulting Transaction.

@@ -278,7 +278,7 @@ class Cli(object):
 		# Implement the "resolvdep" command.
 		sub_resolvdep = self.sub_commands.add_parser("resolvdep",
 			help=_("Check the dependencies for a particular package."))
-		sub_resolvdep.add_argument("package", nargs="+",
+		sub_resolvdep.add_argument("package", nargs=1,
 			help=_("Give name of at least one package to check."))
 		sub_resolvdep.add_argument("action", action="store_const", const="resolvdep")
 
@@ -375,7 +375,12 @@ class Cli(object):
 		pakfire.check(**self.pakfire_args)
 
 	def handle_resolvdep(self):
-		pakfire.resolvdep(self.args.package, **self.pakfire_args)
+		(pkg,) = self.args.package
+
+		solver = pakfire.resolvdep(pkg, **self.pakfire_args)
+
+		assert solver.status
+		solver.transaction.dump()
 
 
 class CliBuilder(Cli):

@@ -100,16 +100,54 @@ class Pakfire(object):
 		# Reset logging.
 		logger.setup_logging()
 
-	def create_solver(self):
-		return satsolver.Solver(self, self.pool)
+	def expand_requires(self, requires):
+		if requires is None:
+			return []
 
-	def create_request(self, builder=False):
+		ret = []
+		for req in requires:
+			if isinstance(req, packages.BinaryPackage):
+				ret.append(req)
+				continue
+
+			if isinstance(req, packages.SolvPackage):
+				ret.append(req.solvable)
+				continue
+
+			assert type(req) == type("a"), req
+
+			# Expand all groups.
+			if req.startswith("@"):
+				reqs = self.grouplist(req[1:])
+			else:
+				reqs = [req,]
+
+			for req in reqs:
+				req = self.create_relation(req)
+				ret.append(req)
+
+		return ret
+
+	def create_request(self, builder=False, install=None, remove=None, update=None):
 		request = satsolver.Request(self.pool)
 
 		# Add multiinstall information.
 		for solv in PAKFIRE_MULTIINSTALL:
 			request.noobsoletes(solv)
 
+		# Apply all installs.
+		for req in self.expand_requires(install):
+			request.install(req)
+
+		# Apply all removes.
+		for req in self.expand_requires(remove):
+			request.remove(req)
+
+		# Apply all updates.
+		for req in self.expand_requires(update):
+			request.update(req)
+
+		# Return the request.
 		return request
 
 	def create_relation(self, s):
@@ -198,52 +236,64 @@ class Pakfire(object):
 		# XXX just backwards compatibility
 		return self.mode == "builder"
 
-	def resolvdep(self, requires):
+	def resolvdep(self, pkg, logger=None):
+		assert os.path.exists(pkg)
+
+		# Open the package file.
+		pkg = packages.open(self, None, pkg)
+
 		# Create a new request.
-		request = self.create_request()
-		for req in requires:
-			req = self.create_relation(req)
-			request.install(req)
+		request = self.create_request(install=pkg.requires)
+
+		# Add build dependencies if needed.
+		if isinstance(pkg, packages.Makefile) or isinstance(pkg, packages.SourcePackage):
+			for req in self.expand_requires(BUILD_PACKAGES):
+				request.install(req)
+
+		# Solv the request.
+		solver = self.solv(request, logger=logger)
+
+		if solver.status:
+			return solver
+
+		raise DependencyError, solver.get_problem_string()
+
+	def solv(self, request, interactive=False, logger=None, **kwargs):
+		# XXX implement interactive
+
+		if not logger:
+			logger = logging.getLogger("pakfire")
+
+		# Create a solver.
+		solver = satsolver.Solver(self, request, logger=logger)
+
+		# Apply configuration to solver.
+		for key, val in kwargs.items():
+			solver.set(key, val)
 
 		# Do the solving.
-		solver = self.create_solver()
-		t = solver.solve(request)
+		solver.solve()
 
-		if t:
-			t.dump()
-		else:
-			log.info(_("Nothing to do"))
+		# Return the solver so one can do stuff with it...
+		return solver
 
 	def install(self, requires, interactive=True, logger=None, **kwargs):
 		if not logger:
 			logger = logging.getLogger("pakfire")
 
-		# Create a new request.
-		request = self.create_request()
-
-		# Expand all groups.
-		for req in requires:
-			if req.startswith("@"):
-				reqs = self.grouplist(req[1:])
-			else:
-				reqs = [req,]
-
-			for req in reqs:
-				if not isinstance(req, packages.BinaryPackage):
-					req = self.create_relation(req)
-
-				request.install(req)
-
 		# Do the solving.
-		solver = self.create_solver()
-		t = solver.solve(request, logger=logger, **kwargs)
+		request = self.create_request(install=requires)
+		solver  = self.solv(request, logger=logger, interactive=interactive, **kwargs)
 
-		if not t:
+		if not solver.status:
 			if not interactive:
 				raise DependencyError
 
-			log.info(_("Nothing to do"))
+			logger.info(_("Nothing to do"))
 			return
+
+		# Create the transaction.
+		t = solver.transaction
 
 		if interactive:
 			# Ask if the user acknowledges the transaction.
@@ -257,6 +307,9 @@ class Pakfire(object):
 		t.run(logger=logger)
 
 	def localinstall(self, files, yes=None, allow_uninstall=False, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		repo_name = repo_desc = "localinstall"
 
 		# Create a new repository that holds all packages we passed on
@@ -279,17 +332,17 @@ class Pakfire(object):
 
 			# Create a new request that installs all solvables from the
 			# repository.
-			request = self.create_request()
-			for solv in [p.solvable for p in repo]:
-				request.install(solv)
+			request = self.create_request(install=repo)
 
-			solver = self.create_solver()
-			t = solver.solve(request, uninstall=allow_uninstall)
+			solver = self.solv(request, logger=logger, uninstall=allow_uninstall)
 
 			# If solving was not possible, we exit here.
-			if not t:
-				log.info(_("Nothing to do"))
+			if not solver.status:
+				logger.info(_("Nothing to do"))
 				return
+
+			# Create transaction.
+			t = solver.transaction
 
 			if yes is None:
 				# Ask the user if this is okay.
@@ -391,8 +444,10 @@ class Pakfire(object):
 				request.install(new.solvable)
 
 		if request:
-			solver = self.create_solver()
-			t = solver.solve(request)
+			solver = self.solv(request)
+			assert solver.status
+
+			t = solver.transaction
 		else:
 			# Create new transaction.
 			t = transaction.Transaction(self)
@@ -418,31 +473,29 @@ class Pakfire(object):
 			check indicates, if the method should return after calculation
 			of the transaction.
 		"""
-		request = self.create_request()
+		if logger is None:
+			logger = logging.getLogger("pakfire")
 
 		# If there are given any packets on the command line, we will
 		# only update them. Otherwise, we update the whole system.
 		if pkgs:
 			update = False
-			for pkg in pkgs:
-				pkg = self.create_relation(pkg)
-				request.update(pkg)
 		else:
 			update = True
 
+		request = self.create_request(update=pkgs)
+
 		# Exclude packages that should not be updated.
-		if excludes:
-			for exclude in excludes:
-				log.info(_("Excluding %s.") % exclude)
+		for exclude in excludes or []:
+			logger.info(_("Excluding %s.") % exclude)
 
-				exclude = self.create_relation(exclude)
-				request.lock(exclude)
+			exclude = self.create_relation(exclude)
+			request.lock(exclude)
 
-		solver = self.create_solver()
-		t = solver.solve(request, update=update, logger=logger, **kwargs)
+		solver = self.solv(request, logger=logger, update=update, **kwargs)
 
-		if not t:
-			log.info(_("Nothing to do"))
+		if not solver.status:
+			logger.info(_("Nothing to do"))
 
 			# If we are running in check mode, we return a non-zero value to
 			# indicate, that there are no updates.
@@ -450,6 +503,9 @@ class Pakfire(object):
 				return 1
 			else:
 				return
+
+		# Create the transaction.
+		t = solver.transaction
 
 		# Just exit here, because we won't do the transaction in this mode.
 		if check:
@@ -489,10 +545,12 @@ class Pakfire(object):
 				request.install(rel)
 
 		# Solve the request.
-		solver = self.create_solver()
-		t = solver.solve(request, allow_downgrade=True,
-			allow_vendorchange=allow_vendorchange,
+		solver = self.solve(request, allow_downgrade=True, allow_vendorchange=allow_vendorchange,
 			allow_archchange=allow_archchange)
+		assert solver.status is True
+
+		# Create the transaction.
+		t = solver.transaction
 
 		if not t:
 			log.info(_("Nothing to do"))
@@ -505,14 +563,14 @@ class Pakfire(object):
 
 	def remove(self, pkgs):
 		# Create a new request.
-		request = self.create_request()
-		for pkg in pkgs:
-			pkg = self.create_relation(pkg)
-			request.remove(pkg)
+		request = self.create_request(remove=pkgs)
 
 		# Solve the request.
-		solver = self.create_solver()
-		t = solver.solve(request, uninstall=True)
+		solver = self.solve(request, uninstall=True)
+		assert solver.status is True
+
+		# Create the transaction.
+		t = solver.transaction
 
 		if not t:
 			log.info(_("Nothing to do"))
@@ -693,19 +751,15 @@ class Pakfire(object):
 		# For that we create an empty request and solver and try to solve
 		# something.
 		request = self.create_request()
-		solver = self.create_solver()
-
-		# XXX the solver does crash if we call it with fix_system=1,
-		# allow_downgrade=1 and uninstall=1. Need to fix this.
-		allow_downgrade = False
-		uninstall = False
-
-		t = solver.solve(request, fix_system=True, allow_downgrade=downgrade,
+		solver = self.solve(request, fix_system=True, allow_downgrade=downgrade,
 			uninstall=uninstall)
 
-		if not t:
+		if solver.status is False:
 			log.info(_("Everything is fine."))
 			return
+
+		# Create the transaction.
+		t = solver.transaction
 
 		# Ask the user if okay.
 		if not t.cli_yesno():
