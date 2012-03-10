@@ -4,7 +4,7 @@
 
 DESC="The filelayout should comply to the FHS."
 
-DIRS="/etc/init.d /etc/rc.d /lib/pkgconfig /usr/etc /usr/libexec /usr/local /usr/man /usr/usr /usr/var"
+DIRS="/etc/init.d /etc/rc.d /lib/pkgconfig /usr/etc /usr/libexec /usr/local /usr/man /usr/usr /usr/var ${BUILDROOT}"
 
 function check() {
 	# Do nothing, if directory check was disabled.
