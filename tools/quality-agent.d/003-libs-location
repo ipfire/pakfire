@@ -19,7 +19,7 @@ gcc_libdir=$(gcc -print-libgcc-file-name)
 for i in 1 2; do
 	gcc_libdir=$(dirname ${gcc_libdir})
 done
-gcc_libdir=$(ls ${BUILDROOT}${gcc_libdir}/* 2>/dev/null | tail -n1)
+gcc_libdir=$(find ${BUILDROOT}${gcc_libdir}/* -type d -maxdepth 1 2>/dev/null | sort | head -n1)
 
 function check() {
 	local failed=0
