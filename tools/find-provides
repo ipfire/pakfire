@@ -18,7 +18,8 @@ while read file; do
 			# Do not show python shared objects in provides list.
 			;;
 		*.so*)
-			binary_files="${binary_files} ${file}"
+			file_is_elf ${file} >/dev/null 2>&1 && \
+				binary_files="${binary_files} ${file}"
 			;;
 		*.pm)
 			# This file is a perl module. We check them later.
