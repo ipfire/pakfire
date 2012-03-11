@@ -25,7 +25,7 @@ function check() {
 	local failed=0
 	local found
 
-	for lib in $(find ${BUILDROOT}/{,usr/}${libdir} -type f -name "lib*.so.*" 2>/dev/null); do
+	for lib in $(find ${BUILDROOT}/{,usr/}${libdir} -maxdepth 1 -type f -name "lib*.so.*" 2>/dev/null); do
 		lib=${lib##*/}
 		lib=${lib%%.so*}
 
