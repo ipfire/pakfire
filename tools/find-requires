@@ -43,14 +43,16 @@ while read file; do
 		*/usr/lib*/python*/*)
 			# Sort out all python files.
 			;;
-		*/usr/lib*/python*)
+		*/usr/lib/python*|*/usr/lib64/python*)
 			# This will only get the python directory.
 			file=$(basename ${file})
 
 			# Strip the python version from the string.
 			python_version="${file#python}"
 
-			echo "python-abi = ${python_version}"
+			if [ -n "${python_version}" ]; then
+				echo "python-abi = ${python_version}"
+			fi
 			continue
 			;;
 	esac
