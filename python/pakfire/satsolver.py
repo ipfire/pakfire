@@ -26,6 +26,8 @@ log = logging.getLogger("pakfire")
 
 import _pakfire
 from _pakfire import *
+
+from constants import *
 from i18n import _
 
 import transaction
@@ -188,8 +190,8 @@ class Solver(object):
 
 		# Configure the solver for an update.
 		if self.get("update"):
-			solver.set_updatesystem(True)
-			solver.set_do_split_provides(True)
+			self.solver.set_updatesystem(True)
+			self.solver.set_do_split_provides(True)
 
 		# Actually solve the request.
 		start_time = time.time()
@@ -199,6 +201,9 @@ class Solver(object):
 		self.time = time.time() - start_time
 
 		self.logger.debug("Solver status: %s (%.2f ms)" % (self.status, self.time / 1000))
+
+		if self.status is False:
+			raise DependencyError, self.get_problem_string()
 
 	@property
 	def transaction(self):
