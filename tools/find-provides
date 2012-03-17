@@ -81,9 +81,6 @@ if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
 			# We have a dependency.  Make a note that we need the pkgconfig
 			# tool for this package.
 			echo "pkgconfig(${n}) ${r} ${v}"
-
-			# The dependency on the pkgconfig package itself.
-			echo "pkgconfig"
 		done
 	done | sort -u
 fi

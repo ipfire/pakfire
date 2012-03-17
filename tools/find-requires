@@ -142,6 +142,9 @@ fi
 pkgconfig=$(which pkg-config)
 if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
 	for file in ${pkgconfig_files}; do
+		# The dependency for the pkgconfig package itself.
+		echo "pkgconfig"
+
 		${pkgconfig} --print-requires --print-requires-private "${file}" 2> /dev/null | while read n r v ; do
 			echo "pkgconfig(${n})" "${r}" "${v}"
 		done
