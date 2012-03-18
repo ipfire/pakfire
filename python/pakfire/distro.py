@@ -156,6 +156,19 @@ class Distribution(object):
 	arch = property(get_arch, set_arch)
 
 	@property
+	def platform(self):
+		"""
+			Returns the "class" this architecture belongs to.
+		"""
+		if self.arch.startswith("arm"):
+			return "arm"
+
+		if self.arch in ("i686", "x86_64"):
+			return "x86"
+
+		return "unknown"
+
+	@property
 	def dist(self):
 		return self.sname[:2] + self.release
 
@@ -192,6 +205,7 @@ class Distribution(object):
 			"DISTRO_DISTTAG"      : self.dist,
 			"DISTRO_ARCH"         : self.arch,
 			"DISTRO_MACHINE"      : self.machine,
+			"DISTRO_PLATFORM"     : self.platform,
 			"DISTRO_BUILDTARGET"  : self.buildtarget,
 			"DISTRO_VENDOR"       : self.vendor,
 			"DISTRO_CONTACT"      : self.contact,
