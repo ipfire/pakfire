@@ -48,7 +48,7 @@ packages
 		files
 			%{bindir}/*-config
 			%{includedir}
-			%{libdir}//*.a
+			%{libdir}/*.a
 			%{libdir}/pkgconfig
 			%{datadir}/aclocal
 			%{libdir}/*.so
