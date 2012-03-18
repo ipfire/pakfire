@@ -19,6 +19,7 @@
 #                                                                             #
 ###############################################################################
 
+import httplib
 import socket
 import ssl
 import time
@@ -44,7 +45,7 @@ class XMLRPCMixin:
 			try:
 				ret = xmlrpclib.Transport.single_request(self, *args, **kwargs)
 
-			except (socket.error, ssl.SSLError, \
+			except (socket.error, ssl.SSLError, httplib.BadStatusLine, \
 				xmlrpclib.Fault, xmlrpclib.ProtocolError, xmlrpclib.ResponseError), error_code:
 				pass
 
