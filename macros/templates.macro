@@ -78,4 +78,13 @@ packages
 			/usr/src/debug
 		end
 	end
+
+	template DOCS
+		summary = Documentation from the %{name} package.
+		description = %{summary}
+
+		files
+			%{datadir}/doc
+		end
+	end
 end
