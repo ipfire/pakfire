@@ -509,10 +509,6 @@ class Package(object):
 			else:
 				file = _file.name
 
-			# If the file was removed by the user, we can skip it.
-			if not os.path.exists(file):
-				continue
-
 			# Rename configuration files.
 			if _file.is_config():
 				file_save = "%s%s" % (file, CONFIG_FILE_SUFFIX_SAVE)

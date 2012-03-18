@@ -305,7 +305,10 @@ class BinaryPackager(Packager):
 				_patterns = [pattern,]
 
 			for pattern in _patterns:
-				if not os.path.exists(pattern):
+				# Try to stat the pattern. If that is not successful, we cannot go on.
+				try:
+					os.lstat(pattern)
+				except OSError:
 					continue
 
 				# Add directories recursively but skip those symlinks
