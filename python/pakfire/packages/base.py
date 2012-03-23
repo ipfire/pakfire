@@ -141,6 +141,11 @@ class Package(object):
 			items.append((_("Build date"), self.build_date))
 			items.append((_("Build host"), self.build_host))
 
+			caption = _("Signatures")
+			for sig in self.signatures:
+				items.append((caption, sig))
+				caption = ""
+
 			caption = _("Provides")
 			for prov in sorted(self.provides):
 				items.append((caption, prov))
@@ -349,7 +354,7 @@ class Package(object):
 		return triggers.split()
 
 	@property
-	def signature(self):
+	def signatures(self):
 		raise NotImplementedError
 
 	@property
