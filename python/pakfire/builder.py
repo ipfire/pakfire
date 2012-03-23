@@ -299,6 +299,8 @@ class BuildEnviron(object):
 		shutil.copy2(file_in, file_out)
 
 	def copy_result(self, resultdir):
+		# XXX should use find_result_packages
+
 		dir_in = self.chrootPath("result")
 
 		for dir, subdirs, files in os.walk(dir_in):
@@ -314,6 +316,19 @@ class BuildEnviron(object):
 				)
 
 				self.copyout(file_in, file_out)
+
+	def find_result_packages(self):
+		ret = []
+
+		for dir, subdirs, files in os.walk(self.resultdir):
+			for file in files:
+				if not file.endswith(".%s" % PACKAGE_EXTENSION):
+					continue
+
+				file = os.path.join(dir, file)
+				ret.append(file)
+
+		return ret
 
 	def extract(self, requires=None, build_deps=True):
 		"""
@@ -371,12 +386,12 @@ class BuildEnviron(object):
 			raise
 
 	def install_test(self):
-		pkgs = []
-		for dir, subdirs, files in os.walk(self.chrootPath("result")):
-			for file in files:
-				pkgs.append(os.path.join(dir, file))
+		try:
+			self.pakfire.localinstall(self.find_result_packages(), yes=True, allow_uninstall=True, logger=self.log)
 
-		self.pakfire.localinstall(pkgs, yes=True, allow_uninstall=True)
+		# Dependency errors when trying to install the result packages are build errors.
+		except DependencyError, e:
+			raise BuildError, e
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes
