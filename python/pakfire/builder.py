@@ -959,12 +959,6 @@ class Builder(object):
 			pkgs.append(pkg)
 		log.info("")
 
-		for pkg in sorted(pkgs):
-			for line in pkg.dump(long=True).splitlines():
-				log.info(line)
-			log.info("")
-		log.info("")
-
 	def build_stage(self, stage):
 		# Get the buildscript for this stage.
 		buildscript = self.create_buildscript(stage)
