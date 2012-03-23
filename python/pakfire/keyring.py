@@ -58,7 +58,7 @@ class Keyring(object):
 
 		# Create a default gnupg.conf.
 		f = open(filename, "w")
-		f.write("# This is a default gnupg configuration file create by\n")
+		f.write("# This is a default gnupg configuration file created by\n")
 		f.write("# Pakfire %s.\n" % PAKFIRE_VERSION)
 		f.close()
 		# XXX chmod 600
