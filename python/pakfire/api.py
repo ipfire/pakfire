@@ -113,10 +113,10 @@ def requires(patterns, **pakfire_args):
 
 	return pakfire.requires(requires)
 
-def repo_create(path, input_paths, type="binary", **pakfire_args):
+def repo_create(path, input_paths, key_id=None, type="binary", **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.repo_create(path, input_paths, type=type)
+	return pakfire.repo_create(path, input_paths, key_id=key_id, type=type)
 
 def repo_list(**pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
@@ -136,3 +136,36 @@ def check(**pakfire_args):
 # Cache functions
 def cache_create(**pakfire_args):
 	return Pakfire.cache_create(**pakfire_args)
+
+
+# Key functions.
+
+def key_init(**pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.init()
+
+def key_generate(realname, email, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.gen_key(realname, email)
+
+def key_import(keyfile, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.import_key(keyfile)
+
+def key_export(keyid, keyfile, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.export_key(keyid, keyfile)
+
+def key_delete(keyid, **pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.delete_key(keyid)
+
+def key_list(**pakfire_args):
+	pakfire = Pakfire(**pakfire_args)
+
+	return pakfire.keyring.list_keys()

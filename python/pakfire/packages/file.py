@@ -194,8 +194,8 @@ class FilePackage(Package):
 		# A file package is always local.
 		return True
 
-	def open_archive(self):
-		return tarfile.open(self.filename, format=tarfile.PAX_FORMAT)
+	def open_archive(self, mode="r"):
+		return tarfile.open(self.filename, mode=mode, format=tarfile.PAX_FORMAT)
 
 	def extract(self, message=None, prefix=None):
 		log.debug("Extracting package %s" % self.friendly_name)
@@ -521,28 +521,187 @@ class FilePackage(Package):
 
 		return self.__payload_compression or "none"
 
+	### SIGNATURE STUFF
+
 	@property
-	def signature(self):
-		# XXX needs to be replaced
+	def signatures(self):
 		"""
-			Read the signature from the archive or return None if no
-			signature does exist.
+			Read the signatures from the archive.
 		"""
-		ret = None
-		try:
-			a = self.open_archive()
-			f = a.extractfile("signature")
+		ret = {}
 
-			ret = f.read()
+		# Open the archive for reading.
+		a = self.open_archive()
 
+		for member in a.getmembers():
+			# Skip all files that are not a signature.
+			if not member.name.startswith("signatures/"):
+				continue
+
+			# Get the ID of the key.
+			key_id = os.path.basename(member.name)
+
+			# Get the content of the signature file.
+			f = a.extractfile(member.name)
+			ret[key_id] = f.read()
 			f.close()
+
+		# Close the archive.
+		a.close()
+
+		return ret
+
+	def has_signature(self, key_id):
+		"""
+			Check if the file a signature of the given key.
+		"""
+		return self.signatures.has_key(key_id)
+
+	def __has_hardlinks(self):
+		"""
+			Returns True when a file has a hardlink.
+		"""
+		res = os.stat(self.filename)
+
+		return res.st_nlink > 1
+
+	def __remove_hardlinks(self):
+		"""
+			Remove all hardlinks from this file that we can alter it in place.
+		"""
+		if not self.__has_hardlinks():
+			return
+
+		# Open a file descriptor to the old file and remove the link from
+		# the filesystem.
+		f = open(self.filename, "rb")
+		os.unlink(self.filename)
+
+		# Create a new file with the exact same name for copying the data
+		# to.
+		g = open(self.filename, "wb")
+
+		# Copy the data.
+		while True:
+			buf = f.read(BUFFER_SIZE)
+			if not buf:
+				break
+
+			g.write(buf)
+
+		# Close all files.
+		f.close()
+		g.close()
+
+		# Make sure the whole process above worked fine.
+		assert self.__has_hardlinks() is False
+
+	def sign(self, key_id):
+		"""
+			Sign the package with the given key.
+		"""
+		# First check if the package has already been signed with this key.
+		# If true, we do not have anything to do here.
+		if self.has_signature(key_id):
+			return
+
+		# Remove all hardlinks.
+		self.__remove_hardlinks()
+
+		# XXX verify the content of the file here.
+
+		# Open the archive and read the checksum file.
+		a = self.open_archive()
+
+		f = a.extractfile("chksums")
+		cleartext = f.read()
+
+		f.close()
+		a.close()
+
+		# Create the signature.
+		signature = self.pakfire.keyring.sign(key_id, cleartext)
+
+		# Write the signature to a temporary file.
+		trash, signature_file = tempfile.mkstemp()
+
+		try:
+			f = open(signature_file, mode="w")
+			f.write(signature)
+			f.close()
+
+			# Reopen the outer tarfile in write mode and append
+			# the new signature.
+			a = self.open_archive("a")
+			a.add(signature_file, "signatures/%s" % key_id)
 			a.close()
 
-		except KeyError:
-			# signature file could not be found
-			pass
+		finally:
+			if os.path.exists(signature_file):
+				os.unlink(signature_file)
 
-		return ret or None
+	def verify(self):
+		"""
+			Verify the tarball against the given key.
+
+			If not key is given, only the checksums are compared to
+			the actual data.
+		"""
+
+		# XXX replace Exception
+
+		# Read the data of the checksum file.
+		a = self.open_archive()
+		f = a.extractfile("chksums")
+		chksums = f.read()
+		f.close()
+		a.close()
+
+		sigs = []
+		for signature in self.signatures.values():
+			sigs += self.pakfire.keyring.verify(signature, chksums)
+
+		# Open the archive to access all files we will need.
+		a = self.open_archive()
+
+		# Read the chksums file.
+		chksums = {}
+		f = a.extractfile("chksums")
+		for line in f.readlines():
+			filename, chksum = line.split()
+			chksums[filename] = chksum
+		f.close()
+		a.close()
+
+		for filename, chksum in chksums.items():
+			ret = self.check_chksum(filename, chksum)
+
+			if ret:
+				log.debug("Checksum of %s matches." % filename)
+				continue
+			else:
+				log.debug("Checksum of %s does not match." % filename)
+
+			raise Exception, "Checksum does not match: %s" % filename
+
+		return sigs
+
+	def check_chksum(self, filename, chksum, algo="sha512"):
+		a = self.open_archive()
+		f = a.extractfile(filename)
+
+		h = hashlib.new(algo)
+		while True:
+			buf = f.read(BUFFER_SIZE)
+			if not buf:
+				break
+
+			h.update(buf)
+
+		f.close()
+		a.close()
+
+		return h.hexdigest() == chksum
 
 	@property
 	def hash1(self):

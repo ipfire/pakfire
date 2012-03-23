@@ -37,6 +37,8 @@ CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire")
 CONFIG_REPOS_DIR = os.path.join(CONFIG_DIR, "repos")
 CONFIG_DISTRO_DIR = os.path.join(CONFIG_DIR, "distros")
 
+KEYRING_DIR = os.path.join(SYSCONFDIR, "pakfire.d", "gnupg")
+
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
 CACHE_ENVIRON_DIR = os.path.join(CACHE_DIR, "environments")
