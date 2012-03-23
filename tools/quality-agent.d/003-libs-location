@@ -14,13 +14,6 @@ case "$(uname -m)" in
 		;;
 esac
 
-# Find gcc libdir.
-gcc_libdir=$(gcc -print-libgcc-file-name)
-for i in 1 2; do
-	gcc_libdir=$(dirname ${gcc_libdir})
-done
-gcc_libdir=$(find ${BUILDROOT}${gcc_libdir}/* -type d -maxdepth 1 2>/dev/null | sort | head -n1)
-
 function check() {
 	local failed=0
 	local found
@@ -33,7 +26,7 @@ function check() {
 		found=0
 
 		# Check if ${lib}.so is in the linker's search path.
-		for path in /usr/${libdir} ${gcc_libdir}; do
+		for path in /usr/${libdir}; do
 			if [ -e "${BUILDROOT}${path}/${lib}.so" ]; then
 				found=1
 				break
