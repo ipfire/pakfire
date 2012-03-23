@@ -63,11 +63,25 @@ class Keyring(object):
 		f.close()
 		# XXX chmod 600
 
+	@property
+	def initialized(self):
+		"""
+			Returns true if the local keyring was already initialized.
+		"""
+		if self.get_host_key():
+			return True
+
+		return False
+
 	def init(self):
+		# If the host key is already present, we break up.
+		if self.initialized:
+			log.error(_("The local keyring is already initialized. Aborting."))
+			return
+
 		log.info(_("Initializing local keyring..."))
 
 		hostname, domainname = system.hostname.split(".", 1)
-
 		self.gen_key(system.hostname, "%s@%s" % (hostname, domainname))
 
 	def dump_key(self, keyfp):
@@ -105,6 +119,15 @@ class Keyring(object):
 
 		return ret
 
+	def get_keys(self):
+		"""
+			Returns all keys that are known to the system.
+		"""
+
+		ctx = gpgme.Context()
+
+		return [k.subkeys[0].keyid for k in ctx.keylist(None, True)]
+
 	def get_key(self, keyid):
 		ctx = gpgme.Context()
 
@@ -113,23 +136,50 @@ class Keyring(object):
 		except gpgme.GpgmeError:
 			return None
 
+	def get_host_key(self):
+		key = None
+
+		for fpr in self.get_keys():
+			k = self.get_key(fpr)
+
+			for uid in k.uids:
+				if not uid.name == system.hostname:
+					continue
+
+				key = fpr
+				break
+
+		return key
+
 	def gen_key(self, realname, email):
+		args = {
+			"realname" : realname,
+			"email"    : email,
+		}
+
 		params = """
 			<GnupgKeyParms format="internal">
 				Key-Type: RSA
 				Key-Usage: sign
-				Key-Length: 2048
-				Name-Real: %s
-				Name-Email: %s
+				Key-Length: 4096
+				Name-Real: %(realname)s
+				Name-Email: %(email)s
 				Expire-Date: 0
 			</GnupgKeyParms>
-		""" % (realname, email)
+		""" % args
+
+		log.info(_("Generating new key for %(realname)s <%(email)s>...") % args)
+		log.info(_("This may take a while..."))
 
 		# Create a new context.
 		ctx = gpgme.Context()
 
 		# Generate the key.
 		result = ctx.genkey(params)
+
+		# Dump the recently generated key.
+		for line in self.dump_key(result.fpr):
+			log.info(line)
 
 		# Return the fingerprint of the generated key.
 		return result.fpr
@@ -165,11 +215,20 @@ class Keyring(object):
 	def list_keys(self):
 		ret = []
 
-		ctx = gpgme.Context()
+		# Search for the host key and show it.
+		host_key = self.get_host_key()
+		if host_key:
+			ret.append(_("Host key:"))
+			ret += ["  %s" % l for l in self.dump_key(host_key)]
+		else:
+			ret.append(_("No host key available."))
 
-		keys = [k.subkeys[0].keyid for k in ctx.keylist(None, True)]
+		# List all other keys.
+		for key in self.get_keys():
+			# Skip the host key.
+			if key == host_key:
+				continue
 
-		for key in keys:
 			ret += self.dump_key(key)
 
 		return ret

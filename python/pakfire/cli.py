@@ -1256,11 +1256,7 @@ class CliKey(Cli):
 		print
 
 		# Generate the key.
-		fpr = pakfire.key_generate(realname, email, **self.pakfire_args)
-
-		# Dump all information about the new key.
-		for line in self.dump_key(fpr):
-			print line
+		pakfire.key_generate(realname, email, **self.pakfire_args)
 
 	def handle_import(self):
 		filename = self.args.filename[0]

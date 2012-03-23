@@ -192,6 +192,7 @@ class BuildEnviron(object):
 			"enable_loop_devices" : True,
 			"enable_ccache"   : True,
 			"enable_icecream" : False,
+			"sign_packages"   : True,
 		}
 		#self.settings.update(settings)
 
@@ -243,6 +244,20 @@ class BuildEnviron(object):
 			"build_id"   : self.build_id,
 			"build_time" : self.build_time,
 		}
+
+	@property
+	def keyring(self):
+		"""
+			Shortcut to access the pakfire keyring.
+
+			(Makes also sure that it is properly initialized.)
+		"""
+		assert self.pakfire
+
+		if not self.pakfire.keyring.initialized:
+			self.pakfire.keyring.init()
+
+		return self.pakfire.keyring
 
 	def lock(self):
 		filename = os.path.join(self.path, ".lock")
@@ -391,6 +406,9 @@ class BuildEnviron(object):
 
 		# Dependency errors when trying to install the result packages are build errors.
 		except DependencyError, e:
+			# Dump all packages (for debugging).
+			self.dump()
+
 			raise BuildError, e
 
 	def chrootPath(self, *args):
@@ -699,9 +717,20 @@ class BuildEnviron(object):
 
 			raise BuildError, _("The build command failed. See logfile for details.")
 
+		# Sign all built packages with the host key (if available).
+		if self.settings.get("sign_packages"):
+			host_key = self.keyring.get_host_key()
+			assert host_key
+
+			# Do the signing...
+			self.sign(host_key)
+
 		# Perform install test.
 		if install_test:
 			self.install_test()
+
+		# Dump package information.
+		self.dump()
 
 	def shell(self, args=[]):
 		if not util.cli_is_interactive():
@@ -729,6 +758,53 @@ class BuildEnviron(object):
 
 		shell = os.system(command)
 		return os.WEXITSTATUS(shell)
+
+	def sign(self, keyfp):
+		assert self.keyring.get_key(keyfp), "Key for signing does not exist"
+
+		# Find all files to process.
+		files = self.find_result_packages()
+
+		# Create a progressbar.
+		p = util.make_progress(_("Signing files (%s)") % keyfp, len(files))
+		i = 0
+
+		for file in files:
+			# Update progressbar.
+			if p:
+				i += 1
+				p.update(i)
+
+			# Open package file.
+			pkg = packages.open(self.pakfire, None, file)
+
+			# Sign it.
+			pkg.sign(keyfp)
+
+		# Close progressbar.
+		if p:
+			p.finish()
+
+	def dump(self):
+		pkgs = []
+
+		for file in self.find_result_packages():
+			pkg = packages.open(self.pakfire, None, file)
+			pkgs.append(pkg)
+
+		# If there are no packages, there is nothing to do.
+		if not pkgs:
+			return
+
+		pkgs.sort()
+
+		self.log.info(_("Dumping package information:"))
+		for pkg in pkgs:
+			dump = pkg.dump(long=True)
+
+			for line in dump.splitlines():
+				self.log.info("  %s" % line)
+			self.log.info("") # Empty line.
 
 	@property
 	def cache_file(self):
