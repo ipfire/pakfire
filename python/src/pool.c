@@ -131,8 +131,6 @@ PyObject *_Pool_search(Pool *pool, Repo *repo, const char *match, int option, co
 	}
 
 	dataiterator_free(&d);
-
-	Py_INCREF(list);
 	return list;
 }
 

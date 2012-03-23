@@ -170,7 +170,6 @@ PyObject *_Solvable_get_dependencies(Solvable *solv, Offset deps) {
 		PyList_Append(list, Py_BuildValue("s", dep_str));
 	}
 
-	Py_INCREF(list);
 	return list;
 }
 

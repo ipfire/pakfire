@@ -80,7 +80,6 @@ PyObject *Transaction_steps(TransactionObject *self, PyObject *args) {
 		PyList_Append(list, (PyObject *)step);
 	}
 
-	Py_INCREF(list); // XXX do we need this here?
 	return list;
 }
 
