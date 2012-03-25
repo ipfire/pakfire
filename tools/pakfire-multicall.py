@@ -75,7 +75,9 @@ except Error, e:
 	log.error("")
 
 	log.error(_("Further description:"))
-	log.error("  %s" % e)
+	msg = "%s" % e
+	for line in msg.splitlines():
+		log.error("  %s" % line)
 	log.error("")
 
 	ret = e.exit_code
