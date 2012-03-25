@@ -426,6 +426,67 @@ class Transaction(object):
 
 		raise TransactionCheckError, _("Transaction test was not successful")
 
+	def verify_signatures(self, logger):
+		"""
+			Check the downloaded files for valid signatures.
+		"""
+		mode = self.pakfire.config.get("signatures", "mode", "strict")
+
+		# If this disabled, we do nothing.
+		if mode == "disabled":
+			return
+
+		# Search for actions we need to process.
+		actions = []
+		for action in self.actions:
+			# Skip scripts.
+			if isinstance(action, ActionScript):
+				continue
+
+			actions.append(action)
+
+		# Make a nice progressbar.
+		p = util.make_progress(_("Verifying signatures..."), len(actions))
+
+		# Collect all errors.
+		errors = []
+
+		try:
+			# Do the verification for every action.
+			i = 0
+			for action in actions:
+				# Update the progressbar.
+				if p:
+					i += 1
+					p.update(i)
+
+				try:
+					action.verify()
+
+				except SignatureError, e:
+					errors.append("%s" % e)
+		finally:
+			if p: p.finish()
+
+		# If no errors were found everything is fine.
+		if not errors:
+			logger.info("")
+			return
+
+		# Raise a SignatureError in strict mode.
+		if mode == "strict":
+			raise SignatureError, "\n".join(errors)
+
+		elif mode == "permissive":
+			logger.warning(_("Found %s signature error(s)!") % len(errors))
+			for error in errors:
+				logger.warning("  %s" % error)
+			logger.warning("")
+
+			logger.warning(_("Going on because we are running in permissive mode."))
+			logger.warning(_("This is dangerous!"))
+			logger.warning("")
+
 	def run(self, logger=None):
 		assert not self.__need_sort, "Did you forget to sort the transaction?"
 
@@ -436,6 +497,9 @@ class Transaction(object):
 		# (don't add logger here because I do not want to see downloads
 		# in the build logs on the build service)
 		self.download()
+
+		# Verify signatures.
+		self.verify_signatures(logger=logger)
 
 		# Run the transaction test
 		self.check(logger=logger)

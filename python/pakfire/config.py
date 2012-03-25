@@ -44,6 +44,10 @@ class _Config(object):
 			"mode"  : "rotate",
 			"rotation_threshold" : 10485760,
 		},
+
+		"signatures" : {
+			"mode" : "strict",
+		},
 	}
 
 	# A dict with default settings for this config class.

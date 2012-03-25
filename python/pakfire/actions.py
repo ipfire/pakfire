@@ -58,6 +58,17 @@ class Action(object):
 		# This is just a dummy test that does nothing at all.
 		return filelist
 
+	def verify(self):
+		# Check if there are any signatures at all.
+		if not self.pkg.signatures:
+			raise SignatureError, _("%s has got no signatures") % self.pkg.friendly_name
+
+		# Run the verification process and save the result.
+		sigs = self.pkg.verify()
+
+		if not sigs:
+			raise SignatureError, _("%s has got no valid signatures") % self.pkg.friendly_name
+
 	@property
 	def needs_download(self):
 		return self.type in ("install", "reinstall", "upgrade", "downgrade", "change",) \

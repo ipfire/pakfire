@@ -86,5 +86,9 @@ class PakfireContainerError(Error):
 	message = _("Running pakfire-build in a pakfire container?")
 
 
+class SignatureError(Error):
+	pass
+
+
 class TransactionCheckError(Error):
 	message = _("Transaction test was not successful")
