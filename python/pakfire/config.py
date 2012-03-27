@@ -127,6 +127,7 @@ class _Config(object):
 		if not s:
 			return
 
+		s = str(s)
 		buf = io.BytesIO(s)
 
 		config = ConfigParser()
