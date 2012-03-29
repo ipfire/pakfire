@@ -39,6 +39,13 @@ class Keyring(object):
 		os.environ["GNUPGHOME"] = self.path
 		self.create_path()
 
+		# Initialize context.
+		self.ctx = gpgme.Context()
+		self.ctx.armor = True
+
+		# Cache.
+		self.__key_cache = {}
+
 	def __del__(self):
 		del os.environ["GNUPGHOME"]
 
@@ -87,8 +94,7 @@ class Keyring(object):
 	def dump_key(self, keyfp):
 		ret = []
 
-		ctx = gpgme.Context()
-		key = ctx.get_key(keyfp)
+		key = self.ctx.get_key(keyfp)
 
 		for uid in key.uids:
 			ret.append(uid.uid)
@@ -123,16 +129,11 @@ class Keyring(object):
 		"""
 			Returns all keys that are known to the system.
 		"""
-
-		ctx = gpgme.Context()
-
-		return [k.subkeys[0].keyid for k in ctx.keylist(None, True)]
+		return [k.subkeys[0].keyid for k in self.ctx.keylist(None, True)]
 
 	def get_key(self, keyid):
-		ctx = gpgme.Context()
-
 		try:
-			return ctx.get_key(keyid)
+			return self.ctx.get_key(keyid)
 		except gpgme.GpgmeError:
 			return None
 
@@ -171,11 +172,8 @@ class Keyring(object):
 		log.info(_("Generating new key for %(realname)s <%(email)s>...") % args)
 		log.info(_("This may take a while..."))
 
-		# Create a new context.
-		ctx = gpgme.Context()
-
 		# Generate the key.
-		result = ctx.genkey(params)
+		result = self.ctx.genkey(params)
 
 		# Dump the recently generated key.
 		for line in self.dump_key(result.fpr):
@@ -187,30 +185,23 @@ class Keyring(object):
 	def import_key(self, keyfile):
 		ret = []
 
-		ctx = gpgme.Context()
-
 		f = open(keyfile, "rb")
-		res = ctx.import_(f)
+		res = self.ctx.import_(f)
 		f.close()
 
 		log.info(_("Successfully import key %s.") % keyfile)
 
 	def export_key(self, keyid, keyfile):
-		ctx = gpgme.Context()
-		ctx.armor = True
-
 		keydata = io.BytesIO()
-		ctx.export(keyid, keydata)
+		self.ctx.export(keyid, keydata)
 
 		f = open(keyfile, "wb")
 		f.write(keydata.getvalue())
 		f.close()
 
 	def delete_key(self, keyid):
-		ctx = gpgme.Context()
-
-		key = ctx.get_key(keyid)
-		ctx.delete(key, True)
+		key = self.ctx.get_key(keyid)
+		self.ctx.delete(key, True)
 
 	def list_keys(self):
 		ret = []
@@ -234,27 +225,25 @@ class Keyring(object):
 		return ret
 
 	def sign(self, keyid, cleartext):
-		ctx = gpgme.Context()
-		ctx.armor = True
+		key = self.__key_cache.get(keyid, None)
+		if key is None:
+			key = self.ctx.get_key(keyid)
+			self.__key_cache[keyid] = key
 
-		key = ctx.get_key(keyid)
-		ctx.signers = [key,]
+		self.ctx.signers = [key,]
 
 		cleartext = io.BytesIO(cleartext)
 		signature = io.BytesIO()
 
-		ctx.sign(cleartext, signature, gpgme.SIG_MODE_DETACH)
+		self.ctx.sign(cleartext, signature, gpgme.SIG_MODE_DETACH)
 
 		return signature.getvalue()
 
 	def verify(self, signature, cleartext):
-		# Create context.
-		ctx = gpgme.Context()
-
 		signature = io.BytesIO(signature)
 		cleartext = io.BytesIO(cleartext)
 
 		# Verify the data.
-		sigs = ctx.verify(signature, cleartext, None)
+		sigs = self.ctx.verify(signature, cleartext, None)
 
 		return sigs
