@@ -274,9 +274,6 @@ class MirrorList(object):
 	def forget_mirrors(self):
 		self.__mirrors = []
 
-		if self.base_mirror:
-			self.__mirrors.append(self.base_mirror)
-
 	@property
 	def preferred(self):
 		"""
@@ -316,16 +313,24 @@ class MirrorList(object):
 		# Add all preferred mirrors at the first place and shuffle them
 		# that we will start at a random place.
 		for mirror in self.preferred:
-			mirrors.append(mirror.url.encode("utf-8"))
+			mirrors.append({ "mirror" : mirror.url.encode("utf-8") })
 		random.shuffle(mirrors)
 
 		# All other mirrors are added as well and will only be used if all
 		# preferred mirrors did not work.
 		for mirror in self.all:
-			if mirror.url in mirrors:
+			mirror = { "mirror" : mirror.url.encode("utf-8") }
+			if mirror in mirrors:
 				continue
 
-			mirrors.append({ "mirror" : mirror.url.encode("utf-8") })
+			mirrors.append(mirror)
+
+		# Always add the base mirror if any.
+		base_mirror = self.base_mirror
+		if base_mirror:
+			mirror = { "mirror" : base_mirror.url.encode("utf-8") }
+			if not mirror in mirrors:
+				mirrors.append(mirror)
 
 		return MirrorGroup(grabber, mirrors)
 
