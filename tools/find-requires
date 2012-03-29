@@ -26,6 +26,11 @@ while read file; do
 		*/usr/lib/debug/*|*/usr/src/debug/*)
 			# Skip all debuginfo files.
 			;;
+		*.ko)
+			# Skip all kernel modules because they do not
+			# require anything at all.
+			continue
+			;;
 		*.pc)
 			# Find all pkg-config files.
 			pkgconfig_files="${pkgconfig_files} ${file}"
@@ -57,18 +62,6 @@ while read file; do
 			;;
 	esac
 
-	# Search for all binary files.
-	if file_is_elf ${file}; then
-		binary_files="${binary_files} ${file}"
-		continue
-	fi
-
-	# Search for script files.
-	if file_is_script ${file}; then
-		script_files="${script_files} ${file}"
-		continue
-	fi
-
 	# Unresolved symlinks.
 	if [ -L "${file}" ]; then
 		# Get destination.
@@ -79,6 +72,22 @@ while read file; do
 		if ! [ -e "${link}" ]; then
 			echo "${link#${BUILDROOT}}"
 		fi
+
+		# Don't search for anything else, because
+		# symlinks do not require anything but the target file.
+		continue
+	fi
+
+	# Search for all binary files.
+	if file_is_elf ${file}; then
+		binary_files="${binary_files} ${file}"
+		continue
+	fi
+
+	# Search for script files.
+	if file_is_script ${file}; then
+		script_files="${script_files} ${file}"
+		continue
 	fi
 done < ${FILELIST}
 
