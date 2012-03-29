@@ -235,7 +235,7 @@ class RepositoryDir(base.RepositoryFactory):
 			shutil.move(db_path, db_path2)
 
 		# Create a new metadata object and add out information to it.
-		md = metadata.Metadata(self.pakfire, self)
+		md = metadata.Metadata(self.pakfire)
 
 		# Save name of the hashed database to the metadata.
 		md.database = os.path.basename(db_path2)
