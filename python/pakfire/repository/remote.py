@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import urlgrabber
 
 import logging
 log = logging.getLogger("pakfire")
@@ -164,7 +165,14 @@ class RepositoryRemote(base.RepositoryFactory):
 		grabber = self.mirrors.group(grabber)
 
 		while True:
-			data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
+			try:
+				data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
+			except urlgrabber.grabber.URLGrabError, e:
+				if e.errno == 256:
+					raise DownloadError, _("Could not update metadata for %s from any mirror server") % self.name
+
+				grabber.increment_mirror(grabber)
+				continue
 
 			# Parse new metadata for comparison.
 			md = metadata.Metadata(self.pakfire, metadata=data)
