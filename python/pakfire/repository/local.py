@@ -26,7 +26,6 @@ import logging
 log = logging.getLogger("pakfire")
 
 import base
-import index
 import metadata
 
 import pakfire.compress as compress
@@ -37,7 +36,7 @@ from pakfire.constants import *
 from pakfire.i18n import _
 
 class RepositoryDir(base.RepositoryFactory):
-	def __init__(self, pakfire, name, description, path, type="binary"):
+	def __init__(self, pakfire, name, description, path, type="binary", key_id=None):
 		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Path to files.
@@ -47,8 +46,8 @@ class RepositoryDir(base.RepositoryFactory):
 		assert type in ("binary", "source",)
 		self.type = type
 
-		# Create index
-		self.index = index.IndexDir(self.pakfire, self)
+		# The key that is used to sign all added packages.
+		self.key_id = key_id
 
 	def remove(self):
 		self.index.clear()
@@ -66,62 +65,105 @@ class RepositoryDir(base.RepositoryFactory):
 		# Yes, this is local.
 		return True
 
-	def collect_packages(self, *args, **kwargs):
+	def search_files(self, *paths):
 		"""
-			Proxy function to add packages to the index.
+			Search for possible package files in the paths.
 		"""
+		files = []
 
-		for pkg in self.index.collect_packages(*args, **kwargs):
-			# The path of the package in the repository
-			repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
+		for path in paths:
+			if not os.path.exists(path):
+				continue
 
-			# Check, if the package does already exists and check if the
-			# files are really equal.
-			if os.path.exists(repo_filename):
-				pkg_exists = packages.open(self.pakfire, self, repo_filename)
+			if os.path.isdir(path):
+				for dir, subdirs, _files in os.walk(path):
+					for file in sorted(_files):
+						# Skip files that do not have the right extension
+						if not file.endswith(".%s" % PACKAGE_EXTENSION):
+							continue
 
-				# Check UUID to see if the file needs to be copied.
-				if pkg.uuid == pkg_exists.uuid:
-					continue
+						file = os.path.join(dir, file)
+						files.append(file)
 
-			log.debug("Copying package '%s' to repository." % pkg)
-			repo_dirname = os.path.dirname(repo_filename)
-			if not os.path.exists(repo_dirname):
-				os.makedirs(repo_dirname)
+			elif os.path.isfile(path) and path.endswith(".%s" % PACKAGE_EXTENSION):
+				files.append(path)
 
-			# Try to use a hard link if possible, if we cannot do that we simply
-			# copy the file.
-			try:
-				os.link(pkg.filename, repo_filename)
-			except OSError:
-				shutil.copy2(pkg.filename, repo_filename)
+		return files
 
-	def sign(self, key_id):
-		"""
-			Sign all packages with the given key.
-		"""
-		# Create progressbar.
-		pb = util.make_progress(_("Signing packages..."), len(self), eta=True)
+	def add_packages(self, *paths):
+		# Search for possible package files in the paths.
+		files = self.search_files(*paths)
+
+		# Give up if there are no files to process.
+		if not files:
+			return
+
+		# Create progress bar.
+		pb = util.make_progress(_("%s: Adding packages...") % self.name, len(files))
 		i = 0
 
-		# Create a new index (because package checksums will change).
-		for pkg in self:
+		for file in files:
 			if pb:
 				i += 1
 				pb.update(i)
 
-			# Create the full path to the file.
-			filename = os.path.join(self.path, pkg.filename)
-			pkg = packages.open(self.pakfire, self, filename)
+			# Open the package file we want to add.
+			pkg = packages.open(self.pakfire, self, file)
 
-			# Sign the package.
-			pkg.sign(key_id)
+			# Find all packages with the given type and skip those of
+			# the other type.
+			if not pkg.type == self.type:
+				continue
+
+			# Compute the local path.
+			repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
+			pkg2 = None
+
+			# If the file is already located in the repository, we do not need to
+			# copy it.
+			if not pkg.filename == repo_filename:
+				need_copy = True
+
+				# Check if the file is already in the repository.
+				if os.path.exists(repo_filename):
+					# Open it for comparison.
+					pkg2 = packages.open(self.pakfire, self, repo_filename)
+
+					if pkg.uuid == pkg2.uuid:
+						need_copy = False
+
+				# If a copy is still needed, we do it.
+				if need_copy:
+					# Create the directory.
+					repo_dirname = os.path.dirname(repo_filename)
+					if not os.path.exists(repo_dirname):
+						os.makedirs(repo_dirname)
+
+					# Try to use a hard link if possible, if we cannot do that we simply
+					# copy the file.
+					try:
+						os.link(pkg.filename, repo_filename)
+					except OSError:
+						shutil.copy2(pkg.filename, repo_filename)
+
+			# Reopen the new package file (in case it needs to be changed).
+			if pkg2:
+				pkg = pkg2
+			else:
+				pkg = packages.open(self.pakfire, self, repo_filename)
+
+			# Sign all packages.
+			if self.key_id:
+				pkg.sign(self.key_id)
+
+			# Add the package to the index.
+			self.index.add_package(pkg)
 
 		if pb:
 			pb.finish()
 
-		# Recreate the index because file checksums may have changed.
-		self.index.update(force=True)
+		# Optimize the index.
+		self.index.optimize()
 
 	def save(self, path=None, algo="xz"):
 		"""
@@ -206,17 +248,41 @@ class RepositoryDir(base.RepositoryFactory):
 
 class RepositoryBuild(RepositoryDir):
 	def __init__(self, pakfire):
-		# XXX need to add distro information to this path
 		# XXX it is also hardcoded
-		path = pakfire.config.get(None, "local_build_repo_path",
-			"/var/lib/pakfire/local")
+		path = pakfire.config.get(None, "local_build_repo_path", "/var/lib/pakfire/local")
+		#path = os.path.join(path, pakfire.distro.sname)
 		assert path
 
-		# Create path if it does not exist.
-		if not os.path.exists(path):
-			os.makedirs(path)
-
 		RepositoryDir.__init__(self, pakfire, "build", "Locally built packages", path)
+
+	def update(self, force=False, offline=False):
+		# If force is not given, but there are no files in the repository,
+		# we force an update anyway.
+		if not force:
+			force = len(self) == 0
+
+		if force:
+			# Wipe the index.
+			self.index.clear()
+
+			# Find all files in the repository dir.
+			files = self.search_files(self.path)
+
+			# Create progress bar.
+			pb = util.make_progress(_("%s: Adding packages...") % self.name, len(files))
+			i = 0
+
+			# Add all files to the index.
+			for file in files:
+				if pb:
+					i += 1
+					pb.update(i)
+
+				pkg = packages.open(self.pakfire, self, file)
+				self.index.add_package(pkg)
+
+			if pb:
+				pb.finish()
 
 	@property
 	def local(self):
@@ -228,34 +294,3 @@ class RepositoryBuild(RepositoryDir):
 	@property
 	def priority(self):
 		return 20000
-
-
-class RepositoryLocal(base.RepositoryFactory):
-	def __init__(self, pakfire):
-		base.RepositoryFactory.__init__(self, pakfire, "@system", "Local repository")
-
-		self.index = index.IndexLocal(self.pakfire, self)
-
-		# Tell the solver, that these are the installed packages.
-		self.pool.set_installed(self.solver_repo)
-
-	@property
-	def priority(self):
-		"""
-			The local repository has always a high priority.
-		"""
-		return 10
-
-	def add_package(self, pkg):
-		# Add package to the database.
-		self.index.db.add_package(pkg)
-
-		self.index.add_package(pkg)
-
-	def rem_package(self, pkg):
-		# Remove package from the database.
-		self.index.rem_package(pkg)
-
-	@property
-	def filelist(self):
-		return self.index.filelist

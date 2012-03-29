@@ -19,24 +19,52 @@
 #                                                                             #
 ###############################################################################
 
-import index
+import base
+import database
 
-from base import RepositoryFactory
-
-class InstalledRepository(RepositoryFactory):
+class RepositorySystem(base.RepositoryFactory):
 	def __init__(self, pakfire):
-		RepositoryFactory.__init__(self, pakfire, "installed", "Installed packages")
+		base.RepositoryFactory.__init__(self, pakfire, "@system", "Local repository")
 
-		self.index = index.InstalledIndex(self.pakfire, self)
+		# Open database connection.
+		self.db = database.DatabaseLocal(self.pakfire, self)
 
-	@property
-	def local(self):
-		# This is obviously local.
-		return True
+		# Tell the solver, that these are the installed packages.
+		self.pool.set_installed(self.solver_repo)
 
 	@property
 	def priority(self):
 		"""
-			The installed repository has always the highest priority.
+			The local repository has always a high priority.
 		"""
-		return 0
+		return 10
+
+	def update(self, force=False, offline=False):
+		if not force:
+			force = len(self) == 0
+
+		if force:
+			self.index.clear()
+			for pkg in self.db.packages:
+				self.index.add_package(pkg)
+
+	def commit(self):
+		# Commit the database to disk.
+		self.db.commit()
+
+	def add_package(self, pkg):
+		# Add package to the database.
+		self.db.add_package(pkg)
+		self.index.add_package(pkg)
+
+	def rem_package(self, pkg):
+		# Remove package from the database.
+		self.index.rem_package(pkg)
+
+	@property
+	def filelist(self):
+		# XXX ugly?
+
+		for pkg in self.db.packages:
+			for file in pkg.filelist:
+				yield file

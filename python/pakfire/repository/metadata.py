@@ -20,15 +20,14 @@
 ###############################################################################
 
 import json
+import os
 import time
 
 from pakfire.constants import *
 
 class Metadata(object):
-	def __init__(self, pakfire, index, metafile=None, metadata=None):
+	def __init__(self, pakfire, metafile=None, metadata=None):
 		self.pakfire = pakfire
-		self.index = index
-
 		self.filename = metafile
 
 		# Place where we save the data.
@@ -65,6 +64,8 @@ class Metadata(object):
 		"""
 		if not filename:
 			filename = self.filename
+
+		assert os.path.exists(filename), "Metadata file does not exist."
 
 		with open(filename) as f:
 			self.parse(f.read())

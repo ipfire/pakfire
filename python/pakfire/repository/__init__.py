@@ -27,8 +27,9 @@ log = logging.getLogger("pakfire")
 import pakfire.packages as packages
 
 from base import RepositoryDummy
-from local import RepositoryDir, RepositoryBuild, RepositoryLocal
-from remote import RepositorySolv
+from local import RepositoryDir, RepositoryBuild
+from remote import RepositoryRemote
+from system import RepositorySystem
 
 class Repositories(object):
 	"""
@@ -49,8 +50,8 @@ class Repositories(object):
 		# Create a dummy repository
 		self.dummy = RepositoryDummy(self.pakfire)
 
-		# Create the local repository
-		self.local = RepositoryLocal(self.pakfire)
+		# Create the local repository.
+		self.local = RepositorySystem(self.pakfire)
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
@@ -58,6 +59,7 @@ class Repositories(object):
 			self.local_build = RepositoryBuild(self.pakfire)
 			self.add_repo(self.local_build)
 
+		# Fetch all repository from the configuration files.
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
 
@@ -77,7 +79,7 @@ class Repositories(object):
 
 		# Update all indexes of the repositories (not force) so that we will
 		# always work with valid data.
-		self.update(offline=self.pakfire.offline)
+		self.update(force=False, offline=self.pakfire.offline)
 
 	def __iter__(self):
 		repositories = self.__repos.values()
@@ -129,7 +131,7 @@ class Repositories(object):
 				# Replace the variable with its value.
 				v = v.replace("%%{%s}" % var, replaces.get(var, ""))
 
-		repo = RepositorySolv(self.pakfire, **_args)
+		repo = RepositoryRemote(self.pakfire, **_args)
 		self.add_repo(repo)
 
 	def add_repo(self, repo):

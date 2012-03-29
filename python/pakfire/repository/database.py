@@ -82,11 +82,13 @@ class Database(object):
 				self.create()
 
 	def close(self):
-		self.__del__()
+		if self._db:
+			self._db.close()
+			self._db = None
 
 	def commit(self):
-		self.open()
-		self._db.commit()
+		if self._db:
+			self._db.commit()
 
 	def cursor(self):
 		self.open()
@@ -370,6 +372,18 @@ class DatabaseLocal(Database):
 			yield packages.DatabasePackage(self.pakfire, self.repo, self, row)
 
 		c.close()
+
+	def get_filelist(self):
+		c = self.cursor()
+		c.execute("SELECT DISTINCT name FROM files")
+
+		ret = []
+		for row in c:
+			ret.append(row["name"])
+
+		c.close()
+
+		return ret
 
 	def get_package_from_solv(self, solv_pkg):
 		c = self.cursor()

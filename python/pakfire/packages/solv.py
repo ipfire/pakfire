@@ -205,7 +205,12 @@ class SolvPackage(base.Package):
 		if self.repo.local:
 			return True
 
-		return self.repo.cache.exists(self.cache_filename)
+		# If the repository has got a cache, we check if the file
+		# is in there.
+		if self.repo.cache:
+			return self.repo.cache.exists(self.cache_filename)
+
+		return False
 
 	def get_from_cache(self):
 		path = None
@@ -220,11 +225,18 @@ class SolvPackage(base.Package):
 				if os.path.exists(p):
 					path = p
 					break
-		else:
-			if self.repo.cache.exists(self.cache_filename):
-				path = self.repo.cache.abspath(self.cache_filename)
 
-		if path and self.repo.cache.verify(path, self.hash1):
+			return file.BinaryPackage(self.pakfire, self.repo, path)
+
+		if not self.repo.cache:
+			return
+
+		if self.repo.cache.exists(self.cache_filename):
+			# Check if the checksum matches, too.
+			if not self.repo.cache.verify(self.cache_filename, self.hash1):
+				return
+
+			path = self.repo.cache.abspath(self.cache_filename)
 			return file.BinaryPackage(self.pakfire, self.repo, path)
 
 	def download(self, text="", logger=None):
@@ -236,3 +248,8 @@ class SolvPackage(base.Package):
 	def get_scriptlet(self, type):
 		# XXX TODO
 		return None
+
+	#@property
+	#def signatures(self):
+	#	# Solv packages do not have any signatures.
+	#	return []

@@ -325,8 +325,7 @@ class Pakfire(object):
 
 		try:
 			# Add all packages to the repository index.
-			for file in files:
-				repo.collect_packages(file)
+			repo.add_packages(*files)
 
 			# Break if no packages were added at all.
 			if not len(repo):
@@ -719,26 +718,23 @@ class Pakfire(object):
 
 		return sorted(pkgs)
 
-	def repo_create(self, path, input_paths, key_id=None, type="binary"):
+	def repo_create(self, path, input_paths, name=None, key_id=None, type="binary"):
 		assert type in ("binary", "source",)
 
-		repo = repository.RepositoryDir(
-			self,
-			name="new",
-			description="New repository.",
-			path=path,
-			type=type,
-		)
+		if not name:
+			name = _("New repository")
 
-		for input_path in input_paths:
-			repo.collect_packages(input_path)
+		# Create new repository.
+		repo = repository.RepositoryDir(self, name=name, description="New repository.",
+			path=path, type=type, key_id=key_id)
 
-		# Sign the repository with the given key.
-		if key_id:
-			repo.sign(key_id)
+		# Add all packages.
+		repo.add_packages(*input_paths)
 
+		# Write metadata to disk.
 		repo.save()
 
+		# Return the new repository.
 		return repo
 
 	def repo_list(self):

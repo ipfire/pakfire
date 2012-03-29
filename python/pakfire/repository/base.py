@@ -19,14 +19,11 @@
 #                                                                             #
 ###############################################################################
 
-import fnmatch
-import glob
-import re
-
 import logging
 log = logging.getLogger("pakfire")
 
-import cache
+import index
+
 import pakfire.packages as packages
 import pakfire.satsolver as satsolver
 
@@ -40,13 +37,13 @@ class RepositoryFactory(object):
 		self.solver_repo = satsolver.Repo(self.pool, self.name)
 		self.solver_repo.set_priority(self.priority)
 
+		# Some repositories may have a cache.
+		self.cache = None
+
 		log.debug("Initialized new repository: %s" % self)
 
-		# Create an cache object
-		self.cache = cache.RepositoryCache(self.pakfire, self)
-
-		# The index MUST be set by an inheriting class.
-		self.index = None
+		# Create an index (in memory).
+		self.index = index.Index(self.pakfire, self)
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
@@ -113,26 +110,16 @@ class RepositoryFactory(object):
 			A function that is called to update the local data of
 			the repository.
 		"""
-		assert self.index
-
-		if force or self.enabled:
-			self.index.update(force, offline=offline)
+		raise NotImplementedError, self
 
 	def clean(self):
 		"""
 			Cleanup all temporary files of this repository.
 		"""
 		log.info("Cleaning up repository '%s'..." % self.name)
-		self.cache.destroy()
 
-		assert self.index
+		# Clear all packages in the index.
 		self.index.clear()
-
-	def commit(self):
-		"""
-			Commit repository data to disk.
-		"""
-		self.index.commit()
 
 	def dump(self, long=False, filelist=False):
 		dumps = []

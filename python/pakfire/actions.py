@@ -59,6 +59,13 @@ class Action(object):
 		return filelist
 
 	def verify(self):
+		assert self.pkg, "No package! %s" % self.pkg_solv
+		assert self.pkg.repo, "Package has no repository? %s" % self.pkg
+
+		# Local packages need no verification.
+		if self.pkg.repo.local:
+			return
+
 		# Check if there are any signatures at all.
 		if not self.pkg.signatures:
 			raise SignatureError, _("%s has got no signatures") % self.pkg.friendly_name

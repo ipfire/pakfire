@@ -113,10 +113,10 @@ def requires(patterns, **pakfire_args):
 
 	return pakfire.requires(requires)
 
-def repo_create(path, input_paths, key_id=None, type="binary", **pakfire_args):
+def repo_create(path, input_paths, name=None, key_id=None, type="binary", **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.repo_create(path, input_paths, key_id=key_id, type=type)
+	return pakfire.repo_create(path, input_paths, name=name, key_id=key_id, type=type)
 
 def repo_list(**pakfire_args):
 	pakfire = Pakfire(**pakfire_args)

@@ -80,6 +80,12 @@ class PakfireGrabber(URLGrabber):
 		# a unicode string.
 		return URLGrabber.urlread(self, filename.encode("utf-8"), *args, **kwargs)
 
+	def urlopen(self, filename, *args, **kwargs):
+		# However, urlopen requires the filename to be an ordinary string object.
+		filename = str(filename)
+
+		return URLGrabber.urlopen(self, filename, *args, **kwargs)
+
 
 class PackageDownloader(PakfireGrabber):
 	def __init__(self, pakfire, *args, **kwargs):
@@ -181,14 +187,21 @@ class Mirror(object):
 
 
 class MirrorList(object):
-	def __init__(self, pakfire, repo):
+	def __init__(self, pakfire, repo, mirrorlist):
 		self.pakfire = pakfire
 		self.repo = repo
 
 		self.__mirrors = []
 
 		# Save URL to more mirrors.
-		self.mirrorlist = repo._mirrors
+		self.mirrorlist = mirrorlist
+
+	@property
+	def base_mirror(self):
+		if not self.repo.baseurl:
+			return
+
+		return Mirror(self.repo.baseurl, preferred=False)
 
 	@property
 	def distro(self):
@@ -260,6 +273,9 @@ class MirrorList(object):
 
 	def forget_mirrors(self):
 		self.__mirrors = []
+
+		if self.base_mirror:
+			self.__mirrors.append(self.base_mirror)
 
 	@property
 	def preferred(self):
