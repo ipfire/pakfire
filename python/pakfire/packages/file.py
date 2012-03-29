@@ -603,7 +603,7 @@ class FilePackage(Package):
 		# First check if the package has already been signed with this key.
 		# If true, we do not have anything to do here.
 		if self.has_signature(key_id):
-			return
+			return False
 
 		# Remove all hardlinks.
 		self.__remove_hardlinks()
@@ -622,23 +622,22 @@ class FilePackage(Package):
 		# Create the signature.
 		signature = self.pakfire.keyring.sign(key_id, cleartext)
 
-		# Write the signature to a temporary file.
-		trash, signature_file = tempfile.mkstemp()
-
 		try:
-			f = open(signature_file, mode="w")
+			# Write the signature to a temporary file.
+			f = tempfile.NamedTemporaryFile(mode="w", delete=False)
 			f.write(signature)
 			f.close()
 
 			# Reopen the outer tarfile in write mode and append
 			# the new signature.
 			a = self.open_archive("a")
-			a.add(signature_file, "signatures/%s" % key_id)
+			a.add(f.name, "signatures/%s" % key_id)
 			a.close()
 
 		finally:
-			if os.path.exists(signature_file):
-				os.unlink(signature_file)
+			os.unlink(f.name)
+
+		return True
 
 	def verify(self):
 		"""
