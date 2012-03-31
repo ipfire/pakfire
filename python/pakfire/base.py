@@ -535,7 +535,7 @@ class Pakfire(object):
 				request.install(rel)
 
 		# Solve the request.
-		solver = self.solve(request, allow_downgrade=True, allow_vendorchange=allow_vendorchange,
+		solver = self.solv(request, allow_downgrade=True, allow_vendorchange=allow_vendorchange,
 			allow_archchange=allow_archchange)
 		assert solver.status is True
 
@@ -557,7 +557,7 @@ class Pakfire(object):
 		request = self.create_request(remove=pkgs)
 
 		# Solve the request.
-		solver = self.solve(request, uninstall=True)
+		solver = self.solv(request, uninstall=True)
 		assert solver.status is True
 
 		# Create the transaction.
@@ -746,7 +746,7 @@ class Pakfire(object):
 		# For that we create an empty request and solver and try to solve
 		# something.
 		request = self.create_request()
-		solver = self.solve(request, fix_system=True, allow_downgrade=downgrade,
+		solver = self.solv(request, fix_system=True, allow_downgrade=downgrade,
 			uninstall=uninstall)
 
 		if solver.status is False:
