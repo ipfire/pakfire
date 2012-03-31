@@ -326,7 +326,7 @@ class ActionRemove(Action):
 		Action.__init__(self, *args, **kwargs)
 
 		# XXX This is ugly, but works for the moment.
-		self.pkg = self.local.index.db.get_package_from_solv(self.pkg_solv)
+		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
 		assert self.pkg
 
 	def check(self, check):
