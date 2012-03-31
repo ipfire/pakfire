@@ -384,7 +384,7 @@ class BuildEnviron(object):
 		if self.pkg:
 			self.pkg.extract(_("Extracting"), prefix=self.build_dir)
 
-	def install(self, requires):
+	def install(self, requires, **kwargs):
 		"""
 			Install everything that is required in requires.
 		"""
@@ -392,24 +392,16 @@ class BuildEnviron(object):
 		if not requires:
 			return
 
-		try:
-			self.pakfire.install(requires, interactive=False,
-				allow_downgrade=True, logger=self.log)
+		kwargs.update({
+			"interactive" : False,
+			"logger" : self.log,
+		})
 
-		# Catch dependency errors and log it.
-		except DependencyError, e:
-			raise
+		if not kwargs.has_key("allow_downgrade"):
+			kwargs["allow_downgrade"] = True
 
-	def install_test(self):
-		try:
-			self.pakfire.localinstall(self.find_result_packages(), yes=True, allow_uninstall=True, logger=self.log)
-
-		# Dependency errors when trying to install the result packages are build errors.
-		except DependencyError, e:
-			# Dump all packages (for debugging).
-			self.dump()
-
-			raise BuildError, e
+		# Install everything.
+		self.pakfire.install(requires, **kwargs)
 
 	def chrootPath(self, *args):
 		# Remove all leading slashes
@@ -712,6 +704,10 @@ class BuildEnviron(object):
 		try:
 			self.do(" ".join(build_command), logger=self.log)
 
+			# Perform the install test after the actual build.
+			if install_test:
+				self.install_test()
+
 		except Error:
 			self.log.error(_("Build failed."), exc_info=True)
 
@@ -725,12 +721,18 @@ class BuildEnviron(object):
 			# Do the signing...
 			self.sign(host_key)
 
-		# Perform install test.
-		if install_test:
-			self.install_test()
-
 		# Dump package information.
 		self.dump()
+
+	def install_test(self):
+		self.log.info(_("Running installation test..."))
+
+		# Install all packages that were built.
+		self.install(self.find_result_packages(),
+			uninstall=True, signatures_mode="disabled")
+
+		self.log.info(_("Installation test succeeded."))
+		self.log.info("")
 
 	def shell(self, args=[]):
 		if not util.cli_is_interactive():
@@ -766,7 +768,8 @@ class BuildEnviron(object):
 		files = self.find_result_packages()
 
 		# Create a progressbar.
-		p = util.make_progress(_("Signing files (%s)") % keyfp, len(files))
+		print _("Signing packages...")
+		p = util.make_progress(keyfp, len(files))
 		i = 0
 
 		for file in files:
@@ -784,6 +787,7 @@ class BuildEnviron(object):
 		# Close progressbar.
 		if p:
 			p.finish()
+			print "" # Print an empty line.
 
 	def dump(self):
 		pkgs = []

@@ -280,88 +280,71 @@ class Pakfire(object):
 		# Return the solver so one can do stuff with it...
 		return solver
 
-	def install(self, requires, interactive=True, logger=None, **kwargs):
+	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
 		if not logger:
 			logger = logging.getLogger("pakfire")
 
-		# Do the solving.
-		request = self.create_request(install=requires)
-		solver  = self.solv(request, logger=logger, interactive=interactive, **kwargs)
+		# Pointer to temporary repository.
+		repo = None
 
-		if not solver.status:
-			if not interactive:
-				raise DependencyError
+		# Sort out what we got...
+		files = []
+		relations = []
 
-			logger.info(_("Nothing to do"))
-			return
+		for req in requires:
+			if isinstance(req, packages.Package):
+				relations.append(req)
+				continue
 
-		# Create the transaction.
-		t = solver.transaction
+			# This looks like a file.
+			if req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req):
+				files.append(req)
+				continue
 
-		if interactive:
-			# Ask if the user acknowledges the transaction.
-			if not t.cli_yesno():
-				return
+			# We treat the rest as relations. The solver will return any errors.
+			relations.append(req)
 
-		else:
-			t.dump(logger=logger)
-
-		# Run the transaction.
-		t.run(logger=logger)
-
-	def localinstall(self, files, yes=None, allow_uninstall=False, logger=None):
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		repo_name = repo_desc = "localinstall"
-
-		# Create a new repository that holds all packages we passed on
-		# the commandline.
-		repo = repository.RepositoryDir(self, repo_name, repo_desc,
-			os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
-
-		# Register the repository.
-		self.repos.add_repo(repo)
+		# Redefine requires, which will be the list that will be passed to the
+		# solver.
+		requires = relations
 
 		try:
-			# Add all packages to the repository index.
-			repo.add_packages(*files)
+			# If we have got files to install, we need to create a temporary repository
+			# called 'localinstall'.
+			# XXX FIX TMP PATH
+			if files:
+				repo = repository.RepositoryDir(self, "localinstall", _("Local install repository"),
+					os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
 
-			# Break if no packages were added at all.
-			if not len(repo):
-				log.critical(_("There are no packages to install."))
-				return
+				# Register the repository.
+				self.repos.add_repo(repo)
 
-			# Create a new request that installs all solvables from the
-			# repository.
-			request = self.create_request(install=repo)
+				# Add all packages to the repository index.
+				repo.add_packages(*files)
 
-			solver = self.solv(request, logger=logger, uninstall=allow_uninstall)
+				# Add all packages to the requires.
+				requires += repo
 
-			# If solving was not possible, we exit here.
-			if not solver.status:
-				logger.info(_("Nothing to do"))
-				return
+			# Do the solving.
+			request = self.create_request(install=requires)
+			solver  = self.solv(request, logger=logger, interactive=interactive, **kwargs)
 
-			# Create transaction.
+			# Create the transaction.
 			t = solver.transaction
+			t.dump(logger=logger)
 
-			if yes is None:
-				# Ask the user if this is okay.
-				if not t.cli_yesno():
-					return
-			elif yes:
-				t.dump(logger=logger)
-			else:
+			# Ask if the user acknowledges the transaction.
+			if interactive and not t.cli_yesno():
 				return
 
-			# If okay, run the transcation.
-			t.run(logger=logger)
+			# Run the transaction.
+			t.run(logger=logger, signatures_mode=signatures_mode)
 
 		finally:
-			# Remove the temporary copy of the repository we have created earlier.
-			repo.remove()
-			self.repos.rem_repo(repo)
+			if repo:
+				# Remove the temporary repository we have created earlier.
+				repo.remove()
+				self.repos.rem_repo(repo)
 
 	def reinstall(self, pkgs, strict=False):
 		"""
@@ -370,6 +353,9 @@ class Pakfire(object):
 			If strict is True, only a package with excatly the same UUID
 			will replace the currently installed one.
 		"""
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		# XXX it is possible to install packages without fulfulling
 		# all dependencies.
 
@@ -384,17 +370,17 @@ class Pakfire(object):
 				_pkgs.append(pkg)
 
 			if not _pkgs:
-				log.warning(_("Could not find any installed package providing \"%s\".") \
+				logger.warning(_("Could not find any installed package providing \"%s\".") \
 					% pattern)
 			elif len(_pkgs) == 1:
 				reinstall_pkgs.append(_pkgs[0])
 				#t.add("reinstall", _pkgs[0])
 			else:
-				log.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
+				logger.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
 					% { "pattern" : pattern, "pkgs" : ", ".join(p.friendly_name for p in sorted(_pkgs)) })
 
 		if not reinstall_pkgs:
-			log.info(_("Nothing to do"))
+			logger.info(_("Nothing to do"))
 			return
 
 		# Packages we want to replace.
@@ -419,7 +405,7 @@ class Pakfire(object):
 					_pkgs.append(_pkg)
 
 			if not _pkgs:
-				log.warning(_("Could not find package %s in a remote repository.") % \
+				logger.warning(_("Could not find package %s in a remote repository.") % \
 					pkg.friendly_name)
 			else:
 				# Sort packages to reflect repository priorities, etc...
@@ -462,13 +448,15 @@ class Pakfire(object):
 		t.sort()
 
 		if not t:
-			log.info(_("Nothing to do"))
+			logger.info(_("Nothing to do"))
 			return
+
+		t.dump(logger=logger)
 
 		if not t.cli_yesno():
 			return
 
-		t.run()
+		t.run(logger=logger)
 
 	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, **kwargs):
 		"""
@@ -508,10 +496,10 @@ class Pakfire(object):
 
 		# Create the transaction.
 		t = solver.transaction
+		t.dump(logger=logger)
 
 		# Just exit here, because we won't do the transaction in this mode.
 		if check:
-			t.dump(logger=logger)
 			return
 
 		# Ask the user if the transaction is okay.
@@ -553,6 +541,7 @@ class Pakfire(object):
 
 		# Create the transaction.
 		t = solver.transaction
+		t.dump(logger=logger)
 
 		if not t:
 			log.info(_("Nothing to do"))
@@ -573,6 +562,7 @@ class Pakfire(object):
 
 		# Create the transaction.
 		t = solver.transaction
+		t.dump()
 
 		if not t:
 			log.info(_("Nothing to do"))
@@ -658,6 +648,7 @@ class Pakfire(object):
 			try:
 				# Build the package.
 				b.build(install_test=install_test)
+
 			except BuildError:
 				# Raise the error, if the user does not want to
 				# have a shell.
@@ -686,6 +677,7 @@ class Pakfire(object):
 
 		try:
 			b.build()
+
 		except Error:
 			raise BuildError, _("Build command has failed.")
 
@@ -763,6 +755,7 @@ class Pakfire(object):
 
 		# Create the transaction.
 		t = solver.transaction
+		t.dump()
 
 		# Ask the user if okay.
 		if not t.cli_yesno():

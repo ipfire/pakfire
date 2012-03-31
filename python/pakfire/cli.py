@@ -60,7 +60,6 @@ class Cli(object):
 		self.sub_commands = self.parser.add_subparsers()
 
 		self.parse_command_install()
-		self.parse_command_localinstall()
 		self.parse_command_reinstall()
 		self.parse_command_remove()
 		self.parse_command_info()
@@ -81,7 +80,6 @@ class Cli(object):
 
 		self.action2func = {
 			"install"      : self.handle_install,
-			"localinstall" : self.handle_localinstall,
 			"reinstall"    : self.handle_reinstall,
 			"remove"       : self.handle_remove,
 			"check_update" : self.handle_check_update,
@@ -149,14 +147,6 @@ class Cli(object):
 		sub_install.add_argument("package", nargs="+",
 			help=_("Give name of at least one package to install."))
 		sub_install.add_argument("action", action="store_const", const="install")
-
-	def parse_command_localinstall(self):
-		# Implement the "localinstall" command.
-		sub_install = self.sub_commands.add_parser("localinstall",
-			help=_("Install one or more packages from the filesystem."))
-		sub_install.add_argument("package", nargs="+",
-			help=_("Give filename of at least one package."))
-		sub_install.add_argument("action", action="store_const", const="localinstall")
 
 	def parse_command_reinstall(self):
 		# Implement the "reinstall" command.
@@ -327,9 +317,6 @@ class Cli(object):
 	def handle_install(self):
 		pakfire.install(self.args.package, **self.pakfire_args)
 
-	def handle_localinstall(self):
-		pakfire.localinstall(self.args.package, **self.pakfire_args)
-
 	def handle_reinstall(self):
 		pakfire.reinstall(self.args.package, **self.pakfire_args)
 
@@ -469,6 +456,8 @@ class CliBuilder(Cli):
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 		sub_build.add_argument("--after-shell", action="store_true",
 			help=_("Run a shell after a successful build."))
+		sub_build.add_argument("--no-install-test", action="store_true",
+			help=_("Do not perform the install test."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -493,7 +482,6 @@ class CliBuilder(Cli):
 
 		sub_dist.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
-
 
 	def parse_command_cache(self):
 		# Implement the "cache" command.
@@ -530,7 +518,10 @@ class CliBuilder(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		pakfire.build(pkg, builder_mode=self.args.mode,
+		# Check whether to enable the install test.
+		install_test = not self.args.no_install_test
+
+		pakfire.build(pkg, builder_mode=self.args.mode, install_test=install_test,
 			arch=self.args.arch, resultdirs=[self.args.resultdir,],
 			shell=True, after_shell=self.args.after_shell, **self.pakfire_args)
 
@@ -785,9 +776,15 @@ class CliBuilderIntern(Cli):
 		else:
 			disable_repos = None
 
-		pakfire._build(pkg, builder_mode=self.args.mode, config=conf,
-			disable_repos=disable_repos, arch=self.args.arch,
-			resultdir=self.args.resultdir)
+		kwargs = {
+			"arch"          : self.args.arch,
+			"builder_mode"  : self.args.mode,
+			"config"        : conf,
+			"disable_repos" : disable_repos,
+			"resultdir"     : self.args.resultdir,
+		}
+
+		pakfire._build(pkg, **kwargs)
 
 
 class CliClient(Cli):

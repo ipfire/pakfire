@@ -240,6 +240,8 @@ class Keyring(object):
 		return signature.getvalue()
 
 	def verify(self, signature, cleartext):
+		assert signature, "Empty signature?"
+
 		signature = io.BytesIO(signature)
 		cleartext = io.BytesIO(cleartext)
 

@@ -543,8 +543,11 @@ class FilePackage(Package):
 
 			# Get the content of the signature file.
 			f = a.extractfile(member.name)
-			ret[key_id] = f.read()
+			signature = f.read()
 			f.close()
+
+			if signature:
+				ret[key_id] = signature
 
 		# Close the archive.
 		a.close()

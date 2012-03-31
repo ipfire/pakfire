@@ -248,8 +248,3 @@ class SolvPackage(base.Package):
 	def get_scriptlet(self, type):
 		# XXX TODO
 		return None
-
-	#@property
-	#def signatures(self):
-	#	# Solv packages do not have any signatures.
-	#	return []

@@ -355,7 +355,7 @@ class Package(object):
 
 	@property
 	def signatures(self):
-		raise NotImplementedError
+		return []
 
 	@property
 	def build_date(self):

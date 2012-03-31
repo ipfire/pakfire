@@ -396,9 +396,7 @@ class Transaction(object):
 		for line in s:
 			logger.info(line)
 
-	def cli_yesno(self, logger=None):
-		self.dump(logger)
-
+	def cli_yesno(self):
 		return util.ask_user(_("Is this okay?"))
 
 	def check(self, logger=None):
@@ -426,11 +424,15 @@ class Transaction(object):
 
 		raise TransactionCheckError, _("Transaction test was not successful")
 
-	def verify_signatures(self, logger):
+	def verify_signatures(self, mode=None, logger=None):
 		"""
 			Check the downloaded files for valid signatures.
 		"""
-		mode = self.pakfire.config.get("signatures", "mode", "strict")
+		if not logger:
+			logger = log.getLogger("pakfire")
+
+		if mode is None:
+			mode = self.pakfire.config.get("signatures", "mode", "strict")
 
 		# If this disabled, we do nothing.
 		if mode == "disabled":
@@ -487,7 +489,7 @@ class Transaction(object):
 			logger.warning(_("This is dangerous!"))
 			logger.warning("")
 
-	def run(self, logger=None):
+	def run(self, logger=None, signatures_mode=None):
 		assert not self.__need_sort, "Did you forget to sort the transaction?"
 
 		if logger is None:
@@ -499,7 +501,7 @@ class Transaction(object):
 		self.download()
 
 		# Verify signatures.
-		self.verify_signatures(logger=logger)
+		self.verify_signatures(mode=signatures_mode, logger=logger)
 
 		# Run the transaction test
 		self.check(logger=logger)

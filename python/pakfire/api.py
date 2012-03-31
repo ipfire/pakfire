@@ -36,11 +36,6 @@ def resolvdep(pkgs, **pakfire_args):
 
 	return pakfire.resolvdep(pkgs)
 
-def localinstall(files, **pakfire_args):
-	pakfire = Pakfire(**pakfire_args)
-
-	return pakfire.localinstall(files)
-
 def reinstall(pkgs, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
