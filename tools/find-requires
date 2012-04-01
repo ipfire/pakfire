@@ -112,8 +112,15 @@ done
 
 # Search for binary interpreters.
 for file in ${binary_files}; do
-	# Just print the interpreter.
-	file_get_elf_interpreter ${file}
+	# Get the interpreter.
+	interp=$(file_get_elf_interpreter ${file})
+
+	# Skip the interpreter if it is provided by this
+	# package.
+	[ -e "${BUILDROOT}${interp}" ] && continue
+
+	# Print the interpreter.
+	echo "${interp}"
 done | sort -u
 
 # Weak symbol versions (from glibc).
