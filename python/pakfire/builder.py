@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import socket
+import tempfile
 import time
 import uuid
 
@@ -922,18 +923,6 @@ class Builder(object):
 			"LANG"             : "C",
 		}
 
-	def mktemp(self):
-		"""
-			Create a temporary file in the build environment.
-		"""
-		file = "/tmp/pakfire_%s" % util.random_string()
-
-		# Touch the file.
-		f = open(file, "w")
-		f.close()
-
-		return file
-
 	@property
 	def buildroot(self):
 		return self.pkg.buildroot
@@ -1015,22 +1004,22 @@ class Builder(object):
 				self._environ["ICECC_VERSION"] = "/tmp/%s" % m.group(1)
 
 	def create_buildscript(self, stage):
-		file = "/tmp/build_%s" % util.random_string()
-
 		# Get buildscript from the package.
 		script = self.pkg.get_buildscript(stage)
 
 		# Write script to an empty file.
-		f = open(file, "w")
+		f = tempfile.NamedTemporaryFile(mode="w", delete=False)
 		f.write("#!/bin/sh\n\n")
 		f.write("set -e\n")
 		f.write("set -x\n")
 		f.write("\n%s\n" % script)
 		f.write("exit 0\n")
 		f.close()
-		os.chmod(file, 700)
 
-		return file
+		# Make the script executable.
+		os.chmod(f.name, 700)
+
+		return f.name
 
 	def build(self):
 		# Create buildroot and remove all content if it was existant.
