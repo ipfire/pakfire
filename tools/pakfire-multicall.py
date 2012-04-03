@@ -74,6 +74,9 @@ except Error, e:
 	log.error("  %s: %s" % (e.__class__.__name__, e.message))
 	log.error("")
 
+	# Log the traceback when in debugging mode.
+	log.debug("", exc_info=True)
+
 	log.error(_("Further description:"))
 	msg = "%s" % e
 	for line in msg.splitlines():
