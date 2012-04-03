@@ -25,6 +25,11 @@ while read file; do
 	case "${file}" in
 		*/usr/lib/debug/*|*/usr/src/debug/*)
 			# Skip all debuginfo files.
+			continue
+			;;
+		*/usr/lib*/gconv/*)
+			# Skip all gconv files.
+			continue
 			;;
 		*.ko)
 			# Skip all kernel modules because they do not
@@ -47,6 +52,7 @@ while read file; do
 		# Python
 		*/usr/lib*/python*/*)
 			# Sort out all python files.
+			# Directories are processed bewlow.
 			;;
 		*/usr/lib/python*|*/usr/lib64/python*)
 			# This will only get the python directory.

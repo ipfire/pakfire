@@ -14,10 +14,21 @@ pkgconfig_files=
 # Walk through all file files and see what we have got here.
 while read file; do
 	case "${file}" in
+		*/usr/lib/debug/*|*/usr/src/debug/*)
+			# Skip all debuginfo files.
+			continue
+			;;
 		*/usr/lib*/python*/*.so*)
 			# Do not show python shared objects in provides list.
 			;;
+		*/usr/lib*/gconv/*)
+			# Skip gconv files.
+			continue
+			;;
 		*.so*)
+			# Skip symlinks for performance reasons.
+			[ -L "${file}" ] && continue
+
 			file_is_elf ${file} >/dev/null 2>&1 && \
 				binary_files="${binary_files} ${file}"
 			;;
@@ -33,8 +44,6 @@ done < ${FILELIST}
 
 # Search for SONAMEs in all binary files.
 for file in ${binary_files}; do
-	[ -L ${file} ] && continue
-
 	soname=$(file_get_soname ${file})
 
 	# If the files does not have a SONAME, we will
