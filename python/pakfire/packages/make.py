@@ -441,6 +441,15 @@ class MakefilePackage(MakefileBase):
 				self._dependencies[key], self.lexer.get_var("filter_%s" % key)
 			)
 
+	def update_prerequires(self, prerequires):
+		if not prerequires:
+			return
+
+		_prerequires = self._dependencies.get("prerequires", [])
+		_prerequires = set(_prerequires + prerequires)
+
+		self._dependencies["prerequires"] = list(prerequires)
+
 	@staticmethod
 	def filter_deps(deps, filters):
 		if not filters:

@@ -201,6 +201,13 @@ SCRIPTS = (
 	"posttransup",
 )
 
+SCRIPTS_PREREQUIRES = (
+	"prein",
+	"postin",
+	"preup",
+	"postup",
+)
+
 LDCONFIG = "/sbin/ldconfig"
 
 CONFIG_FILE_SUFFIX_NEW  = ".paknew"

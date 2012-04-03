@@ -955,6 +955,12 @@ class Builder(object):
 		return environ
 
 	def do(self, command, shell=True, personality=None, cwd=None, *args, **kwargs):
+		try:
+			logger = kwargs["logger"]
+		except KeyError:
+			logger = logging.getLogger("pakfire")
+			kwargs["logger"] = logger
+
 		# Environment variables
 		log.debug("Environment:")
 		for k, v in sorted(self.environ.items()):
@@ -977,11 +983,25 @@ class Builder(object):
 			personality=personality,
 			shell=False,
 			env=self.environ,
-			logger=logging.getLogger("pakfire"),
 			cwd=cwd,
 			*args,
 			**kwargs
 		)
+
+	def run_script(self, script, *args):
+		if not script.startswith("/"):
+			script = os.path.join(SCRIPT_DIR, script)
+
+		assert os.path.exists(script), "Script we should run does not exist: %s" % script
+
+		cmd = [script,]
+		for arg in args:
+			cmd.append(arg)
+		cmd = " ".join(cmd)
+
+		# Returns the output of the command, but the output won't get
+		# logged.
+		return self.do(cmd, returnOutput=True, logger=None)
 
 	def create_icecream_toolchain(self):
 		try:
@@ -1090,6 +1110,14 @@ class Builder(object):
 		except Error, e:
 			log.error(_("Extracting debuginfo did not complete with success. Aborting build."))
 			raise
+
+	def find_prerequires(self, scriptlet_file):
+		assert os.path.exists(scriptlet_file), "Scriptlet file does not exist: %s" % scriptlet_file
+
+		res = self.run_script("find-prerequires", scriptlet_file)
+		prerequires = set(res.splitlines())
+
+		return prerequires
 
 	def cleanup(self):
 		if os.path.exists(self.buildroot):

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -z "${1}" ]; then
+	echo >&2 "No input file passed!"
+	exit 1
+fi
+
+prereqs=$(bash --rpm-requires < ${1} | sort | uniq | sed -e 's/^bash(//' -e 's/)$//' -e 's/^executable(//' -e 's/)$//')
+[ -z "${prereqs}" ] && exit 0
+
+for prereq in ${prereqs}; do
+	case "${prereq}" in
+		/*)
+			echo ${prereq}
+			;;
+		*)
+			which ${prereq} 2>/dev/null
+			;;
+	esac
+done | sort | uniq

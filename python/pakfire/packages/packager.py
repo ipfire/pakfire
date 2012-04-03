@@ -425,6 +425,9 @@ class BinaryPackager(Packager):
 	def create_scriptlets(self):
 		scriptlets = []
 
+		# Collect all prerequires for the scriptlets.
+		prerequires = []
+
 		for scriptlet_name in SCRIPTS:
 			scriptlet = self.pkg.get_scriptlet(scriptlet_name)
 
@@ -463,12 +466,19 @@ class BinaryPackager(Packager):
 
 				s.close()
 
+				if scriptlet_name in SCRIPTS_PREREQUIRES:
+					# Shell scripts require a shell to be executed.
+					prerequires.append("/bin/sh")
+
+					prerequires += self.builder.find_prerequires(scriptlet_file)
+
 			else:
 				raise Exception, "Unknown scriptlet language: %s" % scriptlet["lang"]
 
 			scriptlets.append((scriptlet_name, scriptlet_file))
 
-		# XXX scan for script dependencies
+		# Cleanup prerequires.
+		self.pkg.update_prerequires(prerequires)
 
 		return scriptlets
 

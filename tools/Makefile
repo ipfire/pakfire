@@ -20,6 +20,7 @@ SCRIPTS_SHELL = \
 	compress-man-pages \
 	extract-debuginfo \
 	find-common \
+	find-prerequires \
 	find-provides \
 	find-requires \
 	pakfire-multicall.py \
