@@ -24,6 +24,7 @@ import re
 import shutil
 import socket
 import tarfile
+import tempfile
 import uuid
 
 from urlgrabber.grabber import URLGrabber, URLGrabError
@@ -370,6 +371,9 @@ class MakefilePackage(MakefileBase):
 		self._name = name
 		self.lexer = lexer
 
+		# Save filelist.
+		self._filelist = set()
+
 		# Store additional dependencies in here.
 		self._dependencies = {}
 
@@ -398,32 +402,33 @@ class MakefilePackage(MakefileBase):
 
 	def track_dependencies(self, builder, path):
 		# Build filelist with all files that have been installed.
-		filelist = builder.mktemp()
+		f = tempfile.NamedTemporaryFile(mode="w", delete=False)
+		filelist = f.name
 
 		try:
-			f = open(filelist, "w")
 			for dir, subdirs, files in os.walk(path):
 				f.write("%s\n" % dir)
 
 				for file in files:
-					f.write("%s\n" % os.path.join(dir, file))
+					file = os.path.join(dir, file)
+					f.write("%s\n" % file)
+
+					file = "/%s" % os.path.relpath(file, path)
+					self._filelist.add(file)
 			f.close()
 
 			log.info(_("Searching for automatic dependencies for %s...") % self.friendly_name)
 
 			# Search for provides.
-			res = builder.do("/usr/lib/pakfire/find-provides %s %s" \
-				% (path, filelist), returnOutput=True)
+			res = builder.run_script("find-provides", path, filelist)
 			provides = set(res.splitlines())
 
 			# Search for requires.
-			res = builder.do("/usr/lib/pakfire/find-requires %s %s" \
-				% (path, filelist), returnOutput=True)
+			res = builder.run_script("find-requires", path, filelist)
 			requires = set(res.splitlines()) - provides
 
 		finally:
-			if os.path.exists(filelist):
-				os.unlink(filelist)
+			os.unlink(filelist)
 
 		self._dependencies["provides"] = provides
 		self._dependencies["requires"] = requires
@@ -501,27 +506,57 @@ class MakefilePackage(MakefileBase):
 		# Collect all dependencies that were discovered by the tracker.
 		deps += self._dependencies.get(key, [])
 
-		# Add the UUID.
+		# Remove duplicates and sort the data.
+		deps = set(deps)
+		deps = list(deps)
+		deps.sort()
+
+		# Add the UUID of the package as a provides.
 		if key == "provides":
 			deps.append("uuid(%s)" % self.uuid)
 
-		# Remove duplicates.
-		deps = set(deps)
-		deps = list(deps)
-
-		return sorted(deps)
+		return deps
 
 	@property
 	def prerequires(self):
-		return self.get_deps("prerequires")
+		ret = []
+
+		# Cache the provides and as a set for faster searching.
+		provides = set(self.provides)
+
+		for dep in self.get_deps("prerequires"):
+			# Skip all prerequires that are provided by a file in this package.
+			if dep.startswith("/") and dep in self._filelist:
+				continue
+
+			if dep in self.provides:
+				continue
+
+			ret.append(dep)
+
+		return ret
 
 	@property
 	def requires(self):
 		# Make sure that no self-provides are in the list
 		# of requirements.
-		provides = self.provides
+		ret = []
 
-		return [r for r in self.get_deps("requires") if not r in provides]
+		# Cache the provides and as a set for faster searching.
+		provides = set(self.provides)
+
+		for dep in self.get_deps("requires"):
+			# Skip requires that are provided by a file in this package.
+			if dep.startswith("/") and dep in self._filelist:
+				continue
+
+			# Skip all other kinds of provides.
+			if dep in provides:
+				continue
+
+			ret.append(dep)
+
+		return ret
 
 	@property
 	def provides(self):
