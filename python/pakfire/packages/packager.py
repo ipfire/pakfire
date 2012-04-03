@@ -43,9 +43,11 @@ import pakfire.util as util
 from pakfire.constants import *
 from pakfire.i18n import _
 
-from file import BinaryPackage, InnerTarFileXz, SourcePackage
+from file import BinaryPackage, InnerTarFile, InnerTarFileXz, SourcePackage
 
 class Packager(object):
+	payload_compression = None
+
 	def __init__(self, pakfire, pkg):
 		self.pakfire = pakfire
 		self.pkg = pkg
@@ -66,11 +68,14 @@ class Packager(object):
 				os.remove(file)
 
 	def mktemp(self, directory=False):
-		# XXX use real mk(s)temp here
-		filename = os.path.join("/", LOCAL_TMP_PATH, util.random_string())
-
 		if directory:
+			filename = os.path.join("/", LOCAL_TMP_PATH, util.random_string())
 			os.makedirs(filename)
+		else:
+			f = tempfile.NamedTemporaryFile(mode="w", delete=False)
+			f.close()
+
+			filename = f.name
 
 		self.tmpfiles.append(filename)
 
@@ -136,7 +141,11 @@ class Packager(object):
 		filelist = self.mktemp()
 
 		f = open(filelist, "w")
-		datafile = InnerTarFileXz.open(datafile)
+
+		if self.payload_compression == "xz":
+			datafile = InnerTarFileXz.open(datafile)
+		else:
+			datafile = InnerTarFile.open(datafile)
 
 		while True:
 			m = datafile.next()
@@ -204,6 +213,8 @@ class Packager(object):
 
 
 class BinaryPackager(Packager):
+	payload_compression = "xz"
+
 	def __init__(self, pakfire, pkg, builder, buildroot):
 		Packager.__init__(self, pakfire, pkg)
 
@@ -216,7 +227,11 @@ class BinaryPackager(Packager):
 		# Extract datafile in temporary directory and scan for dependencies.
 		tmpdir = self.mktemp(directory=True)
 
-		tarfile = InnerTarFileXz.open(datafile)
+		if self.payload_compression == "xz":
+			tarfile = InnerTarFileXz.open(datafile)
+		else:
+			tarfile = InnerTarFile.open(datafile)
+
 		tarfile.extractall(path=tmpdir)
 		tarfile.close()
 
@@ -366,7 +381,10 @@ class BinaryPackager(Packager):
 		pb = util.make_progress(message, len(files), eta=False)
 
 		datafile = self.mktemp()
-		tar = InnerTarFileXz.open(datafile, mode="w")
+		if self.payload_compression == "xz":
+			tar = InnerTarFileXz.open(datafile, mode="w")
+		else:
+			tar = InnerTarFile.open(datafile, mode="w")
 
 		# All files in the tarball are relative to this directory.
 		basedir = self.buildroot
@@ -483,7 +501,10 @@ class BinaryPackager(Packager):
 		return scriptlets
 
 	def create_configs(self, datafile):
-		datafile = InnerTarFileXz.open(datafile)
+		if self.payload_compression == "xz":
+			datafile = InnerTarFileXz.open(datafile)
+		else:
+			datafile = InnerTarFile.open(datafile)
 
 		members = datafile.getmembers()
 
@@ -572,6 +593,8 @@ class BinaryPackager(Packager):
 
 
 class SourcePackager(Packager):
+	payload_compression = None
+
 	def create_metafile(self, datafile):
 		info = collections.defaultdict(lambda: "")
 
@@ -646,7 +669,10 @@ class SourcePackager(Packager):
 		pb = util.make_progress(message, len(files), eta=False)
 
 		filename = self.mktemp()
-		datafile = InnerTarFileXz.open(filename, mode="w")
+		if self.payload_compression == "xz":
+			datafile = InnerTarFileXz.open(filename, mode="w")
+		else:
+			datafile = InnerTarFile.open(filename, mode="w")
 
 		i = 0
 		for arcname, file in files:
