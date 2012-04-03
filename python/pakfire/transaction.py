@@ -350,6 +350,9 @@ class Transaction(object):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
+		if not self.actions:
+			logger.info(_("Nothing to do"))
+
 		width = 80
 		line = "=" * width
 
@@ -397,6 +400,10 @@ class Transaction(object):
 			logger.info(line)
 
 	def cli_yesno(self):
+		# Empty transactions are always denied.
+		if not self.actions:
+			return False
+
 		return util.ask_user(_("Is this okay?"))
 
 	def check(self, logger=None):
@@ -490,6 +497,7 @@ class Transaction(object):
 			logger.warning("")
 
 	def run(self, logger=None, signatures_mode=None):
+		assert self.actions, "Cannot run an empty transaction."
 		assert not self.__need_sort, "Did you forget to sort the transaction?"
 
 		if logger is None:
