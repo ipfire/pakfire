@@ -42,32 +42,40 @@ def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 
 	tail = ""
 	while not done:
-		if (time.time() - start)>timeout and timeout!=0:
+		if (time.time() - start) > timeout and timeout != 0:
 			done = 1
 			break
 
-		i_rdy,o_rdy,e_rdy = select.select(fds,[],[],1) 
+		i_rdy, o_rdy, e_rdy = select.select(fds,[],[],1)
+
 		for s in i_rdy:
 			# slurp as much input as is ready
 			input = s.read()
+
 			if input == "":
 				done = 1
 				break
+
 			if logger is not None:
 				lines = input.split("\n")
 				if tail:
 					lines[0] = tail + lines[0]
+
 				# we may not have all of the last line
 				tail = lines.pop()
+
 				for line in lines:
-					if line == '': continue
 					logger.info(line)
+
 				for h in logger.handlers:
 					h.flush()
+
 			if returnOutput:
 				output += input
+
 	if tail and logger is not None:
 		logger.info(tail)
+
 	return output
 
 
