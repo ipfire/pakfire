@@ -118,6 +118,9 @@ class RepositoryRemote(base.RepositoryFactory):
 		self.cache.destroy()
 
 	def update(self, force=False, offline=False):
+		if force and offline:
+			raise OfflineModeError, _("You cannot force to update metadata in offline mode.")
+
 		# First update the repository metadata.
 		self.update_metadata(force=force, offline=offline)
 		self.update_database(force=force, offline=offline)
@@ -138,28 +141,25 @@ class RepositoryRemote(base.RepositoryFactory):
 		cache_filename = self.cache_path(os.path.basename(filename))
 
 		# Check if the metadata is already recent enough...
-		if self.cache.exists(cache_filename):
+		exists = self.cache.exists(cache_filename)
+
+		if not exists and offline:
+			raise OfflineModeError, _("No metadata available for repository %s. Cannot download any.") \
+				% self.name
+
+		elif exists and offline:
+			# Repository metadata exists. We cannot update anything because of the offline mode.
+			return
+
+		if not force and exists:
 			age = self.cache.age(cache_filename)
 			if age and age < TIME_10M:
 				log.debug("Metadata is recent enough. I don't download it again.")
-			else:
-				log.debug("Metadata needs an update.")
-				force = True
-
-		# If no metadata exists, yet we need an update.
-		else:
-			force = True
-
-		# Raise an exception when we are running in offline mode but an update is required.
-		if force and offline:
-			raise OfflineModeError, _("Cannot update repository metadata for %s when in offline mode.") % self.name
-
-		# If no download is required, we exit here.
-		if not force:
-			return
+				return
 
 		# Going to download metada.
 		log.debug("Going to download repository metadata for %s..." % self.name)
+		assert not offline
 
 		grabber = downloader.MetadataDownloader(self.pakfire)
 		grabber = self.mirrors.group(grabber)
@@ -206,7 +206,7 @@ class RepositoryRemote(base.RepositoryFactory):
 		self.index.read(filename)
 
 	def update_database(self, force=False, offline=False):
-		assert self.metadata
+		assert self.metadata, "Metadata needs to be openend first."
 
 		# Construct cache and download filename.
 		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
@@ -221,6 +221,9 @@ class RepositoryRemote(base.RepositoryFactory):
 
 		elif not force:
 			return
+
+		# Just make sure we don't try to download anything in offline mode.
+		assert not offline
 
 		# Initialize a grabber for download.
 		grabber = downloader.DatabaseDownloader(

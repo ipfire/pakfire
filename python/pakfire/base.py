@@ -53,10 +53,6 @@ class Pakfire(object):
 
 	def __init__(self, mode=None, path="/", config=None, configs=None, arch=None,
 			enable_repos=None, disable_repos=None, **kwargs):
-
-		if kwargs:
-			print _("Ignored arguments:"), kwargs
-
 		# Set the mode.
 		assert mode in ("normal", "builder", "server",)
 		self.mode = mode
@@ -83,6 +79,10 @@ class Pakfire(object):
 		else:
 			# Read configuration file(s).
 			self.config = Config(files=configs)
+
+		# Update configuration with additional arguments.
+		for section, settings in kwargs.items():
+			self.config.update(section, settings)
 
 		# Dump the configuration.
 		self.config.dump()
@@ -199,7 +199,7 @@ class Pakfire(object):
 		"""
 			A shortcut that indicates if the system is running in offline mode.
 		"""
-		return self.config.get("offline", False)
+		return self.config.get("downloader", "offline", False)
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:

@@ -52,9 +52,7 @@ class PakfireGrabber(URLGrabber):
 			config = pakfire
 		else:
 			config = pakfire.config
-
-		if config.get("downloader", "offline"):
-			raise OfflineModeError, "Cannot use %s in offline mode." % self.__class__.__name__
+		self.config = config
 
 		# Set throttle setting.
 		bandwidth_throttle = config.get("downloader", "bandwidth_throttle")
@@ -74,13 +72,24 @@ class PakfireGrabber(URLGrabber):
 
 		URLGrabber.__init__(self, *args, **kwargs)
 
+	def check_offline_mode(self):
+		offline = self.config.get("downloader", "offline")
+		if not offline:
+			return
+
+		raise OfflineModeError
+
 	def urlread(self, filename, *args, **kwargs):
+		self.check_offline_mode()
+
 		# This is for older versions of urlgrabber which are packaged in Debian
 		# and Ubuntu and cannot handle filenames as a normal Python string but need
 		# a unicode string.
 		return URLGrabber.urlread(self, filename.encode("utf-8"), *args, **kwargs)
 
 	def urlopen(self, filename, *args, **kwargs):
+		self.check_offline_mode()
+
 		# However, urlopen requires the filename to be an ordinary string object.
 		filename = str(filename)
 
@@ -144,6 +153,9 @@ class SourceDownloader(object):
 
 		if download_files:
 			log.info(_("Downloading source files:"))
+
+			if self.pakfire.offline:
+				raise OfflineModeError, _("Cannot download source code in offline mode.")
 
 			# Create source download directory.
 			if not os.path.exists(SOURCE_CACHE_DIR):

@@ -187,6 +187,10 @@ class _Config(object):
 		return default
 
 	def update(self, section, what):
+		if not type(what) == type({}):
+			log.error(_("Unhandled configuration update: %s") % what)
+			return
+
 		try:
 			self._config[section].update(what)
 		except KeyError:

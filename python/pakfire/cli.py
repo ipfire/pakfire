@@ -109,8 +109,10 @@ class Cli(object):
 		if hasattr(self.args, "enable_repo"):
 			ret["enable_repos"] = self.args.enable_repo
 
-		if hasattr(self.args, "offline"):
-			ret["offline"] = self.args.offline
+		if hasattr(self.args, "offline") and self.args.offline:
+			ret["downloader"] = {
+				"offline" : self.args.offline,
+			}
 
 		if hasattr(self.args, "config"):
 			ret["configs"] = self.args.config
@@ -429,8 +431,10 @@ class CliBuilder(Cli):
 		if hasattr(self.args, "enable_repo"):
 			ret["enable_repos"] = self.args.enable_repo
 
-		if hasattr(self.args, "offline"):
-			ret["offline"] = self.args.offline
+		if hasattr(self.args, "offline") and self.args.offline:
+			ret["downloader"] = {
+				"offline" : self.args.offline,
+			}
 
 		return ret
 
@@ -624,8 +628,10 @@ class CliServer(Cli):
 	def pakfire_args(self):
 		ret = { "mode" : "server" }
 
-		if hasattr(self.args, "offline"):
-			ret["offline"] = self.args.offline
+		if hasattr(self.args, "offline") and self.args.offline:
+			ret["downloader"] = {
+				"offline" : self.args.offline,
+			}
 
 		return ret
 
