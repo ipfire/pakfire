@@ -227,7 +227,6 @@ class Pakfire(object):
 
 		raise BuildError, arch
 
-	@staticmethod
 	def check_is_ipfire(self):
 		ret = os.path.exists("/etc/ipfire-release")
 
