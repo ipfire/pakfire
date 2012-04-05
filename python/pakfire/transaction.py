@@ -352,6 +352,7 @@ class Transaction(object):
 
 		if not self.actions:
 			logger.info(_("Nothing to do"))
+			return
 
 		width = 80
 		line = "=" * width
