@@ -79,7 +79,7 @@ def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 	return output
 
 
-def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True, returnOutput=0, personality=None, logger=None, env=None, *args, **kargs):
+def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True, returnOutput=0, personality=None, logger=None, env=None, cgroup=None, *args, **kargs):
 	# Save the output of command
 	output = ""
 
@@ -93,8 +93,6 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 		logger.debug("Executing command: %s in %s" % (command, chrootPath or "/"))
 
 	try:
-		child = None
-
 		# Create new child process
 		child = subprocess.Popen(
 			command,
@@ -106,6 +104,10 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 			preexec_fn = preexec,
 			env=env
 		)
+
+		# If cgroup is given, attach the subprocess.
+		if cgroup:
+			cgroup.attach_task(child.pid)
 
 		# use select() to poll for output so we dont block
 		output = logOutput([child.stdout, child.stderr], logger, returnOutput, start, timeout)

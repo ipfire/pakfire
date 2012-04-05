@@ -25,12 +25,14 @@ import math
 import os
 import re
 import shutil
+import signal
 import socket
 import tempfile
 import time
 import uuid
 
 import base
+import cgroup
 import chroot
 import logger
 import packages
@@ -104,6 +106,14 @@ class BuildEnviron(object):
 		else:
 			# If no logile was given, we use the root logger.
 			self.log = logging.getLogger("pakfire")
+
+		# Initialize a cgroup (if supported).
+		self.cgroup = None
+		if cgroup.supported():
+			self.cgroup = cgroup.CGroup("pakfire/builder/%s" % self.build_id)
+
+			# Attach the pakfire-builder process to the parent group.
+			self.cgroup.parent.attach()
 
 		# Log information about pakfire and some more information, when we
 		# are running in release mode.
@@ -218,8 +228,24 @@ class BuildEnviron(object):
 		self.extract()
 
 	def stop(self):
-		# Kill all still running processes.
-		util.orphans_kill(self.path)
+		if self.cgroup:
+			# Kill all still running processes in the cgroup.
+			self.cgroup.kill_and_wait()
+
+			# Remove cgroup and all parent cgroups if they are empty.
+			self.cgroup.migrate_task(self.cgroup.root, os.getpid())
+			self.cgroup.destroy()
+
+			parent = self.cgroup.parent
+			while parent:
+				if not parent.is_empty(recursive=True):
+					break
+
+				parent.destroy()
+				parent = parent.parent
+
+		else:
+			util.orphans_kill(self.path)
 
 		# Close pakfire instance.
 		del self.pakfire
@@ -666,6 +692,9 @@ class BuildEnviron(object):
 		if not kwargs.has_key("chrootPath"):
 			kwargs["chrootPath"] = self.chrootPath()
 
+		if not kwargs.has_key("cgroup"):
+			kwargs["cgroup"] = self.cgroup
+
 		ret = chroot.do(
 			command,
 			personality=personality,
@@ -943,7 +972,7 @@ class Builder(object):
 
 		return environ
 
-	def do(self, command, shell=True, personality=None, cwd=None, *args, **kwargs):
+	def do(self, command, shell=True, *args, **kwargs):
 		try:
 			logger = kwargs["logger"]
 		except KeyError:
@@ -956,26 +985,28 @@ class Builder(object):
 			log.debug("  %s=%s" % (k, v))
 
 		# Update personality it none was set
-		if not personality:
-			personality = self.distro.personality
+		if not kwargs.has_key("personality"):
+			kwargs["personality"] = self.distro.personality
 
-		if not cwd:
-			cwd = "/%s" % LOCAL_TMP_PATH
+		if not kwargs.has_key("cwd"):
+			kwargs["cwd"] = "/%s" % LOCAL_TMP_PATH
 
 		# Make every shell to a login shell because we set a lot of
 		# environment things there.
 		if shell:
 			command = ["bash", "--login", "-c", command]
+			kwargs["shell"] = False
 
-		return chroot.do(
-			command,
-			personality=personality,
-			shell=False,
-			env=self.environ,
-			cwd=cwd,
-			*args,
-			**kwargs
-		)
+		kwargs["env"] = self.environ
+
+		try:
+			return chroot.do(command, *args, **kwargs)
+		except Error:
+			if not logger:
+				logger = logging.getLogger("pakfire")
+
+			logger.error("Command exited with an error: %s" % command)
+			raise
 
 	def run_script(self, script, *args):
 		if not script.startswith("/"):
