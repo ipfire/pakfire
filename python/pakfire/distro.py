@@ -35,6 +35,9 @@ class Distribution(object):
 		self._data = {}
 
 		if data is None:
+			# Read /etc/os-release if it does exist.
+			self.read_osrelease()
+
 			# Inherit configuration from Pakfire configuration.
 			self.update(self.pakfire.config.get_section("distro"))
 		else:
@@ -43,12 +46,12 @@ class Distribution(object):
 		# Dump all data
 		self.dump()
 
-	@classmethod
-	def from_osrelease(cls, pakfire, path="/"):
-		filename = os.path.join(path, "etc", "os-release")
+	def read_osrelease(self):
+		filename = os.path.join(self.pakfire.path, "etc", "os-release")
 
 		if not os.path.exists(filename):
-			raise Exception, "Could not find %s." % filename
+			log.warning(_("Could not read %s.") % filename)
+			return
 
 		keymap = {
 			"NAME"       : "name",
@@ -74,7 +77,7 @@ class Distribution(object):
 				data[k] = v
 		f.close()
 
-		return cls(pakfire, data)
+		self.update(data)
 
 	@property
 	def config(self):
@@ -131,7 +134,11 @@ class Distribution(object):
 
 	@property
 	def vendor(self):
-		return self._data.get("vendor", "N/A")
+		vendor = self._data.get("vendor")
+		if vendor is None:
+			vendor = "%s Project" % self.name
+
+		return vendor
 
 	@property
 	def contact(self):
