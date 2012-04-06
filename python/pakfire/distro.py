@@ -50,7 +50,6 @@ class Distribution(object):
 		filename = os.path.join(self.pakfire.path, "etc", "os-release")
 
 		if not os.path.exists(filename):
-			log.warning(_("Could not read %s.") % filename)
 			return
 
 		keymap = {
