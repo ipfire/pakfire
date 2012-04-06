@@ -345,7 +345,7 @@ class Pakfire(object):
 				repo.remove()
 				self.repos.rem_repo(repo)
 
-	def reinstall(self, pkgs, strict=False):
+	def reinstall(self, pkgs, strict=False, logger=None):
 		"""
 			Reinstall one or more packages.
 
