@@ -15,10 +15,14 @@ CC = gcc
 CFLAGS ?= -O2 -fPIC -pipe
 MACHINE = $(shell uname -m)
 
-ifeq "$(MACHINE)" "x86_64"
+ifeq "$(DEBIAN)" "0"
+ ifeq "$(MACHINE)" "x86_64"
 	LIBDIR = $(PREFIX)/lib64
-else
+ else
 	LIBDIR = $(PREFIX)/lib
+ endif
+else
+ LIBDIR = $(PREFIX)/lib
 endif
 
 # Get the version and configuration of the python interpreter.

@@ -34,7 +34,13 @@ class System(object):
 	"""
 	@property
 	def hostname(self):
-		return socket.gethostname()
+		hn = socket.gethostname()
+
+		# If a host has got no domain part, we add one.
+		if not "." in hn:
+			hn = "%s.localdomain" % hn
+
+		return hn
 
 	@property
 	def native_arch(self):
