@@ -266,7 +266,11 @@ class CGroup(object):
 				try:
 					os.kill(proc, sig)
 				except OSError, e:
-					raise
+					# Skip "No such process" error
+					if e.errno == 3:
+						pass
+					else:
+						raise
 
 				# Save all killed processes to a list.
 				killed_processes.append(proc)
