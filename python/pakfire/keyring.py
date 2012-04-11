@@ -242,6 +242,8 @@ class Keyring(object):
 	def verify(self, signature, cleartext):
 		assert signature, "Empty signature?"
 
+		assert signature, "Signature is empty?"
+
 		signature = io.BytesIO(signature)
 		cleartext = io.BytesIO(cleartext)
 

@@ -99,11 +99,17 @@ class RepositoryCache(object):
 
 		return open(filename, *args, **kwargs)
 
+	def hash1(self, filename):
+		"""
+			Return hash of the file in the cache.
+		"""
+		return util.calc_hash1(self.abspath(filename))
+
 	def verify(self, filename, hash1):
 		"""
 			Return a bool that indicates if a file matches the given hash.
 		"""
-		return util.calc_hash1(self.abspath(filename)) == hash1
+		return self.hash1(filename) == hash1
 
 	def remove(self, filename):
 		"""
