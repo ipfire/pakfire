@@ -1145,7 +1145,6 @@ class CliKey(Cli):
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
 
-		self.parse_command_init()
 		self.parse_command_generate()
 		self.parse_command_import()
 		self.parse_command_export()
@@ -1161,7 +1160,6 @@ class CliKey(Cli):
 		self.pakfire = pakfire.Pakfire(**self.pakfire_args)
 
 		self.action2func = {
-			"init"        : self.handle_init,
 			"generate"    : self.handle_generate,
 			"import"      : self.handle_import,
 			"export"      : self.handle_export,
@@ -1178,12 +1176,6 @@ class CliKey(Cli):
 		}
 
 		return ret
-
-	def parse_command_init(self):
-		# Parse "init" command.
-		sub_init = self.sub_commands.add_parser("init",
-			help=_("Initialize the local keyring."))
-		sub_init.add_argument("action", action="store_const", const="init")
 
 	def parse_command_generate(self):
 		# Parse "generate" command.
@@ -1246,10 +1238,6 @@ class CliKey(Cli):
 		sub_verify.add_argument("package", nargs="+",
 			help=_("Package(s) to verify."))
 		sub_verify.add_argument("action", action="store_const", const="verify")
-
-	def handle_init(self):
-		# Initialize the keyring...
-		pakfire.key_init(**self.pakfire_args)
 
 	def handle_generate(self):
 		realname = self.args.realname[0]

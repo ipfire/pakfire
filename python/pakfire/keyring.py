@@ -54,42 +54,24 @@ class Keyring(object):
 		return KEYRING_DIR
 
 	def create_path(self):
+		if os.path.exists(self.path):
+			os.chmod(self.path, 700)
+		else:
+			os.makedirs(self.path, 700)
+
 		filename = os.path.join(self.path, "gnupg.conf")
 
 		if os.path.exists(filename):
+			os.chmod(filename, 600)
 			return
-
-		if not os.path.exists(self.path):
-			os.makedirs(self.path)
-			# XXX chmod 700
 
 		# Create a default gnupg.conf.
 		f = open(filename, "w")
 		f.write("# This is a default gnupg configuration file created by\n")
 		f.write("# Pakfire %s.\n" % PAKFIRE_VERSION)
 		f.close()
-		# XXX chmod 600
 
-	@property
-	def initialized(self):
-		"""
-			Returns true if the local keyring was already initialized.
-		"""
-		if self.get_host_key():
-			return True
-
-		return False
-
-	def init(self):
-		# If the host key is already present, we break up.
-		if self.initialized:
-			log.error(_("The local keyring is already initialized. Aborting."))
-			return
-
-		log.info(_("Initializing local keyring..."))
-
-		hostname, domainname = system.hostname.split(".", 1)
-		self.gen_key(system.hostname, "%s@%s" % (hostname, domainname))
+		os.chmod(filename, 600)
 
 	def dump_key(self, keyfp):
 		ret = []
