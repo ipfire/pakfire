@@ -29,7 +29,7 @@ class LexerUndefinedVariableError(LexerError):
 LEXER_VALID_PACKAGE_NAME    = re.compile(r"[A-Za-z][A-Za-z0-9\_\-\+]")
 
 # XXX need to build check
-LEXER_VALID_SCRIPTLET_NAME  = re.compile(r"((pre|post|posttrans)(in|un|up))")
+LEXER_VALID_SCRIPTLET_NAME  = re.compile(r"((pre|post|pretrans|posttrans)(in|un|up))")
 
 LEXER_COMMENT_CHAR    = "#"
 LEXER_COMMENT         = re.compile(r"^\s*#")

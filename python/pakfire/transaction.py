@@ -157,12 +157,44 @@ class TransactionCheck(object):
 
 class Transaction(object):
 	action_classes = {
-		ActionInstall.type   : [ActionScriptPreIn, ActionInstall, ActionScriptPostIn, ActionScriptPostTransIn],
-		ActionReinstall.type : [ActionScriptPreIn, ActionReinstall, ActionScriptPostIn, ActionScriptPostTransIn],
-		ActionRemove.type    : [ActionScriptPreUn, ActionRemove, ActionScriptPostUn, ActionScriptPostTransUn],
-		ActionUpdate.type    : [ActionScriptPreUp, ActionUpdate,  ActionScriptPostUp, ActionScriptPostTransUp],
-		ActionCleanup.type   : [ActionCleanup,],
-		ActionDowngrade.type : [ActionScriptPreUp, ActionDowngrade, ActionScriptPostUp, ActionScriptPostTransUp],
+		ActionInstall.type : [
+			ActionScriptPreTransIn,
+			ActionScriptPreIn,
+			ActionInstall,
+			ActionScriptPostIn,
+			ActionScriptPostTransIn,
+		],
+		ActionReinstall.type : [
+			ActionScriptPreTransIn,
+			ActionScriptPreIn,
+			ActionReinstall,
+			ActionScriptPostIn,
+			ActionScriptPostTransIn,
+		],
+		ActionRemove.type : [
+			ActionScriptPreTransUn,
+			ActionScriptPreUn,
+			ActionRemove,
+			ActionScriptPostUn,
+			ActionScriptPostTransUn,
+		],
+		ActionUpdate.type : [
+			ActionScriptPreTransUp,
+			ActionScriptPreUp,
+			ActionUpdate,
+			ActionScriptPostUp,
+			ActionScriptPostTransUp,
+		],
+		ActionCleanup.type : [
+			ActionCleanup,
+		],
+		ActionDowngrade.type : [
+			ActionScriptPreTransUp,
+			ActionScriptPreUp,
+			ActionDowngrade,
+			ActionScriptPostUp,
+			ActionScriptPostTransUp,
+		],
 	}
 
 	def __init__(self, pakfire):
@@ -233,15 +265,18 @@ class Transaction(object):
 			Sort all actions.
 		"""
 		actions = []
+		actions_pre = []
 		actions_post = []
 
 		for action in self.actions:
-			if isinstance(action, ActionScriptPostTrans):
+			if isinstance(action, ActionScriptPreTrans):
+				actions_pre.append(action)
+			elif isinstance(action, ActionScriptPostTrans):
 				actions_post.append(action)
 			else:
 				actions.append(action)
 
-		self.actions = actions + actions_post
+		self.actions = actions_pre + actions + actions_post
 		self.__need_sort = False
 
 	@property

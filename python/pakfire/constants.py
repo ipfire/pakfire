@@ -190,6 +190,9 @@ SCRIPTLET_INTERPRETER = "/bin/sh"
 SCRIPTLET_TIMEOUT = 60 * 15
 
 SCRIPTS = (
+	"pretransin",
+	"pretransun",
+	"pretransup",
 	"prein",
 	"postin",
 	"preun",

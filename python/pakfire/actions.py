@@ -249,6 +249,22 @@ class ActionScriptPostUp(ActionScript):
 	script_action = "postup"
 
 
+class ActionScriptPreTrans(ActionScript):
+	pass
+
+
+class ActionScriptPreTransIn(ActionScriptPreTrans):
+	script_action = "pretransin"
+
+
+class ActionScriptPreTransUn(ActionScriptPreTrans):
+	script_action = "pretransun"
+
+
+class ActionScriptPreTransUp(ActionScriptPreTrans):
+	script_action = "pretransup"
+
+
 class ActionScriptPostTrans(ActionScript):
 	pass
 
