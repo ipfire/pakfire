@@ -20,6 +20,7 @@
 ###############################################################################
 
 import os
+import sys
 
 import chroot
 import packages
@@ -142,6 +143,23 @@ class ActionScript(Action):
 		# Load the scriplet.
 		self.scriptlet = self.pkg.get_scriptlet(self.script_action)
 
+	def get_lang(self):
+		if not self.scriptlet:
+			return
+
+		interp = None
+
+		for line in self.scriptlet.splitlines():
+			if line.startswith("#!/"):
+				interp = "exec"
+				break
+
+			elif line.startswith("#<lang: "):
+				interp = line[8:].replace(">", "")
+				break
+
+		return interp
+
 	@property
 	def interpreter(self):
 		"""
@@ -160,6 +178,22 @@ class ActionScript(Action):
 
 		# Actually run the scriplet.
 		log.debug("Running scriptlet %s" % self)
+
+		# Check of what kind the scriptlet is and run the
+		# corresponding handler.
+		lang = self.get_lang()
+
+		if lang == "exec":
+			self.run_exec()
+
+		elif lang == "python":
+			self.run_python()
+
+		else:
+			raise ActionError, _("Could not handle scriptlet of unknown type. Skipping.")
+
+	def run_exec(self):
+		log.debug(_("Executing python scriptlet..."))
 
 		# Check if the interpreter does exist and is executable.
 		if self.interpreter:
@@ -223,6 +257,48 @@ class ActionScript(Action):
 				os.unlink(script_file)
 			except OSError:
 				log.debug("Could not remove scriptlet file: %s" % script_file)
+
+	def run_python(self):
+		# This functions creates a fork with then chroots into the
+		# pakfire root if necessary and then compiles the given scriptlet
+		# code and runs it.
+
+		log.debug(_("Executing python scriptlet..."))
+
+		# Create fork.
+		pid = os.fork()
+
+		if not pid:
+			# child code
+
+			# The child chroots into the pakfire path.
+			if not self.pakfire.path == "/":
+				os.chroot(self.pakfire.path)
+
+			# Create a clean global environment, where only
+			# builtin functions are available and the os and sys modules.
+			_globals = {
+				"os"  : os,
+				"sys" : sys,
+			}
+
+			# Compile the scriptlet and execute it.
+			try:
+				obj = compile(self.scriptlet, "<string>", "exec")
+				eval(obj, _globals, {})
+
+			except Exception, e:
+				print _("Exception occured: %s") % e
+				os._exit(1)
+
+			# End the child process without cleaning up.
+			os._exit(0)
+
+		else:
+			# parent code
+
+			# Wait until the child process has finished.
+			os.waitpid(pid, 0)
 
 
 class ActionScriptPreIn(ActionScript):

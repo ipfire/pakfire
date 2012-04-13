@@ -51,7 +51,7 @@ LEXER_PACKAGE_LINE    = LEXER_BLOCK_LINE
 LEXER_PACKAGE_END     = LEXER_BLOCK_END
 LEXER_PACKAGE_INHERIT = re.compile(r"^template ([A-Z0-9]+)$")
 
-LEXER_SCRIPTLET_BEGIN = re.compile(r"^script ([a-z]+)\s?(/[A-Za-z0-9\-\_/]+)?$")
+LEXER_SCRIPTLET_BEGIN = re.compile(r"^script ([a-z]+)\s?(shell|python)?$")
 LEXER_SCRIPTLET_LINE  = LEXER_BLOCK_LINE
 LEXER_SCRIPTLET_END   = LEXER_BLOCK_END
 
@@ -626,15 +626,11 @@ class TemplateLexer(DefaultLexer):
 		if self.scriptlets.has_key(name):
 			raise Exception, "Scriptlet %s is already defined" % name
 
-		path = m.group(2)
-		if path:
-			self.scriptlets[name] = {
-				"lang" : "bin",
-				"path" : self.expand_string(path),
-			}
-			return
+		lang = m.group(2) or "shell"
+		lines = [
+			"#<lang: %s>" % lang,
+		]
 
-		lines = []
 		while True:
 			line = self.get_line(self._lineno, raw=True)
 
@@ -658,8 +654,8 @@ class TemplateLexer(DefaultLexer):
 			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
 
 		self.scriptlets[name] = {
-			"lang"      : "shell",
-			"scriptlet" : "\n".join(lines),
+			"lang"      : lang,
+			"scriptlet" : self.expand_string("\n".join(lines)),
 		}
 
 	def get_scriptlet(self, name):

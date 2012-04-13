@@ -455,7 +455,9 @@ class BinaryPackager(Packager):
 			# Write script to a file.
 			scriptlet_file = self.mktemp()
 
-			if scriptlet["lang"] == "bin":
+			lang = scriptlet["lang"]
+
+			if lang == "bin":
 				path = lang["path"]
 				try:
 					f = open(path, "b")
@@ -474,14 +476,13 @@ class BinaryPackager(Packager):
 				f.close()
 				s.close()
 
-			elif scriptlet["lang"] == "shell":
+			elif lang == "shell":
 				s = open(scriptlet_file, "w")
 
 				# Write shell script to file.
 				s.write("#!/bin/sh -e\n\n")
 				s.write(scriptlet["scriptlet"])
 				s.write("\n\nexit 0\n")
-
 				s.close()
 
 				if scriptlet_name in SCRIPTS_PREREQUIRES:
@@ -489,6 +490,12 @@ class BinaryPackager(Packager):
 					prerequires.append("/bin/sh")
 
 					prerequires += self.builder.find_prerequires(scriptlet_file)
+
+			elif lang == "python":
+				# Write the code to the scriptlet file.
+				s = open(scriptlet_file, "w")
+				s.write(scriptlet["scriptlet"])
+				s.close()
 
 			else:
 				raise Exception, "Unknown scriptlet language: %s" % scriptlet["lang"]
