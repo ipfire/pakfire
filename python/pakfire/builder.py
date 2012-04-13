@@ -589,8 +589,9 @@ class BuildEnviron(object):
 		env = {
 			# Add HOME manually, because it is occasionally not set
 			# and some builds get in trouble then.
+			"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
 			"HOME" : "/root",
-			"TERM" : os.environ.get("TERM", "dumb"),
+			"TERM" : os.environ.get("TERM", "vt100"),
 			"PS1"  : "\u:\w\$ ",
 
 			# Sanitize language.
