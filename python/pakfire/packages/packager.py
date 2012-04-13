@@ -296,6 +296,20 @@ class BinaryPackager(Packager):
 		# List of all patterns, which grows.
 		patterns = self.pkg.files
 
+		# ...
+		orphan_directories = []
+		for d in ORPHAN_DIRECTORIES:
+			if d.startswith("usr/"):
+				b = os.path.basename(d)
+				b = os.path.join(self.buildroot, b)
+
+				if os.path.islink(b):
+					continue
+
+			d = os.path.join(self.buildroot, d)
+			if not os.path.islink(d):
+				orphan_directories.append(d)
+
 		for pattern in patterns:
 			# Check if we are running in include or exclude mode.
 			if pattern.startswith("!"):
@@ -334,7 +348,7 @@ class BinaryPackager(Packager):
 
 					for dir, subdirs, _files in os.walk(pattern):
 						for subdir in subdirs:
-							if subdir in ORPHAN_DIRECTORIES:
+							if subdir in orphan_directories:
 								continue
 
 							subdir = os.path.join(dir, subdir)
@@ -347,9 +361,6 @@ class BinaryPackager(Packager):
 				# All other files are just added.
 				else:
 					files.append(pattern)
-
-		# ...
-		orphan_directories = [os.path.join(self.buildroot, d) for d in ORPHAN_DIRECTORIES]
 
 		files = []
 		for file in includes:
