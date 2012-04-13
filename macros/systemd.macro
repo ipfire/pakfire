@@ -1,19 +1,17 @@
 
-
-SYSTEMD_UNIT_DIR = /lib/systemd/system
-
 SYSTEMD_TMPFILES_DIR = /usr/lib/tmpfiles.d
 
-def MACRO_INSTALL_SYSTEMD_FILES
+MACRO_INSTALL_SYSTEMD_FILES
 	for file in %{DIR_SOURCE}/systemd/*; do
 		[ -e "${file}" ] || continue
-		mkdir -p %{BUILDROOT}/%{SYSTEMD_UNIT_DIR}
-		cp -vf ${file} %{BUILDROOT}/%{SYSTEMD_UNIT_DIR}/$(basename ${file})
+
+		mkdir -p %{BUILDROOT}/%{unitdir}
+		cp -vf ${file} %{BUILDROOT}/%{unitdir}/$(basename ${file})
 	done
 	unset file
 end
 
-def MACRO_INSTALL_SYSTEMD_TMPFILES
+MACRO_INSTALL_SYSTEMD_TMPFILES
 	for file in %{DIR_SOURCE}/*.tmpfiles; do
 		[ -e "${file}" ] || continue
 		mkdir -p %{BUILDROOT}/%{SYSTEMD_TMPFILES_DIR}
