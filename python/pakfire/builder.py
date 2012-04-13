@@ -276,14 +276,7 @@ class BuildEnviron(object):
 	def keyring(self):
 		"""
 			Shortcut to access the pakfire keyring.
-
-			(Makes also sure that it is properly initialized.)
 		"""
-		assert self.pakfire
-
-		if not self.pakfire.keyring.initialized:
-			self.pakfire.keyring.init()
-
 		return self.pakfire.keyring
 
 	def lock(self):

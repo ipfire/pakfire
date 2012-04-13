@@ -135,11 +135,6 @@ def cache_create(**pakfire_args):
 
 # Key functions.
 
-def key_init(**pakfire_args):
-	pakfire = Pakfire(**pakfire_args)
-
-	return pakfire.keyring.init()
-
 def key_generate(realname, email, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 

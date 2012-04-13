@@ -285,7 +285,7 @@ class RepositoryRemote(base.RepositoryFactory):
 				download = False
 			else:
 				# The file in cache has a wrong hash. Remove it and repeat download.
-				cache.remove(cache_filename)
+				self.cache.remove(cache_filename)
 
 		# Get a package grabber and add mirror download capabilities to it.
 		grabber = downloader.PackageDownloader(
@@ -305,7 +305,10 @@ class RepositoryRemote(base.RepositoryFactory):
 				raise OfflineModeError, _("Cannot download this file in offline mode: %s") \
 					% filename
 
-			i = grabber.urlopen(filename)
+			try:
+				i = grabber.urlopen(filename)
+			except urlgrabber.grabber.URLGrabError, e:
+				raise DownloadError, _("Could not download %s: %s") % (filename, e)
 
 			# Open input and output files and download the file.
 			o = self.cache.open(cache_filename, "w")
@@ -318,15 +321,27 @@ class RepositoryRemote(base.RepositoryFactory):
 			i.close()
 			o.close()
 
-			if self.cache.verify(cache_filename, hash1):
+			# Calc the hash1 of the downloaded file.
+			calc_hash1 = self.cache.hash1(cache_filename)
+
+			if calc_hash1 == hash1:
 				logger.debug("Successfully downloaded %s (%s)." % (filename, hash1))
 				break
 
+			sums = {
+				"good" : hash1,
+				"bad"  : calc_hash1,
+			}
+
 			logger.warning(_("The checksum of the downloaded file did not match."))
+			logger.warning(_("Expected %(good)s but got %(bad)s.") % sums)
 			logger.warning(_("Trying an other mirror."))
 
+			# Remove the bad file.
+			self.cache.remove(cache_filename)
+
 			# Go to the next mirror.
-			grabber.increment_mirror()
+			grabber.increment_mirror(grabber)
 
 		return os.path.join(self.cache.path, cache_filename)
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-05 18:51+0200\n"
+"POT-Creation-Date: 2012-04-12 01:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,50 +84,50 @@ msgstr ""
 msgid "Downgrading"
 msgstr ""
 
-#: ../python/pakfire/base.py:316
+#: ../python/pakfire/base.py:315
 msgid "Local install repository"
 msgstr ""
 
-#: ../python/pakfire/base.py:373
+#: ../python/pakfire/base.py:372
 #, python-format
 msgid "Could not find any installed package providing \"%s\"."
 msgstr ""
 
-#: ../python/pakfire/base.py:379
+#: ../python/pakfire/base.py:378
 #, python-format
 msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
 msgstr ""
 
-#: ../python/pakfire/base.py:383 ../python/pakfire/base.py:451
-#: ../python/pakfire/base.py:488 ../python/pakfire/base.py:547
-#: ../python/pakfire/base.py:568 ../python/pakfire/transaction.py:354
+#: ../python/pakfire/base.py:382 ../python/pakfire/base.py:450
+#: ../python/pakfire/base.py:487 ../python/pakfire/base.py:546
+#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:354
 msgid "Nothing to do"
 msgstr ""
 
-#: ../python/pakfire/base.py:408
+#: ../python/pakfire/base.py:407
 #, python-format
 msgid "Could not find package %s in a remote repository."
 msgstr ""
 
-#: ../python/pakfire/base.py:480
+#: ../python/pakfire/base.py:479
 #, python-format
 msgid "Excluding %s."
 msgstr ""
 
-#: ../python/pakfire/base.py:532
+#: ../python/pakfire/base.py:531
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr ""
 
-#: ../python/pakfire/base.py:682
+#: ../python/pakfire/base.py:681
 msgid "Build command has failed."
 msgstr ""
 
-#: ../python/pakfire/base.py:717
+#: ../python/pakfire/base.py:716
 msgid "New repository"
 msgstr ""
 
-#: ../python/pakfire/base.py:753
+#: ../python/pakfire/base.py:752
 msgid "Everything is fine."
 msgstr ""
 
@@ -154,101 +154,101 @@ msgid "Package information:"
 msgstr ""
 
 #. Install all packages.
-#: ../python/pakfire/builder.py:410
+#: ../python/pakfire/builder.py:400
 msgid "Install packages needed for build..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:415
+#: ../python/pakfire/builder.py:405
 msgid "Extracting"
 msgstr ""
 
-#: ../python/pakfire/builder.py:715
+#: ../python/pakfire/builder.py:705
 msgid "You cannot run a build when no package was given."
 msgstr ""
 
-#: ../python/pakfire/builder.py:720
+#: ../python/pakfire/builder.py:710
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:745
+#: ../python/pakfire/builder.py:735
 msgid "Build failed."
 msgstr ""
 
-#: ../python/pakfire/builder.py:747
+#: ../python/pakfire/builder.py:737
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
-#: ../python/pakfire/builder.py:761
+#: ../python/pakfire/builder.py:751
 msgid "Running installation test..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:767
+#: ../python/pakfire/builder.py:757
 msgid "Installation test succeeded."
 msgstr ""
 
 #. Create a progressbar.
-#: ../python/pakfire/builder.py:804
+#: ../python/pakfire/builder.py:794
 msgid "Signing packages..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:838
+#: ../python/pakfire/builder.py:828
 msgid "Dumping package information:"
 msgstr ""
 
 #. Walk through the whole tree and collect all files
 #. that are on the same disk (not crossing mountpoints).
-#: ../python/pakfire/builder.py:868
+#: ../python/pakfire/builder.py:858
 msgid "Creating filelist..."
 msgstr ""
 
 #. Create a nice progressbar.
-#: ../python/pakfire/builder.py:887
+#: ../python/pakfire/builder.py:877
 msgid "Compressing files..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:906
+#: ../python/pakfire/builder.py:896
 #, python-format
 msgid "Cache file was successfully created at %s."
 msgstr ""
 
-#: ../python/pakfire/builder.py:907
+#: ../python/pakfire/builder.py:897
 #, python-format
 msgid "  Containing %(files)s files, it has a size of %(size)s."
 msgstr ""
 
 #. Make a nice progress bar as always.
-#: ../python/pakfire/builder.py:918
+#: ../python/pakfire/builder.py:908
 msgid "Extracting files..."
 msgstr ""
 
 #. Update all packages.
-#: ../python/pakfire/builder.py:938
+#: ../python/pakfire/builder.py:928
 msgid "Updating packages from cache..."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:1076
+#: ../python/pakfire/builder.py:1066
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:1090
+#: ../python/pakfire/builder.py:1080
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1108
+#: ../python/pakfire/builder.py:1098
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1114
+#: ../python/pakfire/builder.py:1104
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
-#: ../python/pakfire/builder.py:1134
+#: ../python/pakfire/builder.py:1124
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
@@ -400,7 +400,7 @@ msgstr ""
 msgid "Give name of at least one package to check."
 msgstr ""
 
-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:362
+#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:363
 msgid "Repository"
 msgstr ""
 
@@ -716,7 +716,7 @@ msgid "Job: %(name)s"
 msgstr ""
 
 #: ../python/pakfire/cli.py:1070 ../python/pakfire/packages/base.py:107
-#: ../python/pakfire/transaction.py:361
+#: ../python/pakfire/transaction.py:362
 msgid "Arch"
 msgstr ""
 
@@ -748,102 +748,98 @@ msgstr ""
 msgid "Pakfire key command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1185
-msgid "Initialize the local keyring."
-msgstr ""
-
-#: ../python/pakfire/cli.py:1191 ../python/pakfire/cli.py:1201
+#: ../python/pakfire/cli.py:1183 ../python/pakfire/cli.py:1193
 msgid "Import a key from file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1193
+#: ../python/pakfire/cli.py:1185
 msgid "The real name of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1195
+#: ../python/pakfire/cli.py:1187
 msgid "The email address of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1203
+#: ../python/pakfire/cli.py:1195
 msgid "Filename of that key to import."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1209
+#: ../python/pakfire/cli.py:1201
 msgid "Export a key to a file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1211
+#: ../python/pakfire/cli.py:1203
 msgid "The ID of the key to export."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1213
+#: ../python/pakfire/cli.py:1205
 msgid "Write the key to this file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1219
+#: ../python/pakfire/cli.py:1211
 msgid "Delete a key from the local keyring."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1221
+#: ../python/pakfire/cli.py:1213
 msgid "The ID of the key to delete."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1227
+#: ../python/pakfire/cli.py:1219
 msgid "List all imported keys."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1233
+#: ../python/pakfire/cli.py:1225
 msgid "Sign one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1235
+#: ../python/pakfire/cli.py:1227
 msgid "Key that is used sign the package(s)."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1237
+#: ../python/pakfire/cli.py:1229
 msgid "Package(s) to sign."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1243
+#: ../python/pakfire/cli.py:1235
 msgid "Verify one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1247
+#: ../python/pakfire/cli.py:1239
 msgid "Package(s) to verify."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1258
+#: ../python/pakfire/cli.py:1246
 msgid "Generating the key may take a moment..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1306
+#: ../python/pakfire/cli.py:1294
 #, python-format
 msgid "Signing %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1323
+#: ../python/pakfire/cli.py:1311
 #, python-format
 msgid "Verifying %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1333
+#: ../python/pakfire/cli.py:1321
 msgid "This signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1336
+#: ../python/pakfire/cli.py:1324
 msgid "Unknown key"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1337
+#: ../python/pakfire/cli.py:1325
 msgid "Could not check if this signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1340 ../python/pakfire/keyring.py:114
+#: ../python/pakfire/cli.py:1328 ../python/pakfire/keyring.py:96
 #, python-format
 msgid "Created: %s"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1344 ../python/pakfire/keyring.py:117
+#: ../python/pakfire/cli.py:1332 ../python/pakfire/keyring.py:99
 #, python-format
 msgid "Expires: %s"
 msgstr ""
@@ -924,7 +920,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:432
+#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:433
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -933,63 +929,69 @@ msgstr ""
 msgid "%(commas)s and %(last)s"
 msgstr ""
 
-#: ../python/pakfire/keyring.py:86
-msgid "The local keyring is already initialized. Aborting."
-msgstr ""
-
-#: ../python/pakfire/keyring.py:89
-msgid "Initializing local keyring..."
-msgstr ""
-
-#: ../python/pakfire/keyring.py:102
+#: ../python/pakfire/keyring.py:82
 #, python-format
 msgid "Fingerprint: %s"
 msgstr ""
 
-#: ../python/pakfire/keyring.py:106
+#: ../python/pakfire/keyring.py:84
+msgid "Private key available!"
+msgstr ""
+
+#: ../python/pakfire/keyring.py:88
 #, python-format
 msgid "Subkey: %s"
 msgstr ""
 
-#: ../python/pakfire/keyring.py:108
+#: ../python/pakfire/keyring.py:90
 msgid "This key has expired!"
 msgstr ""
 
-#: ../python/pakfire/keyring.py:111
+#: ../python/pakfire/keyring.py:93
 msgid "This is a secret key."
 msgstr ""
 
-#: ../python/pakfire/keyring.py:119
+#: ../python/pakfire/keyring.py:101
 msgid "This key does not expire."
 msgstr ""
 
-#: ../python/pakfire/keyring.py:172
+#: ../python/pakfire/keyring.py:149
 #, python-format
 msgid "Generating new key for %(realname)s <%(email)s>..."
 msgstr ""
 
-#: ../python/pakfire/keyring.py:173
+#: ../python/pakfire/keyring.py:150
 msgid "This may take a while..."
 msgstr ""
 
-#: ../python/pakfire/keyring.py:192
+#: ../python/pakfire/keyring.py:169
 #, python-format
-msgid "Successfully import key %s."
+msgid "Successfully imported %s."
 msgstr ""
 
-#: ../python/pakfire/keyring.py:212
+#: ../python/pakfire/keyring.py:189
 msgid "Host key:"
 msgstr ""
 
-#: ../python/pakfire/keyring.py:215
-msgid "No host key available."
+#: ../python/pakfire/keyring.py:196
+#, python-format
+msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr ""
+
+#: ../python/pakfire/keyring.py:199
+#, python-format
+msgid "WARNING! Host key with ID %s configured, but not found!"
+msgstr ""
+
+#: ../python/pakfire/keyring.py:201
+msgid "No host key available or configured."
 msgstr ""
 
 #: ../python/pakfire/packages/base.py:99
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:361
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:362
 msgid "Version"
 msgstr ""
 
@@ -997,7 +999,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:362
+#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:363
 msgid "Size"
 msgstr ""
 
@@ -1206,11 +1208,21 @@ msgstr ""
 msgid "Cannot download this file in offline mode: %s"
 msgstr ""
 
-#: ../python/pakfire/repository/remote.py:325
+#: ../python/pakfire/repository/remote.py:311
+#, python-format
+msgid "Could not download %s: %s"
+msgstr ""
+
+#: ../python/pakfire/repository/remote.py:336
 msgid "The checksum of the downloaded file did not match."
 msgstr ""
 
-#: ../python/pakfire/repository/remote.py:326
+#: ../python/pakfire/repository/remote.py:337
+#, python-format
+msgid "Expected %(good)s but got %(bad)s."
+msgstr ""
+
+#: ../python/pakfire/repository/remote.py:338
 msgid "Trying an other mirror."
 msgstr ""
 
@@ -1244,7 +1256,7 @@ msgstr ""
 msgid "    Solutions:"
 msgstr ""
 
-#: ../python/pakfire/server.py:279 ../python/pakfire/system.py:125
+#: ../python/pakfire/server.py:279 ../python/pakfire/system.py:131
 msgid "Could not be determined"
 msgstr ""
 
@@ -1274,84 +1286,84 @@ msgstr ""
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:361
+#: ../python/pakfire/transaction.py:362
 msgid "Package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:366
+#: ../python/pakfire/transaction.py:367
 msgid "Installing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:367
+#: ../python/pakfire/transaction.py:368
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:368
+#: ../python/pakfire/transaction.py:369
 msgid "Updating:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:369
+#: ../python/pakfire/transaction.py:370
 msgid "Downgrading:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:370
+#: ../python/pakfire/transaction.py:371
 msgid "Removing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:376
+#: ../python/pakfire/transaction.py:377
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:383
+#: ../python/pakfire/transaction.py:384
 msgid "package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:389
+#: ../python/pakfire/transaction.py:390
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:393
+#: ../python/pakfire/transaction.py:394
 #, python-format
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:396
+#: ../python/pakfire/transaction.py:397
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:407
+#: ../python/pakfire/transaction.py:408
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:413
+#: ../python/pakfire/transaction.py:414
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:425
+#: ../python/pakfire/transaction.py:426
 msgid "Transaction Test Succeeded"
 msgstr ""
 
 #. Make a nice progressbar.
-#: ../python/pakfire/transaction.py:458
+#: ../python/pakfire/transaction.py:459
 msgid "Verifying signatures..."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:490
+#: ../python/pakfire/transaction.py:491
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:495
+#: ../python/pakfire/transaction.py:496
 msgid "Going on because we are running in permissive mode."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:496
+#: ../python/pakfire/transaction.py:497
 msgid "This is dangerous!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:517
+#: ../python/pakfire/transaction.py:518
 msgid "Running transaction"
 msgstr ""
 

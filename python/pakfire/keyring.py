@@ -43,9 +43,6 @@ class Keyring(object):
 		self.ctx = gpgme.Context()
 		self.ctx.armor = True
 
-		# Cache.
-		self.__key_cache = {}
-
 	def __del__(self):
 		del os.environ["GNUPGHOME"]
 
@@ -54,52 +51,37 @@ class Keyring(object):
 		return KEYRING_DIR
 
 	def create_path(self):
+		if os.path.exists(self.path):
+			os.chmod(self.path, 700)
+		else:
+			os.makedirs(self.path, 700)
+
 		filename = os.path.join(self.path, "gnupg.conf")
 
 		if os.path.exists(filename):
+			os.chmod(filename, 600)
 			return
-
-		if not os.path.exists(self.path):
-			os.makedirs(self.path)
-			# XXX chmod 700
 
 		# Create a default gnupg.conf.
 		f = open(filename, "w")
 		f.write("# This is a default gnupg configuration file created by\n")
 		f.write("# Pakfire %s.\n" % PAKFIRE_VERSION)
 		f.close()
-		# XXX chmod 600
 
-	@property
-	def initialized(self):
-		"""
-			Returns true if the local keyring was already initialized.
-		"""
-		if self.get_host_key():
-			return True
-
-		return False
-
-	def init(self):
-		# If the host key is already present, we break up.
-		if self.initialized:
-			log.error(_("The local keyring is already initialized. Aborting."))
-			return
-
-		log.info(_("Initializing local keyring..."))
-
-		hostname, domainname = system.hostname.split(".", 1)
-		self.gen_key(system.hostname, "%s@%s" % (hostname, domainname))
+		os.chmod(filename, 600)
 
 	def dump_key(self, keyfp):
 		ret = []
 
-		key = self.ctx.get_key(keyfp)
+		key = self.get_key(keyfp, secret=False)
+		key_priv = self.get_key(keyfp, secret=True)
 
 		for uid in key.uids:
 			ret.append(uid.uid)
 
 		ret.append("  " + _("Fingerprint: %s") % keyfp)
+		if key_priv:
+			ret.append("    " + _("Private key available!"))
 		ret.append("")
 
 		for subkey in key.subkeys:
@@ -129,28 +111,23 @@ class Keyring(object):
 		"""
 			Returns all keys that are known to the system.
 		"""
-		return [k.subkeys[0].keyid for k in self.ctx.keylist(None, True)]
+		return [k.subkeys[0].keyid for k in self.ctx.keylist(None, False)]
 
-	def get_key(self, keyid):
+	def get_key(self, keyid, secret=False):
 		try:
-			return self.ctx.get_key(keyid)
+			return self.ctx.get_key(keyid, secret)
 		except gpgme.GpgmeError:
 			return None
 
-	def get_host_key(self):
-		key = None
+	def get_host_key_id(self):
+		return self.pakfire.config.get("signatures", "host_key", None)
 
-		for fpr in self.get_keys():
-			k = self.get_key(fpr)
+	def get_host_key(self, secret=False):
+		key_id = self.get_host_key_id()
 
-			for uid in k.uids:
-				if not uid.name == system.hostname:
-					continue
-
-				key = fpr
-				break
-
-		return key
+		if key_id:
+			key = self.get_key(key_id, secret=secret)
+			return key_id
 
 	def gen_key(self, realname, email):
 		args = {
@@ -189,7 +166,7 @@ class Keyring(object):
 		res = self.ctx.import_(f)
 		f.close()
 
-		log.info(_("Successfully import key %s.") % keyfile)
+		log.info(_("Successfully imported %s.") % keyfile)
 
 	def export_key(self, keyid, keyfile):
 		keydata = io.BytesIO()
@@ -207,12 +184,21 @@ class Keyring(object):
 		ret = []
 
 		# Search for the host key and show it.
-		host_key = self.get_host_key()
+		host_key = self.get_host_key(secret=True)
 		if host_key:
 			ret.append(_("Host key:"))
 			ret += ["  %s" % l for l in self.dump_key(host_key)]
 		else:
-			ret.append(_("No host key available."))
+			host_key_id = self.get_host_key_id()
+			if host_key_id:
+				host_key = self.get_host_key(secret=False)
+				if host_key:
+					ret.append(_("WARNING! Host key with ID %s configured, but the secret key is missing!") \
+						% host_key_id)
+				else:
+					ret.append(_("WARNING! Host key with ID %s configured, but not found!") % host_key_id)
+			else:
+				ret.append(_("No host key available or configured."))
 
 		# List all other keys.
 		for key in self.get_keys():
@@ -225,11 +211,7 @@ class Keyring(object):
 		return ret
 
 	def sign(self, keyid, cleartext):
-		key = self.__key_cache.get(keyid, None)
-		if key is None:
-			key = self.ctx.get_key(keyid)
-			self.__key_cache[keyid] = key
-
+		key = self.ctx.get_key(keyid, True)
 		self.ctx.signers = [key,]
 
 		cleartext = io.BytesIO(cleartext)
