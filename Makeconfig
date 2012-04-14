@@ -1,6 +1,6 @@
 
 PACKAGE_NAME    = pakfire
-PACKAGE_VERSION = 0.9.21
+PACKAGE_VERSION = 0.9.22
 PACKAGE_AUTHOR  = IPFire.org Team
 PACKAGE_AUTHOR_EMAIL = info@ipfire.org
 PACKAGE_URL     = http://redmine.ipfire.org/projects/buildsystem3
