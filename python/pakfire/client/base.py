@@ -64,6 +64,11 @@ class PakfireClient(object):
 		"""
 		return self.conn.noop()
 
+	def test_code(self, error_code):
+		assert error_code >= 100 and error_code <= 999
+
+		return self.conn.test_code(error_code)
+
 	def get_my_address(self):
 		"""
 			Get my own address (as seen by the hub).

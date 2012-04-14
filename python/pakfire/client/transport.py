@@ -45,32 +45,51 @@ class XMLRPCMixin:
 			try:
 				ret = xmlrpclib.Transport.single_request(self, *args, **kwargs)
 
-			except (socket.error, ssl.SSLError, httplib.BadStatusLine, \
-				xmlrpclib.Fault, xmlrpclib.ProtocolError, xmlrpclib.ResponseError), error_code:
+			# Catch errors related to the connection. Just try again.
+			except (socket.error, ssl.SSLError):
 				pass
 
-			#except socket.error, e:
-			#	# These kinds of errors are not fatal, but they can happen on
-			#	# a bad internet connection or whatever.
-			#	#   32 Broken pipe
-			#	#  110 Connection timeout
-			#	#  111 Connection refused
-			#	if not e.errno in (32, 110, 111,):
-			#		raise
-			#
-			#	log.warning(_("Socket error: %s") % e)
-			#
-			#except xmlrpclib.ProtocolError, e:
-			#	# Log all XMLRPC protocol errors.
-			#	log.error("XMLRPC protocol error:")
-			#	log.error("  URL: %s" % e.url)
-			#	log.error("  HTTP headers:")
-			#	for header in e.headers.items():
-			#		log.error("    %s: %s" % header)
-			#	log.error("  Error code: %s" % e.errcode)
-			#	log.error("  Error message: %s" % e.errmsg)
-			#	raise
-			#
+			# Presumably, the server closed the connection before sending anything.
+			except httplib.BadStatusLine:
+				pass
+
+			# The XML reponse could not be parsed.
+			except xmlrpclib.ResponseError:
+				pass
+
+			except xmlrpclib.ProtocolError, e:
+				if e.errcode == 403:
+					# Possibly, the user credentials are invalid.
+					# Cannot go on.
+					raise XMLRPCForbiddenError(e)
+
+				elif e.errcode == 404:
+					# Some invalid URL was called.
+					# Cannot go on.
+					raise XMLRPCNotFoundError(e)
+
+				elif e.errcode == 503:
+					# Possibly the hub is not running but the SSL proxy
+					# is. Just try again in a short time.
+					pass
+
+				else:
+					# Log all XMLRPC protocol errors.
+					log.error(_("XMLRPC protocol error:"))
+					log.error("  %s" % _("URL: %s") % e.url)
+					log.error("  %s" % _("  HTTP headers:"))
+					for header in e.headers.items():
+						log.error("    %s: %s" % header)
+					log.error("  %s" % _("Error code: %s") % e.errcode)
+					log.error("  %s" % _("Error message: %s") % e.errmsg)
+
+					# If an unhandled error code appeared, we raise an
+					# error.
+					raise
+
+			except xmlrpclib.Fault:
+				raise
+
 			else:
 				# If request was successful, we can break the loop.
 				break
@@ -87,11 +106,10 @@ class XMLRPCMixin:
 			time.sleep(timeout)
 
 		else:
-			log.error("Maximum number of tries was reached. Giving up.")
-			# XXX need better exception here.
-			raise Exception, "Could not fulfill request."
+			raise XMLRPCTransportError, _("Maximum number of tries was reached. Giving up.")
 
 		return ret
+
 
 
 class XMLRPCTransport(XMLRPCMixin, xmlrpclib.Transport):

@@ -92,3 +92,19 @@ class SignatureError(Error):
 
 class TransactionCheckError(Error):
 	message = _("Transaction test was not successful")
+
+
+class XMLRPCError(Error):
+	message = _("Generic XMLRPC error.")
+
+
+class XMLRPCForbiddenError(XMLRPCError):
+	message = _("You are forbidden to perform this action. Maybe you need to check your credentials.")
+
+
+class XMLRPCNotFoundError(XMLRPCError):
+	message = _("Could not find the requested URL.")
+
+
+class XMLRPCTransportError(XMLRPCError):
+	message = _("An unforseable problem on the XML-RPC transport connection occured.")

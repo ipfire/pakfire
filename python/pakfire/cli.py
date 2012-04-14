@@ -809,6 +809,7 @@ class CliClient(Cli):
 		self.parse_command_info()
 		self.parse_command_jobs()
 		self.parse_command_builds()
+		self.parse_command_test()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -821,6 +822,7 @@ class CliClient(Cli):
 			"jobs_active" : self.handle_jobs_active,
 			"jobs_latest" : self.handle_jobs_latest,
 			"builds_show" : self.handle_builds_show,
+			"test"        : self.handle_test,
 		}
 
 		# Read configuration for the pakfire client.
@@ -895,6 +897,12 @@ class CliClient(Cli):
 			help=_("Show details about the given build."))
 		sub_show.add_argument("build_id", nargs=1, help=_("The ID of the build."))
 		sub_show.add_argument("action", action="store_const", const="builds_show")
+
+	def parse_command_test(self):
+		sub_test = self.sub_commands.add_parser("test",
+			help=_("Test the connection to the hub."))
+		sub_test.add_argument("error_code", nargs=1, help=_("Error code to test."))
+		sub_test.add_argument("action", action="store_const", const="test")
 
 	def handle_build(self):
 		(package,) = self.args.package
@@ -1098,6 +1106,20 @@ class CliClient(Cli):
 		for line in lines:
 			print " ", line
 		print # New line.
+
+	def handle_test(self):
+		error_code = self.args.error_code[0]
+
+		try:
+			error_code = int(error_code)
+		except ValueError:
+			error_code = 0
+
+		if error_code < 100 or error_code > 999:
+			raise Error, _("Invalid error code given.")
+
+		res = self.client.test_code(error_code)
+		print _("Reponse from the server: %s") % res
 
 
 class CliDaemon(Cli):

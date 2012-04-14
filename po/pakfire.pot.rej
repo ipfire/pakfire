@@ -1,0 +1,228 @@
+--- po/pakfire.pot
++++ po/pakfire.pot
+@@ -8,7 +8,7 @@
+ msgstr ""
+ "Project-Id-Version: PACKAGE VERSION\n"
+ "Report-Msgid-Bugs-To: \n"
+-"POT-Creation-Date: 2012-04-05 18:51+0200\n"
++"POT-Creation-Date: 2012-04-06 23:28+0200\n"
+ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+ "Language-Team: LANGUAGE <LL@li.org>\n"
+@@ -84,50 +84,50 @@
+ msgid "Downgrading"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:316
++#: ../python/pakfire/base.py:315
+ msgid "Local install repository"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:373
++#: ../python/pakfire/base.py:372
+ #, python-format
+ msgid "Could not find any installed package providing \"%s\"."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:379
++#: ../python/pakfire/base.py:378
+ #, python-format
+ msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:383 ../python/pakfire/base.py:451
+-#: ../python/pakfire/base.py:488 ../python/pakfire/base.py:547
+-#: ../python/pakfire/base.py:568 ../python/pakfire/transaction.py:354
++#: ../python/pakfire/base.py:382 ../python/pakfire/base.py:450
++#: ../python/pakfire/base.py:487 ../python/pakfire/base.py:546
++#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:354
+ msgid "Nothing to do"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:408
++#: ../python/pakfire/base.py:407
+ #, python-format
+ msgid "Could not find package %s in a remote repository."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:480
++#: ../python/pakfire/base.py:479
+ #, python-format
+ msgid "Excluding %s."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:532
++#: ../python/pakfire/base.py:531
+ #, python-format
+ msgid "\"%s\" package does not seem to be installed."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:682
++#: ../python/pakfire/base.py:681
+ msgid "Build command has failed."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:717
++#: ../python/pakfire/base.py:716
+ msgid "New repository"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:753
++#: ../python/pakfire/base.py:752
+ msgid "Everything is fine."
+ msgstr ""
+ 
+@@ -400,7 +400,7 @@
+ msgid "Give name of at least one package to check."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:362
++#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:363
+ msgid "Repository"
+ msgstr ""
+ 
+@@ -716,7 +716,7 @@
+ msgstr ""
+ 
+ #: ../python/pakfire/cli.py:1070 ../python/pakfire/packages/base.py:107
+-#: ../python/pakfire/transaction.py:361
++#: ../python/pakfire/transaction.py:362
+ msgid "Arch"
+ msgstr ""
+ 
+@@ -924,11 +924,11 @@
+ msgid "Running pakfire-build in a pakfire container?"
+ msgstr ""
+ 
+-#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:432
++#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:433
+ msgid "Transaction test was not successful"
+ msgstr ""
+ 
+-#: ../python/pakfire/i18n.py:54
++#: ../python/pakfire/i18n.py:56
+ #, python-format
+ msgid "%(commas)s and %(last)s"
+ msgstr ""
+@@ -989,7 +989,7 @@
+ msgid "Name"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:361
++#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:362
+ msgid "Version"
+ msgstr ""
+ 
+@@ -997,7 +997,7 @@
+ msgid "Release"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:362
++#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:363
+ msgid "Size"
+ msgstr ""
+ 
+@@ -1274,84 +1274,84 @@
+ msgid "Downloading packages:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:361
++#: ../python/pakfire/transaction.py:362
+ msgid "Package"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:366
++#: ../python/pakfire/transaction.py:367
+ msgid "Installing:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:367
++#: ../python/pakfire/transaction.py:368
+ msgid "Reinstalling:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:368
++#: ../python/pakfire/transaction.py:369
+ msgid "Updating:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:369
++#: ../python/pakfire/transaction.py:370
+ msgid "Downgrading:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:370
++#: ../python/pakfire/transaction.py:371
+ msgid "Removing:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:376
++#: ../python/pakfire/transaction.py:377
+ msgid "Transaction Summary"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:383
++#: ../python/pakfire/transaction.py:384
+ msgid "package"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:389
++#: ../python/pakfire/transaction.py:390
+ #, python-format
+ msgid "Total download size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:393
++#: ../python/pakfire/transaction.py:394
+ #, python-format
+ msgid "Installed size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:396
++#: ../python/pakfire/transaction.py:397
+ #, python-format
+ msgid "Freed size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:407
++#: ../python/pakfire/transaction.py:408
+ msgid "Is this okay?"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:413
++#: ../python/pakfire/transaction.py:414
+ msgid "Running Transaction Test"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:425
++#: ../python/pakfire/transaction.py:426
+ msgid "Transaction Test Succeeded"
+ msgstr ""
+ 
+ #. Make a nice progressbar.
+-#: ../python/pakfire/transaction.py:458
++#: ../python/pakfire/transaction.py:459
+ msgid "Verifying signatures..."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:490
++#: ../python/pakfire/transaction.py:491
+ #, python-format
+ msgid "Found %s signature error(s)!"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:495
++#: ../python/pakfire/transaction.py:496
+ msgid "Going on because we are running in permissive mode."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:496
++#: ../python/pakfire/transaction.py:497
+ msgid "This is dangerous!"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:517
++#: ../python/pakfire/transaction.py:518
+ msgid "Running transaction"
+ msgstr ""
+ 
