@@ -220,7 +220,7 @@ class _Config(object):
 
 
 class Config(_Config):
-	files = ["general.conf"]
+	files = ["general.conf", "distro.conf"]
 
 
 class ConfigBuilder(_Config):
