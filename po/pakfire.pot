@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-12 01:15+0200\n"
+"POT-Creation-Date: 2012-04-14 12:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,70 +17,86 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../python/pakfire/actions.py:71
+#: ../python/pakfire/actions.py:72
 #, python-format
 msgid "%s has got no signatures"
 msgstr ""
 
-#: ../python/pakfire/actions.py:77
+#: ../python/pakfire/actions.py:78
 #, python-format
 msgid "%s has got no valid signatures"
 msgstr ""
 
-#: ../python/pakfire/actions.py:168
+#: ../python/pakfire/actions.py:193
+msgid "Could not handle scriptlet of unknown type. Skipping."
+msgstr ""
+
+#. This functions creates a fork with then chroots into the
+#. pakfire root if necessary and then compiles the given scriptlet
+#. code and runs it.
+#: ../python/pakfire/actions.py:196 ../python/pakfire/actions.py:266
+msgid "Executing python scriptlet..."
+msgstr ""
+
+#: ../python/pakfire/actions.py:202
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:172
+#: ../python/pakfire/actions.py:206
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:211
+#: ../python/pakfire/actions.py:245
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:214
+#: ../python/pakfire/actions.py:248
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr ""
 
-#: ../python/pakfire/actions.py:218
+#: ../python/pakfire/actions.py:252
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:272 ../python/pakfire/actions.py:310
-#: ../python/pakfire/actions.py:333 ../python/pakfire/actions.py:356
-#: ../python/pakfire/actions.py:373 ../python/pakfire/actions.py:392
+#: ../python/pakfire/actions.py:291
+#, python-format
+msgid "Exception occured: %s"
+msgstr ""
+
+#: ../python/pakfire/actions.py:364 ../python/pakfire/actions.py:402
+#: ../python/pakfire/actions.py:425 ../python/pakfire/actions.py:448
+#: ../python/pakfire/actions.py:465 ../python/pakfire/actions.py:484
 #, python-format
 msgid "Running transaction test for %s"
 msgstr ""
 
-#: ../python/pakfire/actions.py:281 ../python/pakfire/actions.py:385
+#: ../python/pakfire/actions.py:373 ../python/pakfire/actions.py:477
 msgid "Installing"
 msgstr ""
 
-#: ../python/pakfire/actions.py:319
+#: ../python/pakfire/actions.py:411
 msgid "Updating"
 msgstr ""
 
-#: ../python/pakfire/actions.py:339
+#: ../python/pakfire/actions.py:431
 msgid "Removing"
 msgstr ""
 
 #. Cleaning up leftover files and stuff.
-#: ../python/pakfire/actions.py:363
+#: ../python/pakfire/actions.py:455
 msgid "Cleanup"
 msgstr ""
 
-#: ../python/pakfire/actions.py:401
+#: ../python/pakfire/actions.py:493
 msgid "Downgrading"
 msgstr ""
 
@@ -100,7 +116,7 @@ msgstr ""
 
 #: ../python/pakfire/base.py:382 ../python/pakfire/base.py:450
 #: ../python/pakfire/base.py:487 ../python/pakfire/base.py:546
-#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:354
+#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:389
 msgid "Nothing to do"
 msgstr ""
 
@@ -154,101 +170,101 @@ msgid "Package information:"
 msgstr ""
 
 #. Install all packages.
-#: ../python/pakfire/builder.py:400
+#: ../python/pakfire/builder.py:408
 msgid "Install packages needed for build..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:405
+#: ../python/pakfire/builder.py:413
 msgid "Extracting"
 msgstr ""
 
-#: ../python/pakfire/builder.py:705
+#: ../python/pakfire/builder.py:714
 msgid "You cannot run a build when no package was given."
 msgstr ""
 
-#: ../python/pakfire/builder.py:710
+#: ../python/pakfire/builder.py:719
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:735
+#: ../python/pakfire/builder.py:744
 msgid "Build failed."
 msgstr ""
 
-#: ../python/pakfire/builder.py:737
+#: ../python/pakfire/builder.py:746
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
-#: ../python/pakfire/builder.py:751
+#: ../python/pakfire/builder.py:760
 msgid "Running installation test..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:757
+#: ../python/pakfire/builder.py:766
 msgid "Installation test succeeded."
 msgstr ""
 
 #. Create a progressbar.
-#: ../python/pakfire/builder.py:794
+#: ../python/pakfire/builder.py:803
 msgid "Signing packages..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:828
+#: ../python/pakfire/builder.py:837
 msgid "Dumping package information:"
 msgstr ""
 
 #. Walk through the whole tree and collect all files
 #. that are on the same disk (not crossing mountpoints).
-#: ../python/pakfire/builder.py:858
+#: ../python/pakfire/builder.py:867
 msgid "Creating filelist..."
 msgstr ""
 
 #. Create a nice progressbar.
-#: ../python/pakfire/builder.py:877
+#: ../python/pakfire/builder.py:886
 msgid "Compressing files..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:896
+#: ../python/pakfire/builder.py:905
 #, python-format
 msgid "Cache file was successfully created at %s."
 msgstr ""
 
-#: ../python/pakfire/builder.py:897
+#: ../python/pakfire/builder.py:906
 #, python-format
 msgid "  Containing %(files)s files, it has a size of %(size)s."
 msgstr ""
 
 #. Make a nice progress bar as always.
-#: ../python/pakfire/builder.py:908
+#: ../python/pakfire/builder.py:917
 msgid "Extracting files..."
 msgstr ""
 
 #. Update all packages.
-#: ../python/pakfire/builder.py:928
+#: ../python/pakfire/builder.py:937
 msgid "Updating packages from cache..."
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:1066
+#: ../python/pakfire/builder.py:1075
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:1080
+#: ../python/pakfire/builder.py:1089
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1098
+#: ../python/pakfire/builder.py:1107
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1104
+#: ../python/pakfire/builder.py:1113
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
-#: ../python/pakfire/builder.py:1124
+#: ../python/pakfire/builder.py:1133
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
@@ -400,7 +416,7 @@ msgstr ""
 msgid "Give name of at least one package to check."
 msgstr ""
 
-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:363
+#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:398
 msgid "Repository"
 msgstr ""
 
@@ -716,7 +732,7 @@ msgid "Job: %(name)s"
 msgstr ""
 
 #: ../python/pakfire/cli.py:1070 ../python/pakfire/packages/base.py:107
-#: ../python/pakfire/transaction.py:362
+#: ../python/pakfire/transaction.py:397
 msgid "Arch"
 msgstr ""
 
@@ -920,7 +936,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:433
+#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:468
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -991,7 +1007,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:362
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:397
 msgid "Version"
 msgstr ""
 
@@ -999,7 +1015,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:363
+#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:398
 msgid "Size"
 msgstr ""
 
@@ -1109,7 +1125,7 @@ msgstr ""
 msgid "Could not remove file: /%s"
 msgstr ""
 
-#: ../python/pakfire/packages/lexer.py:722
+#: ../python/pakfire/packages/lexer.py:718
 #, python-format
 msgid "Template does not exist: %s"
 msgstr ""
@@ -1139,12 +1155,12 @@ msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr ""
 
 #. Load progressbar.
-#: ../python/pakfire/packages/packager.py:380
-#: ../python/pakfire/packages/packager.py:668
+#: ../python/pakfire/packages/packager.py:391
+#: ../python/pakfire/packages/packager.py:686
 msgid "Packaging"
 msgstr ""
 
-#: ../python/pakfire/packages/packager.py:696
+#: ../python/pakfire/packages/packager.py:714
 #, python-format
 msgid "Building source package %s:"
 msgstr ""
@@ -1277,93 +1293,93 @@ msgid ""
 "perform transaction."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:295
+#: ../python/pakfire/transaction.py:330
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:298
+#: ../python/pakfire/transaction.py:333
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:362
+#: ../python/pakfire/transaction.py:397
 msgid "Package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:367
+#: ../python/pakfire/transaction.py:402
 msgid "Installing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:368
+#: ../python/pakfire/transaction.py:403
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:369
+#: ../python/pakfire/transaction.py:404
 msgid "Updating:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:370
+#: ../python/pakfire/transaction.py:405
 msgid "Downgrading:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:371
+#: ../python/pakfire/transaction.py:406
 msgid "Removing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:377
+#: ../python/pakfire/transaction.py:412
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:384
+#: ../python/pakfire/transaction.py:419
 msgid "package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:390
+#: ../python/pakfire/transaction.py:425
 #, python-format
 msgid "Total download size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:394
+#: ../python/pakfire/transaction.py:429
 #, python-format
 msgid "Installed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:397
+#: ../python/pakfire/transaction.py:432
 #, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:408
+#: ../python/pakfire/transaction.py:443
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:414
+#: ../python/pakfire/transaction.py:449
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:426
+#: ../python/pakfire/transaction.py:461
 msgid "Transaction Test Succeeded"
 msgstr ""
 
 #. Make a nice progressbar.
-#: ../python/pakfire/transaction.py:459
+#: ../python/pakfire/transaction.py:494
 msgid "Verifying signatures..."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:491
+#: ../python/pakfire/transaction.py:526
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:496
+#: ../python/pakfire/transaction.py:531
 msgid "Going on because we are running in permissive mode."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:497
+#: ../python/pakfire/transaction.py:532
 msgid "This is dangerous!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:518
+#: ../python/pakfire/transaction.py:553
 msgid "Running transaction"
 msgstr ""
 
