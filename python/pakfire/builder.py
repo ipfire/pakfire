@@ -203,9 +203,14 @@ class BuildEnviron(object):
 			"enable_loop_devices" : True,
 			"enable_ccache"   : True,
 			"enable_icecream" : False,
-			"sign_packages"   : True,
+			"sign_packages"   : False,
 		}
 		#self.settings.update(settings)
+
+		# Try to get the configured host key. If it is available,
+		# we will automatically sign all packages with it.
+		if self.keyring.get_host_key(secret=True):
+			self.settings["sign_packages"] = True
 
 		# Lock the buildroot
 		self._lock = None
@@ -739,7 +744,7 @@ class BuildEnviron(object):
 
 		# Sign all built packages with the host key (if available).
 		if self.settings.get("sign_packages"):
-			host_key = self.keyring.get_host_key()
+			host_key = self.keyring.get_host_key_id()
 			assert host_key
 
 			# Do the signing...

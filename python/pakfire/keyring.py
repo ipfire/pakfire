@@ -212,6 +212,8 @@ class Keyring(object):
 
 	def sign(self, keyid, cleartext):
 		key = self.ctx.get_key(keyid, True)
+		assert key, "Key was not found or no secret key installed."
+
 		self.ctx.signers = [key,]
 
 		cleartext = io.BytesIO(cleartext)
