@@ -213,6 +213,8 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 	def send_update(self):
 		log.info("Sending host information update to hub...")
 
+		config = pakfire.config.ConfigDaemon()
+
 		self.conn.send_update(
 			# Supported architectures.
 			system.supported_arches,
@@ -226,4 +228,7 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 
 			# Send the currently running version of Pakfire.
 			PAKFIRE_VERSION,
+
+			# Send the host key.
+			config.get("signatures", "host_key", None),
 		)

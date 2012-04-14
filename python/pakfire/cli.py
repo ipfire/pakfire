@@ -1141,12 +1141,7 @@ class CliDaemon(Cli):
 		conf = config.ConfigDaemon()
 
 		# Create daemon instance.
-		d = pakfire.client.PakfireDaemon(
-			server   = conf.get("daemon", "server"),
-			hostname = conf.get("daemon", "hostname"),
-			secret   = conf.get("daemon", "secret"),
-		)
-
+		d = pakfire.client.PakfireDaemon()
 		try:
 			d.run()
 

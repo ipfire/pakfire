@@ -31,6 +31,9 @@ log = logging.getLogger("pakfire.client")
 from pakfire.constants import *
 from pakfire.i18n import _
 
+# Set the default socket timeout to 30 seconds.
+socket.setdefaulttimeout(30)
+
 class XMLRPCMixin:
 	user_agent = "pakfire/%s" % PAKFIRE_VERSION
 
@@ -46,16 +49,17 @@ class XMLRPCMixin:
 				ret = xmlrpclib.Transport.single_request(self, *args, **kwargs)
 
 			# Catch errors related to the connection. Just try again.
-			except (socket.error, ssl.SSLError):
-				pass
+			except (socket.error, ssl.SSLError), e:
+				log.warning("Exception: %s: %s" % (e.__class__.__name__, e))
 
 			# Presumably, the server closed the connection before sending anything.
 			except httplib.BadStatusLine:
-				pass
+				# Try again immediately.
+				continue
 
 			# The XML reponse could not be parsed.
-			except xmlrpclib.ResponseError:
-				pass
+			except xmlrpclib.ResponseError, e:
+				log.warning("Exception: %s: %s" % (e.__class__.__name__, e))
 
 			except xmlrpclib.ProtocolError, e:
 				if e.errcode == 403:

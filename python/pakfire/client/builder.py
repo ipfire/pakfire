@@ -48,7 +48,13 @@ class PakfireDaemon(object):
 			The PakfireDaemon class that creates a a new process per build
 			job and also handles the keepalive/abort stuff.
 		"""
-		def __init__(self, server, hostname, secret):
+		def __init__(self):
+			self.config = pakfire.config.ConfigDaemon()
+
+			server   = self.config.get("daemon", "server")
+			hostname = self.config.get("daemon", "hostname")
+			secret   = self.config.get("daemon", "secret")
+
 			self.client = base.PakfireBuilderClient(server, hostname, secret)
 			self.conn   = self.client.conn
 
@@ -207,12 +213,12 @@ class PakfireDaemon(object):
 			if time.time() - self._last_keepalive < 30:
 				return
 
-			free_space = self.free_space / 1024**2
+			kwargs = {
+				"overload"   : self.has_overload(),
+				"free_space" : self.free_space / 1024**2,
+			}
 
-			self.client.send_keepalive(
-				overload=self.has_overload(),
-				free_space=free_space,
-			)
+			self.client.send_keepalive(**kwargs)
 			self._last_keepalive = time.time()
 
 		def remove_finished_builders(self):
@@ -405,7 +411,7 @@ class ClientBuilder(object):
 						raise DownloadError, "Hash check did not succeed."
 
 				# Build configuration.
-				config = pakfire.config.Config(files=["general.conf"])
+				config = pakfire.config.ConfigDaemon()
 
 				# Parse the configuration received from the build service.
 				config.parse(self.build_config)
