@@ -334,6 +334,7 @@ class ClientBuilder(object):
 		pkgs = []
 
 		for pkg in installed_packages:
+			assert pkg.uuid, "%s has got no UUID"
 			pkgs.append((pkg.friendly_name, pkg.uuid))
 
 		return self.conn.build_upload_buildroot(self.build_id, pkgs)

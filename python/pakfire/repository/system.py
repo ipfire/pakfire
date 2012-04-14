@@ -52,6 +52,9 @@ class RepositorySystem(base.RepositoryFactory):
 		# Commit the database to disk.
 		self.db.commit()
 
+		# Make sure that all data in the index is accessable.
+		self.index.optimize()
+
 	def add_package(self, pkg):
 		# Add package to the database.
 		self.db.add_package(pkg)
