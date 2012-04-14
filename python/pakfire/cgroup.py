@@ -9,7 +9,6 @@ import logging
 log = logging.getLogger("pakfire.cgroups")
 
 CGROUP_PATH_CANDIDATES = (
-	"/sys/fs/cgroup/systemd/system",
 	"/sys/fs/cgroup",
 )
 
