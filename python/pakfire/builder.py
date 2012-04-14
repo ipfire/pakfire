@@ -219,6 +219,9 @@ class BuildEnviron(object):
 		# Save the build time.
 		self.build_time = int(time.time())
 
+	def setup_signal_handlers(self):
+		pass
+
 	def start(self):
 		# Mount the directories.
 		self._mountall()

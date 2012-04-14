@@ -193,7 +193,7 @@ class PakfireUserClient(BuildMixin, PakfireClient):
 class PakfireBuilderClient(BuildMixin, PakfireClient):
 	type = "builder"
 
-	def send_keepalive(self, overload=None, free_space=None):
+	def send_keepalive(self, force=False, overload=None, free_space=None):
 		"""
 			Sends a little keepalive to the server and
 			updates the hardware information if the server
@@ -206,7 +206,7 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 
 		needs_update = self.conn.send_keepalive(loadavg, overload, free_space)
 
-		if needs_update:
+		if force or needs_update:
 			log.debug("The hub is requesting an update.")
 			self.send_update()
 

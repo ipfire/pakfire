@@ -71,7 +71,7 @@ class PakfireDaemon(object):
 			self._last_keepalive = 0
 
 			# Send an initial keepalive message.
-			self.send_keepalive()
+			self.send_keepalive(force=True)
 
 		def run(self, heartbeat=1, max_processes=None):
 			# By default do not start more than two processes per CPU core.
@@ -205,7 +205,7 @@ class PakfireDaemon(object):
 			# a new job.
 			return load5 >= system.cpu_count * 2
 
-		def send_keepalive(self):
+		def send_keepalive(self, force=False):
 			"""
 				When triggered, this method sends a keepalive to the hub.
 			"""
@@ -214,6 +214,7 @@ class PakfireDaemon(object):
 				return
 
 			kwargs = {
+				"force"      : force,
 				"overload"   : self.has_overload(),
 				"free_space" : self.free_space / 1024**2,
 			}
