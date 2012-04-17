@@ -69,7 +69,6 @@ for file in ${binary_files}; do
 		/Version definitions:/ { START=1; }
 		/^[0-9]/ && (START==1) { print $4; }
 		/^$/ { START=0; }' | \
-                grep -v ${soname} | \
                 while read symbol ; do
                     echo "${soname}(${symbol})$(${is_64} && echo ${mark64} | sed 's/()//')"
                 done
