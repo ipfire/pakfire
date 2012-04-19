@@ -301,7 +301,7 @@ class Transaction(object):
 
 	@property
 	def downloads(self):
-		return sorted([a for a in self.actions if a.needs_download])
+		return sorted([a.pkg_solv for a in self.actions if a.needs_download])
 
 	def download(self, logger=None):
 		if logger is None:
@@ -309,16 +309,13 @@ class Transaction(object):
 
 		# Get all download actions as a list.
 		downloads = [d for d in self.downloads]
-		downloads.sort()
 
 		# If there are no downloads, we can just stop here.
 		if not downloads:
 			return
 
 		# Calculate downloadsize.
-		download_size = 0
-		for action in downloads:
-			download_size += action.pkg.size
+		download_size = sum([d.size for d in downloads])
 
 		# Get free space of the download location.
 		path = os.path.realpath(REPO_CACHE_DIR)
@@ -334,9 +331,19 @@ class Transaction(object):
 		time_start = time.time()
 
 		i = 0
-		for action in downloads:
+		for pkg in downloads:
 			i += 1
-			action.download(text="(%d/%d): " % (i, len(downloads)), logger=logger)
+
+			# Download the package file.
+			bin_pkg = pkg.download(text="(%d/%d): " % (i, len(downloads)), logger=logger)
+
+			# Search in every action if we need to replace the package.
+			for action in self.actions:
+				if not action.pkg_solv.uuid == bin_pkg.uuid:
+					continue
+
+				# Replace the package.
+				action.pkg = bin_pkg
 
 		# Write an empty line to the console when there have been any downloads.
 		width, height = util.terminal_size()
@@ -420,7 +427,7 @@ class Transaction(object):
 
 		# Calculate the size of all files that need to be downloaded this this
 		# transaction.
-		download_size = sum([a.pkg.size for a in self.downloads])
+		download_size = sum([d.size for d in self.downloads])
 		if download_size:
 			s.append(_("Total download size: %s") % util.format_size(download_size))
 
