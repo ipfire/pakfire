@@ -102,6 +102,10 @@ class XMLRPCForbiddenError(XMLRPCError):
 	message = _("You are forbidden to perform this action. Maybe you need to check your credentials.")
 
 
+class XMLRPCInternalServerError(XMLRPCError):
+	message = _("A request could not be fulfilled by the server.")
+
+
 class XMLRPCNotFoundError(XMLRPCError):
 	message = _("Could not find the requested URL.")
 

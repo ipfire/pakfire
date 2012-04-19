@@ -72,6 +72,14 @@ class XMLRPCMixin:
 					# Cannot go on.
 					raise XMLRPCNotFoundError(e)
 
+				elif e.errcode == 500:
+					# This could have various reasons, so we can not
+					# be sure to kill connections here.
+					# But to visualize the issue, we will raise an
+					# exception on the last try.
+					if tries == 1:
+						raise XMLRPCInternalServerError(e)
+
 				elif e.errcode == 503:
 					# Possibly the hub is not running but the SSL proxy
 					# is. Just try again in a short time.

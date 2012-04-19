@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-14 14:32+0200\n"
+"POT-Creation-Date: 2012-04-19 16:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: ../python/pakfire/base.py:382 ../python/pakfire/base.py:450
 #: ../python/pakfire/base.py:487 ../python/pakfire/base.py:546
-#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:389
+#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:396
 msgid "Nothing to do"
 msgstr ""
 
@@ -416,7 +416,7 @@ msgstr ""
 msgid "Give name of at least one package to check."
 msgstr ""
 
-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:398
+#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:405
 msgid "Repository"
 msgstr ""
 
@@ -740,7 +740,7 @@ msgid "Job: %(name)s"
 msgstr ""
 
 #: ../python/pakfire/cli.py:1078 ../python/pakfire/packages/base.py:107
-#: ../python/pakfire/transaction.py:397
+#: ../python/pakfire/transaction.py:404
 msgid "Arch"
 msgstr ""
 
@@ -777,140 +777,151 @@ msgstr ""
 msgid "Pakfire daemon command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1161
+#: ../python/pakfire/cli.py:1156
 msgid "Pakfire key command line interface."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1205 ../python/pakfire/cli.py:1215
+#: ../python/pakfire/cli.py:1200 ../python/pakfire/cli.py:1210
 msgid "Import a key from file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1207
+#: ../python/pakfire/cli.py:1202
 msgid "The real name of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1209
+#: ../python/pakfire/cli.py:1204
 msgid "The email address of the owner of this key."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1217
+#: ../python/pakfire/cli.py:1212
 msgid "Filename of that key to import."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1223
+#: ../python/pakfire/cli.py:1218
 msgid "Export a key to a file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1225
+#: ../python/pakfire/cli.py:1220
 msgid "The ID of the key to export."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1227
+#: ../python/pakfire/cli.py:1222
 msgid "Write the key to this file."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1233
+#: ../python/pakfire/cli.py:1228
 msgid "Delete a key from the local keyring."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1235
+#: ../python/pakfire/cli.py:1230
 msgid "The ID of the key to delete."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1241
+#: ../python/pakfire/cli.py:1236
 msgid "List all imported keys."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1247
+#: ../python/pakfire/cli.py:1242
 msgid "Sign one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1249
+#: ../python/pakfire/cli.py:1244
 msgid "Key that is used sign the package(s)."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1251
+#: ../python/pakfire/cli.py:1246
 msgid "Package(s) to sign."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1257
+#: ../python/pakfire/cli.py:1252
 msgid "Verify one or more packages."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1261
+#: ../python/pakfire/cli.py:1256
 msgid "Package(s) to verify."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1268
+#: ../python/pakfire/cli.py:1263
 msgid "Generating the key may take a moment..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1316
+#: ../python/pakfire/cli.py:1311
 #, python-format
 msgid "Signing %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1333
+#: ../python/pakfire/cli.py:1328
 #, python-format
 msgid "Verifying %s..."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1343
+#: ../python/pakfire/cli.py:1338
 msgid "This signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1346
+#: ../python/pakfire/cli.py:1341
 msgid "Unknown key"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1347
+#: ../python/pakfire/cli.py:1342
 msgid "Could not check if this signature is valid."
 msgstr ""
 
-#: ../python/pakfire/cli.py:1350 ../python/pakfire/keyring.py:96
+#: ../python/pakfire/cli.py:1345 ../python/pakfire/keyring.py:96
 #, python-format
 msgid "Created: %s"
 msgstr ""
 
-#: ../python/pakfire/cli.py:1354 ../python/pakfire/keyring.py:99
+#: ../python/pakfire/cli.py:1349 ../python/pakfire/keyring.py:99
 #, python-format
 msgid "Expires: %s"
 msgstr ""
 
-#: ../python/pakfire/client/builder.py:173
+#. If the keepalive message could not successfully be sent, we don't
+#. bother, because the client will soon retry.
+#: ../python/pakfire/client/base.py:213
+msgid "Could not send a keepalive message to the hub."
+msgstr ""
+
+#. Don't give a shit either.
+#: ../python/pakfire/client/base.py:247
+msgid "Could not update the host information."
+msgstr ""
+
+#: ../python/pakfire/client/builder.py:179
 msgid "Less than 2GB of free space. Cannot request a new job."
 msgstr ""
 
 #. Log all XMLRPC protocol errors.
-#: ../python/pakfire/client/transport.py:78
+#: ../python/pakfire/client/transport.py:90
 msgid "XMLRPC protocol error:"
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:79
+#: ../python/pakfire/client/transport.py:91
 #, python-format
 msgid "URL: %s"
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:80
+#: ../python/pakfire/client/transport.py:92
 msgid "  HTTP headers:"
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:83
+#: ../python/pakfire/client/transport.py:95
 #, python-format
 msgid "Error code: %s"
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:84
+#: ../python/pakfire/client/transport.py:96
 #, python-format
 msgid "Error message: %s"
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:104
+#: ../python/pakfire/client/transport.py:116
 #, python-format
 msgid "Trying again in %(timeout)s second(s). %(tries)s tries left."
 msgstr ""
 
-#: ../python/pakfire/client/transport.py:109
+#: ../python/pakfire/client/transport.py:121
 msgid "Maximum number of tries was reached. Giving up."
 msgstr ""
 
@@ -981,7 +992,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr ""
 
-#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:468
+#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:475
 msgid "Transaction test was not successful"
 msgstr ""
 
@@ -996,10 +1007,14 @@ msgid ""
 msgstr ""
 
 #: ../python/pakfire/errors.py:106
-msgid "Could not find the requested URL."
+msgid "A request could not be fulfilled by the server."
 msgstr ""
 
 #: ../python/pakfire/errors.py:110
+msgid "Could not find the requested URL."
+msgstr ""
+
+#: ../python/pakfire/errors.py:114
 msgid "An unforseable problem on the XML-RPC transport connection occured."
 msgstr ""
 
@@ -1070,7 +1085,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:397
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:404
 msgid "Version"
 msgstr ""
 
@@ -1078,7 +1093,7 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:398
+#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:405
 msgid "Size"
 msgstr ""
 
@@ -1356,93 +1371,93 @@ msgid ""
 "perform transaction."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:330
+#: ../python/pakfire/transaction.py:327
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:333
+#: ../python/pakfire/transaction.py:330
 msgid "Downloading packages:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:397
+#: ../python/pakfire/transaction.py:404
 msgid "Package"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:402
+#: ../python/pakfire/transaction.py:409
 msgid "Installing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:403
+#: ../python/pakfire/transaction.py:410
 msgid "Reinstalling:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:404
+#: ../python/pakfire/transaction.py:411
 msgid "Updating:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:405
+#: ../python/pakfire/transaction.py:412
 msgid "Downgrading:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:406
+#: ../python/pakfire/transaction.py:413
 msgid "Removing:"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:412
+#: ../python/pakfire/transaction.py:419
 msgid "Transaction Summary"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:419
+#: ../python/pakfire/transaction.py:426
 msgid "package"
-msgstr ""
-
-#: ../python/pakfire/transaction.py:425
-#, python-format
-msgid "Total download size: %s"
-msgstr ""
-
-#: ../python/pakfire/transaction.py:429
-#, python-format
-msgid "Installed size: %s"
 msgstr ""
 
 #: ../python/pakfire/transaction.py:432
 #, python-format
+msgid "Total download size: %s"
+msgstr ""
+
+#: ../python/pakfire/transaction.py:436
+#, python-format
+msgid "Installed size: %s"
+msgstr ""
+
+#: ../python/pakfire/transaction.py:439
+#, python-format
 msgid "Freed size: %s"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:443
+#: ../python/pakfire/transaction.py:450
 msgid "Is this okay?"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:449
+#: ../python/pakfire/transaction.py:456
 msgid "Running Transaction Test"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:461
+#: ../python/pakfire/transaction.py:468
 msgid "Transaction Test Succeeded"
 msgstr ""
 
 #. Make a nice progressbar.
-#: ../python/pakfire/transaction.py:494
+#: ../python/pakfire/transaction.py:501
 msgid "Verifying signatures..."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:526
+#: ../python/pakfire/transaction.py:533
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:531
+#: ../python/pakfire/transaction.py:538
 msgid "Going on because we are running in permissive mode."
 msgstr ""
 
-#: ../python/pakfire/transaction.py:532
+#: ../python/pakfire/transaction.py:539
 msgid "This is dangerous!"
 msgstr ""
 
-#: ../python/pakfire/transaction.py:553
+#: ../python/pakfire/transaction.py:560
 msgid "Running transaction"
 msgstr ""
 

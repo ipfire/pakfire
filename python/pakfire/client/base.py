@@ -204,7 +204,15 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 		# Collect the current loadavg and send it to the hub.
 		loadavg = ", ".join(("%.2f" % round(l, 2) for l in os.getloadavg()))
 
-		needs_update = self.conn.send_keepalive(loadavg, overload, free_space)
+		try:
+			needs_update = self.conn.send_keepalive(loadavg, overload, free_space)
+
+		except XMLRPCInternalServerError:
+			# If the keepalive message could not successfully be sent, we don't
+			# bother, because the client will soon retry.
+			log.warning(_("Could not send a keepalive message to the hub."))
+
+			return
 
 		if force or needs_update:
 			log.debug("The hub is requesting an update.")
@@ -215,20 +223,27 @@ class PakfireBuilderClient(BuildMixin, PakfireClient):
 
 		config = pakfire.config.ConfigDaemon()
 
-		self.conn.send_update(
-			# Supported architectures.
-			system.supported_arches,
+		try:
+			self.conn.send_update(
+				# Supported architectures.
+				system.supported_arches,
 
-			# CPU information.
-			system.cpu_model,
-			system.cpu_count,
+				# CPU information.
+				system.cpu_model,
+				system.cpu_count,
 
-			# Amount of memory in bytes.
-			system.memory / 1024,
+				# Amount of memory in bytes.
+				system.memory / 1024,
 
-			# Send the currently running version of Pakfire.
-			PAKFIRE_VERSION,
+				# Send the currently running version of Pakfire.
+				PAKFIRE_VERSION,
 
-			# Send the host key.
-			config.get("signatures", "host_key", None),
-		)
+				# Send the host key.
+				config.get("signatures", "host_key", None),
+			)
+
+		except XMLRPCInternalServerError:
+			# Don't give a shit either.
+			log.warning(_("Could not update the host information."))
+
+			return
