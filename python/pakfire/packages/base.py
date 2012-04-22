@@ -516,6 +516,12 @@ class Package(object):
 
 			# Rename configuration files.
 			if _file.is_config():
+				# Skip already removed config files.
+				try:
+					os.lstat(file)
+				except OSError:
+					continue
+
 				file_save = "%s%s" % (file, CONFIG_FILE_SUFFIX_SAVE)
 
 				try:
@@ -530,6 +536,7 @@ class Package(object):
 
 			# Handle regular files and symlinks.
 			if os.path.isfile(file) or os.path.islink(file):
+				log.debug("Removing %s..." % _file)
 				try:
 					os.remove(file)
 				except OSError:
@@ -544,6 +551,11 @@ class Package(object):
 					os.rmdir(file)
 				except OSError:
 					pass
+
+			# Handle files that have already been removed
+			# by somebody else.
+			elif not os.path.exists(file):
+				pass
 
 			# Log all unhandled types.
 			else:
