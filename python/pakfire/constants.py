@@ -184,7 +184,14 @@ end
 PACKAGE_INFO_DESCRIPTION_LINE = PACKAGE_INFO_DEPENDENCY_LINE = "\t\t%s"
 
 # XXX make this configurable in pakfire.conf
-PAKFIRE_MULTIINSTALL = ["kernel", "kernel-PAE",]
+PAKFIRE_MULTIINSTALL = [
+	"kernel",
+	"kernel-kirkwood",
+	"kernel-legacy",
+	"kernel-omap",
+	"kernel-versatile",
+	"kernel-devel",
+]
 
 SCRIPTLET_INTERPRETER = "/bin/sh"
 SCRIPTLET_TIMEOUT = 60 * 15
