@@ -62,6 +62,7 @@ class RepositorySystem(base.RepositoryFactory):
 
 	def rem_package(self, pkg):
 		# Remove package from the database.
+		self.db.rem_package(pkg)
 		self.index.rem_package(pkg)
 
 	@property
