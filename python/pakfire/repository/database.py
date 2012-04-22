@@ -334,9 +334,9 @@ class DatabaseLocal(Database):
 
 		# Get the ID of the package in the database.
 		c = self.cursor()
-		#c.execute("SELECT id FROM packages WHERE uuid = ? LIMIT 1", (pkg.uuid,))
-		c.execute("SELECT id FROM packages WHERE name = ? AND epoch = ? AND version = ?"
-			" AND release = ? LIMIT 1", (pkg.name, pkg.epoch, pkg.version, pkg.release,))
+		c.execute("SELECT id FROM packages WHERE uuid = ? LIMIT 1", (pkg.uuid,))
+		#c.execute("SELECT id FROM packages WHERE name = ? AND epoch = ? AND version = ?"
+		#	" AND release = ? LIMIT 1", (pkg.name, pkg.epoch, pkg.version, pkg.release,))
 
 		id = None
 		for row in c:
