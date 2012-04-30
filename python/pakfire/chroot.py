@@ -92,6 +92,8 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 	if logger:
 		logger.debug("Executing command: %s in %s" % (command, chrootPath or "/"))
 
+	child = None
+
 	try:
 		# Create new child process
 		child = subprocess.Popen(
