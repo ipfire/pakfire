@@ -112,7 +112,7 @@ class RepositoryRemote(base.RepositoryFactory):
 		)
 
 	def clean(self):
-		RepositoryFactory.clean(self)
+		base.RepositoryFactory.clean(self)
 
 		# Remove all files in the files cache.
 		self.cache.destroy()
