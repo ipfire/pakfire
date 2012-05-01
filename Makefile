@@ -32,8 +32,8 @@ install: build
 	cp -vf macros/*.macro $(DESTDIR)$(PREFIX)/lib/pakfire/macros
 
 	# Install example configuration.
-	-mkdir -pv $(DESTDIR)/etc/pakfire
-	for file in general.conf builder.conf client.conf daemon.conf distros repos; do \
+	-mkdir -pv $(DESTDIR)/etc/pakfire/repos
+	for file in general.conf builder.conf client.conf daemon.conf distros; do \
 		[ -e "$(DESTDIR)/etc/pakfire/$${file}" ] && continue; \
 		cp -rvf examples/$${file} $(DESTDIR)/etc/pakfire/; \
 	done
