@@ -80,6 +80,9 @@ static PyMethodDef Request_methods[] = {
 	{"noobsoletes_solvable", (PyCFunction)Request_noobsoletes_solvable, METH_VARARGS, NULL},
 	{"noobsoletes_relation", (PyCFunction)Request_noobsoletes_relation, METH_VARARGS, NULL},
 	{"noobsoletes_name", (PyCFunction)Request_noobsoletes_name, METH_VARARGS, NULL},
+	{"updateall", (PyCFunction)Request_updateall, METH_NOARGS, NULL},
+	{"distupgrade", (PyCFunction)Request_distupgrade, METH_NOARGS, NULL},
+	{"verify", (PyCFunction)Request_verify, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -99,6 +102,7 @@ static PyMethodDef Repo_methods[] = {
 	{"internalize", (PyCFunction)Repo_internalize, METH_NOARGS, NULL},
 	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
 	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
+	{"rem_solv", (PyCFunction)Repo_rem_solv, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -152,10 +156,8 @@ static PyMethodDef Solution_methods[] = {
 
 static PyMethodDef Solver_methods[] = {
 	{"solve", (PyCFunction)Solver_solve, METH_VARARGS, NULL},
-	{"get_fix_system", (PyCFunction)Solver_get_fix_system, METH_NOARGS, NULL},
-	{"set_fix_system", (PyCFunction)Solver_set_fix_system, METH_VARARGS, NULL},
-	{"get_allow_downgrade", (PyCFunction)Solver_get_allow_downgrade, METH_NOARGS, NULL},
-	{"set_allow_downgrade", (PyCFunction)Solver_set_allow_downgrade, METH_VARARGS, NULL},
+	{"get_flag", (PyCFunction)Solver_get_flag, METH_VARARGS, NULL},
+	{"set_flag", (PyCFunction)Solver_set_flag, METH_VARARGS, NULL},
 	{"get_allow_archchange", (PyCFunction)Solver_get_allow_archchange, METH_NOARGS, NULL},
 	{"set_allow_archchange", (PyCFunction)Solver_set_allow_archchange, METH_VARARGS, NULL},
 	{"get_allow_vendorchange", (PyCFunction)Solver_get_allow_vendorchange, METH_NOARGS, NULL},
@@ -307,4 +309,12 @@ void init_pakfire(void) {
 	PyDict_SetItemString(d, "SOLVER_RULE_FEATURE",				Py_BuildValue("i", SOLVER_RULE_FEATURE));
 	PyDict_SetItemString(d, "SOLVER_RULE_LEARNT",				Py_BuildValue("i", SOLVER_RULE_LEARNT));
 	PyDict_SetItemString(d, "SOLVER_RULE_CHOICE",				Py_BuildValue("i", SOLVER_RULE_CHOICE));
+
+	/* Solver flags */
+	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_DOWNGRADE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_DOWNGRADE));
+	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_ARCHCHANGE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_ARCHCHANGE));
+	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_VENDORCHANGE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_VENDORCHANGE));
+	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_UNINSTALL", Py_BuildValue("i", SOLVER_FLAG_ALLOW_UNINSTALL));
+	PyDict_SetItemString(d, "SOLVER_FLAG_NO_UPDATEPROVIDE", Py_BuildValue("i", SOLVER_FLAG_NO_UPDATEPROVIDE));
+	PyDict_SetItemString(d, "SOLVER_FLAG_SPLITPROVIDES", Py_BuildValue("i", SOLVER_FLAG_SPLITPROVIDES));
 }

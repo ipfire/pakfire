@@ -59,15 +59,16 @@ class TransactionCheck(object):
 
 	@property
 	def error_files(self):
-		ret = {}
+		ret = []
 
-		for name, files in self.filelist.items():
-			if len(files) <= 1:
-				continue
+		for name, count in self.filelist.items():
+			if count > 1:
+				ret.append(name)
 
-			ret[name] = files
+		return sorted(ret)
 
-		return ret
+	def provides_file(self, name):
+		return [] # XXX TODO
 
 	@property
 	def successful(self):
@@ -85,18 +86,16 @@ class TransactionCheck(object):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
-		for name, files in sorted(self.error_files.items()):
-			assert len(files) >= 2
+		for file in self.error_files:
+			pkgs = self.provides_file(file)
 
-			pkgs = [f.pkg.friendly_name for f in files]
-
-			if len(files) == 2:
+			if len(pkgs) == 2:
 				logger.critical(
 					_("file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s") % \
 						{ "name" : name, "pkg1" : pkgs[0], "pkg2" : pkgs[1] }
 				)
 
-			elif len(files) >= 3:
+			elif len(pkgs) >= 3:
 				logger.critical(
 					_("file %(name)s from %(pkg)s conflicts with files from %(pkgs)s") % \
 						{ "name" : name, "pkg" : pkgs[0], "pkgs" : i18n.list(pkgs[1:])}
@@ -113,7 +112,7 @@ class TransactionCheck(object):
 		filelist = {}
 
 		for file in self.pakfire.repos.local.filelist:
-			filelist[file.name] = [file,]
+			filelist[file] = 1
 
 		return filelist
 
@@ -122,11 +121,10 @@ class TransactionCheck(object):
 			if file.is_dir():
 				continue
 
-			if self.filelist.has_key(file.name):
-				self.filelist[file.name].append(file)
-
-			else:
-				self.filelist[file.name] = [file,]
+			try:
+				self.filelist[file.name] += 1
+			except KeyError:
+				self.filelist[file.name] = 1
 
 		# Add all filesize data to mountpoints.
 		self.mountpoints.add_pkg(pkg)
@@ -136,14 +134,10 @@ class TransactionCheck(object):
 			if file.is_dir():
 				continue
 
-			if not self.filelist.has_key(file.name):
-				continue
-
-			for f in self.filelist[file.name]:
-				if not f.pkg == pkg:
-					continue
-
-				self.filelist[file.name].remove(f)
+			try:
+				self.filelist[file.name] -= 1
+			except KeyError:
+				pass
 
 		# Remove all filesize data from mountpoints.
 		self.mountpoints.rem_pkg(pkg)
@@ -562,8 +556,11 @@ class Transaction(object):
 		for action in self.actions:
 			try:
 				action.run()
+
 			except ActionError, e:
 				logger.error("Action finished with an error: %s - %s" % (action, e))
+			#except Exception, e:
+			#	logger.error(_("An unforeseen error occoured: %s") % e)
 
 		logger.info("")
 

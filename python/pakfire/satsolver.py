@@ -111,6 +111,13 @@ class Request(_pakfire.Request):
 
 
 class Solver(object):
+	option2flag = {
+		"allow_archchange"   : SOLVER_FLAG_ALLOW_ARCHCHANGE,
+		"allow_downgrade"    : SOLVER_FLAG_ALLOW_DOWNGRADE,
+		"allow_uninstall"    : SOLVER_FLAG_ALLOW_UNINSTALL,
+		"allow_vendorchange" : SOLVER_FLAG_ALLOW_VENDORCHANGE,
+	}
+
 	def __init__(self, pakfire, request, logger=None):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
@@ -118,27 +125,6 @@ class Solver(object):
 
 		self.pakfire = pakfire
 		self.pool = self.pakfire.pool
-
-		# Default settings.
-		self.settings = {
-			# Update all installed packages?
-			"update" : False,
-
-			# Allow to uninstall any packages?
-			"uninstall" : False,
-
-			# Allow to downgrade any packages?
-			"allow_downgrade" : False,
-
-			# Allow packages to change their vendors?
-			"allow_vendorchange" : False,
-
-			# Allow packages to change their arch?
-			"allow_archchange" : False,
-
-			# Fix system?
-			"fix_system" : False,
-		}
 
 		self.request = request
 		assert self.request, "Empty request?"
@@ -159,39 +145,22 @@ class Solver(object):
 		self.__problems = None
 		self.__transaction = None
 
-	def set(self, key, value):
-		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
-		assert value in (True, False), "Invalid value: %s" % value
-
+	def set(self, option, value):
 		try:
-			self.settings[key] = value
+			flag = self.option2flag[option]
 		except KeyError:
-			pass
+			raise Exception, "Unknown configuration setting: %s" % option
+		self.solver.set_flag(flag, value)
 
-	def get(self, key):
-		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
-
-		return self.settings.get(key)
+	def get(self, option):
+		try:
+			flag = self.option2flag[option]
+		except KeyError:
+			raise Exception, "Unknown configuration setting: %s" % option
+		return self.solver.get_flag(flag)
 
 	def solve(self):
 		assert self.status is None, "Solver did already solve something."
-
-		# Apply solver configuration.
-		self.solver.set_fix_system(self.get("fix_system"))
-		self.solver.set_allow_uninstall(self.get("uninstall"))
-		self.solver.set_allow_downgrade(self.get("allow_downgrade"))
-
-		# Optionally allow packages to change their vendors.
-		# This is not recommended because it may have weird effects.
-		self.solver.set_allow_vendorchange(self.get("allow_vendorchange"))
-
-		# Optionally allow packages ot change their architecture.
-		self.solver.set_allow_archchange(self.get("allow_archchange"))
-
-		# Configure the solver for an update.
-		if self.get("update"):
-			self.solver.set_updatesystem(True)
-			self.solver.set_do_split_provides(True)
 
 		# Actually solve the request.
 		start_time = time.time()

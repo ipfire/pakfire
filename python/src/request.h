@@ -59,6 +59,10 @@ extern PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *arg
 extern PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args);
 extern PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args);
 
+extern PyObject *Request_updateall(RequestObject *self, PyObject *args);
+extern PyObject *Request_distupgrade(RequestObject *self, PyObject *args);
+extern PyObject *Request_verify(RequestObject *self, PyObject *args);
+
 extern PyTypeObject RequestType;
 
 #endif

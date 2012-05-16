@@ -24,6 +24,7 @@ import os
 import logging
 log = logging.getLogger("pakfire")
 
+import pakfire.packages as packages
 import pakfire.satsolver as satsolver
 
 class Index(object):
@@ -147,8 +148,12 @@ class Index(object):
 			solvable.add_provides(rel)
 
 	def rem_package(self, pkg):
-		# XXX delete the solvable from the index.
-		pass # TODO
+		"""
+			Delete the solvable from the index.
+		"""
+		assert isinstance(pkg, packages.SolvPackage)
+
+		self.solver_repo.rem_solv(pkg)
 
 	def clear(self):
 		"""

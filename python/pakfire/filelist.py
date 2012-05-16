@@ -74,13 +74,12 @@ class File(_File):
 
 
 class FileDatabase(_File):
-	def __init__(self, pakfire, db, row_id):
+	def __init__(self, pakfire, db, row_id, row=None):
 		_File.__init__(self, pakfire)
 
 		self.db = db
 		self.row_id = row_id
-
-		self.__row = None
+		self.__row = row
 
 	@property
 	def row(self):
@@ -91,13 +90,7 @@ class FileDatabase(_File):
 			c = self.db.cursor()
 			c.execute("SELECT * FROM files WHERE id = ? LIMIT 1", (self.row_id,))
 
-			# Check if we got the same row.
-			#assert c.lastrowid == self.row_id
-
-			for row in c:
-				self.__row = row
-				break
-
+			self.__row = c.fetchone()
 			c.close()
 
 		return self.__row

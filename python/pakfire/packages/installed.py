@@ -39,6 +39,7 @@ class DatabasePackage(Package):
 		self.db = db
 
 		self._data = {}
+		self._filelist = None
 
 		for key in data.keys():
 			self._data[key] = data[key]
@@ -169,20 +170,21 @@ class DatabasePackage(Package):
 
 	@property
 	def filename(self):
-		return self.metadata.get("filename") # XXX basename?
+		return self.metadata.get("filename")
 
 	@property
 	def filelist(self):
-		filelist = []
+		if self._filelist is None:
+			self._filelist = []
 
-		c = self.db.cursor()
-		c.execute("SELECT id FROM files WHERE pkg = ?", (self.id,))
+			c = self.db.cursor()
+			c.execute("SELECT * FROM files WHERE pkg = ?", (self.id,))
 
-		for id in c:
-			file = pakfire.filelist.FileDatabase(self.pakfire, self.db, id[0])
-			filelist.append(file)
+			for row in c.fetchall():
+				file = pakfire.filelist.FileDatabase(self.pakfire, self.db, row["id"], row)
+				self._filelist.append(file)
 
-		return filelist
+		return self._filelist
 
 	@property
 	def configfiles(self):

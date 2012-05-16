@@ -82,7 +82,7 @@ PyObject *Solution_string(SolutionObject *self) {
 
 			switch (how & SOLVER_JOBMASK) {
 				case SOLVER_INSTALL:
-					if (select == SOLVER_SOLVABLE && solver->installed && pool->solvables[what].repo == solver->installed)
+					if (select == SOLVER_SOLVABLE && pool->installed && pool->solvables[what].repo == pool->installed)
 						snprintf(str, STRING_SIZE - 1, _("do not keep %s installed"),
 							pool_solvid2str(pool, what));
 					else if (select == SOLVER_SOLVABLE_PROVIDES)
@@ -94,7 +94,7 @@ PyObject *Solution_string(SolutionObject *self) {
 					break;
 
 				case SOLVER_ERASE:
-					if (select == SOLVER_SOLVABLE && !(solver->installed && pool->solvables[what].repo == solver->installed))
+					if (select == SOLVER_SOLVABLE && !(pool->installed && pool->solvables[what].repo == pool->installed))
 						snprintf(str, STRING_SIZE - 1, _("do not forbid installation of %s"),
 							pool_solvid2str(pool, what));
 					else if (select == SOLVER_SOLVABLE_PROVIDES)
@@ -122,7 +122,7 @@ PyObject *Solution_string(SolutionObject *self) {
 
 		} else if (p == SOLVER_SOLUTION_INFARCH) {
 			s = pool->solvables + rp;
-			if (solver->installed && s->repo == solver->installed)
+			if (pool->installed && s->repo == pool->installed)
 				snprintf(str, STRING_SIZE - 1, _("keep %s despite the inferior architecture"),
 					pool_solvable2str(pool, s));
 			else
@@ -131,7 +131,7 @@ PyObject *Solution_string(SolutionObject *self) {
 
 		} else if (p == SOLVER_SOLUTION_DISTUPGRADE) {
 			s = pool->solvables + rp;
-			if (solver->installed && s->repo == solver->installed)
+			if (pool->installed && s->repo == pool->installed)
 				snprintf(str, STRING_SIZE - 1, _("keep obsolete %s"),
 					pool_solvable2str(pool, s));
 			else

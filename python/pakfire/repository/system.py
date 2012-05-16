@@ -19,8 +19,16 @@
 #                                                                             #
 ###############################################################################
 
+import os
+
 import base
 import database
+
+import pakfire.packages as packages
+import pakfire.util as util
+
+from pakfire.constants import *
+from pakfire.i18n import _
 
 class RepositorySystem(base.RepositoryFactory):
 	def __init__(self, pakfire):
@@ -33,6 +41,10 @@ class RepositorySystem(base.RepositoryFactory):
 		self.pool.set_installed(self.solver_repo)
 
 	@property
+	def cache_file(self):
+		return os.path.join(self.pakfire.path, PACKAGES_SOLV)
+
+	@property
 	def priority(self):
 		"""
 			The local repository has always a high priority.
@@ -40,13 +52,34 @@ class RepositorySystem(base.RepositoryFactory):
 		return 10
 
 	def update(self, force=False, offline=False):
-		if not force:
-			force = len(self) == 0
+		# XXX using the cache is currently disabled
+		#if not force:
+		#	if os.path.exists(self.cache_file):
+		#		self.index.read(self.cache_file)
+		#
+		#	force = len(self) == 0
+
+		force = True
 
 		if force:
+			# Create a progressbar.
+			pb = util.make_progress(_("Loading installed packages"), len(self.db))
+
+			# Remove all data from the current index.
 			self.index.clear()
+
+			i = 0
 			for pkg in self.db.packages:
+				if pb:
+					i += 1
+					pb.update(i)
+
 				self.index.add_package(pkg)
+
+			self.index.optimize()
+
+			if pb:
+				pb.finish()
 
 	def commit(self):
 		# Commit the database to disk.
@@ -55,20 +88,23 @@ class RepositorySystem(base.RepositoryFactory):
 		# Make sure that all data in the index is accessable.
 		self.index.optimize()
 
+		# Write the content of the index to a file
+		# for fast parsing.
+		# XXX this is currently disabled
+		#self.index.write(self.cache_file)
+
 	def add_package(self, pkg):
 		# Add package to the database.
 		self.db.add_package(pkg)
 		self.index.add_package(pkg)
 
 	def rem_package(self, pkg):
+		assert isinstance(pkg, packages.SolvPackage), pkg
+
 		# Remove package from the database.
 		self.db.rem_package(pkg)
 		self.index.rem_package(pkg)
 
 	@property
 	def filelist(self):
-		# XXX ugly?
-
-		for pkg in self.db.packages:
-			for file in pkg.filelist:
-				yield file
+		return self.db.get_filelist()

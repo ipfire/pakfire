@@ -64,29 +64,25 @@ PyObject *Request_dealloc(RequestObject *self) {
 }
 
 void _Request_solvable(RequestObject *self, Id what, Id solvable) {
-	queue_push(&self->_queue, what|SOLVER_SOLVABLE);
-	queue_push(&self->_queue, solvable);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE, solvable);
 }
 
 void _Request_relation(RequestObject *self, Id what, Id relation) {
-	queue_push(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES);
-	queue_push(&self->_queue, relation);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES, relation);
 }
 
 void _Request_name(RequestObject *self, Id what, Id provides) {
-	queue_push(&self->_queue, what|SOLVER_SOLVABLE_NAME);
-	queue_push(&self->_queue, provides);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_NAME, provides);
 }
 
 PyObject *Request_install_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
 	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_solvable(self, SOLVER_INSTALL, solv->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -94,11 +90,10 @@ PyObject *Request_install_relation(RequestObject *self, PyObject *args) {
 	RelationObject *rel;
 
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_relation(self, SOLVER_INSTALL, rel->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -106,7 +101,7 @@ PyObject *Request_install_name(RequestObject *self, PyObject *args) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(self->_pool, name, 1);
@@ -119,11 +114,10 @@ PyObject *Request_remove_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
 	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_solvable(self, SOLVER_ERASE, solv->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -131,11 +125,10 @@ PyObject *Request_remove_relation(RequestObject *self, PyObject *args) {
 	RelationObject *rel;
 
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_relation(self, SOLVER_ERASE, rel->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -143,7 +136,7 @@ PyObject *Request_remove_name(RequestObject *self, PyObject *args) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(self->_pool, name, 1);
@@ -156,11 +149,10 @@ PyObject *Request_update_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
 	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_solvable(self, SOLVER_UPDATE, solv->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -168,11 +160,10 @@ PyObject *Request_update_relation(RequestObject *self, PyObject *args) {
 	RelationObject *rel;
 
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_relation(self, SOLVER_UPDATE, rel->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -180,7 +171,7 @@ PyObject *Request_update_name(RequestObject *self, PyObject *args) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(self->_pool, name, 1);
@@ -193,11 +184,10 @@ PyObject *Request_lock_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
 	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_solvable(self, SOLVER_LOCK, solv->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -205,11 +195,10 @@ PyObject *Request_lock_relation(RequestObject *self, PyObject *args) {
 	RelationObject *rel;
 
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_relation(self, SOLVER_LOCK, rel->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -217,7 +206,7 @@ PyObject *Request_lock_name(RequestObject *self, PyObject *args) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(self->_pool, name, 1);
@@ -230,11 +219,10 @@ PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *args) {
 	SolvableObject *solv;
 
 	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_solvable(self, SOLVER_NOOBSOLETES, solv->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -242,11 +230,10 @@ PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args) {
 	RelationObject *rel;
 
 	if (!PyArg_ParseTuple(args, "O", &rel)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	_Request_relation(self, SOLVER_NOOBSOLETES, rel->_id);
-
 	Py_RETURN_NONE;
 }
 
@@ -254,11 +241,26 @@ PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	Id _name = pool_str2id(self->_pool, name, 1);
 	_Request_name(self, SOLVER_NOOBSOLETES, _name);
 
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_updateall(RequestObject *self, PyObject *args) {
+	queue_push2(&self->_queue, SOLVER_UPDATE|SOLVER_SOLVABLE_ALL, 0);
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_distupgrade(RequestObject *self, PyObject *args) {
+	queue_push2(&self->_queue, SOLVER_DISTUPGRADE|SOLVER_SOLVABLE_ALL, 0);
+	Py_RETURN_NONE;
+}
+
+PyObject *Request_verify(RequestObject *self, PyObject *args) {
+	queue_push2(&self->_queue, SOLVER_VERIFY|SOLVER_SOLVABLE_ALL, 0);
 	Py_RETURN_NONE;
 }

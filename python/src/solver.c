@@ -53,6 +53,9 @@ PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 		}
 	}
 
+	/* enable splitprovides by default */
+	solver_set_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES, 1);
+
 	return (PyObject *)self;
 }
 
@@ -63,138 +66,150 @@ PyObject *Solver_dealloc(SolverObject *self) {
 	Py_RETURN_NONE;
 }
 
-PyObject *Solver_get_fix_system(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->fixsystem);
-}
+PyObject *Solver_get_flag(SolverObject *self, PyObject *args) {
+	int flag = 0;
 
-PyObject *Solver_set_fix_system(SolverObject *self, PyObject *args) {
-	int val;
-
-	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+	if (!PyArg_ParseTuple(args, "i", &flag)) {
+		return NULL;
 	}
 
-	self->_solver->fixsystem = val;
+	int val = solver_get_flag(self->_solver, flag);
+	return Py_BuildValue("i", val);
+}
 
+PyObject *Solver_set_flag(SolverObject *self, PyObject *args) {
+	int flag = 0, val = 0;
+
+	if (!PyArg_ParseTuple(args, "ii", &flag, &val)) {
+		return NULL;
+	}
+
+	solver_set_flag(self->_solver, flag, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->allowdowngrade);
+	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_DOWNGRADE);
+
+	return Py_BuildValue("i", val);
 }
 
 PyObject *Solver_set_allow_downgrade(SolverObject *self, PyObject *args) {
 	int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->allowdowngrade = val;
-
+	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_DOWNGRADE, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_allow_archchange(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->allowarchchange);
+	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_ARCHCHANGE);
+
+	return Py_BuildValue("i", val);
 }
 
 PyObject *Solver_set_allow_archchange(SolverObject *self, PyObject *args) {
 	int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->allowarchchange = val;
-
+	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_ARCHCHANGE, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_allow_vendorchange(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->allowvendorchange);
+	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_VENDORCHANGE);
+
+	return Py_BuildValue("i", val);
 }
 
 PyObject *Solver_set_allow_vendorchange(SolverObject *self, PyObject *args) {
 	int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->allowvendorchange = val;
-
+	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_VENDORCHANGE, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_allow_uninstall(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->allowuninstall);
+	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_UNINSTALL);
+
+	return Py_BuildValue("i", val);
 }
 
 PyObject *Solver_set_allow_uninstall(SolverObject *self, PyObject *args) {
 	int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->allowuninstall = val;
-
+	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_UNINSTALL, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_updatesystem(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->updatesystem);
+	//return Py_BuildValue("i", self->_solver->updatesystem);
+	Py_RETURN_NONE;
 }
 
 PyObject *Solver_set_updatesystem(SolverObject *self, PyObject *args) {
-	int val;
+	/*int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->updatesystem = val;
+	self->_solver->updatesystem = val; */
 
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_get_do_split_provides(SolverObject *self, PyObject *args) {
-	return Py_BuildValue("i", self->_solver->dosplitprovides);
+	int val = solver_get_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES);
+
+	return Py_BuildValue("i", val);
 }
 
 PyObject *Solver_set_do_split_provides(SolverObject *self, PyObject *args) {
 	int val;
 
 	if (!PyArg_ParseTuple(args, "i", &val)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
-	self->_solver->dosplitprovides = val;
-
+	solver_set_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES, val);
 	Py_RETURN_NONE;
 }
 
 PyObject *Solver_solve(SolverObject *self, PyObject *args) {
 	RequestObject *request;
+	int res = 0;
 
 	if (!PyArg_ParseTuple(args, "O", &request)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	// Make sure, the pool is prepared.
 	_Pool_prepare(self->_solver->pool);
 
-	solver_solve(self->_solver, &request->_queue);
+	res = solver_solve(self->_solver, &request->_queue);
 
 #ifdef DEBUG
 	solver_printallsolutions(self->_solver);
 #endif
 
-	if (self->_solver->problems.count == 0) {
+	if (res == 0) {
 		Py_RETURN_TRUE;
 	}
-
 	Py_RETURN_FALSE;
 }
 
@@ -202,7 +217,6 @@ PyObject *Solver_get_problems(SolverObject *self, PyObject *args) {
 	RequestObject *request;
 
 	if (!PyArg_ParseTuple(args, "O", &request)) {
-		/* XXX raise exception */
 		return NULL;
 	}
 

@@ -47,7 +47,6 @@ PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 	const char *name;
 
 	if (!PyArg_ParseTuple(args, "Os", &pool, &name)) {
-		/* XXX raise exception */
 		return NULL;
 	}
 
@@ -67,7 +66,6 @@ PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Repo_dealloc(RepoObject *self) {
-	// repo_free(self->_repo, 0);
 	self->ob_type->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
@@ -97,7 +95,6 @@ PyObject *Repo_set_enabled(RepoObject *self, PyObject *args) {
 	bool enabled;
 
 	if (!PyArg_ParseTuple(args, "b", &enabled)) {
-		/* XXX raise exception */
 		return NULL;
 	}
 
@@ -132,13 +129,12 @@ PyObject *Repo_write(RepoObject *self, PyObject *args) {
 	char exception[STRING_SIZE];
 
 	if (!PyArg_ParseTuple(args, "s", &filename)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	// Prepare the pool and internalize all attributes.
-	_Pool_prepare(self->_repo->pool);
+	//_Pool_prepare(self->_repo->pool);
 
-	// XXX catch if file cannot be opened
 	FILE *fp = NULL;
 	if ((fp = fopen(filename, "wb")) == NULL) {
 		snprintf(exception, STRING_SIZE - 1, "Could not open file for writing: %s (%s).",
@@ -147,8 +143,7 @@ PyObject *Repo_write(RepoObject *self, PyObject *args) {
 		return NULL;
 	}
 
-	repo_write(self->_repo, fp, NULL, NULL, 0);
-
+	repo_write(self->_repo, fp);
 	fclose(fp);
 
 	Py_RETURN_NONE;
@@ -158,14 +153,12 @@ PyObject *Repo_read(RepoObject *self, PyObject *args) {
 	const char *filename;
 
 	if (!PyArg_ParseTuple(args, "s", &filename)) {
-		/* XXX raise exception */
+		return NULL;
 	}
 
 	// XXX catch if file cannot be opened
 	FILE *fp = fopen(filename, "rb");
-
-	repo_add_solv(self->_repo, fp);
-
+	repo_add_solv(self->_repo, fp, 0);
 	fclose(fp);
 
 	Py_RETURN_NONE;
@@ -208,4 +201,18 @@ PyObject *Repo_get_all(RepoObject *self) {
 	}
 
 	return list;
+}
+
+PyObject *Repo_rem_solv(RepoObject *self, PyObject *args) {
+	Repo *repo = self->_repo;
+	SolvableObject *solv;
+
+	if (!PyArg_ParseTuple(args, "O", &solv)) {
+		return NULL;
+	}
+
+	Solvable *s = pool_id2solvable(repo->pool, solv->_id);
+	repo_free_solvable(repo, s - repo->pool->solvables, 1);
+
+	Py_RETURN_NONE;
 }

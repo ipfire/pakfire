@@ -132,7 +132,7 @@ class Pakfire(object):
 
 		return ret
 
-	def create_request(self, builder=False, install=None, remove=None, update=None):
+	def create_request(self, builder=False, install=None, remove=None, update=None, updateall=False):
 		request = satsolver.Request(self.pool)
 
 		# Add multiinstall information.
@@ -150,6 +150,11 @@ class Pakfire(object):
 		# Apply all updates.
 		for req in self.expand_requires(update):
 			request.update(req)
+
+		# Configure the request to update all packages
+		# if requested.
+		if updateall:
+			request.updateall()
 
 		# Return the request.
 		return request
@@ -467,12 +472,11 @@ class Pakfire(object):
 
 		# If there are given any packets on the command line, we will
 		# only update them. Otherwise, we update the whole system.
+		updateall = True
 		if pkgs:
-			update = False
-		else:
-			update = True
+			updateall = False
 
-		request = self.create_request(update=pkgs)
+		request = self.create_request(update=pkgs, updateall=updateall)
 
 		# Exclude packages that should not be updated.
 		for exclude in excludes or []:
@@ -481,7 +485,7 @@ class Pakfire(object):
 			exclude = self.create_relation(exclude)
 			request.lock(exclude)
 
-		solver = self.solv(request, logger=logger, update=update, **kwargs)
+		solver = self.solv(request, logger=logger, **kwargs)
 
 		if not solver.status:
 			logger.info(_("Nothing to do"))
@@ -534,8 +538,11 @@ class Pakfire(object):
 				request.install(rel)
 
 		# Solve the request.
-		solver = self.solv(request, allow_downgrade=True, allow_vendorchange=allow_vendorchange,
-			allow_archchange=allow_archchange)
+		solver = self.solv(request,
+			allow_downgrade=True,
+			allow_vendorchange=allow_vendorchange,
+			allow_archchange=allow_archchange,
+		)
 		assert solver.status is True
 
 		# Create the transaction.
@@ -556,7 +563,7 @@ class Pakfire(object):
 		request = self.create_request(remove=pkgs)
 
 		# Solve the request.
-		solver = self.solv(request, uninstall=True)
+		solver = self.solv(request, allow_uninstall=True)
 		assert solver.status is True
 
 		# Create the transaction.
@@ -737,7 +744,7 @@ class Pakfire(object):
 		# Clean up repository caches.
 		self.repos.clean()
 
-	def check(self, downgrade=True, uninstall=True):
+	def check(self, allow_downgrade=True, allow_uninstall=True):
 		"""
 			Try to fix any errors in the system.
 		"""
@@ -745,8 +752,13 @@ class Pakfire(object):
 		# For that we create an empty request and solver and try to solve
 		# something.
 		request = self.create_request()
-		solver = self.solv(request, fix_system=True, allow_downgrade=downgrade,
-			uninstall=uninstall)
+		request.verify()
+
+		solver = self.solv(
+			request,
+			allow_downgrade=allow_downgrade,
+			allow_uninstall=allow_uninstall,
+		)
 
 		if solver.status is False:
 			log.info(_("Everything is fine."))

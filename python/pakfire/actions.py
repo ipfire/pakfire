@@ -417,7 +417,6 @@ class ActionRemove(Action):
 	def __init__(self, *args, **kwargs):
 		Action.__init__(self, *args, **kwargs)
 
-		# XXX This is ugly, but works for the moment.
 		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
 		assert self.pkg
 
@@ -431,7 +430,7 @@ class ActionRemove(Action):
 		self.pkg.cleanup(_("Removing"), prefix=self.pakfire.path)
 
 		# Remove package from the database.
-		self.local.rem_package(self.pkg)
+		self.local.rem_package(self.pkg_solv)
 
 
 class ActionCleanup(Action):
@@ -440,7 +439,6 @@ class ActionCleanup(Action):
 	def __init__(self, *args, **kwargs):
 		Action.__init__(self, *args, **kwargs)
 
-		# XXX This is ugly, but works for the moment.
 		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
 		assert self.pkg
 
@@ -455,7 +453,7 @@ class ActionCleanup(Action):
 		self.pkg.cleanup(_("Cleanup"), prefix=self.pakfire.path)
 
 		# Remove package from the database.
-		self.local.rem_package(self.pkg)
+		self.local.rem_package(self.pkg_solv)
 
 
 class ActionReinstall(Action):
@@ -471,10 +469,10 @@ class ActionReinstall(Action):
 	def run(self):
 		# Remove package from the database and add it afterwards.
 		# Sounds weird, but fixes broken entries in the database.
-		self.local.rem_package(self.pkg)
+		self.local.rem_package(self.pkg_solv)
 		self.local.add_package(self.pkg)
 
-		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
+		self.pkg.extract(_("Reinstalling"), prefix=self.pakfire.path)
 
 
 class ActionDowngrade(Action):

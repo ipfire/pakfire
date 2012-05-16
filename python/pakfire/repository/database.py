@@ -53,6 +53,13 @@ class Database(object):
 			self._db.close()
 			self._db = None
 
+	@property
+	def db(self):
+		if self._db is None:
+			self.open()
+
+		return self._db
+
 	def create(self):
 		pass
 
@@ -338,11 +345,11 @@ class DatabaseLocal(Database):
 		#c.execute("SELECT id FROM packages WHERE name = ? AND epoch = ? AND version = ?"
 		#	" AND release = ? LIMIT 1", (pkg.name, pkg.epoch, pkg.version, pkg.release,))
 
-		id = None
-		for row in c:
-			id = row["id"]
-			break
-		assert id
+		row = c.fetchone()
+		if not row:
+			return
+
+		id = row["id"]
 
 		# First, delete all files from the database and then delete the pkg itself.
 		c.execute("DELETE FROM files WHERE pkg = ?", (id,))
@@ -364,34 +371,29 @@ class DatabaseLocal(Database):
 
 	@property
 	def packages(self):
-		c = self.cursor()
+		c = self.db.execute("SELECT * FROM packages ORDER BY name")
 
-		c.execute("SELECT * FROM packages ORDER BY name")
-
-		for row in c:
+		for row in c.fetchall():
 			yield packages.DatabasePackage(self.pakfire, self.repo, self, row)
 
 		c.close()
 
 	def get_filelist(self):
-		c = self.cursor()
-		c.execute("SELECT DISTINCT name FROM files")
+		c = self.db.execute("SELECT name FROM files")
 
-		ret = []
-		for row in c:
-			ret.append(row["name"])
-
-		c.close()
-
-		return ret
+		return [r["name"] for r in c.fetchall()]
 
 	def get_package_from_solv(self, solv_pkg):
-		c = self.cursor()
-		c.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
+		assert solv_pkg.uuid
+
+		c = self.db.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
 
 		try:
-			for row in c:
-				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+			row = c.fetchone()
+			if row is None:
+				return
+
+			return packages.DatabasePackage(self.pakfire, self.repo, self, row)
 
 		finally:
 			c.close()

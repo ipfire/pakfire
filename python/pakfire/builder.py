@@ -761,7 +761,8 @@ class BuildEnviron(object):
 
 		# Install all packages that were built.
 		self.install(self.find_result_packages(),
-			uninstall=True, signatures_mode="disabled")
+			allow_vendorchange=True, allow_archchange=True,
+			allow_uninstall=True, signatures_mode="disabled")
 
 		self.log.info(_("Installation test succeeded."))
 		self.log.info("")
