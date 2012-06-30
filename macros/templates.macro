@@ -52,7 +52,7 @@ packages
 			%{libdir}/pkgconfig
 			%{datadir}/aclocal
 			%{libdir}/*.so
-			%{datadir}/*/cmake
+			%{datadir}/cmake
 			%{mandir}/man2
 			%{mandir}/man3
 			%{datadir}/pkgconfig
