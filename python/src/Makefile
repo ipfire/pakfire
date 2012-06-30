@@ -7,7 +7,7 @@ MODULE_LZMA    = _lzma.so
 MODULES        = $(MODULE_PAKFIRE) $(MODULE_LZMA)
 
 # Libs that are to be linked into the module.
-MODULE_PAKFIRE_LIBS = -lcap -lpython$(PYTHON_VERSION) -lsolv -lsolvext
+MODULE_PAKFIRE_LIBS = -lcap -lpython$(PYTHON_VERSION) -lsolv
 MODULE_LZMA_LIBS    = -llzma
 
 SOURCES_LZMA     = _lzmamodule.c
