@@ -145,10 +145,10 @@ def key_import(keyfile, **pakfire_args):
 
 	return pakfire.keyring.import_key(keyfile)
 
-def key_export(keyid, keyfile, **pakfire_args):
+def key_export(keyid, keyfile, secret=False, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.keyring.export_key(keyid, keyfile)
+	return pakfire.keyring.export_key(keyid, keyfile, secret=secret)
 
 def key_delete(keyid, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)

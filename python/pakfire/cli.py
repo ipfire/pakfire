@@ -1220,6 +1220,8 @@ class CliKey(Cli):
 			help=_("The ID of the key to export."))
 		sub_export.add_argument("filename", nargs=1,
 			help=_("Write the key to this file."))
+		sub_export.add_argument("--secret", action="store_true",
+			help=_("Export the secret key, too."))
 		sub_export.add_argument("action", action="store_const", const="export")
 
 	def parse_command_delete(self):
@@ -1275,8 +1277,9 @@ class CliKey(Cli):
 	def handle_export(self):
 		keyid    = self.args.keyid[0]
 		filename = self.args.filename[0]
+		secret   = self.args.secret
 
-		pakfire.key_export(keyid, filename, **self.pakfire_args)
+		pakfire.key_export(keyid, filename, secret=secret, **self.pakfire_args)
 
 	def handle_delete(self):
 		keyid = self.args.keyid[0]
