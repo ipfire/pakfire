@@ -296,16 +296,3 @@ def scriptlet_interpreter(scriptlet):
 		break
 
 	return interpreter
-
-def calc_parallelism():
-	"""
-		Calculate how many processes to run
-		at the same time.
-
-		We take the log10(number of processors) * factor
-	"""
-	num = os.sysconf("SC_NPROCESSORS_CONF")
-	if num == 1:
-		return 2
-
-	return num

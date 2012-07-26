@@ -45,6 +45,7 @@ from file import SourcePackage
 
 from pakfire.constants import *
 from pakfire.i18n import _
+from pakfire.system import system
 
 class MakefileBase(Package):
 	def __init__(self, pakfire, filename):
@@ -57,7 +58,7 @@ class MakefileBase(Package):
 		environ = self.pakfire.environ
 		environ.update({
 			"BASEDIR"          : os.path.dirname(self.filename),
-			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
+			"PARALLELISMFLAGS" : "-j%d" % system.parallelism,
 		})
 
 		# Open and parse the makefile.

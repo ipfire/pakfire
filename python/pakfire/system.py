@@ -150,6 +150,22 @@ class System(object):
 	def get_mountpoint(self, path):
 		return Mountpoint(path)
 
+	@property
+	def parallelism(self):
+		"""
+			Calculates how many processes should be run
+			simulatneously when compiling.
+		"""
+		# Check how many processes would fit into the
+		# memory when each process takes up to 500MB.
+		multiplicator = self.memory / (500 * 1024 * 1024)
+		multiplicator = round(multiplicator)
+
+		# Count the number of online CPU cores.
+		cpucount = os.sysconf("SC_NPROCESSORS_CONF")
+
+		return min(multiplicator, cpucount * 2)
+
 
 # Create an instance of this class to only keep it once in memory.
 system = System()

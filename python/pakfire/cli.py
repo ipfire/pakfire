@@ -960,6 +960,7 @@ class CliClient(Cli):
 		ret.append("  %s:" % _("Hardware information"))
 		ret.append("      %-16s: %s" % (_("CPU model"), system.cpu_model))
 		ret.append("      %-16s: %s" % (_("Memory"),    util.format_size(system.memory)))
+		ret.append("      %-16s: %s" % (_("Parallelism"), system.parallelism))
 		ret.append("")
 		ret.append("      %-16s: %s" % (_("Native arch"), system.native_arch))
 		if not system.arch == system.native_arch:
