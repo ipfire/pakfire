@@ -92,13 +92,19 @@ class TransactionCheck(object):
 			if len(pkgs) == 2:
 				logger.critical(
 					_("file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s") % \
-						{ "name" : name, "pkg1" : pkgs[0], "pkg2" : pkgs[1] }
+						{ "name" : file, "pkg1" : pkgs[0], "pkg2" : pkgs[1] }
 				)
 
 			elif len(pkgs) >= 3:
 				logger.critical(
 					_("file %(name)s from %(pkg)s conflicts with files from %(pkgs)s") % \
-						{ "name" : name, "pkg" : pkgs[0], "pkgs" : i18n.list(pkgs[1:])}
+						{ "name" : file, "pkg" : pkgs[0], "pkgs" : i18n.list(pkgs[1:])}
+				)
+
+			else:
+				logger.critical(
+					_("file %(name)s causes the transaction test to fail for an unknown reason") % \
+						{ "name" : file }
 				)
 
 		for mp in self.mountpoints:

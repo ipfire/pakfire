@@ -31,6 +31,8 @@ TYPE_DIR  = tarfile.DIRTYPE	# directory
 TYPE_FIFO = tarfile.FIFOTYPE	# fifo special device
 TYPE_CONT = tarfile.CONTTYPE	# contiguous file
 
+TYPE_DIR_INT = int(TYPE_DIR)
+
 class _File(object):
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
@@ -69,6 +71,10 @@ class File(_File):
 		self.mtime = 0
 		self.capabilities = None
 
+	def is_dir(self):
+		return self.type == TYPE_DIR_INT \
+			or self.name.endswith("/")
+
 	def is_config(self):
 		return self.config
 
@@ -94,6 +100,10 @@ class FileDatabase(_File):
 			c.close()
 
 		return self.__row
+
+	def is_dir(self):
+		return self.type == TYPE_DIR_INT \
+			or self.name.endswith("/")
 
 	def is_config(self):
 		return self.row["config"] == 1

@@ -157,7 +157,7 @@ class Packager(object):
 				"%d-%02d-%02d %02d:%02d:%02d" % time.localtime(m.mtime)[:6],
 				util.format_size(m.size), m.name))
 
-			f.write("%(name)-40s %(type)1s %(size)-10d %(uname)-10s %(gname)-10s %(mode)-6d %(mtime)-12d" \
+			f.write("%(type)1s %(size)-10d %(uname)-10s %(gname)-10s %(mode)-6d %(mtime)-12d" \
 				% m.get_info(tarfile.ENCODING, "strict"))
 
 			# Calculate SHA512 hash of regular files.
@@ -181,6 +181,9 @@ class Packager(object):
 				f.write(" %s" % caps)
 			else:
 				f.write(" -")
+
+			# The file name must be the last argument to contain spaces.
+			f.write(" %s" % m.name)
 
 			f.write("\n")
 

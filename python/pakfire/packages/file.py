@@ -232,7 +232,7 @@ class FilePackage(Package):
 
 		name2file = {}
 		for file in self.filelist:
-			if file.is_dir():
+			if file.is_dir() and file.name.endswith("/"):
 				name = file.name[:-1]
 			else:
 				name = file.name
@@ -424,8 +424,7 @@ class FilePackage(Package):
 			file = pakfire.filelist.File(self.pakfire)
 
 			if self.format >= 1:
-				line = line.rstrip()
-				line = line.split()
+				line = line.split(None, 8)
 
 				# Check if fields do have the correct length.
 				if self.format >= 3 and len(line) <= 7:
@@ -433,7 +432,11 @@ class FilePackage(Package):
 				elif len(line) <= 6:
 					continue
 
-				name = line[0]
+				# Switch the first and last argument in the line.
+				if self.format < 4:
+					line.append(line.pop(0))
+
+				name = line[-1]
 
 				if not name.startswith("/"):
 					name = "/%s" % name
@@ -444,37 +447,37 @@ class FilePackage(Package):
 
 				# Parse file type.
 				try:
-					file.type = int(line[1])
+					file.type = int(line[0])
 				except ValueError:
 					file.type = 0
 
 				# Parse the size information.
 				try:
-					file.size = int(line[2])
+					file.size = int(line[1])
 				except ValueError:
 					file.size = 0
 
 				# Parse user and group.
-				file.user, file.group = line[3], line[4]
+				file.user, file.group = line[2], line[3]
 
 				# Parse mode.
 				try:
-					file.mode = int(line[5])
+					file.mode = int(line[4])
 				except ValueError:
 					file.mode = 0
 
 				# Parse time.
 				try:
-					file.mtime = line[6]
+					file.mtime = line[5]
 				except ValueError:
 					file.mtime = 0
 
 				# Parse hash1 (sha512).
-				if not line[7] == "-":
-					file.hash1 = line[7]
+				if not line[6] == "-":
+					file.hash1 = line[6]
 
-				if self.format >= 3 and len(line) >= 9 and not line[8] == "-":
-					file.capabilities = line[8]
+				if self.format >= 3 and len(line) >= 9 and not line[7] == "-":
+					file.capabilities = line[7]
 
 			else:
 				name = line
