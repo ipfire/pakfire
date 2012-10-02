@@ -140,8 +140,17 @@ class ActionScript(Action):
 	script_action = None
 
 	def init(self):
-		# Load the scriplet.
-		self.scriptlet = self.pkg.get_scriptlet(self.script_action)
+		self._scriptlet = None
+
+	@property
+	def scriptlet(self):
+		"""
+			Load the scriplet.
+		"""
+		if self._scriptlet is None:
+			self._scriptlet = self.pkg.get_scriptlet(self.script_action)
+
+		return self._scriptlet
 
 	def get_lang(self):
 		if not self.scriptlet:
