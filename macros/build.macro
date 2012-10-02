@@ -46,7 +46,17 @@ def MACRO_INSTALL_LOGROTATE_FILES
 end
 
 def MACRO_PYTHON_COMPILE
-	# XXX TODO
+	if [ -x "%{python3}" ]; then
+		%{python3_bytecompile} \
+			%{BUILDROOT}%{python3_sitearch} \
+			%{BUILDROOT}%{python3_sitelib}
+	fi
+
+	if [ -x "%{python}" ]; then
+		%{python_bytecompile} \
+			%{BUILDROOT}%{python_sitearch} \
+			%{BUILDROOT}%{python_sitelib}
+	fi
 end
 
 MACRO_PERL_CLEANUP
