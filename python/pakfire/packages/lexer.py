@@ -6,6 +6,8 @@ import re
 from pakfire.constants import *
 from pakfire.i18n import _
 
+import pakfire.chroot
+
 import logging
 #log = logging.getLogger("pakfire.lexer")
 log = logging.getLogger("pakfire")
@@ -90,7 +92,7 @@ LEXER_UNEXPORT        = re.compile(r"^unexport\s+([A-Za-z0-9_\-]+)$")
 LEXER_INCLUDE         = re.compile(r"^include\s+(.+)$")
 
 LEXER_VARIABLE        = re.compile(r"\%\{([A-Za-z0-9_\-]+)\}")
-LEXER_SHELL           = re.compile(r"\%\(.*\)")
+LEXER_SHELL           = re.compile(r"\%\((.*)\)")
 
 LEXER_IF_IF           = re.compile(r"^if\s+(.*)\s+(==|!=)\s+(.*)\s*")
 LEXER_IF_ELIF         = re.compile(r"^elif\s+(.*)\s*(==|!=)\s*(.*)\s*")
@@ -204,6 +206,18 @@ class Lexer(object):
 		if s is None:
 			return ""
 
+		# First run all embedded commands.
+		while s:
+			m = re.search(LEXER_SHELL, s)
+			if not m:
+				break
+
+			command = m.group(1)
+			result = self.exec_command(command)
+
+			s = s.replace("%%(%s)" % command, result or "")
+
+		# Then expand the variables.
 		while s:
 			m = re.search(LEXER_VARIABLE, s)
 			if not m:
@@ -213,6 +227,27 @@ class Lexer(object):
 			s = s.replace("%%{%s}" % var, self.get_var(var))
 
 		return s
+
+	def exec_command(self, command):
+		# Expand all variables in the command.
+		command = self.expand_string(command)
+
+		# If the command is empty, we don't do anything.
+		if not command:
+			return
+
+		# Do we need to chroot and change personality?
+		try:
+			output = pakfire.chroot.do(command, shell=True, returnOutput=1, logger=log)
+
+		except Error:
+			return
+
+		# Strip newline.
+		if output:
+			output = output.rstrip("\n")
+
+		return output
 
 	def get_var(self, key, default=None, raw=False):
 		definitions = {}
