@@ -87,4 +87,24 @@ packages
 			%{datadir}/doc
 		end
 	end
+
+	template PYTHON
+		summary = Python bindings from the %{name} package.
+		description = %{summary}
+
+		files
+			%{python_sitearch}
+			%{python_sitelib}
+		end
+	end
+
+	template PYTHON3
+		summary = Python 3 bindings from the %{name} package.
+		description = %{summary}
+
+		files
+			%{python3_sitearch}
+			%{python3_sitelib}
+		end
+	end
 end
