@@ -33,14 +33,18 @@ tempfile=$(mktemp)
 trap "rm -f ${tempfile}" EXIT
 
 cat > ${tempfile} <<EOF
+import os
 import py_compile
 import sys
 
 for file in sys.argv[1:]:
+	if not os.path.exists(file):
+		continue
+
 	py_compile.compile(file, doraise=0)
 EOF
 
-filelist=$(find ${paths} -type f -a -name "*.py")
+filelist=$(find ${paths} -type f -a -name "*.py" 2>/dev/null)
 
 # Compile with optimization.
 ${python_interpreter} -O ${tempfile} ${filelist}
@@ -49,7 +53,7 @@ ${python_interpreter} -O ${tempfile} ${filelist}
 ${python_interpreter} ${tempfile} ${filelist}
 
 # Hardlink identical files.
-for pyc in $(find ${paths} -type f -a -name "*.pyc"); do
+for pyc in $(find ${paths} -type f -a -name "*.pyc" 2>/dev/null); do
 	pyo="${pyc/.pyc/.pyo}"
 
 	if cmp -s "${pyc}" "${pyo}"; then
