@@ -678,11 +678,15 @@ class Pakfire(object):
 		finally:
 			b.stop()
 
-	def _build(self, pkg, resultdir, nodeps=False, **kwargs):
+	def _build(self, pkg, resultdir, nodeps=False, prepare=False, **kwargs):
 		b = builder.Builder(self, pkg, resultdir, **kwargs)
 
+		stages = None
+		if prepare:
+			stages = ("prepare",)
+
 		try:
-			b.build()
+			b.build(stages=stages)
 
 		except Error:
 			raise BuildError, _("Build command has failed.")
@@ -696,6 +700,12 @@ class Pakfire(object):
 
 		try:
 			b.start()
+
+			try:
+				b.build(prepare=True)
+			except BuildError:
+				pass
+
 			b.shell()
 		finally:
 			b.stop()

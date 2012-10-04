@@ -764,6 +764,8 @@ class CliBuilderIntern(Cli):
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 		sub_build.add_argument("--nodeps", action="store_true",
 			help=_("Do not verify build dependencies."))
+		sub_build.add_argument("--prepare", action="store_true",
+			help=_("Only run the prepare stage."))
 
 	def handle_build(self):
 		# Get the package descriptor from the command line options
@@ -787,6 +789,7 @@ class CliBuilderIntern(Cli):
 			"builder_mode"  : self.args.mode,
 			"config"        : conf,
 			"disable_repos" : disable_repos,
+			"prepare"       : self.args.prepare,
 			"resultdir"     : self.args.resultdir,
 		}
 

@@ -709,7 +709,7 @@ class BuildEnviron(object):
 
 		return ret
 
-	def build(self, install_test=True):
+	def build(self, install_test=True, prepare=False):
 		if not self.pkg:
 			raise BuildError, _("You cannot run a build when no package was given.")
 
@@ -733,17 +733,24 @@ class BuildEnviron(object):
 			"--resultdir=/result",
 		]
 
+		if prepare:
+			build_command.append("--prepare")
+
 		try:
 			self.do(" ".join(build_command), logger=self.log)
 
 			# Perform the install test after the actual build.
-			if install_test:
+			if install_test and not prepare:
 				self.install_test()
 
 		except Error:
 			self.log.error(_("Build failed."), exc_info=True)
 
 			raise BuildError, _("The build command failed. See logfile for details.")
+
+		# Don't sign packages in prepare mode.
+		if prepare:
+			return
 
 		# Sign all built packages with the host key (if available).
 		if self.settings.get("sign_packages"):
@@ -1055,7 +1062,7 @@ class Builder(object):
 
 		return f.name
 
-	def build(self):
+	def build(self, stages=None):
 		# Create buildroot and remove all content if it was existant.
 		util.rm(self.buildroot)
 		os.makedirs(self.buildroot)
@@ -1063,8 +1070,18 @@ class Builder(object):
 		# Build icecream toolchain if icecream is installed.
 		self.create_icecream_toolchain()
 
-		for stage in ("prepare", "build", "test", "install"):
+		if stages is None:
+			stages = ("prepare", "build", "test", "install")
+			stop_early = False
+		else:
+			stop_early = True
+
+		for stage in stages:
 			self.build_stage(stage)
+
+		# Stop if only the prepare stage is wanted.
+		if stop_early:
+			return
 
 		# Run post-build stuff.
 		self.post_compress_man_pages()
