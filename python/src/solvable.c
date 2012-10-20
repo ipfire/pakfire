@@ -477,10 +477,9 @@ PyObject *Solvable_get_maintainer(SolvableObject *self) {
 PyObject *Solvable_set_downloadsize(SolvableObject *self, PyObject *args) {
 	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
 
-	unsigned int downloadsize;
+	unsigned long long downloadsize;
 
-	if (!PyArg_ParseTuple(args, "i", &downloadsize)) {
-		/* XXX raise exception */
+	if (!PyArg_ParseTuple(args, "K", &downloadsize)) {
 		return NULL;
 	}
 
@@ -495,7 +494,7 @@ PyObject *Solvable_get_downloadsize(SolvableObject *self) {
 	unsigned long long downloadsize = repo_lookup_num(solv->repo, self->_id,
 		SOLVABLE_DOWNLOADSIZE, 0);
 
-	return Py_BuildValue("K", downloadsize / 1024);
+	return Py_BuildValue("K", downloadsize);
 }
 
 PyObject *Solvable_set_installsize(SolvableObject *self, PyObject *args) {
