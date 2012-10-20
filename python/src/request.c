@@ -64,15 +64,15 @@ PyObject *Request_dealloc(RequestObject *self) {
 }
 
 void _Request_solvable(RequestObject *self, Id what, Id solvable) {
-	queue_push2(&self->_queue, what|SOLVER_SOLVABLE, solvable);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE|SOLVER_WEAK, solvable);
 }
 
 void _Request_relation(RequestObject *self, Id what, Id relation) {
-	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES, relation);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES|SOLVER_WEAK, relation);
 }
 
 void _Request_name(RequestObject *self, Id what, Id provides) {
-	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_NAME, provides);
+	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_NAME|SOLVER_WEAK, provides);
 }
 
 PyObject *Request_install_solvable(RequestObject *self, PyObject *args) {

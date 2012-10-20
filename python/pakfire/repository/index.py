@@ -147,6 +147,16 @@ class Index(object):
 			rel = self.create_relation(file)
 			solvable.add_provides(rel)
 
+		# Import all recommends.
+		for reco in pkg.recommends:
+			rel = self.create_relation(reco)
+			solvable.add_recommends(rel)
+
+		# Import all suggests.
+		for sugg in pkg.suggests:
+			rel = self.create_relation(sugg)
+			solvable.add_suggests(rel)
+
 	def rem_package(self, pkg):
 		"""
 			Delete the solvable from the index.

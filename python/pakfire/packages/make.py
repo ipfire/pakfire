@@ -294,6 +294,14 @@ class Makefile(MakefileBase):
 		return []
 
 	@property
+	def recommends(self):
+		return []
+
+	@property
+	def suggests(self):
+		return []
+
+	@property
 	def files(self):
 		files = []
 		basedir = os.path.dirname(self.filename)
@@ -570,6 +578,14 @@ class MakefilePackage(MakefileBase):
 	@property
 	def conflicts(self):
 		return self.get_deps("conflicts")
+
+	@property
+	def recommends(self):
+		return self.get_deps("recommends")
+
+	@property
+	def suggests(self):
+		return self.get_deps("suggests")
 
 	def get_scriptlet(self, type):
 		return self.lexer.get_scriptlet(type)

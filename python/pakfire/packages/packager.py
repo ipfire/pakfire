@@ -265,6 +265,10 @@ class BinaryPackager(Packager):
 				for d in self.pkg.conflicts]),
 			"obsoletes"   : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
 				for d in self.pkg.obsoletes]),
+			"recommends"  : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.recommends]),
+			"suggests"    : "\n".join([PACKAGE_INFO_DEPENDENCY_LINE % d \
+				for d in self.pkg.suggests]),
 		})
 
 		# Format description.

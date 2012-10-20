@@ -161,6 +161,24 @@ class DatabasePackage(Package):
 		return self.metadata.get("obsoletes", "").splitlines()
 
 	@property
+	def recommends(self):
+		recommends = self.metadata.get("recommends", None)
+
+		if recommends:
+			return recommends.splitlines()
+
+		return []
+
+	@property
+	def suggests(self):
+		suggests = self.metadata.get("suggests", None)
+
+		if suggests:
+			return suggests.splitlines()
+
+		return []
+
+	@property
 	def hash1(self):
 		return self.metadata.get("hash1")
 

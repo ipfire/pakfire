@@ -99,6 +99,12 @@ extern PyObject *Solvable_get_obsoletes(SolvableObject *self);
 extern PyObject *Solvable_add_conflicts(SolvableObject *self, PyObject *args);
 extern PyObject *Solvable_get_conflicts(SolvableObject *self);
 
+extern PyObject *Solvable_add_recommends(SolvableObject *self, PyObject *args);
+extern PyObject *Solvable_get_recommends(SolvableObject *self);
+
+extern PyObject *Solvable_add_suggests(SolvableObject *self, PyObject *args);
+extern PyObject *Solvable_get_suggests(SolvableObject *self);
+
 extern PyTypeObject SolvableType;
 
 #endif

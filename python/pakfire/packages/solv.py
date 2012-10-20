@@ -182,6 +182,14 @@ class SolvPackage(base.Package):
 		return self.solvable.get_conflicts()
 
 	@property
+	def recommends(self):
+		return self.solvable.get_recommends()
+
+	@property
+	def suggests(self):
+		return self.solvable.get_suggests()
+
+	@property
 	def filename(self):
 		return self.solvable.get_filename()
 

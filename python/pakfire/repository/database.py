@@ -189,6 +189,8 @@ class DatabaseLocal(Database):
 				requires	TEXT,
 				conflicts	TEXT,
 				obsoletes	TEXT,
+				recommends	TEXT,
+				suggests	TEXT,
 				license		TEXT,
 				summary		TEXT,
 				description	TEXT,
@@ -250,6 +252,10 @@ class DatabaseLocal(Database):
 		if self.format < 3:
 			c.execute("ALTER TABLE files ADD COLUMN `capabilities` TEXT")
 
+		if self.format < 4:
+			c.execute("ALTER TABLE packages ADD COLUMN recommends TEXT AFTER obsoletes")
+			c.execute("ALTER TABLE packages ADD COLUMN suggests TEXT AFTER recommends")
+
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
 		self.__format = DATABASE_FORMAT
@@ -278,6 +284,8 @@ class DatabaseLocal(Database):
 					requires,
 					conflicts,
 					obsoletes,
+					recommends,
+					suggests,
 					license,
 					summary,
 					description,
@@ -290,7 +298,7 @@ class DatabaseLocal(Database):
 					installed,
 					repository,
 					reason
-				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 				(
 					pkg.name,
 					pkg.epoch,
@@ -305,6 +313,8 @@ class DatabaseLocal(Database):
 					"\n".join(pkg.requires),
 					"\n".join(pkg.conflicts),
 					"\n".join(pkg.obsoletes),
+					"\n".join(pkg.recommends),
+					"\n".join(pkg.suggests),
 					pkg.license,
 					pkg.summary,
 					pkg.description,

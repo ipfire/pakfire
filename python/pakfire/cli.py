@@ -148,6 +148,8 @@ class Cli(object):
 			help=_("Install one or more packages to the system."))
 		sub_install.add_argument("package", nargs="+",
 			help=_("Give name of at least one package to install."))
+		sub_install.add_argument("--without-recommends", action="store_true",
+			help=_("Don't install recommended packages."))
 		sub_install.add_argument("action", action="store_const", const="install")
 
 	def parse_command_reinstall(self):
@@ -317,7 +319,9 @@ class Cli(object):
 			**args)
 
 	def handle_install(self):
-		pakfire.install(self.args.package, **self.pakfire_args)
+		pakfire.install(self.args.package,
+			ignore_recommended=self.args.without_recommends,
+			**self.pakfire_args)
 
 	def handle_reinstall(self):
 		pakfire.reinstall(self.args.package, **self.pakfire_args)

@@ -116,6 +116,7 @@ class Solver(object):
 		"allow_downgrade"    : SOLVER_FLAG_ALLOW_DOWNGRADE,
 		"allow_uninstall"    : SOLVER_FLAG_ALLOW_UNINSTALL,
 		"allow_vendorchange" : SOLVER_FLAG_ALLOW_VENDORCHANGE,
+		"ignore_recommended" : SOLVER_FLAG_IGNORE_RECOMMENDED,
 	}
 
 	def __init__(self, pakfire, request, logger=None):

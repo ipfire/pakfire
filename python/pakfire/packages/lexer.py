@@ -365,7 +365,7 @@ class Lexer(object):
 
 		raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
 
-	DEP_DEFINITIONS = ("prerequires", "requires", "provides", "conflicts", "obsoletes",)
+	DEP_DEFINITIONS = ("prerequires", "requires", "provides", "conflicts", "obsoletes", "recommends", "suggests")
 
 	def parse_definition(self, pattern=LEXER_DEFINITION):
 		line = self.get_line(self._lineno)

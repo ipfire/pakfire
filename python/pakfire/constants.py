@@ -75,8 +75,8 @@ PACKAGE_FORMATS_SUPPORTED = [0, 1, 2, 3, 4]
 PACKAGE_EXTENSION = "pfm"
 MAKEFILE_EXTENSION = "nm"
 
-DATABASE_FORMAT = 3
-DATABASE_FORMATS_SUPPORTED = [0, 1, 2, 3]
+DATABASE_FORMAT = 4
+DATABASE_FORMATS_SUPPORTED = [0, 1, 2, 3, 4]
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
@@ -176,6 +176,14 @@ dependencies
 
 	def obsoletes
 %(obsoletes)s
+	end
+
+	def recommends
+%(recommends)s
+	end
+
+	def suggests
+%(suggests)s
 	end
 end
 

@@ -147,6 +147,10 @@ static PyMethodDef Solvable_methods[] = {
 	{"get_obsoletes", (PyCFunction)Solvable_get_obsoletes, METH_NOARGS, NULL},
 	{"add_conflicts", (PyCFunction)Solvable_add_conflicts, METH_VARARGS, NULL},
 	{"get_conflicts", (PyCFunction)Solvable_get_conflicts, METH_NOARGS, NULL},
+	{"add_recommends", (PyCFunction)Solvable_add_recommends, METH_VARARGS, NULL},
+	{"get_recommends", (PyCFunction)Solvable_get_recommends, METH_NOARGS, NULL},
+	{"add_suggests", (PyCFunction)Solvable_add_suggests, METH_VARARGS, NULL},
+	{"get_suggests", (PyCFunction)Solvable_get_suggests, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -317,4 +321,5 @@ void init_pakfire(void) {
 	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_UNINSTALL", Py_BuildValue("i", SOLVER_FLAG_ALLOW_UNINSTALL));
 	PyDict_SetItemString(d, "SOLVER_FLAG_NO_UPDATEPROVIDE", Py_BuildValue("i", SOLVER_FLAG_NO_UPDATEPROVIDE));
 	PyDict_SetItemString(d, "SOLVER_FLAG_SPLITPROVIDES", Py_BuildValue("i", SOLVER_FLAG_SPLITPROVIDES));
+	PyDict_SetItemString(d, "SOLVER_FLAG_IGNORE_RECOMMENDED", Py_BuildValue("i", SOLVER_FLAG_IGNORE_RECOMMENDED));
 }

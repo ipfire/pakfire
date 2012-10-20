@@ -171,6 +171,16 @@ class Package(object):
 				items.append((caption, req))
 				caption = ""
 
+			caption = _("Recommends")
+			for req in sorted(self.recommends):
+				items.append((caption, req))
+				caption = ""
+
+			caption = _("Suggests")
+			for req in sorted(self.suggests):
+				items.append((caption, req))
+				caption = ""
+
 		# Append filelist if requested.
 		if filelist:
 			for file in self.filelist:
@@ -454,6 +464,14 @@ class Package(object):
 	@property
 	def obsoletes(self):
 		return self.metadata.get("PKG_OBSOLETES", "").splitlines()
+
+	@property
+	def recommends(self):
+		return []
+
+	@property
+	def suggests(self):
+		return []
 
 	@property
 	def scriptlets(self):

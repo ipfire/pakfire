@@ -960,6 +960,26 @@ class FilePackage(Package):
 		conflicts = conflicts.splitlines()
 		return self.filter_deps(conflicts)
 
+	@property
+	def recommends(self):
+		recommends = self.lexer.deps.get_var("recommends")
+
+		if not recommends:
+			return []
+
+		recommends = recommends.splitlines()
+		return self.filter_deps(recommends)
+
+	@property
+	def suggests(self):
+		suggests = self.lexer.deps.get_var("suggests")
+
+		if not suggests:
+			return []
+
+		suggests = suggests.splitlines()
+		return self.filter_deps(suggests)
+
 
 class SourcePackage(FilePackage):
 	_type = "source"

@@ -26,10 +26,10 @@ from errors import *
 
 Pakfire = base.Pakfire
 
-def install(requires, **pakfire_args):
+def install(requires, ignore_recommended=False, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.install(requires)
+	return pakfire.install(requires, ignore_recommended=ignore_recommended)
 
 def resolvdep(pkgs, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)

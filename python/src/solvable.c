@@ -239,6 +239,42 @@ PyObject *Solvable_get_conflicts(SolvableObject *self) {
 	return _Solvable_get_dependencies(solv, solv->conflicts);
 }
 
+PyObject *Solvable_add_recommends(SolvableObject *self, PyObject *args) {
+	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
+
+	RelationObject *rel;
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		return NULL;
+	}
+
+	solv->recommends = repo_addid_dep(solv->repo, solv->recommends, rel->_id, 0);
+	Py_RETURN_NONE;
+}
+
+PyObject *Solvable_get_recommends(SolvableObject *self) {
+	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
+
+	return _Solvable_get_dependencies(solv, solv->recommends);
+}
+
+PyObject *Solvable_add_suggests(SolvableObject *self, PyObject *args) {
+	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
+
+	RelationObject *rel;
+	if (!PyArg_ParseTuple(args, "O", &rel)) {
+		return NULL;
+	}
+
+	solv->suggests = repo_addid_dep(solv->repo, solv->suggests, rel->_id, 0);
+	Py_RETURN_NONE;
+}
+
+PyObject *Solvable_get_suggests(SolvableObject *self) {
+	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
+
+	return _Solvable_get_dependencies(solv, solv->suggests);
+}
+
 PyObject *Solvable_set_uuid(SolvableObject *self, PyObject *args) {
 	Solvable *solv = pool_id2solvable(self->_pool, self->_id);
 
