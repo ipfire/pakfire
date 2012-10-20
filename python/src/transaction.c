@@ -86,5 +86,5 @@ PyObject *Transaction_steps(TransactionObject *self, PyObject *args) {
 PyObject *Transaction_get_installsizechange(TransactionObject *self) {
 	int installsizechange = transaction_calc_installsizechange(self->_transaction);
 
-	return Py_BuildValue("i", installsizechange);
+	return Py_BuildValue("i", installsizechange * 1024);
 }
