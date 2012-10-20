@@ -10,13 +10,16 @@ TRANS_FILES := $(addprefix $(TOP),$(TRANS_FILES))
 TRANS_FILES := $(sort $(wildcard $(TRANS_FILES)))
 
 .PHONY: all
-all: $(POT_FILE) $(MO_FILES)
+all: $(MO_FILES)
+
+.PHONY: pot
+pot: $(POT_FILE)
 
 $(POT_FILE): $(TRANS_FILES)
 	xgettext -d $(PACKAGE_NAME) -k_ -kN_ \
 		-o $@ --add-comments --from-code=UTF-8 $^ 
 
-%.mo: %.po $(POT_FILE)
+%.mo: %.po
 	msgfmt -o $@ $<
 
 .PHONY: install
@@ -29,4 +32,4 @@ install: $(MO_FILES)
 
 .PHONY: clean
 clean:
-	rm -f $(POT_FILE) $(MO_FILES)
+	rm -f $(MO_FILES)

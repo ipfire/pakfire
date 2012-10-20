@@ -45,3 +45,7 @@ check:
 .PHONY: po
 po:
 	$(MAKE) -C po
+
+.PHONY: pot
+pot:
+	$(MAKE) -C po pot
