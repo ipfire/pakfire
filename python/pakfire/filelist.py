@@ -54,6 +54,9 @@ class _File(object):
 		# XXX TODO
 		return False
 
+	def is_datafile(self):
+		return False
+
 
 class File(_File):
 	def __init__(self, pakfire):
@@ -70,6 +73,7 @@ class File(_File):
 		self.group = 0
 		self.mtime = 0
 		self.capabilities = None
+		self.datafile = False
 
 	def is_dir(self):
 		return self.type == TYPE_DIR_INT \
@@ -77,6 +81,9 @@ class File(_File):
 
 	def is_config(self):
 		return self.config
+
+	def is_datafile(self):
+		return self.datafile
 
 
 class FileDatabase(_File):
@@ -107,6 +114,9 @@ class FileDatabase(_File):
 
 	def is_config(self):
 		return self.row["config"] == 1
+
+	def is_datafile(self):
+		return self.row["datafile"] == 1
 
 	@property
 	def pkg(self):

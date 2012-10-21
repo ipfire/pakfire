@@ -166,6 +166,7 @@ class DatabaseLocal(Database):
 				size		INTEGER,
 				type		INTEGER,
 				config		INTEGER,
+				datafile	INTEGER,
 				mode		INTEGER,
 				user		TEXT,
 				`group`		TEXT,
@@ -256,6 +257,9 @@ class DatabaseLocal(Database):
 			c.execute("ALTER TABLE packages ADD COLUMN recommends TEXT AFTER obsoletes")
 			c.execute("ALTER TABLE packages ADD COLUMN suggests TEXT AFTER recommends")
 
+		if self.format < 5:
+			c.execute("ALTER TABLE files ADD COLUMN datafile INTEGER AFTER config")
+
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
 		self.__format = DATABASE_FORMAT
@@ -332,9 +336,9 @@ class DatabaseLocal(Database):
 
 			pkg_id = c.lastrowid
 
-			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`, `capabilities`)"
-					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				((f.name, pkg_id, f.size, f.is_config(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime, f.capabilities or "") for f in pkg.filelist))
+			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `datafile`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`, `capabilities`)"
+					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				((f.name, pkg_id, f.size, f.is_config(), f.is_datafile(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime, f.capabilities or "") for f in pkg.filelist))
 
 		except:
 			raise

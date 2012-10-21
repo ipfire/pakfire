@@ -312,6 +312,11 @@ class FilePackage(Package):
 					messages.append(_("Config file created as %s") % config_new)
 					continue
 
+			# Don't overwrite target files if they already exist.
+			if file.is_datafile() and os.path.exists(target):
+				log.debug(_("Don't overwrite already existing datafile '/%s'") % member.name)
+				continue
+
 			# If the member is a directory and if it already exists, we
 			# don't need to create it again.
 			if os.path.exists(target):
@@ -394,6 +399,32 @@ class FilePackage(Package):
 
 		return inst_size
 
+	def read_plain_filelist(self, filename):
+		a = self.open_archive()
+		files = []
+
+		try:
+			f = a.extractfile(filename)
+			for line in f.readlines():
+				# Strip newline at end of line.
+				file = line.rstrip()
+
+				# Add a leading / is not present.
+				if not file.startswith("/"):
+					file = "/%s" % file
+
+				files.append(file)
+			f.close()
+
+		# Ignore if 'filename' does not exist.
+		except KeyError:
+			pass
+
+		finally:
+			a.close()
+
+		return files
+
 	def get_filelist(self):
 		"""
 			Return a list of the files that are contained in the package
@@ -404,18 +435,14 @@ class FilePackage(Package):
 		a = self.open_archive()
 
 		# Cache configfiles.
-		configfiles = []
+		if self.format >= 5:
+			filename = "configfiles"
+		else:
+			filename = "configs"
+		configfiles = self.read_plain_filelist(filename)
 
-		try:
-			f = a.extractfile("configs")
-			for line in f.readlines():
-				line = line.rstrip()
-				if not line.startswith("/"):
-					line = "/%s" % line
-				configfiles.append(line)
-			f.close()
-		except KeyError:
-			pass # Package has no configuration files. Never mind.
+		# Cache datafiles.
+		datafiles = self.read_plain_filelist("datafiles")
 
 		f = a.extractfile("filelist")
 		for line in f.readlines():
@@ -444,6 +471,10 @@ class FilePackage(Package):
 				# Check if configfiles.
 				if name in configfiles:
 					file.config = True
+
+				# Check if this is a datafile.
+				if name in datafiles:
+					file.datafile = True
 
 				# Parse file type.
 				try:
@@ -505,6 +536,10 @@ class FilePackage(Package):
 	@property
 	def configfiles(self):
 		return [f for f in self.filelist if f.is_config()]
+
+	@property
+	def datafiles(self):
+		return [f for f in self.filelist if f.is_datafile()]
 
 	@property
 	def payload_compression(self):

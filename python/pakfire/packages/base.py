@@ -481,6 +481,14 @@ class Package(object):
 	def filelist(self):
 		raise NotImplementedError
 
+	@property
+	def configfiles(self):
+		return []
+
+	@property
+	def datafiles(self):
+		return []
+
 	def extract(self, path, prefix=None):
 		raise NotImplementedError, "%s" % repr(self)
 
@@ -490,9 +498,13 @@ class Package(object):
 		# kept. files and configfiles are disjunct.
 		files = []
 		configfiles = self.configfiles
+		datafiles = self.datafiles
 
 		for file in self.filelist:
 			if file in configfiles:
+				continue
+
+			if file in datafiles:
 				continue
 
 			assert file.startswith("/")
@@ -550,6 +562,11 @@ class Package(object):
 				if prefix:
 					file_save = os.path.relpath(file_save, prefix)
 				messages.append(_("Config file saved as %s.") % file_save)
+				continue
+
+			# Preserve datafiles.
+			if _file.is_datafile():
+				log.debug(_("Preserving datafile '/%s'") % _file)
 				continue
 
 			# Handle regular files and symlinks.

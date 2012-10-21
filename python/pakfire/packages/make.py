@@ -402,6 +402,11 @@ class MakefilePackage(MakefileBase):
 		return self.lexer.get_var("configfiles").split()
 
 	@property
+	def datafiles(self):
+		files = self.lexer.get_var("datafiles")
+		return files.split()
+
+	@property
 	def files(self):
 		return self.lexer.get_var("files").split()
 

@@ -525,7 +525,7 @@ class BinaryPackager(Packager):
 
 		return scriptlets
 
-	def create_configs(self, datafile):
+	def find_files(self, datafile, patterns):
 		if self.payload_compression == "xz":
 			datafile = InnerTarFileXz.open(datafile)
 		else:
@@ -533,24 +533,24 @@ class BinaryPackager(Packager):
 
 		members = datafile.getmembers()
 
-		configfiles = []
-		configdirs  = []
+		files = []
+		dirs  = []
 
-		# Find all directories in the config file list.
-		for file in self.pkg.configfiles:
+		# Find all directories in the file list.
+		for file in patterns:
 			if file.startswith("/"):
 				file = file[1:]
 
 			for member in members:
 				if member.name == file and member.isdir():
-					configdirs.append(file)
+					dirs.append(file)
 
-		for configdir in configdirs:
+		for d in dirs:
 			for member in members:
-				if not member.isdir() and member.name.startswith(configdir):
-					configfiles.append(member.name)
+				if not member.isdir() and member.name.startswith(d):
+					files.append(member.name)
 
-		for pattern in self.pkg.configfiles:
+		for pattern in patterns:
 			if pattern.startswith("/"):
 				pattern = pattern[1:]
 
@@ -558,22 +558,39 @@ class BinaryPackager(Packager):
 				if not fnmatch.fnmatch(member.name, pattern):
 					continue
 
-				if member.name in configfiles:
+				if member.name in files:
 					continue
 
-				configfiles.append(member.name)
+				files.append(member.name)
 
 		# Sort list alphabetically.
-		configfiles.sort()
+		files.sort()
+
+		return files
+
+	def create_configfiles(self, datafile):
+		files = self.find_files(datafile, self.pkg.configfiles)
 
 		configsfile = self.mktemp()
 
 		f = open(configsfile, "w")
-		for file in configfiles:
+		for file in files:
 			f.write("%s\n" % file)
 		f.close()
 
 		return configsfile
+
+	def create_datafiles(self, datafile):
+		files = self.find_files(datafile, self.pkg.datafiles)
+
+		datafile = self.mktemp()
+
+		f = open(datafile, "w")
+		for file in files:
+			f.write("%s\n" % file)
+		f.close()
+
+		return datafile
 
 	def run(self, resultdir):
 		# Add all files to this package.
@@ -581,7 +598,8 @@ class BinaryPackager(Packager):
 
 		# Get filelist from datafile.
 		filelist = self.create_filelist(datafile)
-		configs  = self.create_configs(datafile)
+		configfiles = self.create_configfiles(datafile)
+		datafiles   = self.create_datafiles(datafile)
 
 		# Create script files.
 		scriptlets = self.create_scriptlets()
@@ -591,7 +609,8 @@ class BinaryPackager(Packager):
 		# Add files to the tar archive in correct order.
 		self.add(metafile, "info")
 		self.add(filelist, "filelist")
-		self.add(configs,  "configs")
+		self.add(configfiles, "configfiles")
+		self.add(datafiles, "datafiles")
 		self.add(datafile, "data.img")
 
 		for scriptlet_name, scriptlet_file in scriptlets:

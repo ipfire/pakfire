@@ -216,6 +216,18 @@ class DatabasePackage(Package):
 
 		return ret
 
+	@property
+	def datafiles(self):
+		ret = []
+
+		for file in self.filelist:
+			if not file.is_datafile():
+				continue
+
+			ret.append(file)
+
+		return ret
+
 	def _does_provide_file(self, requires):
 		"""
 			A faster version to find a file in the database.
