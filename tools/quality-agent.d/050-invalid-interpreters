@@ -22,10 +22,11 @@ check() {
 			fi
 
 			# Search for bad /usr/bin/env
-			if [ "$(basename ${interpreter})" = "env" ]; then	
+			interp=$(basename ${interpreter} 2>/dev/null)
+			if [ "${interp}" = "env" ]; then
 				# Autofix that crap
 				sed -i ${file} \
-					-e "s,/usr/bin/env python.\..,/usr/bin/python," \
+					-e "s,/usr/bin/env python\(.*\),/usr/bin/python\1," \
 					-e "s,/usr/bin/env python,/usr/bin/python," \
 					-e "s,/usr/bin/env perl,/usr/bin/perl,"
 
