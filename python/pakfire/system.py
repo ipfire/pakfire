@@ -55,7 +55,7 @@ class System(object):
 		"""
 			Return the architecture of the host we are running on.
 		"""
-		if not self.native_arch in self.supported_arches:
+		if self.supported_arches and not self.native_arch in self.supported_arches:
 			return self.supported_arches[0]
 
 		return self.native_arch
