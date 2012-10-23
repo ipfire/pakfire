@@ -238,7 +238,7 @@ class Lexer(object):
 
 		# Do we need to chroot and change personality?
 		try:
-			output = pakfire.chroot.do(command, shell=True, returnOutput=1, logger=log)
+			output = pakfire.chroot.do(command, shell=True, returnOutput=1, logstderr=False)
 
 		except Error:
 			return

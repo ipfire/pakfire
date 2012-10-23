@@ -79,7 +79,7 @@ def logOutput(fds, logger, returnOutput=1, start=0, timeout=0):
 	return output
 
 
-def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True, returnOutput=0, personality=None, logger=None, env=None, cgroup=None, *args, **kargs):
+def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True, returnOutput=0, logstderr=1, personality=None, logger=None, env=None, cgroup=None, *args, **kargs):
 	# Save the output of command
 	output = ""
 
@@ -94,6 +94,11 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 
 	child = None
 
+	if logstderr:
+		stderr = subprocess.PIPE
+	else:
+		stderr = open("/dev/null", "w")
+
 	try:
 		# Create new child process
 		child = subprocess.Popen(
@@ -102,7 +107,7 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 			bufsize=0, close_fds=True, 
 			stdin=open("/dev/null", "r"), 
 			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE,
+			stderr=stderr,
 			preexec_fn = preexec,
 			env=env
 		)
@@ -112,7 +117,11 @@ def do(command, shell=False, chrootPath=None, cwd=None, timeout=0, raiseExc=True
 			cgroup.attach_task(child.pid)
 
 		# use select() to poll for output so we dont block
-		output = logOutput([child.stdout, child.stderr], logger, returnOutput, start, timeout)
+		fds = [child.stdout,]
+		if logstderr:
+			fds.append(child.stderr)
+
+		output = logOutput(fds, logger, returnOutput, start, timeout)
 
 	except:
 		# kill children if they aren't done
