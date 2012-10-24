@@ -86,6 +86,10 @@ class PakfireContainerError(Error):
 	message = _("Running pakfire-build in a pakfire container?")
 
 
+class ShellEnvironmentError(Error):
+	pass
+
+
 class SignatureError(Error):
 	pass
 

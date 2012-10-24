@@ -6,7 +6,7 @@ import re
 from pakfire.constants import *
 from pakfire.i18n import _
 
-import pakfire.chroot
+import pakfire.shell
 
 import logging
 #log = logging.getLogger("pakfire.lexer")
@@ -237,17 +237,20 @@ class Lexer(object):
 			return
 
 		# Do we need to chroot and change personality?
-		try:
-			output = pakfire.chroot.do(command, shell=True, returnOutput=1, logstderr=False)
+		shellenv = pakfire.shell.ShellExecuteEnvironment(command,
+			shell=True, record_output=True, log_output=False, record_stderr=False)
 
-		except Error:
+		try:
+			shellenv.execute()
+
+		except ShellEnvironmentError:
 			return
 
 		# Strip newline.
-		if output:
-			output = output.rstrip("\n")
+		if shellenv.output:
+			return shellenv.output.rstrip("\n")
 
-		return output
+		return shellenv.output
 
 	def get_var(self, key, default=None, raw=False):
 		definitions = {}

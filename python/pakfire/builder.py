@@ -33,12 +33,12 @@ import uuid
 
 import base
 import cgroup
-import chroot
 import logger
 import packages
 import packages.file
 import packages.packager
 import repository
+import shell
 import util
 import _pakfire
 
@@ -204,6 +204,7 @@ class BuildEnviron(object):
 			"enable_ccache"   : True,
 			"enable_icecream" : False,
 			"sign_packages"   : False,
+			"buildroot_tmpfs" : False,
 		}
 		#self.settings.update(settings)
 
@@ -270,6 +271,14 @@ class BuildEnviron(object):
 			Inherit architecture from distribution configuration.
 		"""
 		return self.distro.arch
+
+	@property
+	def personality(self):
+		"""
+			Gets the personality from the distribution configuration.
+		"""
+		if self.distro:
+			return self.distro.personality
 
 	@property
 	def info(self):
@@ -528,9 +537,7 @@ class BuildEnviron(object):
 			if not os.path.exists(mountpoint):
 				os.makedirs(mountpoint)
 
-			cmd = "mount -n -t %s %s %s %s" % \
-				(fs, options, src, mountpoint)
-			chroot.do(cmd, shell=True)
+			self.execute_root("mount -n -t %s %s %s %s" % (fs, options, src, mountpoint), shell=True)
 
 	def _umountall(self):
 		self.log.debug("Umounting environment")
@@ -543,16 +550,20 @@ class BuildEnviron(object):
 		for dest in mountpoints:
 			mountpoint = self.chrootPath(dest)
 
-			chroot.do("umount -n %s" % mountpoint, raiseExc=0, shell=True)
+			try:
+				self.execute_root("umount -n %s" % mountpoint, shell=True)
+			except ShellEnvironmentError:
+				pass
 
 	@property
 	def mountpoints(self):
 		mountpoints = []
 
-		# Make root as a tmpfs.
-		#mountpoints += [
-		#	("pakfire_root", "/", "tmpfs", "defaults"),
-		#]
+		# Make root as a tmpfs if enabled.
+		if self.settings.get("buildroot_tmpfs"):
+			mountpoints += [
+				("pakfire_root", "/", "tmpfs", "defaults"),
+			]
 
 		mountpoints += [
 			# src, dest, fs, options
@@ -669,9 +680,14 @@ class BuildEnviron(object):
 			f.write("\n".join(conf))
 			f.close()
 
-	def do(self, command, shell=True, personality=None, logger=None, *args, **kwargs):
-		ret = None
+	@property
+	def pkg_makefile(self):
+		return os.path.join(self.build_dir, "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION))
 
+	def execute(self, command, logger=None, **kwargs):
+		"""
+			Executes the given command in the build chroot.
+		"""
 		# Environment variables
 		env = self.environ
 
@@ -682,42 +698,42 @@ class BuildEnviron(object):
 		for k, v in sorted(env.items()):
 			self.log.debug("  %s=%s" % (k, v))
 
-		# Update personality it none was set
-		if not personality:
-			personality = self.distro.personality
-
 		# Make every shell to a login shell because we set a lot of
 		# environment things there.
-		if shell:
-			command = ["bash", "--login", "-c", command]
+		command = ["bash", "--login", "-c", command]
 
-		if not kwargs.has_key("chrootPath"):
-			kwargs["chrootPath"] = self.chrootPath()
+		args = {
+			"chroot_path" : self.chrootPath(),
+			"cgroup"      : self.cgroup,
+			"env"         : env,
+			"logger"      : logger,
+			"personality" : self.personality,
+			"shell"       : False,
+		}
+		args.update(kwargs)
 
-		if not kwargs.has_key("cgroup"):
-			kwargs["cgroup"] = self.cgroup
+		# Run the shit.
+		shellenv = shell.ShellExecuteEnvironment(command, **args)
+		shellenv.execute()
 
-		ret = chroot.do(
-			command,
-			personality=personality,
-			shell=False,
-			env=env,
-			logger=logger,
-			*args,
-			**kwargs
-		)
+		return shellenv
 
-		return ret
+	def execute_root(self, command, **kwargs):
+		"""
+			Executes the given command outside the build chroot.
+		"""
+		shellenv = shell.ShellExecuteEnvironment(command, **kwargs)
+		shellenv.execute()
+
+		return shellenv
 
 	def build(self, install_test=True, prepare=False):
 		if not self.pkg:
 			raise BuildError, _("You cannot run a build when no package was given.")
 
 		# Search for the package file in build_dir and raise BuildError if it is not present.
-		pkgfile = os.path.join(self.build_dir, "%s.%s" % (self.pkg.name, MAKEFILE_EXTENSION))
-		if not os.path.exists(pkgfile):
-			raise BuildError, _("Could not find makefile in build root: %s") % pkgfile
-		pkgfile = "/%s" % os.path.relpath(pkgfile, self.chrootPath())
+		if not os.path.exists(self.pkg_makefile):
+			raise BuildError, _("Could not find makefile in build root: %s") % self.pkg_makefile
 
 		# Write pakfire configuration into the chroot.
 		self.write_config()
@@ -727,41 +743,49 @@ class BuildEnviron(object):
 			"/usr/lib/pakfire/builder",
 			"--offline",
 			"build",
-			pkgfile,
+			"/%s" % os.path.relpath(self.pkg_makefile, self.chrootPath()),
 			"--arch", self.arch,
 			"--nodeps",
 			"--resultdir=/result",
 		]
+		build_command = " ".join(build_command)
 
+		# Check if only the preparation stage should be run.
 		if prepare:
 			build_command.append("--prepare")
 
+		error = False
 		try:
-			self.do(" ".join(build_command), logger=self.log)
+			self.execute(build_command, logger=self.log)
 
 			# Perform the install test after the actual build.
 			if install_test and not prepare:
 				self.install_test()
 
-		except Error:
+		except ShellEnvironmentError:
+			error = True
+			self.log.error(_("Build failed"))
+
+		# Catch all other errors.
+		except:
+			error = True
 			self.log.error(_("Build failed."), exc_info=True)
 
-			raise BuildError, _("The build command failed. See logfile for details.")
+		else:
+			# Don't sign packages in prepare mode.
+			if prepare:
+				return
 
-		# Don't sign packages in prepare mode.
-		if prepare:
+			# Sign all built packages with the host key (if available).
+			self.sign_packages()
+
+			# Dump package information.
+			self.dump()
+
 			return
 
-		# Sign all built packages with the host key (if available).
-		if self.settings.get("sign_packages"):
-			host_key = self.keyring.get_host_key_id()
-			assert host_key
-
-			# Do the signing...
-			self.sign(host_key)
-
-		# Dump package information.
-		self.dump()
+		# End here in case of an error.
+		raise BuildError, _("The build command failed. See logfile for details.")
 
 	def install_test(self):
 		self.log.info(_("Running installation test..."))
@@ -801,8 +825,14 @@ class BuildEnviron(object):
 		shell = os.system(command)
 		return os.WEXITSTATUS(shell)
 
-	def sign(self, keyfp):
-		assert self.keyring.get_key(keyfp), "Key for signing does not exist"
+	def sign_packages(self, keyfp=None):
+		# Do nothing if signing is not requested.
+		if not self.settings.get("sign_packages"):
+			return
+
+		# Get key, that should be used for signing.
+		if not keyfp:
+			keyfp = self.keyring.get_host_key_id()
 
 		# Find all files to process.
 		files = self.find_result_packages()
@@ -982,41 +1012,32 @@ class Builder(object):
 
 		return environ
 
-	def do(self, command, shell=True, *args, **kwargs):
-		try:
-			logger = kwargs["logger"]
-		except KeyError:
+	def execute(self, command, logger=None, **kwargs):
+		if logger is None:
 			logger = logging.getLogger("pakfire")
-			kwargs["logger"] = logger
-
-		# Environment variables
-		log.debug("Environment:")
-		for k, v in sorted(self.environ.items()):
-			log.debug("  %s=%s" % (k, v))
-
-		# Update personality it none was set
-		if not kwargs.has_key("personality"):
-			kwargs["personality"] = self.distro.personality
-
-		if not kwargs.has_key("cwd"):
-			kwargs["cwd"] = "/%s" % LOCAL_TMP_PATH
 
 		# Make every shell to a login shell because we set a lot of
 		# environment things there.
-		if shell:
-			command = ["bash", "--login", "-c", command]
-			kwargs["shell"] = False
+		command = ["bash", "--login", "-c", command]
 
-		kwargs["env"] = self.environ
+		args = {
+			"cwd"         : "/%s" % LOCAL_TMP_PATH,
+			"env"         : self.environ,
+			"logger"      : logger,
+			"personality" : self.distro.personality,
+			"shell"       : False,
+		}
+		args.update(kwargs)
 
 		try:
-			return chroot.do(command, *args, **kwargs)
-		except Error:
-			if not logger:
-				logger = logging.getLogger("pakfire")
+			shellenv = shell.ShellExecuteEnvironment(command, **args)
+			shellenv.execute()
 
+		except ShellEnvironmentError:
 			logger.error("Command exited with an error: %s" % command)
 			raise
+
+		return shellenv
 
 	def run_script(self, script, *args):
 		if not script.startswith("/"):
@@ -1031,15 +1052,24 @@ class Builder(object):
 
 		# Returns the output of the command, but the output won't get
 		# logged.
-		return self.do(cmd, returnOutput=True, logger=None)
+		exe = self.execute(cmd, record_output=True, log_output=False)
+
+		# Return the output of the command.
+		if exe.exitcode == 0:
+			return exe.output
 
 	def create_icecream_toolchain(self):
 		try:
-			out = self.do("icecc --build-native 2>/dev/null", returnOutput=True, cwd="/tmp")
-		except Error:
+			exe = self.execute(
+				"icecc --build-native 2>/dev/null",
+				record_output=True, record_stderr=False,
+				log_output=False, log_errors=False,
+				cwd="/tmp",
+			)
+		except ShellEnvironmentError:
 			return
 
-		for line in out.splitlines():
+		for line in exe.output.splitlines():
 			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
 			if m:
 				self._environ["ICECC_VERSION"] = "/tmp/%s" % m.group(1)
@@ -1107,7 +1137,7 @@ class Builder(object):
 		log.info(_("Running stage %s:") % stage)
 
 		try:
-			self.do(buildscript, shell=False)
+			self.execute(buildscript)
 
 		finally:
 			# Remove the buildscript.
@@ -1119,15 +1149,15 @@ class Builder(object):
 		keep_libs = keep_libs.split()
 
 		try:
-			self.do("%s/remove-static-libs %s %s" % \
+			self.execute("%s/remove-static-libs %s %s" % \
 				(SCRIPT_DIR, self.buildroot, " ".join(keep_libs)))
-		except Error, e:
+		except ShellEnvironmentError, e:
 			log.warning(_("Could not remove static libraries: %s") % e)
 
 	def post_compress_man_pages(self):
 		try:
-			self.do("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
-		except Error, e:
+			self.execute("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
+		except ShellEnvironmentError, e:
 			log.warning(_("Compressing man pages did not complete successfully."))
 
 	def post_extract_debuginfo(self):
@@ -1146,8 +1176,8 @@ class Builder(object):
 		args += options.split()
 
 		try:
-			self.do("%s/extract-debuginfo %s %s" % (SCRIPT_DIR, " ".join(args), self.pkg.buildroot))
-		except Error, e:
+			self.execute("%s/extract-debuginfo %s %s" % (SCRIPT_DIR, " ".join(args), self.pkg.buildroot))
+		except ShellEnvironmentError, e:
 			log.error(_("Extracting debuginfo did not complete with success. Aborting build."))
 			raise
 

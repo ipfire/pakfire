@@ -36,7 +36,6 @@ import packager
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.chroot as chroot
 import pakfire.downloader as downloader
 import pakfire.util as util
 

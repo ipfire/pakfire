@@ -22,8 +22,8 @@
 import os
 import sys
 
-import chroot
 import packages
+import shell
 import util
 
 import logging
@@ -98,7 +98,7 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
-	def do(self, cmd, **kwargs):
+	def execute(self, command, **kwargs):
 		# If we are running in /, we do not need to chroot there.
 		chroot_path = None
 		if not self.pakfire.path == "/":
@@ -118,7 +118,6 @@ class Action(object):
 
 		args = {
 			"cwd"         : cwd,
-			"logger"      : log,
 			"personality" : self.pakfire.distro.personality,
 			"shell"       : False,
 			"timeout"     : SCRIPTLET_TIMEOUT,
@@ -128,11 +127,11 @@ class Action(object):
 		args.update(kwargs)
 
 		# You can never overwrite chrootPath.
-		args.update({
-			"chrootPath"  : chroot_path,
-		})
+		args["chroot_path"] = chroot_path
 
-		return chroot.do(cmd, **args)
+		# Execute command.
+		shellenv = shell.ShellExecuteEnvironment(command, **args)
+		shellenv.execute()
 
 
 class ActionScript(Action):
@@ -248,9 +247,9 @@ class ActionScript(Action):
 		command = [script_file_chroot] + self.args
 
 		try:
-			self.do(command)
+			self.execute(command)
 
-		except Error, e:
+		except ShellEnvironmentError, e:
 			raise ActionError, _("The scriptlet returned an error:\n%s" % e)
 
 		except commandTimeoutExpired:
@@ -398,7 +397,7 @@ class ActionInstall(Action):
 			ldconfig = os.path.join(self.pakfire.path, LDCONFIG[1:])
 
 			if os.path.exists(ldconfig) and os.access(ldconfig, os.X_OK):
-				self.do(LDCONFIG)
+				self.execute(LDCONFIG)
 
 			else:
 				log.debug("ldconfig is not present or not executable.")
