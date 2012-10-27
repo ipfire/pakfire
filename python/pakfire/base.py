@@ -641,7 +641,6 @@ class PakfireBuilder(Pakfire):
 		return pkg.dist(resultdir=resultdir)
 
 	def build(self, pkg, resultdirs=None, shell=False, install_test=True, after_shell=False, **kwargs):
-
 		# As the BuildEnviron is only able to handle source packages, we must package makefiles.
 		if pkg.endswith(".%s" % MAKEFILE_EXTENSION):
 			pkg = self.dist(pkg, resultdir=LOCAL_TMP_PATH)
@@ -688,6 +687,10 @@ class PakfireBuilder(Pakfire):
 			b.stop()
 
 	def shell(self, pkg, **kwargs):
+		# As the BuildEnviron is only able to handle source packages, we must package makefiles.
+		if pkg.endswith(".%s" % MAKEFILE_EXTENSION):
+			pkg = self.dist(pkg, resultdir=LOCAL_TMP_PATH)
+
 		b = builder.BuildEnviron(self, pkg, **kwargs)
 
 		try:
