@@ -70,7 +70,7 @@ class BuildEnviron(object):
 	kernel_version = os.uname()[2]
 
 	def __init__(self, filename=None, distro_name=None, config=None, configs=None, arch=None,
-			build_id=None, logfile=None, builder_mode="release", use_cache=None, **pakfire_args):
+			build_id=None, logfile=None, builder_mode="release", **pakfire_args):
 		# Set mode.
 		assert builder_mode in ("development", "release",)
 		self.mode = builder_mode
@@ -161,17 +161,6 @@ class BuildEnviron(object):
 
 		# Where do we put the result?
 		self.resultdir = os.path.join(self.path, "result")
-
-		# Check weather to use or not use the cache.
-		if use_cache is None:
-			# If use_cache is None, the user did not provide anything and
-			# so we guess.
-			if self.mode == "development":
-				use_cache = True
-			else:
-				use_cache = False
-
-		self.use_cache = use_cache
 
 		# Open package.
 		# If we have a plain makefile, we first build a source package and go with that.
@@ -390,13 +379,8 @@ class BuildEnviron(object):
 		if not requires:
 			requires = []
 
-		if self.use_cache and os.path.exists(self.cache_file):
-			# If we are told to use the cache, we just import the
-			# file.
-			self.cache_extract()
-		else:
-			# Add neccessary build dependencies.
-			requires += BUILD_PACKAGES
+		# Add neccessary build dependencies.
+		requires += BUILD_PACKAGES
 
 		# If we have ccache enabled, we need to extract it
 		# to the build chroot.
@@ -879,102 +863,6 @@ class BuildEnviron(object):
 			for line in dump.splitlines():
 				self.log.info("  %s" % line)
 			self.log.info("") # Empty line.
-
-	@property
-	def cache_file(self):
-		comps = [
-			self.pakfire.distro.sname,	# name of the distribution
-			self.pakfire.distro.release,	# release version
-			self.pakfire.distro.arch,	# architecture
-		]
-
-		return os.path.join(CACHE_ENVIRON_DIR, "%s.cache" %"-".join(comps))
-
-	def cache_export(self, filename):
-		# Sync all disk caches.
-		_pakfire.sync()
-
-		# A list to store all mountpoints, so we don't package them.
-		mountpoints = []
-
-		# A list containing all files we want to package.
-		filelist = []
-
-		# Walk through the whole tree and collect all files
-		# that are on the same disk (not crossing mountpoints).
-		log.info(_("Creating filelist..."))
-		root = self.chrootPath()
-		for dir, subdirs, files in os.walk(root):
-			# Search for mountpoints and skip them.
-			if not dir == root and os.path.ismount(dir):
-				mountpoints.append(dir)
-				continue
-
-			# Skip all directories under mountpoints.
-			if any([dir.startswith(m) for m in mountpoints]):
-				continue
-
-			# Add all other files.
-			filelist.append(dir)
-			for file in files:
-				file = os.path.join(dir, file)
-				filelist.append(file)
-
-		# Create a nice progressbar.
-		p = util.make_progress(_("Compressing files..."), len(filelist))
-		i = 0
-
-		# Create tar file and add all files to it.
-		f = packages.file.InnerTarFile.open(filename, "w:gz")
-		for file in filelist:
-			i += 1
-			if p:
-				p.update(i)
-
-			f.add(file, os.path.relpath(file, root), recursive=False)
-		f.close()
-
-		# Finish progressbar.
-		if p:
-			p.finish()
-
-		filesize = os.path.getsize(filename)
-
-		log.info(_("Cache file was successfully created at %s.") % filename)
-		log.info(_("  Containing %(files)s files, it has a size of %(size)s.") % \
-			{ "files" : len(filelist), "size" : util.format_size(filesize), })
-
-	def cache_extract(self):
-		root = self.chrootPath()
-		filename = self.cache_file
-
-		f = packages.file.InnerTarFile.open(filename, "r:gz")
-		members = f.getmembers()
-
-		# Make a nice progress bar as always.
-		p = util.make_progress(_("Extracting files..."), len(members))
-
-		# Extract all files from the cache.
-		i = 0
-		for member in members:
-			if p:
-				i += 1
-				p.update(i)
-
-			f.extract(member, path=root)
-		f.close()
-
-		# Finish progressbar.
-		if p:
-			p.finish()
-
-		# Re-read local repository.
-		self.pakfire.repos.local.update(force=True)
-
-		# Update all packages.
-		self.log.info(_("Updating packages from cache..."))
-		self.pakfire.update(interactive=False, logger=self.log,
-			allow_archchange=True, allow_vendorchange=True, allow_downgrade=True)
 
 
 class Builder(object):

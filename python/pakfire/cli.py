@@ -404,7 +404,6 @@ class CliBuilder(Cli):
 		self.parse_command_repolist()
 		self.parse_command_clean()
 		self.parse_command_resolvdep()
-		self.parse_command_cache()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -421,8 +420,6 @@ class CliBuilder(Cli):
 			"repolist"    : self.handle_repolist,
 			"clean_all"   : self.handle_clean_all,
 			"resolvdep"   : self.handle_resolvdep,
-			"cache_create": self.handle_cache_create,
-			"cache_cleanup": self.handle_cache_cleanup,
 		}
 
 	@property
@@ -490,27 +487,6 @@ class CliBuilder(Cli):
 
 		sub_dist.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
-
-	def parse_command_cache(self):
-		# Implement the "cache" command.
-		sub_cache = self.sub_commands.add_parser("cache",
-			help=_("Create a build environment cache."))
-
-		# Implement subcommands.
-		sub_cache_commands = sub_cache.add_subparsers()
-
-                self.parse_command_cache_create(sub_cache_commands)
-                self.parse_command_cache_cleanup(sub_cache_commands)
-
-	def parse_command_cache_create(self, sub_commands):
-		sub_create = sub_commands.add_parser("create",
-			help=_("Create a new build environment cache."))
-		sub_create.add_argument("action", action="store_const", const="cache_create")
-
-	def parse_command_cache_cleanup(self, sub_commands):
-		sub_cleanup = sub_commands.add_parser("cleanup",
-			help=_("Remove all cached build environments."))
-		sub_cleanup.add_argument("action", action="store_const", const="cache_cleanup")
 
 	def handle_info(self):
 		Cli.handle_info(self, long=True)
@@ -580,22 +556,6 @@ class CliBuilder(Cli):
 
 		for pkg in pkgs:
 			print pkg.dump(long=True)
-
-	def handle_cache_create(self):
-		pakfire.cache_create(**self.pakfire_args)
-
-	def handle_cache_cleanup(self):
-		for env in os.listdir(CACHE_ENVIRON_DIR):
-			if not env.endswith(".cache"):
-				continue
-
-			print _("Removing environment cache file: %s..." % env)
-			env = os.path.join(CACHE_ENVIRON_DIR, env)
-
-			try:
-				os.unlink(env)
-			except OSError:
-				print _("Could not remove file: %s") % env
 
 
 class CliServer(Cli):

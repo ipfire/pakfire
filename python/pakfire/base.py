@@ -784,25 +784,3 @@ class Pakfire(object):
 
 		# Process the transaction.
 		t.run()
-
-	@staticmethod
-	def cache_create(**kwargs):
-		# Create a build environment that we are going to pack into
-		# a shiny tarball.
-		b = builder.BuildEnviron(**kwargs)
-		p = b.pakfire
-
-		# Get filename of the file from builder instance.
-		filename = b.cache_file
-
-		try:
-			b.start()
-
-			# Create directory if not existant.
-			dirname = os.path.dirname(filename)
-			if not os.path.exists(dirname):
-				os.makedirs(dirname)
-
-			b.cache_export(filename)
-		finally:
-			b.stop()
