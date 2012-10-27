@@ -320,7 +320,7 @@ class Pakfire(object):
 
 		if request:
 			solver = self.pool.solve(request)
-			t = solver.transaction
+			t = transaction.Transaction.from_solver(self, solver)
 		else:
 			# Create new transaction.
 			t = transaction.Transaction(self)
@@ -382,7 +382,7 @@ class Pakfire(object):
 				return
 
 		# Create the transaction.
-		t = solver.transaction
+		t = transaction.Transaction.from_solver(self, solver)
 		t.dump(logger=logger)
 
 		# Just exit here, because we won't do the transaction in this mode.
@@ -433,7 +433,7 @@ class Pakfire(object):
 		assert solver.status is True
 
 		# Create the transaction.
-		t = solver.transaction
+		t = transaction.Transaction.from_solver(self, solver)
 		t.dump(logger=logger)
 
 		if not t:
@@ -457,7 +457,7 @@ class Pakfire(object):
 		assert solver.status is True
 
 		# Create the transaction.
-		t = solver.transaction
+		t = transaction.Transaction.from_solver(self, solver)
 		t.dump()
 
 		if not t:
@@ -579,7 +579,7 @@ class Pakfire(object):
 			return
 
 		# Create the transaction.
-		t = solver.transaction
+		t = transaction.Transaction.from_solver(self, solver)
 		t.dump()
 
 		# Ask the user if okay.
