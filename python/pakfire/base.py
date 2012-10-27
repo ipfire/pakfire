@@ -396,8 +396,11 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run(logger=logger)
 
-	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False):
+	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False, logger=None):
 		assert pkgs
+
+		if logger is None:
+			logger = logging.getLogger("pakfire")
 
 		# Initialize this pakfire instance.
 		self.initialize()
@@ -419,7 +422,7 @@ class Pakfire(object):
 					best = pkg
 
 			if best is None:
-				log.warning(_("\"%s\" package does not seem to be installed.") % pattern)
+				logger.warning(_("\"%s\" package does not seem to be installed.") % pattern)
 			else:
 				rel = self.pool.create_relation("%s < %s" % (best.name, best.friendly_version))
 				request.install(rel)
@@ -437,7 +440,7 @@ class Pakfire(object):
 		t.dump(logger=logger)
 
 		if not t:
-			log.info(_("Nothing to do"))
+			logger.info(_("Nothing to do"))
 			return
 
 		if not t.cli_yesno():
@@ -445,7 +448,10 @@ class Pakfire(object):
 
 		t.run()
 
-	def remove(self, pkgs):
+	def remove(self, pkgs, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
 		# Initialize this pakfire instance.
 		self.initialize()
 
