@@ -60,9 +60,6 @@ class Index(object):
 		"""
 		self.solver_repo.internalize()
 
-	def create_relation(self, *args, **kwargs):
-		return self.pakfire.create_relation(*args, **kwargs)
-
 	def add_package(self, pkg):
 		log.debug("Adding package to index %s: %s" % (self, pkg))
 
@@ -122,39 +119,39 @@ class Index(object):
 			requires += prerequires
 
 		for req in requires:
-			rel = self.create_relation(req)
+			rel = self.pakfire.pool.create_relation(req)
 			solvable.add_requires(rel)
 
 		# Import all provides.
 		for prov in pkg.provides:
-			rel = self.create_relation(prov)
+			rel = self.pakfire.pool.create_relation(prov)
 			solvable.add_provides(rel)
 
 		# Import all conflicts.
 		for conf in pkg.conflicts:
-			rel = self.create_relation(conf)
+			rel = self.pakfire.pool.create_relation(conf)
 			solvable.add_conflicts(rel)
 
 		# Import all obsoletes.
 		for obso in pkg.obsoletes:
-			rel = self.create_relation(obso)
+			rel = self.pakfire.pool.create_relation(obso)
 			solvable.add_obsoletes(rel)
 
 		# Import all files that are in the package.
-		rel = self.create_relation("solvable:filemarker")
+		rel = self.pakfire.pool.create_relation("solvable:filemarker")
 		solvable.add_provides(rel)
 		for file in pkg.filelist:
-			rel = self.create_relation(file)
+			rel = self.pakfire.pool.create_relation(file)
 			solvable.add_provides(rel)
 
 		# Import all recommends.
 		for reco in pkg.recommends:
-			rel = self.create_relation(reco)
+			rel = self.pakfire.pool.create_relation(reco)
 			solvable.add_recommends(rel)
 
 		# Import all suggests.
 		for sugg in pkg.suggests:
-			rel = self.create_relation(sugg)
+			rel = self.pakfire.pool.create_relation(sugg)
 			solvable.add_suggests(rel)
 
 	def rem_package(self, pkg):

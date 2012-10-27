@@ -19,19 +19,165 @@
 #                                                                             #
 ###############################################################################
 
+import os
 import time
 
 import logging
 log = logging.getLogger("pakfire")
 
+import filelist
+import packages
+import transaction
+import util
 import _pakfire
-from _pakfire import *
 
 from constants import *
 from i18n import _
 
-import transaction
-import util
+# Put some variables into our own namespace, to make them easily accessible
+# for code, that imports the satsolver module.
+SEARCH_STRING = _pakfire.SEARCH_STRING
+SEARCH_FIELS  = _pakfire.SEARCH_FILES
+SEARCH_GLOB   = _pakfire.SEARCH_GLOB
+
+Repo     = _pakfire.Repo
+Solvable = _pakfire.Solvable
+Relation = _pakfire.Relation
+
+class Pool(_pakfire.Pool):
+	RELATIONS = (
+		(">=", _pakfire.REL_GE,),
+		("<=", _pakfire.REL_LE,),
+		("=" , _pakfire.REL_EQ,),
+		("<" , _pakfire.REL_LT,),
+		(">" , _pakfire.REL_GT,),
+	)
+
+	def create_relation(self, s):
+		assert s
+
+		if isinstance(s, filelist._File):
+			return Relation(self, s.name)
+
+		elif s.startswith("/"):
+			return Relation(self, s)
+
+		for pattern, type in self.RELATIONS:
+			if not pattern in s:
+				continue
+
+			name, version = s.split(pattern, 1)
+			return Relation(self, name.strip(), version.strip(), type)
+
+		return Relation(self, s)
+
+	def create_request(self, builder=False, install=None, remove=None, update=None, updateall=False):
+		request = Request(self)
+
+		# Add multiinstall information.
+		for solv in PAKFIRE_MULTIINSTALL:
+			request.noobsoletes(solv)
+
+		# Apply all installs.
+		for req in self.expand_requires(install):
+			request.install(req)
+
+		# Apply all removes.
+		for req in self.expand_requires(remove):
+			request.remove(req)
+
+		# Apply all updates.
+		for req in self.expand_requires(update):
+			request.update(req)
+
+		# Configure the request to update all packages
+		# if requested.
+		if updateall:
+			request.updateall()
+
+		# Return the request.
+		return request
+
+	def grouplist(self, group):
+		pkgs = []
+
+		for solv in self.search(group, _pakfire.SEARCH_SUBSTRING, "solvable:group"):
+			pkg = packages.SolvPackage(self, solv)
+
+			if group in pkg.groups and not pkg.name in pkgs:
+				pkgs.append(pkg.name)
+
+		return sorted(pkgs)
+
+	def expand_requires(self, requires):
+		if requires is None:
+			return []
+
+		ret = []
+		for req in requires:
+			if isinstance(req, packages.BinaryPackage):
+				ret.append(req)
+				continue
+
+			if isinstance(req, packages.SolvPackage):
+				ret.append(req.solvable)
+				continue
+
+			assert type(req) == type("a"), req
+
+			# Expand all groups.
+			if req.startswith("@"):
+				reqs = self.grouplist(req[1:])
+			else:
+				reqs = [req,]
+
+			for req in reqs:
+				req = self.create_relation(req)
+				ret.append(req)
+
+		return ret
+
+	def resolvdep(self, pkg, logger=None):
+		assert os.path.exists(pkg)
+
+		# Open the package file.
+		pkg = packages.open(self, None, pkg)
+
+		# Create a new request.
+		request = self.create_request(install=pkg.requires)
+
+		# Add build dependencies if needed.
+		if isinstance(pkg, packages.Makefile) or isinstance(pkg, packages.SourcePackage):
+			for req in self.expand_requires(BUILD_PACKAGES):
+				request.install(req)
+
+		# Solv the request.
+		solver = self.solve(request, logger=logger)
+
+		if solver.status:
+			return solver
+
+		raise DependencyError, solver.get_problem_string()
+
+	def solve(self, request, interactive=False, logger=None, **kwargs):
+		# XXX implement interactive
+
+		if not logger:
+			logger = logging.getLogger("pakfire")
+
+		# Create a solver.
+		solver = Solver(self, request, logger=logger)
+
+		# Apply configuration to solver.
+		for key, val in kwargs.items():
+			solver.set(key, val)
+
+		# Do the solving.
+		solver.solve()
+
+		# Return the solver so one can do stuff with it...
+		return solver
+
 
 class Request(_pakfire.Request):
 	def install(self, what):
@@ -112,21 +258,19 @@ class Request(_pakfire.Request):
 
 class Solver(object):
 	option2flag = {
-		"allow_archchange"   : SOLVER_FLAG_ALLOW_ARCHCHANGE,
-		"allow_downgrade"    : SOLVER_FLAG_ALLOW_DOWNGRADE,
-		"allow_uninstall"    : SOLVER_FLAG_ALLOW_UNINSTALL,
-		"allow_vendorchange" : SOLVER_FLAG_ALLOW_VENDORCHANGE,
-		"ignore_recommended" : SOLVER_FLAG_IGNORE_RECOMMENDED,
+		"allow_archchange"   : _pakfire.SOLVER_FLAG_ALLOW_ARCHCHANGE,
+		"allow_downgrade"    : _pakfire.SOLVER_FLAG_ALLOW_DOWNGRADE,
+		"allow_uninstall"    : _pakfire.SOLVER_FLAG_ALLOW_UNINSTALL,
+		"allow_vendorchange" : _pakfire.SOLVER_FLAG_ALLOW_VENDORCHANGE,
+		"ignore_recommended" : _pakfire.SOLVER_FLAG_IGNORE_RECOMMENDED,
 	}
 
-	def __init__(self, pakfire, request, logger=None):
+	def __init__(self, pool, request, logger=None):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 		self.logger = logger
 
-		self.pakfire = pakfire
-		self.pool = self.pakfire.pool
-
+		self.pool = pool
 		self.request = request
 		assert self.request, "Empty request?"
 
@@ -174,17 +318,6 @@ class Solver(object):
 
 		if self.status is False:
 			raise DependencyError, self.get_problem_string()
-
-	@property
-	def transaction(self):
-		if not self.status is True:
-			return
-
-		if self.__transaction is None:
-			self.__transaction = \
-				transaction.Transaction.from_solver(self.pakfire, self)
-
-		return self.__transaction
 
 	@property
 	def problems(self):

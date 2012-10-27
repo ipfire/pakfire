@@ -183,7 +183,7 @@ class Repositories(object):
 			repo.update(force=force, offline=offline)
 
 	def whatprovides(self, what):
-		what = self.pakfire.create_relation(what)
+		what = self.pakfire.pool.create_relation(what)
 
 		for solv in self.pool.providers(what):
 			yield packages.SolvPackage(self.pakfire, solv)
