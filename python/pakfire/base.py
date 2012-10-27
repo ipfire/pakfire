@@ -589,6 +589,20 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
+	def build(self, makefile, resultdir, stages=None, **kwargs):
+		b = builder.Builder(self, makefile, resultdir, **kwargs)
+
+		try:
+			b.build(stages=stages)
+
+		except Error:
+			raise BuildError, _("Build command has failed.")
+
+		else:
+			# If the build was successful, cleanup all temporary files.
+			b.cleanup()
+
+
 
 class PakfireBuilder(Pakfire):
 	mode = "builder"
@@ -672,22 +686,6 @@ class PakfireBuilder(Pakfire):
 
 		finally:
 			b.stop()
-
-	def _build(self, pkg, resultdir, nodeps=False, prepare=False, **kwargs):
-		b = builder.Builder(self, pkg, resultdir, **kwargs)
-
-		stages = None
-		if prepare:
-			stages = ("prepare",)
-
-		try:
-			b.build(stages=stages)
-
-		except Error:
-			raise BuildError, _("Build command has failed.")
-
-		# If the build was successful, cleanup all temporary files.
-		b.cleanup()
 
 	def shell(self, pkg, **kwargs):
 		b = builder.BuildEnviron(self, pkg, **kwargs)

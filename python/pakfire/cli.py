@@ -764,23 +764,21 @@ class CliBuilderIntern(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		conf = config.ConfigBuilder()
+		# Create pakfire instance.
+		c = config.ConfigBuilder()
+		p = base.Pakfire(arch = self.args.arch, config = c)
 
+		# Disable all repositories.
 		if self.args.nodeps:
-			disable_repos = ["*"]
+			p.repos.disable_repo("*")
+
+		# Limit stages that are to be run.
+		if self.args.prepare:
+			stages = ["prepare"]
 		else:
-			disable_repos = None
+			stages = None
 
-		kwargs = {
-			"arch"          : self.args.arch,
-			"builder_mode"  : self.args.mode,
-			"config"        : conf,
-			"disable_repos" : disable_repos,
-			"prepare"       : self.args.prepare,
-			"resultdir"     : self.args.resultdir,
-		}
-
-		self.pakfire._build(pkg, **kwargs)
+		p.build(pkg, resultdir=self.args.resultdir, stages=stages)
 
 
 class CliClient(Cli):

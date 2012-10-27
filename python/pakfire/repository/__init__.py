@@ -173,16 +173,20 @@ class Repositories(object):
 			return self.dummy
 
 	def enable_repo(self, name):
-		try:
-			self.__repos[name].enabled = True
-		except KeyError:
-			pass
+		for repo in self:
+			if repo == self.local:
+				continue
+
+			if repo.name == name or name == "*":
+				repo.enabled = True
 
 	def disable_repo(self, name):
-		try:
-			self.__repos[name].enabled = False
-		except KeyError:
-			pass
+		for repo in self:
+			if repo == self.local:
+				continue
+
+			if repo.name == name or name == "*":
+				repo.enabled = False
 
 	def whatprovides(self, what):
 		what = self.pakfire.pool.create_relation(what)

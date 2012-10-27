@@ -31,7 +31,6 @@ import xmlrpclib
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.api
 import pakfire.base
 import pakfire.config
 import pakfire.downloader

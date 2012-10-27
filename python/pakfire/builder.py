@@ -79,6 +79,18 @@ class BuildEnviron(object):
 		if not system.host_supports_arch(self.arch):
 			raise BuildError, _("Cannot build for %s on this host.") % self.arch
 
+		# Save the build id and generate one if no build id was provided.
+		if not build_id:
+			build_id = "%s" % uuid.uuid4()
+
+		self.build_id = build_id
+
+		# Setup the logging.
+		self.init_logging(logfile)
+
+		# Initialize a cgroup (if supported).
+		self.init_cgroup()
+
 		# This build is a release build?
 		self.release_build = release_build
 
@@ -97,18 +109,6 @@ class BuildEnviron(object):
 
 			for line in BUILD_LOG_HEADER.splitlines():
 				self.log.info(line % logdata)
-
-		# Save the build id and generate one if no build id was provided.
-		if not build_id:
-			build_id = "%s" % uuid.uuid4()
-
-		self.build_id = build_id
-
-		# Setup the logging.
-		self.init_logging(logfile)
-
-		# Initialize a cgroup (if supported).
-		self.init_cgroup()
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -993,17 +993,17 @@ class Builder(object):
 		# Build icecream toolchain if icecream is installed.
 		self.create_icecream_toolchain()
 
-		if stages is None:
-			stages = ("prepare", "build", "test", "install")
-			stop_early = False
-		else:
-			stop_early = True
+		# Process stages in order.
+		for stage in ("prepare", "build", "test", "install"):
+			# Skip unwanted stages.
+			if stages and not stage in stages:
+				continue
 
-		for stage in stages:
+			# Run stage.
 			self.build_stage(stage)
 
-		# Stop if only the prepare stage is wanted.
-		if stop_early:
+		# Stop if install stage has not been processed.
+		if stages and not "install" in stages:
 			return
 
 		# Run post-build stuff.
