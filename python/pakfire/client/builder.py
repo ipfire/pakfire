@@ -7,7 +7,6 @@ import sys
 import tempfile
 import time
 
-import pakfire.api
 import pakfire.builder
 import pakfire.config
 import pakfire.downloader
