@@ -450,7 +450,16 @@ class CliBuilder(Cli):
 				"offline" : self.args.offline,
 			}
 
+		if hasattr(self.args, "distro"):
+			ret["distro_name"] = self.args.distro
+
 		return ret
+
+	def parse_common_arguments(self, *args, **kwargs):
+		Cli.parse_common_arguments(self, *args, **kwargs)
+
+		self.parser.add_argument("--distro", nargs="?",
+			help=_("Choose the distribution configuration to use for build"))
 
 	def parse_command_update(self):
 		# Implement the "update" command.
