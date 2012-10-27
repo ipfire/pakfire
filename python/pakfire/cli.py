@@ -26,14 +26,14 @@ import shutil
 import sys
 import tempfile
 
-import pakfire.api as pakfire
-
+import base
 import client
 import config
 import logger
 import packages
 import repository
 import server
+import transaction
 import util
 
 from system import system
@@ -45,6 +45,8 @@ from i18n import _
 logger.setup_logging()
 
 class Cli(object):
+	pakfire = base.Pakfire
+
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire command line interface."),
@@ -98,7 +100,7 @@ class Cli(object):
 
 	@property
 	def pakfire_args(self):
-		ret = { "mode" : "normal" }
+		ret = {}
 
 		if hasattr(self.args, "root"):
 			ret["path"] = self.args.root
@@ -288,72 +290,76 @@ class Cli(object):
 		return func()
 
 	def handle_info(self, long=False):
-		pkgs = pakfire.info(self.args.package, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
 
-		for pkg in pkgs:
+		for pkg in p.info(self.args.package):
 			print pkg.dump(long=long)
 
 	def handle_search(self):
-		pkgs = pakfire.search(self.args.pattern, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
 
-		for pkg in pkgs:
+		for pkg in p.search(self.args.pattern):
 			print pkg.dump(short=True)
 
 	def handle_update(self, **args):
-		args.update(self.pakfire_args)
-
-		pakfire.update(self.args.package, excludes=self.args.exclude,
+		p = self.pakfire(**self.pakfire_args)
+		p.update(
+			self.args.package,
+			excludes=self.args.exclude,
 			allow_vendorchange=self.args.allow_vendorchange,
 			allow_archchange=self.args.allow_archchange,
-			**args)
+			**args
+		)
 
 	def handle_check_update(self):
 		self.handle_update(check=True)
 
 	def handle_downgrade(self, **args):
-		args.update(self.pakfire_args)
-
-		pakfire.downgrade(self.args.package,
+		p = self.pakfire(**self.pakfire_args)
+		p.downgrade(
+			self.args.package,
 			allow_vendorchange=self.args.allow_vendorchange,
 			allow_archchange=self.args.allow_archchange,
-			**args)
+			**args
+		)
 
 	def handle_install(self):
-		pakfire.install(self.args.package,
-			ignore_recommended=self.args.without_recommends,
-			**self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.install(self.args.package, ignore_recommended=self.args.without_recommends)
 
 	def handle_reinstall(self):
-		pakfire.reinstall(self.args.package, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.reinstall(self.args.package)
 
 	def handle_remove(self):
-		pakfire.remove(self.args.package, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.remove(self.args.package)
 
-	def handle_provides(self):
-		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)
+	def handle_provides(self, long=False):
+		p = self.pakfire(**self.pakfire_args)
 
-		for pkg in pkgs:
-			print pkg.dump()
+		for pkg in p.provides(self.args.pattern):
+			print pkg.dump(long=long)
 
 	def handle_grouplist(self):
-		pkgs = pakfire.grouplist(self.args.group[0], **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
 
-		for pkg in pkgs:
+		for pkg in p.grouplist(self.args.group[0]):
 			print " * %s" % pkg
 
 	def handle_groupinstall(self):
-		pakfire.groupinstall(self.args.group[0], **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.groupinstall(self.args.group[0])
 
 	def handle_repolist(self):
-		repos = pakfire.repo_list(**self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
 
 		FORMAT = " %-20s %8s %12s %12s "
-
 		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
 		print title
 		print "=" * len(title) # spacing line
 
-		for repo in repos:
+		for repo in p.repo_list():
 			# Skip the installed repository.
 			if repo.name == "installed":
 				continue
@@ -363,21 +369,28 @@ class Cli(object):
 	def handle_clean_all(self):
 		print _("Cleaning up everything...")
 
-		pakfire.clean_all(**self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.clean_all()
 
 	def handle_check(self):
-		pakfire.check(**self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.check()
 
 	def handle_resolvdep(self):
+		p = self.pakfire(**self.pakfire_args)
+
 		(pkg,) = self.args.package
 
-		solver = pakfire.resolvdep(pkg, **self.pakfire_args)
-
+		solver = p.pool.resolvdep(pkg)
 		assert solver.status
-		solver.transaction.dump()
+
+		t = transaction.Transaction.from_solver(p, solver)
+		t.dump()
 
 
 class CliBuilder(Cli):
+	pakfire = base.PakfireBuilder
+
 	def __init__(self):
 		# Check if we are already running in a pakfire container. In that
 		# case, we cannot start another pakfire-builder.
@@ -424,7 +437,7 @@ class CliBuilder(Cli):
 
 	@property
 	def pakfire_args(self):
-		ret = { "mode" : "builder" }
+		ret = {}
 
 		if hasattr(self.args, "disable_repo"):
 			ret["disable_repos"] = self.args.disable_repo
@@ -505,9 +518,19 @@ class CliBuilder(Cli):
 		# Check whether to enable the install test.
 		install_test = not self.args.no_install_test
 
-		pakfire.build(pkg, builder_mode=self.args.mode, install_test=install_test,
-			arch=self.args.arch, resultdirs=[self.args.resultdir,],
-			shell=True, after_shell=self.args.after_shell, **self.pakfire_args)
+		if self.args.mode == "release":
+			release_build = True
+		else:
+			release_build = False
+
+		p = self.pakfire(arch=self.args.arch, **self.pakfire_args)
+		p.build(pkg,
+			install_test=install_test,
+			resultdirs=[self.args.resultdir,],
+			shell=True,
+			after_shell=self.args.after_shell,
+			release_build=release_build,
+		)
 
 	def handle_shell(self):
 		pkg = None
@@ -523,8 +546,13 @@ class CliBuilder(Cli):
 			else:
 				raise FileNotFoundError, pkg
 
-		pakfire.shell(pkg, builder_mode=self.args.mode,
-			arch=self.args.arch, **self.pakfire_args)
+		if self.args.mode == "release":
+			release_build = True
+		else:
+			release_build = False
+
+		p = self.pakfire(arch=self.args.arch, **self.pakfire_args)
+		p.shell(pkg, release_build=release_build)
 
 	def handle_dist(self):
 		# Get the packages from the command line options
@@ -543,22 +571,17 @@ class CliBuilder(Cli):
 		# current working directory.
 		resultdir = self.args.resultdir or os.getcwd()
 
-		# Change the default pakfire configuration, because
-		# packaging source packages can be done in server mode.
-		pakfire_args = self.pakfire_args
-		pakfire_args["mode"] = "server"
-
+		p = self.pakfire(**self.pakfire_args)
 		for pkg in pkgs:
-			pakfire.dist(pkg, resultdir=resultdir, **pakfire_args)
+			p.dist(pkg, resultdir=resultdir)
 
 	def handle_provides(self):
-		pkgs = pakfire.provides(self.args.pattern, **self.pakfire_args)
-
-		for pkg in pkgs:
-			print pkg.dump(long=True)
+		Cli.handle_provides(long=True)
 
 
 class CliServer(Cli):
+	pakfire = base.PakfireServer
+
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire server command line interface."),
@@ -590,7 +613,7 @@ class CliServer(Cli):
 
 	@property
 	def pakfire_args(self):
-		ret = { "mode" : "server" }
+		ret = {}
 
 		if hasattr(self.args, "offline") and self.args.offline:
 			ret["downloader"] = {
@@ -683,8 +706,8 @@ class CliServer(Cli):
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
-		pakfire.repo_create(path, self.args.inputs, key_id=self.args.key,
-			**self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.repo_create(path, self.args.inputs, key_id=self.args.key)
 
 	def handle_info(self):
 		info = self.server.info()
@@ -757,7 +780,7 @@ class CliBuilderIntern(Cli):
 			"resultdir"     : self.args.resultdir,
 		}
 
-		pakfire._build(pkg, **kwargs)
+		self.pakfire._build(pkg, **kwargs)
 
 
 class CliClient(Cli):
@@ -882,10 +905,11 @@ class CliClient(Cli):
 
 		try:
 			if package.endswith(".%s" % MAKEFILE_EXTENSION):
-				pakfire_args = { "mode" : "server" }
+				pakfire_args = {}
 
 				# Create a source package from the makefile.
-				package = pakfire.dist(package, temp_dir, **pakfire_args)
+				p = self.pakfire(**self.pakfire_args)
+				package = p.dist(package, temp_dir)
 
 			elif package.endswith(".%s" % PACKAGE_EXTENSION):
 				pass
@@ -1141,9 +1165,6 @@ class CliKey(Cli):
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
 
-		# Create a pakfire instance.
-		self.pakfire = pakfire.Pakfire(**self.pakfire_args)
-
 		self.action2func = {
 			"generate"    : self.handle_generate,
 			"import"      : self.handle_import,
@@ -1156,11 +1177,7 @@ class CliKey(Cli):
 
 	@property
 	def pakfire_args(self):
-		ret = {
-			"mode" : "server",
-		}
-
-		return ret
+		return {}
 
 	def parse_command_generate(self):
 		# Parse "generate" command.
@@ -1234,30 +1251,33 @@ class CliKey(Cli):
 		print
 
 		# Generate the key.
-		pakfire.key_generate(realname, email, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.key_generate(realname, email)
 
 	def handle_import(self):
 		filename = self.args.filename[0]
 
 		# Simply import the file.
-		pakfire.key_import(filename, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.key_import(filename)
 
 	def handle_export(self):
 		keyid    = self.args.keyid[0]
 		filename = self.args.filename[0]
 		secret   = self.args.secret
 
-		pakfire.key_export(keyid, filename, secret=secret, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.key_export(keyid, filename, secret=secret)
 
 	def handle_delete(self):
 		keyid = self.args.keyid[0]
 
-		pakfire.key_delete(keyid, **self.pakfire_args)
+		p = self.pakfire(**self.pakfire_args)
+		p.key_delete(keyid)
 
 	def handle_list(self):
-		lines = pakfire.key_list(**self.pakfire_args)
-
-		for line in lines:
+		p = self.pakfire(**self.pakfire_args)
+		for line in p.key_list():
 			print line
 
 	def handle_sign(self):
@@ -1275,9 +1295,12 @@ class CliKey(Cli):
 
 		key = self.args.key[0]
 
+		# Create pakfire instance.
+		p = self.pakfire(**self.pakfire_args)
+
 		for file in files:
 			# Open the package.
-			pkg = packages.open(self.pakfire, None, file)
+			pkg = packages.open(p, None, file)
 
 			print _("Signing %s...") % pkg.friendly_name
 			pkg.sign(key)
@@ -1292,9 +1315,12 @@ class CliKey(Cli):
 				file = os.path.abspath(file)
 				files.append(file)
 
+		# Create pakfire instance.
+		p = self.pakfire(**self.pakfire_args)
+
 		for file in files:
 			# Open the package.
-			pkg = packages.open(self.pakfire, None, file)
+			pkg = packages.open(p, None, file)
 
 			print _("Verifying %s...") % pkg.friendly_name
 			sigs = pkg.verify()

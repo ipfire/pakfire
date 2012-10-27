@@ -45,6 +45,9 @@ class RepositoryFactory(object):
 		# Create an index (in memory).
 		self.index = index.Index(self.pakfire, self)
 
+		# Marks if this repository has been opened.
+		self.opened = False
+
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
 
@@ -105,12 +108,17 @@ class RepositoryFactory(object):
 		"""
 		return False
 
-	def update(self, force=False, offline=False):
+	def open(self):
 		"""
-			A function that is called to update the local data of
-			the repository.
+			Opens the repository, so we can work with the data.
 		"""
-		raise NotImplementedError, self
+		self.opened = True
+
+	def close(self):
+		"""
+			Close and delete all resources that are used by this repository.
+		"""
+		self.opened = False
 
 	def clean(self):
 		"""

@@ -35,7 +35,7 @@ def install(requires, ignore_recommended=False, **pakfire_args):
 def resolvdep(pkgs, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
 
-	return pakfire.resolvdep(pkgs)
+	return pakfire.pool.resolvdep(pkgs)
 
 def reinstall(pkgs, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)

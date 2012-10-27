@@ -118,6 +118,10 @@ class DatabaseLocal(Database):
 
 		Database.__init__(self, pakfire, filename)
 
+	def initialize(self):
+		# Open the database.
+		self.open()
+
 		# Check if we actually can open the database.
 		if not self.format in DATABASE_FORMATS_SUPPORTED:
 			raise DatabaseFormatError, _("The format of the database is not supported by this version of pakfire.")

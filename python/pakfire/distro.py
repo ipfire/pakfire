@@ -25,29 +25,23 @@ import re
 import logging
 log = logging.getLogger("pakfire")
 
-from errors import ConfigError
-from repository import Repositories
 from system import system
 
 class Distribution(object):
-	def __init__(self, pakfire, data=None):
-		self.pakfire = pakfire
+	def __init__(self,  data=None):
 		self._data = {}
 
-		if data is None:
+		if data:
+			self.update(data)
+		else:
 			# Read /etc/os-release if it does exist.
 			self.read_osrelease()
-
-			# Inherit configuration from Pakfire configuration.
-			self.update(self.pakfire.config.get_section("distro"))
-		else:
-			self._data = data
 
 		# Dump all data
 		self.dump()
 
 	def read_osrelease(self):
-		filename = os.path.join(self.pakfire.path, "etc", "os-release")
+		filename = "/etc/os-release"
 
 		if not os.path.exists(filename):
 			return
@@ -77,10 +71,6 @@ class Distribution(object):
 		f.close()
 
 		self.update(data)
-
-	@property
-	def config(self):
-		return self.pakfire.config
 
 	def dump(self):
 		log.debug("Distribution configuration:")

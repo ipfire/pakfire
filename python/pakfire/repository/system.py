@@ -51,35 +51,44 @@ class RepositorySystem(base.RepositoryFactory):
 		"""
 		return 10
 
-	def update(self, force=False, offline=False):
-		# XXX using the cache is currently disabled
-		#if not force:
-		#	if os.path.exists(self.cache_file):
-		#		self.index.read(self.cache_file)
-		#
-		#	force = len(self) == 0
+	def open(self):
+		# Initialize database.
+		self.db.initialize()
 
-		force = True
+		# Create a progressbar.
+		pb = util.make_progress(_("Loading installed packages"), len(self.db))
 
-		if force:
-			# Create a progressbar.
-			pb = util.make_progress(_("Loading installed packages"), len(self.db))
+		# Remove all data from the current index.
+		self.index.clear()
 
-			# Remove all data from the current index.
-			self.index.clear()
-
-			i = 0
-			for pkg in self.db.packages:
-				if pb:
-					i += 1
-					pb.update(i)
-
-				self.index.add_package(pkg)
-
-			self.index.optimize()
-
+		i = 0
+		for pkg in self.db.packages:
 			if pb:
-				pb.finish()
+				i += 1
+				pb.update(i)
+
+			self.index.add_package(pkg)
+
+		self.index.optimize()
+
+		if pb:
+			pb.finish()
+
+		# Mark repo as open.
+		self.opened = True
+
+	def close(self):
+		# Commit all data that is currently pending for writing.
+		self.db.commit()
+
+		# Close database.
+		self.db.close()
+
+		# Remove indexed data from memory.
+		self.index.clear()
+
+		# Mark repo as closed.
+		self.opened = False
 
 	def commit(self):
 		# Commit the database to disk.

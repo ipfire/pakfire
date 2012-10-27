@@ -117,16 +117,20 @@ class RepositoryRemote(base.RepositoryFactory):
 		# Remove all files in the files cache.
 		self.cache.destroy()
 
-	def update(self, force=False, offline=False):
-		if force and offline:
-			raise OfflineModeError, _("You cannot force to update metadata in offline mode.")
-
+	def open(self):
 		# First update the repository metadata.
-		self.update_metadata(force=force, offline=offline)
-		self.update_database(force=force, offline=offline)
+		self.update_metadata()
+		self.update_database()
 
 		# Read the database.
 		self.open_database()
+
+		# Mark the repository as open.
+		self.opened = True
+
+	def close(self):
+		# Mark the repository as not open.
+		self.opened = False
 
 	def open_metadata(self, path=None):
 		if not path:

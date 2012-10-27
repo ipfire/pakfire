@@ -255,34 +255,35 @@ class RepositoryBuild(RepositoryDir):
 
 		RepositoryDir.__init__(self, pakfire, "build", "Locally built packages", path)
 
-	def update(self, force=False, offline=False):
-		# If force is not given, but there are no files in the repository,
-		# we force an update anyway.
-		if not force:
-			force = len(self) == 0
+	def open(self):
+		# Find all files in the repository dir.
+		files = self.search_files(self.path)
 
-		if force:
-			# Wipe the index.
-			self.index.clear()
+		# Create progress bar.
+		pb = util.make_progress(_("%s: Reading packages...") % self.name, len(files))
+		i = 0
 
-			# Find all files in the repository dir.
-			files = self.search_files(self.path)
-
-			# Create progress bar.
-			pb = util.make_progress(_("%s: Adding packages...") % self.name, len(files))
-			i = 0
-
-			# Add all files to the index.
-			for file in files:
-				if pb:
-					i += 1
-					pb.update(i)
-
-				pkg = packages.open(self.pakfire, self, file)
-				self.index.add_package(pkg)
-
+		# Add all files to the index.
+		for file in files:
 			if pb:
-				pb.finish()
+				i += 1
+				pb.update(i)
+
+			pkg = packages.open(self.pakfire, self, file)
+			self.index.add_package(pkg)
+
+		if pb:
+			pb.finish()
+
+		# Mark repo as open.
+		self.opened = True
+
+	def close(self):
+		# Wipe the index.
+		self.index.clear()
+
+		# Mark repository as not being open.
+		self.opened = False
 
 	@property
 	def local(self):

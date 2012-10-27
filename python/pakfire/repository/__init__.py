@@ -38,11 +38,8 @@ class Repositories(object):
 		This is the place where repositories can be activated or deactivated.
 	"""
 
-	def __init__(self, pakfire, enable_repos=None, disable_repos=None):
+	def __init__(self, pakfire):
 		self.pakfire = pakfire
-
-		self.config = pakfire.config
-		self.distro = pakfire.distro
 
 		# Place to store the repositories
 		self.__repos = {}
@@ -55,31 +52,13 @@ class Repositories(object):
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.
-		if self.pakfire.builder:
+		if self.pakfire.mode == "builder":
 			self.local_build = RepositoryBuild(self.pakfire)
 			self.add_repo(self.local_build)
 
 		# Fetch all repository from the configuration files.
 		for repo_name, repo_args in self.config.get_repos():
 			self._parse(repo_name, repo_args)
-
-		# Enable all repositories here as demanded on commandline
-		if enable_repos:
-			for repo in enable_repos:
-				self.enable_repo(repo)
-
-		# Disable all repositories here as demanded on commandline
-		if disable_repos:
-			# * is magic to disable all repositories.
-			if "*" in disable_repos:
-				disable_repos = [r.name for r in self]
-
-			for repo in disable_repos:
-				self.disable_repo(repo)
-
-		# Update all indexes of the repositories (not force) so that we will
-		# always work with valid data.
-		self.update(force=False, offline=self.pakfire.offline)
 
 	def __iter__(self):
 		repositories = self.__repos.values()
@@ -92,6 +71,40 @@ class Repositories(object):
 			Return the count of enabled repositories.
 		"""
 		return len([r for r in self if r.enabled])
+
+	@property
+	def initialized(self):
+		"""
+			Indicates if all repositories are initialized.
+		"""
+		for repo in self:
+			if not repo.opened:
+				return False
+
+		return True
+
+	def initialize(self):
+		# Nothing to do, if everything is already up to date.
+		if self.initialized:
+			return
+
+		for repo in self:
+			repo.open()
+
+	def shutdown(self):
+		"""
+			Shuts down all repositores.
+		"""
+		for repo in self:
+			repo.close()
+
+	@property
+	def config(self):
+		return self.pakfire.config
+
+	@property
+	def distro(self):
+		return self.pakfire.distro
 
 	@property
 	def pool(self):
@@ -170,17 +183,6 @@ class Repositories(object):
 			self.__repos[name].enabled = False
 		except KeyError:
 			pass
-
-	def update(self, force=False, offline=False):
-		log.debug("Updating all repository indexes (force=%s)" % force)
-
-		# update all indexes if necessary or forced
-		for repo in self:
-			# Skip disabled repositories.
-			if not repo.enabled:
-				continue
-
-			repo.update(force=force, offline=offline)
 
 	def whatprovides(self, what):
 		what = self.pakfire.pool.create_relation(what)

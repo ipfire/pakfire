@@ -69,55 +69,25 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, filename=None, distro_name=None, config=None, configs=None, arch=None,
-			build_id=None, logfile=None, builder_mode="release", **pakfire_args):
-		# Set mode.
-		assert builder_mode in ("development", "release",)
-		self.mode = builder_mode
+	def __init__(self, pakfire, filename=None, distro_name=None, build_id=None, logfile=None, release_build=True):
+		self.pakfire = pakfire
 
-		# Disable the build repository in release mode.
-		if self.mode == "release":
-			if pakfire_args.has_key("disable_repos") and pakfire_args["disable_repos"]:
-				pakfire_args["disable_repos"] += ["build",]
-			else:
-				pakfire_args["disable_repos"] = ["build",]
+		# Check if the given pakfire instance is of the correct type.
+		assert isinstance(self.pakfire, base.PakfireBuilder)
 
-		# Save the build id and generate one if no build id was provided.
-		if not build_id:
-			build_id = "%s" % uuid.uuid4()
+		# Check if this host can build the requested architecture.
+		if not system.host_supports_arch(self.arch):
+			raise BuildError, _("Cannot build for %s on this host.") % self.arch
 
-		self.build_id = build_id
+		# This build is a release build?
+		self.release_build = release_build
 
-		# Setup the logging.
-		if logfile:
-			self.log = log.getChild(self.build_id)
-			# Propage everything to the root logger that we will see something
-			# on the terminal.
-			self.log.propagate = 1
-			self.log.setLevel(logging.INFO)
+		if self.release_build:
+			# Disable the local build repository in release mode.
+			self.pakfire.repos.disable_repo("build")
 
-			# Add the given logfile to the logger.
-			h = logging.FileHandler(logfile)
-			self.log.addHandler(h)
-
-			# Format the log output for the file.
-			f = logger.BuildFormatter()
-			h.setFormatter(f)
-		else:
-			# If no logile was given, we use the root logger.
-			self.log = logging.getLogger("pakfire")
-
-		# Initialize a cgroup (if supported).
-		self.cgroup = None
-		if cgroup.supported():
-			self.cgroup = cgroup.CGroup("pakfire/builder/%s" % self.build_id)
-
-			# Attach the pakfire-builder process to the parent group.
-			self.cgroup.parent.attach()
-
-		# Log information about pakfire and some more information, when we
-		# are running in release mode.
-		if self.mode == "release":
+			# Log information about pakfire and some more information, when we
+			# are running in release mode.
 			logdata = {
 				"host_arch"  : system.arch,
 				"hostname"   : system.hostname,
@@ -128,59 +98,17 @@ class BuildEnviron(object):
 			for line in BUILD_LOG_HEADER.splitlines():
 				self.log.info(line % logdata)
 
-		# Create pakfire instance.
-		if pakfire_args.has_key("mode"):
-			del pakfire_args["mode"]
+		# Save the build id and generate one if no build id was provided.
+		if not build_id:
+			build_id = "%s" % uuid.uuid4()
 
-		if config is None:
-			config = ConfigBuilder(files=configs)
+		self.build_id = build_id
 
-			if not configs:
-				if distro_name is None:
-					distro_name = config.get("builder", "distro", None)
-				config.load_distro_config(distro_name)
+		# Setup the logging.
+		self.init_logging(logfile)
 
-		if not config.has_distro():
-			log.error(_("You have not set the distribution for which you want to build."))
-			log.error(_("Please do so in builder.conf or on the CLI."))
-			raise ConfigError, _("Distribution configuration is missing.")
-
-		self.pakfire = base.PakfireBuilder(config=config, arch=arch, **pakfire_args)
-
-		self.distro = self.pakfire.distro
-		self.path = self.pakfire.path
-
-		# Check if this host can build the requested architecture.
-		if not system.host_supports_arch(self.arch):
-			raise BuildError, _("Cannot build for %s on this host.") % self.arch
-
-		# Where do we put the result?
-		self.resultdir = os.path.join(self.path, "result")
-
-		# Open package.
-		# If we have a plain makefile, we first build a source package and go with that.
-		if filename:
-			if filename.endswith(".%s" % MAKEFILE_EXTENSION):
-				pkg = packages.Makefile(self.pakfire, filename)
-				filename = pkg.dist(os.path.join(self.resultdir, "src"))
-
-				assert os.path.exists(filename), filename
-
-			# Open source package.
-			self.pkg = packages.SourcePackage(self.pakfire, None, filename)
-			assert self.pkg, filename
-
-			# Log the package information.
-			self.log.info(_("Package information:"))
-			for line in self.pkg.dump(long=True).splitlines():
-				self.log.info("  %s" % line)
-			self.log.info("")
-
-			# Path where we extract the package and put all the source files.
-			self.build_dir = os.path.join(self.path, "usr/src/packages", self.pkg.friendly_name)
-		else:
-			# No package :(
-			self.pkg = None
+		# Initialize a cgroup (if supported).
+		self.init_cgroup()
 
 		# XXX need to make this configureable
 		self.settings = {
@@ -197,19 +125,48 @@ class BuildEnviron(object):
 		if self.keyring.get_host_key(secret=True):
 			self.settings["sign_packages"] = True
 
+		# Where do we put the result?
+		self.resultdir = os.path.join(self.pakfire.path, "result")
+
+		# Open package.
+		# If we have a plain makefile, we first build a source package and go with that.
+		if filename:
+			# Open source package.
+			self.pkg = packages.SourcePackage(self.pakfire, None, filename)
+			assert self.pkg, filename
+
+			# Log the package information.
+			self.log.info(_("Package information:"))
+			for line in self.pkg.dump(long=True).splitlines():
+				self.log.info("  %s" % line)
+			self.log.info("")
+
+			# Path where we extract the package and put all the source files.
+			self.build_dir = os.path.join(self.path, "usr/src/packages", self.pkg.friendly_name)
+		else:
+			# No package :(
+			self.pkg = None
+
 		# Lock the buildroot
 		self._lock = None
-		self.lock()
 
 		# Save the build time.
-		self.build_time = int(time.time())
+		self.build_time = time.time()
 
 	def setup_signal_handlers(self):
 		pass
 
 	def start(self):
+		assert not self.pakfire.initialized, "Pakfire has already been initialized"
+
 		# Mount the directories.
 		self._mountall()
+
+		# Lock the build environment.
+		self.lock()
+
+		# Initialize pakfire instance.
+		self.pakfire.initialize()
 
 		# Populate /dev.
 		self.populate_dev()
@@ -240,8 +197,11 @@ class BuildEnviron(object):
 		else:
 			util.orphans_kill(self.path)
 
-		# Close pakfire instance.
-		del self.pakfire
+		# Shut down pakfire instance.
+		self.pakfire.destroy()
+
+		# Unlock build environment.
+		self.unlock()
 
 		# Umount the build environment.
 		self._umountall()
@@ -250,19 +210,32 @@ class BuildEnviron(object):
 		self.destroy()
 
 	@property
+	def distro(self):
+		"""
+			Proxy method for easy access to the distribution.
+		"""
+		return self.pakfire.distro
+
+	@property
+	def path(self):
+		"""
+			Proxy method for easy access to the path.
+		"""
+		return self.pakfire.path
+
+	@property
 	def arch(self):
 		"""
 			Inherit architecture from distribution configuration.
 		"""
-		return self.distro.arch
+		return self.pakfire.distro.arch
 
 	@property
 	def personality(self):
 		"""
 			Gets the personality from the distribution configuration.
 		"""
-		if self.distro:
-			return self.distro.personality
+		return self.pakfire.distro.personality
 
 	@property
 	def info(self):
@@ -299,6 +272,38 @@ class BuildEnviron(object):
 		if self._lock:
 			self._lock.close()
 			self._lock = None
+
+	def init_cgroup(self):
+		"""
+			Initialize cgroup (if the system supports it).
+		"""
+		if not cgroup.supported():
+			self.cgroup = None
+			return
+
+		self.cgroup = cgroup.CGroup("pakfire/builder/%s" % self.build_id)
+
+		# Attach the pakfire-builder process to the parent group.
+		self.cgroup.parent.attach()
+
+	def init_logging(self, logfile):
+		if logfile:
+			self.log = log.getChild(self.build_id)
+			# Propage everything to the root logger that we will see something
+			# on the terminal.
+			self.log.propagate = 1
+			self.log.setLevel(logging.INFO)
+
+			# Add the given logfile to the logger.
+			h = logging.FileHandler(logfile)
+			self.log.addHandler(h)
+
+			# Format the log output for the file.
+			f = logger.BuildFormatter()
+			h.setFormatter(f)
+		else:
+			# If no logile was given, we use the root logger.
+			self.log = logging.getLogger("pakfire")
 
 	def copyin(self, file_out, file_in):
 		if file_in.startswith("/"):
@@ -366,7 +371,7 @@ class BuildEnviron(object):
 
 		return ret
 
-	def extract(self, requires=None, build_deps=True):
+	def extract(self, requires=None):
 		"""
 			Gets a dependency set and extracts all packages
 			to the environment.
@@ -523,16 +528,20 @@ class BuildEnviron(object):
 
 		mountpoints = []
 		for src, dest, fs, options in reversed(self.mountpoints):
+			dest = self.chrootPath(dest)
+
 			if not dest in mountpoints:
 				mountpoints.append(dest)
 
-		for dest in mountpoints:
-			mountpoint = self.chrootPath(dest)
+		while mountpoints:
+			for mp in mountpoints:
+				try:
+					self.execute_root("umount -n %s" % mp, shell=True)
+				except ShellEnvironmentError:
+					pass
 
-			try:
-				self.execute_root("umount -n %s" % mountpoint, shell=True)
-			except ShellEnvironmentError:
-				pass
+				if not os.path.ismount(mp):
+					mountpoints.remove(mp)
 
 	@property
 	def mountpoints(self):
@@ -727,11 +736,12 @@ class BuildEnviron(object):
 			"--nodeps",
 			"--resultdir=/result",
 		]
-		build_command = " ".join(build_command)
 
 		# Check if only the preparation stage should be run.
 		if prepare:
 			build_command.append("--prepare")
+
+		build_command = " ".join(build_command)
 
 		error = False
 		try:

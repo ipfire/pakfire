@@ -25,6 +25,7 @@ import string
 
 import actions
 import builder
+import config
 import distro
 import filelist
 import keyring
@@ -45,30 +46,25 @@ from i18n import _
 class Pakfire(object):
 	mode = None
 
-	def __init__(self, path="/", config=None, configs=None, arch=None,
-			enable_repos=None, disable_repos=None, **kwargs):
+	def __init__(self, path="/", config=None, configs=None, arch=None, **kwargs):
+		# Indicates if this instance has already been initialized.
+		self.initialized = False
+
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
 		# The path where we are operating in.
 		self.path = path
 
-		# Configure the instance of Pakfire we just started.
-		if self.mode == "builder":
-			self.path = os.path.join(BUILD_ROOT, util.random_string())
-
-		elif not self.mode:
-			# check if we are actually running on an ipfire system.
-			if self.path == "/":
-				self.check_is_ipfire()
+		# check if we are actually running on an ipfire system.
+		if not self.mode and self.path == "/":
+			self.check_is_ipfire()
 
 		# Get the configuration.
 		if config:
-			assert configs is None, "You cannot pass configs and config."
 			self.config = config
 		else:
-			# Read configuration file(s).
-			self.config = Config(files=configs)
+			self.config = self._load_config(configs)
 
 		# Update configuration with additional arguments.
 		for section, settings in kwargs.items():
@@ -82,21 +78,39 @@ class Pakfire(object):
 
 		# Get more information about the distribution we are running
 		# or building
-		self.distro = distro.Distribution(self)
+		self.distro = distro.Distribution(self.config.get_distro_conf())
 		if arch:
 			self.distro.arch = arch
 
-		self.pool   = satsolver.Pool(self.distro.arch)
-		self.repos  = repository.Repositories(self,
-			enable_repos=enable_repos, disable_repos=disable_repos)
+		self.pool = satsolver.Pool(self.distro.arch)
+		self.repos = repository.Repositories(self)
+
+	def initialize(self):
+		"""
+			Initialize pakfire instance.
+		"""
+		if self.initialized:
+			return
+
+		# Initialize repositories.
+		self.repos.initialize()
+
+		self.initialized = True
+
+	def _load_config(self, files=None):
+		"""
+			This method loads all needed configuration files.
+		"""
+		return config.Config(files=files)
 
 	def __del__(self):
 		# Reset logging.
 		logger.setup_logging()
 
 	def destroy(self):
-		if not self.path == "/":
-			util.rm(self.path)
+		self.repos.shutdown()
+
+		self.initialized = False
 
 	@property
 	def environ(self):
@@ -148,6 +162,9 @@ class Pakfire(object):
 		return self.mode == "builder"
 
 	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		if not logger:
 			logger = logging.getLogger("pakfire")
 
@@ -220,6 +237,9 @@ class Pakfire(object):
 			If strict is True, only a package with excatly the same UUID
 			will replace the currently installed one.
 		"""
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
@@ -328,6 +348,9 @@ class Pakfire(object):
 			check indicates, if the method should return after calculation
 			of the transaction.
 		"""
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
@@ -376,6 +399,9 @@ class Pakfire(object):
 	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False):
 		assert pkgs
 
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		# Create a new request.
 		request = self.pool.create_request()
 
@@ -420,6 +446,9 @@ class Pakfire(object):
 		t.run()
 
 	def remove(self, pkgs):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		# Create a new request.
 		request = self.pool.create_request(remove=pkgs)
 
@@ -443,6 +472,9 @@ class Pakfire(object):
 		t.run()
 
 	def info(self, patterns):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		pkgs = []
 
 		# For all patterns we run a single search which returns us a bunch
@@ -466,6 +498,9 @@ class Pakfire(object):
 		return sorted(pkgs)
 
 	def search(self, pattern):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		# Do the search.
 		pkgs = {}
 		for solv in self.pool.search(pattern, satsolver.SEARCH_STRING|satsolver.SEARCH_FILES):
@@ -486,9 +521,15 @@ class Pakfire(object):
 		self.install("@%s" % group, **kwargs)
 
 	def grouplist(self, group):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		return self.pool.grouplist(group)
 
 	def provides(self, patterns):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		pkgs = []
 		for pattern in patterns:
 			for pkg in self.repos.whatprovides(pattern):
@@ -500,9 +541,15 @@ class Pakfire(object):
 		return sorted(pkgs)
 
 	def repo_list(self):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		return [r for r in self.repos]
 
 	def clean_all(self):
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		log.debug("Cleaning up everything...")
 
 		# Clean up repository caches.
@@ -512,6 +559,9 @@ class Pakfire(object):
 		"""
 			Try to fix any errors in the system.
 		"""
+		# Initialize this pakfire instance.
+		self.initialize()
+
 		# Detect any errors in the dependency tree.
 		# For that we create an empty request and solver and try to solve
 		# something.
@@ -543,21 +593,46 @@ class Pakfire(object):
 class PakfireBuilder(Pakfire):
 	mode = "builder"
 
+	def __init__(self, distro_name=None, *args, **kwargs):
+		self.distro_name = distro_name
+
+		kwargs.update({
+			"path" : os.path.join(BUILD_ROOT, util.random_string()),
+		})
+
+		Pakfire.__init__(self, *args, **kwargs)
+
+		# Let's see what is our host distribution.
+		self.host_distro = distro.Distribution()
+
+	def _load_config(self, files=None):
+		c = config.ConfigBuilder(files=files)
+
+		if self.distro_name is None:
+			self.distro_name = c.get("builder", "distro", None)
+
+		if self.distro_name:
+			c.load_distro_config(self.distro_name)
+
+		if not c.has_distro_conf():
+			log.error(_("You have not set the distribution for which you want to build."))
+			log.error(_("Please do so in builder.conf or on the CLI."))
+			raise ConfigError, _("Distribution configuration is missing.")
+
+		return c
+
 	def dist(self, pkg, resultdir):
 		pkg = packages.Makefile(self, pkg)
 
 		return pkg.dist(resultdir=resultdir)
 
-	@staticmethod
-	def build(pkg, resultdirs=None, shell=False, install_test=True, after_shell=False, **kwargs):
-		if not resultdirs:
-			resultdirs = []
+	def build(self, pkg, resultdirs=None, shell=False, install_test=True, after_shell=False, **kwargs):
 
-		b = builder.BuildEnviron(pkg, **kwargs)
-		p = b.pakfire
+		# As the BuildEnviron is only able to handle source packages, we must package makefiles.
+		if pkg.endswith(".%s" % MAKEFILE_EXTENSION):
+			pkg = self.dist(pkg, resultdir=LOCAL_TMP_PATH)
 
-		# Always include local repository.
-		resultdirs.append(p.repos.local_build.path)
+		b = builder.BuildEnviron(self, pkg, **kwargs)
 
 		try:
 			# Start to prepare the build environment by mounting
@@ -577,17 +652,24 @@ class PakfireBuilder(Pakfire):
 				# Run a shell to debug the issue.
 				b.shell()
 
-			# If the user requests a shell after a successful build,
-			# we run it here.
-			if after_shell:
-				b.shell()
-
 			# Copy-out all resultfiles if the build was successful.
+			if not resultdirs:
+				resultdirs = []
+
+			# Always include local repository.
+			resultdirs.append(self.repos.local_build.path)
+
 			for resultdir in resultdirs:
 				if not resultdir:
 					continue
 
 				b.copy_result(resultdir)
+
+			# If the user requests a shell after a successful build,
+			# we run it here.
+			if after_shell:
+				b.shell()
+
 		finally:
 			b.stop()
 
@@ -607,9 +689,8 @@ class PakfireBuilder(Pakfire):
 		# If the build was successful, cleanup all temporary files.
 		b.cleanup()
 
-	@staticmethod
-	def shell(pkg, **kwargs):
-		b = builder.BuildEnviron(pkg, **kwargs)
+	def shell(self, pkg, **kwargs):
+		b = builder.BuildEnviron(self, pkg, **kwargs)
 
 		try:
 			b.start()

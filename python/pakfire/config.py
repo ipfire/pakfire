@@ -215,8 +215,11 @@ class _Config(object):
 		for f in self._files:
 			log.debug("    %s" % f)
 
-	def has_distro(self):
+	def has_distro_conf(self):
 		return self._config.has_key("distro")
+
+	def get_distro_conf(self):
+		return self.get_section("distro")
 
 
 class Config(_Config):
