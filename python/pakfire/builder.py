@@ -145,12 +145,7 @@ class BuildEnviron(object):
 			log.error(_("Please do so in builder.conf or on the CLI."))
 			raise ConfigError, _("Distribution configuration is missing.")
 
-		self.pakfire = base.Pakfire(
-			mode="builder",
-			config=config,
-			arch=arch,
-			**pakfire_args
-		)
+		self.pakfire = base.PakfireBuilder(config=config, arch=arch, **pakfire_args)
 
 		self.distro = self.pakfire.distro
 		self.path = self.pakfire.path

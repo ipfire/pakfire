@@ -43,6 +43,8 @@ from constants import *
 from i18n import _
 
 class Pakfire(object):
+	mode = None
+
 	RELATIONS = (
 		(">=", satsolver.REL_GE,),
 		("<=", satsolver.REL_LE,),
@@ -51,12 +53,8 @@ class Pakfire(object):
 		(">" , satsolver.REL_GT,),
 	)
 
-	def __init__(self, mode=None, path="/", config=None, configs=None, arch=None,
+	def __init__(self, path="/", config=None, configs=None, arch=None,
 			enable_repos=None, disable_repos=None, **kwargs):
-		# Set the mode.
-		assert mode in ("normal", "builder", "server",)
-		self.mode = mode
-
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
@@ -64,10 +62,10 @@ class Pakfire(object):
 		self.path = path
 
 		# Configure the instance of Pakfire we just started.
-		if mode == "builder":
+		if self.mode == "builder":
 			self.path = os.path.join(BUILD_ROOT, util.random_string())
 
-		elif mode == "normal":
+		elif not mode:
 			# check if we are actually running on an ipfire system.
 			if self.path == "/":
 				self.check_is_ipfire()
@@ -784,3 +782,11 @@ class Pakfire(object):
 
 		# Process the transaction.
 		t.run()
+
+
+class PakfireBuilder(Pakfire):
+	mode = "builder"
+
+
+class PakfireServer(Pakfire):
+	mode = "server"

@@ -25,6 +25,7 @@ import client
 from errors import *
 
 Pakfire = base.Pakfire
+PakfireBuilder = base.PakfireBuilder
 
 def install(requires, ignore_recommended=False, **pakfire_args):
 	pakfire = Pakfire(**pakfire_args)
@@ -81,7 +82,7 @@ def grouplist(group, **pakfire_args):
 	return pakfire.grouplist(group)
 
 def _build(pkg, resultdir, **kwargs):
-	pakfire = Pakfire(mode="builder", **kwargs)
+	pakfire = PakfireBuilder(**kwargs)
 
 	return pakfire._build(pkg, resultdir, **kwargs)
 
