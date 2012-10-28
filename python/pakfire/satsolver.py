@@ -178,6 +178,14 @@ class Pool(_pakfire.Pool):
 		# Return the solver so one can do stuff with it...
 		return solver
 
+	def whatprovides(self, pakfire, what):
+		pkgs = []
+		for solv in self.providers(what):
+			pkg = packages.SolvPackage(pakfire, solv)
+			pkgs.append(pkg)
+
+		return pkgs
+
 
 class Request(_pakfire.Request):
 	def install(self, what):

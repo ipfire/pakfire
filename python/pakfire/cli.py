@@ -591,7 +591,7 @@ class CliBuilder(Cli):
 			p.dist(pkg, resultdir=resultdir)
 
 	def handle_provides(self):
-		Cli.handle_provides(long=True)
+		Cli.handle_provides(self, long=True)
 
 
 class CliServer(Cli):

@@ -19,7 +19,9 @@
 #############################################################################*/
 
 #include <Python.h>
+#include <fnmatch.h>
 #include <solv/poolarch.h>
+#include <solv/solver.h>
 
 #include "config.h"
 #include "pool.h"
@@ -160,28 +162,81 @@ PyObject *Pool_set_installed(PoolObject *self, PyObject *args) {
 }
 
 PyObject *Pool_providers(PoolObject *self, PyObject *args) {
-	RelationObject *relation;
+	char *name = NULL;
+	Queue job;
+	Solvable *solvable;
+	Pool *pool = self->_pool;
+	Id p, pp;
+	int i;
 
-	if (!PyArg_ParseTuple(args, "O", &relation)) {
-		/* XXX raise exception */
+	if (!PyArg_ParseTuple(args, "s", &name)) {
 		return NULL;
 	}
 
-	Id id = relation->_id;
-
-	Pool *pool = self->_pool;
 	_Pool_prepare(pool);
+	queue_init(&job);
 
+	Id id = pool_str2id(pool, name, 0);
+
+	if (id) {
+		FOR_PROVIDES(p, pp, id) {
+			solvable = pool->solvables + p;
+
+			if (solvable->name == id)
+				queue_push2(&job, SOLVER_SOLVABLE, p);
+		}
+	}
+
+	for (p = 1; p < pool->nsolvables; p++) {
+		solvable = pool->solvables + p;
+		if (!solvable->repo || !pool_installable(pool, solvable))
+			continue;
+
+		id = solvable->name;
+		if (fnmatch(name, pool_id2str(pool, id), 0) == 0) {
+			for (i = 0; i < job.count; i += 2) {
+				if (job.elements[i] == SOLVER_SOLVABLE && job.elements[i + 1] == id)
+					break;
+			}
+
+			if (i == job.count)
+				queue_push2(&job, SOLVER_SOLVABLE, p);
+		}
+	}
+
+	for (id = 1; id < pool->ss.nstrings; id++) {
+		if (!pool->whatprovides[id])
+			continue;
+
+		if (fnmatch(name, pool_id2str(pool, id), 0) == 0) {
+			Id *provides = pool->whatprovidesdata + pool->whatprovides[id];
+
+			while (*provides) {
+				for (i = 0; i < job.count; i += 2) {
+					if (job.elements[i] == SOLVER_SOLVABLE && job.elements[i + 1] == *provides)
+						break;
+				}
+
+				if (i == job.count)
+					queue_push2(&job, SOLVER_SOLVABLE, *provides);
+
+				*provides++;
+			}
+		}
+	}
+
+	SolvableObject *s;
 	PyObject *list = PyList_New(0);
 
-	Id p, pp;
-	SolvableObject *solvable;
-	FOR_PROVIDES(p, pp, id) {
-		solvable = PyObject_New(SolvableObject, &SolvableType);
-		solvable->_pool = self->_pool;
-		solvable->_id = p;
+	for (i = 0; i < job.count; i += 2) {
+		switch (job.elements[i]) {
+			case SOLVER_SOLVABLE:
+				s = PyObject_New(SolvableObject, &SolvableType);
+				s->_pool = pool;
+				s->_id = job.elements[i + 1];
 
-		PyList_Append(list, (PyObject *)solvable);
+				PyList_Append(list, (PyObject *)s);
+		}
 	}
 
 	return list;

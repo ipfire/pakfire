@@ -538,13 +538,16 @@ class Pakfire(object):
 
 		pkgs = []
 		for pattern in patterns:
-			for pkg in self.repos.whatprovides(pattern):
+			for pkg in self.pool.whatprovides(self, pattern):
 				if pkg in pkgs:
 					continue
 
 				pkgs.append(pkg)
 
-		return sorted(pkgs)
+		# Sort output.
+		pkgs.sort()
+
+		return pkgs
 
 	def resolvdep(self, pkg):
 		# Initialize this pakfire instance.

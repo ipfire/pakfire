@@ -194,12 +194,6 @@ class Repositories(object):
 			if repo.name == name or name == "*":
 				repo.enabled = False
 
-	def whatprovides(self, what):
-		what = self.pakfire.pool.create_relation(what)
-
-		for solv in self.pool.providers(what):
-			yield packages.SolvPackage(self.pakfire, solv)
-
 	def clean(self):
 		log.info("Cleaning up all repository caches...")
 
