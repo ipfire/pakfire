@@ -76,6 +76,7 @@ class Cli(object):
 		self.parse_command_clean()
 		self.parse_command_check()
 		self.parse_command_resolvdep()
+		self.parse_command_extract()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -96,6 +97,7 @@ class Cli(object):
 			"clean_all"    : self.handle_clean_all,
 			"check"        : self.handle_check,
 			"resolvdep"    : self.handle_resolvdep,
+			"extract"      : self.handle_extract,
 		}
 
 	@property
@@ -291,6 +293,16 @@ class Cli(object):
 			help=_("Give name of at least one package to check."))
 		sub_resolvdep.add_argument("action", action="store_const", const="resolvdep")
 
+	def parse_command_extract(self):
+		# Implement the "extract" command.
+		sub_extract = self.sub_commands.add_parser("extract",
+			help=_("Extract a package to a directory."))
+		sub_extract.add_argument("package", nargs="+",
+			help=_("Give name of the file to extract."))
+		sub_extract.add_argument("--target", nargs="?",
+			help=_("Target directory where to extract to."))
+		sub_extract.add_argument("action", action="store_const", const="extract")
+
 	def run(self):
 		action = self.args.action
 
@@ -398,6 +410,41 @@ class Cli(object):
 		t = transaction.Transaction.from_solver(p, solver)
 		t.dump()
 
+	def handle_extract(self):
+		p = self.create_pakfire()
+
+		# Open all packages.
+		pkgs = []
+		for pkg in self.args.package:
+			pkg = packages.open(self, None, pkg)
+			pkgs.append(pkg)
+
+		target_prefix = self.args.target
+
+		# Search for binary packages.
+		binary_packages = any([p.type == "binary" for p in pkgs])
+		source_packages = any([p.type == "source" for p in pkgs])
+
+		if binary_packages and source_packages:
+			raise Error, _("Cannot extract mixed package types")
+
+		if binary_packages and not target_prefix:
+			raise Error, _("You must provide an install directory with --target=...")
+
+		elif source_packages and not target_prefix:
+			target_prefix = "/usr/src/packages/"
+
+		if target_prefix == "/":
+			raise Error, _("Cannot extract to /.")
+
+		for pkg in pkgs:
+			if pkg.type == "binary":
+				target_dir = target_prefix
+			elif pkg.type == "source":
+				target_dir = os.path.join(target_prefix, pkg.friendly_name)
+
+			pkg.extract(message=_("Extracting"), prefix=target_dir)
+
 
 class CliBuilder(Cli):
 	pakfire = base.PakfireBuilder
@@ -428,6 +475,7 @@ class CliBuilder(Cli):
 		self.parse_command_repolist()
 		self.parse_command_clean()
 		self.parse_command_resolvdep()
+		self.parse_command_extract()
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -444,6 +492,7 @@ class CliBuilder(Cli):
 			"repolist"    : self.handle_repolist,
 			"clean_all"   : self.handle_clean_all,
 			"resolvdep"   : self.handle_resolvdep,
+			"extract"     : self.handle_extract,
 		}
 
 	@property
