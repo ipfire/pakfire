@@ -448,7 +448,9 @@ class CliBuilder(Cli):
 
 	@property
 	def pakfire_args(self):
-		ret = {}
+		ret = {
+			"arch" : self.args.arch,
+		}
 
 		if hasattr(self.args, "offline") and self.args.offline:
 			ret["downloader"] = {
@@ -466,6 +468,9 @@ class CliBuilder(Cli):
 		self.parser.add_argument("--distro", nargs="?",
 			help=_("Choose the distribution configuration to use for build"))
 
+		self.parser.add_argument("--arch", "-a", nargs="?",
+			help=_("Run pakfire for the given architecture."))
+
 	def parse_command_update(self):
 		# Implement the "update" command.
 		sub_update = self.sub_commands.add_parser("update",
@@ -480,8 +485,6 @@ class CliBuilder(Cli):
 			help=_("Give name of at least one package to build."))
 		sub_build.add_argument("action", action="store_const", const="build")
 
-		sub_build.add_argument("-a", "--arch",
-			help=_("Build the package for the given architecture."))
 		sub_build.add_argument("--resultdir", nargs="?",
 			help=_("Path were the output files should be copied to."))
 		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
@@ -499,8 +502,6 @@ class CliBuilder(Cli):
 			help=_("Give name of a package."))
 		sub_shell.add_argument("action", action="store_const", const="shell")
 
-		sub_shell.add_argument("-a", "--arch",
-			help=_("Emulated architecture in the shell."))
 		sub_shell.add_argument("-m", "--mode", nargs="?", default="development",
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
 
@@ -537,7 +538,7 @@ class CliBuilder(Cli):
 		else:
 			release_build = False
 
-		p = self.create_pakfire(arch=self.args.arch)
+		p = self.create_pakfire()
 		p.build(pkg,
 			install_test=install_test,
 			resultdirs=[self.args.resultdir,],
@@ -565,7 +566,7 @@ class CliBuilder(Cli):
 		else:
 			release_build = False
 
-		p = self.create_pakfire(arch=self.args.arch)
+		p = self.create_pakfire()
 		p.shell(pkg, release_build=release_build)
 
 	def handle_dist(self):
