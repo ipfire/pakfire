@@ -546,6 +546,12 @@ class Pakfire(object):
 
 		return sorted(pkgs)
 
+	def resolvdep(self, pkg):
+		# Initialize this pakfire instance.
+		self.initialize()
+
+		return self.pool.resolvdep(self, pkg)
+
 	def repo_list(self):
 		# Initialize this pakfire instance.
 		self.initialize()

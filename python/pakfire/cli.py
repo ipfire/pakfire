@@ -353,13 +353,14 @@ class Cli(object):
 
 	def handle_repolist(self):
 		p = self.pakfire(**self.pakfire_args)
+		repos = p.repo_list()
 
 		FORMAT = " %-20s %8s %12s %12s "
 		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
 		print title
 		print "=" * len(title) # spacing line
 
-		for repo in p.repo_list():
+		for repo in repos:
 			# Skip the installed repository.
 			if repo.name == "installed":
 				continue
@@ -381,7 +382,7 @@ class Cli(object):
 
 		(pkg,) = self.args.package
 
-		solver = p.pool.resolvdep(pkg)
+		solver = p.resolvdep(pkg)
 		assert solver.status
 
 		t = transaction.Transaction.from_solver(p, solver)

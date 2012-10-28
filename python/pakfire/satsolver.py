@@ -137,11 +137,11 @@ class Pool(_pakfire.Pool):
 
 		return ret
 
-	def resolvdep(self, pkg, logger=None):
+	def resolvdep(self, pakfire, pkg, logger=None):
 		assert os.path.exists(pkg)
 
 		# Open the package file.
-		pkg = packages.open(self, None, pkg)
+		pkg = packages.open(pakfire, None, pkg)
 
 		# Create a new request.
 		request = self.create_request(install=pkg.requires)
