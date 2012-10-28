@@ -110,15 +110,14 @@ class BuildEnviron(object):
 			for line in BUILD_LOG_HEADER.splitlines():
 				self.log.info(line % logdata)
 
-		# XXX need to make this configureable
+		# Settings array.
 		self.settings = {
-			"enable_loop_devices" : True,
-			"enable_ccache"   : True,
-			"enable_icecream" : False,
-			"sign_packages"   : False,
-			"buildroot_tmpfs" : False,
+			"enable_loop_devices" : self.config.get_bool("builder", "use_loop_devices", True),
+			"enable_ccache"       : self.config.get_bool("builder", "use_ccache", True),
+			"enable_icecream"     : self.config.get_bool("builder", "use_icecream", False),
+			"sign_packages"       : False,
+			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
 		}
-		#self.settings.update(settings)
 
 		# Try to get the configured host key. If it is available,
 		# we will automatically sign all packages with it.
@@ -208,6 +207,13 @@ class BuildEnviron(object):
 
 		# Remove all files.
 		self.destroy()
+
+	@property
+	def config(self):
+		"""
+			Proxy method for easy access to the configuration.
+		"""
+		return self.pakfire.config
 
 	@property
 	def distro(self):
