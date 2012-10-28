@@ -113,15 +113,6 @@ class Pakfire(object):
 		self.initialized = False
 
 	@property
-	def environ(self):
-		env = {}
-
-		# Get distribution information.
-		env.update(self.distro.environ)
-
-		return env
-
-	@property
 	def supported_arches(self):
 		return system.supported_arches
 
