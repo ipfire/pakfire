@@ -314,9 +314,9 @@ class Solver(object):
 		# Save the amount of time that was needed to solve the request.
 		self.time = time.time() - start_time
 
-		self.logger.debug("Solver status: %s (%.2f ms)" % (self.status, self.time / 1000))
-
-		if self.status is False:
+		if self.status:
+			self.logger.info(_("Dependency solving finished in %.2f ms") % (self.time / 1000))
+		else:
 			raise DependencyError, self.get_problem_string()
 
 	@property
