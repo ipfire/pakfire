@@ -61,7 +61,7 @@ class InnerTarFile(tarfile.TarFile):
 				log.debug("Saving capabilities for %s: %s" % (name, caps))
 				tarinfo.pax_headers["PAKFIRE.capabilities"] = caps
 
-	        # Append the tar header and data to the archive.
+			# Append the tar header and data to the archive.
 			f = tarfile.bltn_open(name, "rb")
 			self.addfile(tarinfo, f)
 			f.close()
@@ -75,6 +75,9 @@ class InnerTarFile(tarfile.TarFile):
 
 		else:
 			self.addfile(tarinfo)
+
+		# Return the tar information about the file
+		return tarinfo
 
 	def extract(self, member, path=""):
 		target = os.path.join(path, member.name)

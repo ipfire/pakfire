@@ -197,21 +197,22 @@ class Packager(object):
 	def run(self):
 		raise NotImplementedError
 
-	def getsize(self, filename):
-		if tarfile.is_tarfile(filename):
-			return os.path.getsize(filename)
-
+	def getsize(self, datafile):
 		size = 0
-		f = lzma.LZMAFile(filename)
+
+		if self.payload_compression == "xz":
+			tar = InnerTarFileXz.open(datafile)
+		else:
+			tar = InnerTarFile.open(datafile)
 
 		while True:
-			buf = f.read(BUFFER_SIZE)
-			if not buf:
+			m = tar.next()
+			if not m:
 				break
 
-			size += len(buf)
-		f.close()
+			size += m.size
 
+		tar.close()
 		return size
 
 

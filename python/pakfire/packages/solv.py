@@ -122,6 +122,10 @@ class SolvPackage(base.Package):
 		return self.solvable.get_downloadsize()
 
 	@property
+	def inst_size(self):
+		return self.solvable.get_installsize()
+
+	@property
 	def vendor(self):
 		vendor = self.solvable.get_vendor()
 

@@ -114,6 +114,12 @@ class Package(object):
 		if self.size:
 			items.append((_("Size"), util.format_size(self.size)))
 
+		if self.inst_size:
+			items.append(
+				(_("Installed size"),
+				util.format_size(self.inst_size))
+			)
+
 		# filter dummy repository
 		if not self.repo == self.pakfire.repos.dummy:
 			items.append((_("Repo"), self.repo.name))
