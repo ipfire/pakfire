@@ -405,6 +405,9 @@ class BuildEnviron(object):
 		if self.pkg:
 			self.pkg.extract(_("Extracting"), prefix=self.build_dir)
 
+			# Add an empty line at the end.
+			self.log.info("")
+
 	def install(self, requires, **kwargs):
 		"""
 			Install everything that is required in requires.
