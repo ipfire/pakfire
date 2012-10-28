@@ -105,12 +105,6 @@ class Cli(object):
 		if hasattr(self.args, "root"):
 			ret["path"] = self.args.root
 
-		if hasattr(self.args, "disable_repo"):
-			ret["disable_repos"] = self.args.disable_repo
-
-		if hasattr(self.args, "enable_repo"):
-			ret["enable_repos"] = self.args.enable_repo
-
 		if hasattr(self.args, "offline") and self.args.offline:
 			ret["downloader"] = {
 				"offline" : self.args.offline,
@@ -123,7 +117,26 @@ class Cli(object):
 
 		return ret
 
-	def parse_common_arguments(self, repo_manage_switches=True, offline_switch=True):
+	def create_pakfire(self, cls=None, **kwargs):
+		if cls is None:
+			cls = self.pakfire
+
+		args = self.pakfire_args
+		args.update(kwargs)
+
+		p = cls(**args)
+
+		# Disable repositories.
+		for repo in self.args.disable_repo:
+			p.repos.disable_repo(repo)
+
+		# Enable repositories.
+		for repo in self.args.enable_repo:
+			p.repos.enable_repo(repo)
+
+		return p
+
+	def parse_common_arguments(self, offline_switch=True):
 		self.parser.add_argument("--version", action="version",
 			version="%(prog)s " + PAKFIRE_VERSION)
 
@@ -133,12 +146,11 @@ class Cli(object):
 		self.parser.add_argument("-c", "--config", nargs="?",
 			help=_("Path to a configuration file to load."))
 
-		if repo_manage_switches:
-			self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
-				help=_("Disable a repository temporarily."))
+		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
+			help=_("Disable a repository temporarily."), default=[])
 
-			self.parser.add_argument("--enabled-repo", nargs="*", metavar="REPO",
-				help=_("Enable a repository temporarily."))
+		self.parser.add_argument("--enable-repo", nargs="*", metavar="REPO",
+			help=_("Enable a repository temporarily."), default=[])
 
 		if offline_switch:
 			self.parser.add_argument("--offline", action="store_true",
@@ -290,19 +302,19 @@ class Cli(object):
 		return func()
 
 	def handle_info(self, long=False):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for pkg in p.info(self.args.package):
 			print pkg.dump(long=long)
 
 	def handle_search(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for pkg in p.search(self.args.pattern):
 			print pkg.dump(short=True)
 
 	def handle_update(self, **args):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.update(
 			self.args.package,
 			excludes=self.args.exclude,
@@ -315,7 +327,7 @@ class Cli(object):
 		self.handle_update(check=True)
 
 	def handle_downgrade(self, **args):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.downgrade(
 			self.args.package,
 			allow_vendorchange=self.args.allow_vendorchange,
@@ -324,35 +336,37 @@ class Cli(object):
 		)
 
 	def handle_install(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.install(self.args.package, ignore_recommended=self.args.without_recommends)
 
 	def handle_reinstall(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.reinstall(self.args.package)
 
 	def handle_remove(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.remove(self.args.package)
 
 	def handle_provides(self, long=False):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for pkg in p.provides(self.args.pattern):
 			print pkg.dump(long=long)
 
 	def handle_grouplist(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for pkg in p.grouplist(self.args.group[0]):
 			print " * %s" % pkg
 
 	def handle_groupinstall(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.groupinstall(self.args.group[0])
 
 	def handle_repolist(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
+
+		# Get a list of all repositories.
 		repos = p.repo_list()
 
 		FORMAT = " %-20s %8s %12s %12s "
@@ -361,24 +375,20 @@ class Cli(object):
 		print "=" * len(title) # spacing line
 
 		for repo in repos:
-			# Skip the installed repository.
-			if repo.name == "installed":
-				continue
-
 			print FORMAT % (repo.name, repo.enabled, repo.priority, len(repo))
 
 	def handle_clean_all(self):
 		print _("Cleaning up everything...")
 
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.clean_all()
 
 	def handle_check(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.check()
 
 	def handle_resolvdep(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		(pkg,) = self.args.package
 
@@ -439,12 +449,6 @@ class CliBuilder(Cli):
 	@property
 	def pakfire_args(self):
 		ret = {}
-
-		if hasattr(self.args, "disable_repo"):
-			ret["disable_repos"] = self.args.disable_repo
-
-		if hasattr(self.args, "enable_repo"):
-			ret["enable_repos"] = self.args.enable_repo
 
 		if hasattr(self.args, "offline") and self.args.offline:
 			ret["downloader"] = {
@@ -533,7 +537,7 @@ class CliBuilder(Cli):
 		else:
 			release_build = False
 
-		p = self.pakfire(arch=self.args.arch, **self.pakfire_args)
+		p = self.create_pakfire(arch=self.args.arch)
 		p.build(pkg,
 			install_test=install_test,
 			resultdirs=[self.args.resultdir,],
@@ -561,7 +565,7 @@ class CliBuilder(Cli):
 		else:
 			release_build = False
 
-		p = self.pakfire(arch=self.args.arch, **self.pakfire_args)
+		p = self.create_pakfire(arch=self.args.arch)
 		p.shell(pkg, release_build=release_build)
 
 	def handle_dist(self):
@@ -581,7 +585,7 @@ class CliBuilder(Cli):
 		# current working directory.
 		resultdir = self.args.resultdir or os.getcwd()
 
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		for pkg in pkgs:
 			p.dist(pkg, resultdir=resultdir)
 

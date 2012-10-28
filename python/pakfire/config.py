@@ -188,7 +188,7 @@ class _Config(object):
 
 	def update(self, section, what):
 		if not type(what) == type({}):
-			log.error(_("Unhandled configuration update: %s") % what)
+			log.error(_("Unhandled configuration update: %s = %s") % (section, what))
 			return
 
 		try:
