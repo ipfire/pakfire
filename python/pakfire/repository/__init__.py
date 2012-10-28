@@ -26,6 +26,8 @@ log = logging.getLogger("pakfire")
 
 import pakfire.packages as packages
 
+from pakfire.i18n import _
+
 from base import RepositoryDummy
 from local import RepositoryDir, RepositoryBuild
 from remote import RepositoryRemote
@@ -88,8 +90,12 @@ class Repositories(object):
 		if self.initialized:
 			return
 
+		log.info(_("Initializing repositories..."))
 		for repo in self:
 			repo.open()
+
+		# Empty line.
+		log.info("")
 
 	def shutdown(self):
 		"""
