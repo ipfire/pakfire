@@ -1000,6 +1000,9 @@ class FilePackage(Package):
 
 	@property
 	def recommends(self):
+		if self.format < 4:
+			return []
+
 		recommends = self.lexer.deps.get_var("recommends")
 
 		if not recommends:
@@ -1010,6 +1013,9 @@ class FilePackage(Package):
 
 	@property
 	def suggests(self):
+		if self.format < 4:
+			return []
+
 		suggests = self.lexer.deps.get_var("suggests")
 
 		if not suggests:
