@@ -851,7 +851,7 @@ class CliClient(Cli):
 			description = _("Pakfire client command line interface."),
 		)
 
-		self.parse_common_arguments(repo_manage_switches=True, offline_switch=True)
+		self.parse_common_arguments(offline_switch=True)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
@@ -1182,7 +1182,7 @@ class CliDaemon(Cli):
 			description = _("Pakfire daemon command line interface."),
 		)
 
-		self.parse_common_arguments(repo_manage_switches=True, offline_switch=True)
+		self.parse_common_arguments(offline_switch=True)
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -1210,8 +1210,7 @@ class CliKey(Cli):
 			description = _("Pakfire key command line interface."),
 		)
 
-		self.parse_common_arguments(repo_manage_switches=False,
-			offline_switch=True)
+		self.parse_common_arguments(offline_switch=True)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
