@@ -323,7 +323,7 @@ class Solver(object):
 		self.time = time.time() - start_time
 
 		if self.status:
-			self.logger.info(_("Dependency solving finished in %.2f ms") % (self.time / 1000))
+			self.logger.info(_("Dependency solving finished in %.2f ms") % (self.time * 1000))
 		else:
 			raise DependencyError, self.get_problem_string()
 
