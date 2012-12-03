@@ -192,8 +192,8 @@ class Cli(object):
 			help=_("Exclude package from update."))
 		parser.add_argument("--allow-vendorchange", action="store_true",
 			help=_("Allow changing the vendor of packages."))
-		parser.add_argument("--allow-archchange", action="store_true",
-			help=_("Allow changing the architecture of packages."))
+		parser.add_argument("--disallow-archchange", action="store_true",
+			help=_("Disallow changing the architecture of packages."))
 
 	def parse_command_update(self):
 		# Implement the "update" command.
@@ -217,8 +217,8 @@ class Cli(object):
 			help=_("Give a name of a package to downgrade."))
 		sub_downgrade.add_argument("--allow-vendorchange", action="store_true",
 			help=_("Allow changing the vendor of packages."))
-		sub_downgrade.add_argument("--allow-archchange", action="store_true",
-			help=_("Allow changing the architecture of packages."))
+		sub_downgrade.add_argument("--disallow-archchange", action="store_true",
+			help=_("Disallow changing the architecture of packages."))
 		sub_downgrade.add_argument("action", action="store_const", const="downgrade")
 
 	def parse_command_info(self):
@@ -331,7 +331,7 @@ class Cli(object):
 			self.args.package,
 			excludes=self.args.exclude,
 			allow_vendorchange=self.args.allow_vendorchange,
-			allow_archchange=self.args.allow_archchange,
+			allow_archchange=not self.args.disallow_archchange,
 			**args
 		)
 
@@ -343,7 +343,7 @@ class Cli(object):
 		p.downgrade(
 			self.args.package,
 			allow_vendorchange=self.args.allow_vendorchange,
-			allow_archchange=self.args.allow_archchange,
+			allow_archchange=not self.args.disallow_archchange,
 			**args
 		)
 
