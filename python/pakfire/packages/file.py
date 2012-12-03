@@ -200,17 +200,11 @@ class FilePackage(Package):
 	def open_archive(self, mode="r"):
 		return tarfile.open(self.filename, mode=mode, format=tarfile.PAX_FORMAT)
 
-	def extract(self, message=None, prefix=None):
-		log.debug("Extracting package %s" % self.friendly_name)
+	def open_payload_archive(self):
+		a = self.open_archive()
 
-		if prefix is None:
-			prefix = ""
-
-		# Open package data for read.
-		archive = self.open_archive()
-
-		# Get the package payload.
-		payload = archive.extractfile("data.img")
+		# Find the payload data.
+		payload = a.extractfile("data.img")
 
 		# Decompress the payload if needed.
 		if self.payload_compression == "xz":
@@ -220,8 +214,18 @@ class FilePackage(Package):
 			payload_archive = InnerTarFile.open(fileobj=payload)
 
 		else:
-			raise Exception, "Unhandled payload compression type: %s" \
-				% payload_compression
+			raise Exception, "Unhandled payload compression type: %s" % payload_compression
+
+		return payload_archive
+
+	def extract(self, message=None, prefix=None):
+		log.debug("Extracting package %s" % self.friendly_name)
+
+		if prefix is None:
+			prefix = ""
+
+		# Open package data for read.
+		payload_archive = self.open_payload_archive()
 
 		# Load progressbar.
 		pb = None
@@ -357,6 +361,21 @@ class FilePackage(Package):
 		# Print messages.
 		for msg in messages:
 			log.warning(msg)
+
+	def open_file(self, filename):
+		payload_archive = self.open_payload_archive()
+
+		# Search for filename.
+		while True:
+			member = payload_archive.next()
+			if not member:
+				break
+
+			# Skip non-matching files.
+			if not filename in (member.name, "/%s" % member.name):
+				continue
+
+			return payload_archive.extractfile(member)
 
 	@property
 	def metadata(self):
