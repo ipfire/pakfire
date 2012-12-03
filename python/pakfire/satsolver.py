@@ -298,6 +298,9 @@ class Solver(object):
 		self.__problems = None
 		self.__transaction = None
 
+		# Create some sane settings for the most common use cases.
+		self.set("allow_archchange", True)
+
 	def set(self, option, value):
 		try:
 			flag = self.option2flag[option]

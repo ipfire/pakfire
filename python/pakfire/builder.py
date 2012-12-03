@@ -789,8 +789,7 @@ class BuildEnviron(object):
 		self.log.info(_("Running installation test..."))
 
 		# Install all packages that were built.
-		self.install(self.find_result_packages(),
-			allow_vendorchange=True, allow_archchange=True,
+		self.install(self.find_result_packages(), allow_vendorchange=True,
 			allow_uninstall=True, signatures_mode="disabled")
 
 		self.log.info(_("Installation test succeeded."))

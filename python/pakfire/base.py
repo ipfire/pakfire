@@ -387,7 +387,7 @@ class Pakfire(object):
 		# Run the transaction.
 		t.run(logger=logger)
 
-	def downgrade(self, pkgs, allow_vendorchange=False, allow_archchange=False, logger=None):
+	def downgrade(self, pkgs, logger=None, **kwargs):
 		assert pkgs
 
 		if logger is None:
@@ -419,11 +419,7 @@ class Pakfire(object):
 				request.install(rel)
 
 		# Solve the request.
-		solver = self.pool.solve(request,
-			allow_downgrade=True,
-			allow_vendorchange=allow_vendorchange,
-			allow_archchange=allow_archchange,
-		)
+		solver = self.pool.solve(request, allow_downgrade=True, **kwargs)
 		assert solver.status is True
 
 		# Create the transaction.
