@@ -414,6 +414,9 @@ class BuildEnviron(object):
 			# Add an empty line at the end.
 			self.log.info("")
 
+			# Copy source package to build environment.
+			self.copyin(self.pkg.filename, os.path.join(self.resultdir, "src/"))
+
 	def install(self, requires, **kwargs):
 		"""
 			Install everything that is required in requires.
