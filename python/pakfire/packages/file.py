@@ -352,8 +352,6 @@ class FilePackage(Package):
 
 		# Close all open files.
 		payload_archive.close()
-		payload.close()
-		archive.close()
 
 		if pb:
 			pb.finish()
