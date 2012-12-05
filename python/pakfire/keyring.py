@@ -168,9 +168,9 @@ class Keyring(object):
 
 		log.info(_("Successfully imported %s.") % keyfile)
 
-	def export_key(self, keyid, keyfile, secret=False):
+	def export_key(self, keyid, keyfile):
 		keydata = io.BytesIO()
-		self.ctx.export(keyid, keydata, secret)
+		self.ctx.export(keyid, keydata)
 
 		f = open(keyfile, "wb")
 		f.write(keydata.getvalue())

@@ -1205,6 +1205,8 @@ class CliDaemon(Cli):
 
 
 class CliKey(Cli):
+	pakfire = base.PakfireKey
+
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire key command line interface."),
@@ -1266,8 +1268,6 @@ class CliKey(Cli):
 			help=_("The ID of the key to export."))
 		sub_export.add_argument("filename", nargs=1,
 			help=_("Write the key to this file."))
-		sub_export.add_argument("--secret", action="store_true",
-			help=_("Export the secret key, too."))
 		sub_export.add_argument("action", action="store_const", const="export")
 
 	def parse_command_delete(self):
@@ -1313,32 +1313,31 @@ class CliKey(Cli):
 
 		# Generate the key.
 		p = self.pakfire(**self.pakfire_args)
-		p.key_generate(realname, email)
+		p.keyring.gen_key(realname, email)
 
 	def handle_import(self):
 		filename = self.args.filename[0]
 
 		# Simply import the file.
 		p = self.pakfire(**self.pakfire_args)
-		p.key_import(filename)
+		p.keyring.import_key(filename)
 
 	def handle_export(self):
 		keyid    = self.args.keyid[0]
 		filename = self.args.filename[0]
-		secret   = self.args.secret
 
 		p = self.pakfire(**self.pakfire_args)
-		p.key_export(keyid, filename, secret=secret)
+		p.keyring.export_key(keyid, filename)
 
 	def handle_delete(self):
 		keyid = self.args.keyid[0]
 
 		p = self.pakfire(**self.pakfire_args)
-		p.key_delete(keyid)
+		p.keyring.delete_key(keyid)
 
 	def handle_list(self):
 		p = self.pakfire(**self.pakfire_args)
-		for line in p.key_list():
+		for line in p.keyring.list_keys():
 			print line
 
 	def handle_sign(self):

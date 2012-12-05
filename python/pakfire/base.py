@@ -729,3 +729,7 @@ class PakfireServer(Pakfire):
 
 		# Return the new repository.
 		return repo
+
+
+class PakfireKey(Pakfire):
+	mode = "key"
