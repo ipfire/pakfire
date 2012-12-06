@@ -770,7 +770,7 @@ class CliServer(Cli):
 	def handle_repo_create(self):
 		path = self.args.path[0]
 
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.repo_create(path, self.args.inputs, key_id=self.args.key)
 
 	def handle_info(self):
@@ -1320,31 +1320,31 @@ class CliKey(Cli):
 		print
 
 		# Generate the key.
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.keyring.gen_key(realname, email)
 
 	def handle_import(self):
 		filename = self.args.filename[0]
 
 		# Simply import the file.
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.keyring.import_key(filename)
 
 	def handle_export(self):
 		keyid    = self.args.keyid[0]
 		filename = self.args.filename[0]
 
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.keyring.export_key(keyid, filename)
 
 	def handle_delete(self):
 		keyid = self.args.keyid[0]
 
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		p.keyring.delete_key(keyid)
 
 	def handle_list(self):
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 		for line in p.keyring.list_keys():
 			print line
 
@@ -1364,7 +1364,7 @@ class CliKey(Cli):
 		key = self.args.key[0]
 
 		# Create pakfire instance.
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for file in files:
 			# Open the package.
@@ -1384,7 +1384,7 @@ class CliKey(Cli):
 				files.append(file)
 
 		# Create pakfire instance.
-		p = self.pakfire(**self.pakfire_args)
+		p = self.create_pakfire()
 
 		for file in files:
 			# Open the package.
@@ -1394,7 +1394,7 @@ class CliKey(Cli):
 			sigs = pkg.verify()
 
 			for sig in sigs:
-				key = self.pakfire.keyring.get_key(sig.fpr)
+				key = p.keyring.get_key(sig.fpr)
 				if key:
 					subkey = key.subkeys[0]
 
