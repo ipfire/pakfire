@@ -846,6 +846,8 @@ class CliBuilderIntern(Cli):
 
 
 class CliClient(Cli):
+	pakfire = base.PakfireClient
+
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire client command line interface."),
@@ -878,14 +880,20 @@ class CliClient(Cli):
 		}
 
 		# Read configuration for the pakfire client.
-		self.conf = conf = config.ConfigClient()
+		self.config = config.ConfigClient()
 
 		# Create connection to pakfire hub.
 		self.client = client.PakfireUserClient(
-			conf.get("client", "server"),
-			conf.get("client", "username"),
-			conf.get("client", "password"),
+			self.config.get("client", "server"),
+			self.config.get("client", "username"),
+			self.config.get("client", "password"),
 		)
+
+	@property
+	def pakfire_args(self):
+		return {
+			"config" : self.config,
+		}
 
 	def parse_command_build(self):
 		# Parse "build" command.
@@ -1003,10 +1011,10 @@ class CliClient(Cli):
 		ret.append("  PAKFIRE %s" % PAKFIRE_VERSION)
 		ret.append("")
 		ret.append("  %-20s: %s" % (_("Hostname"), system.hostname))
-		ret.append("  %-20s: %s" % (_("Pakfire hub"), self.conf.get("client", "server")))
-		if self.conf.get("client", "username") and self.conf.get("client", "password"):
+		ret.append("  %-20s: %s" % (_("Pakfire hub"), self.config.get("client", "server")))
+		if self.config.get("client", "username") and self.config.get("client", "password"):
 			ret.append("  %-20s: %s" % \
-				(_("Username"), self.conf.get("client", "username")))
+				(_("Username"), self.config.get("client", "username")))
 		ret.append("")
 
 		# Hardware information

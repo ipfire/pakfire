@@ -604,6 +604,10 @@ class Pakfire(object):
 			# If the build was successful, cleanup all temporary files.
 			b.cleanup()
 
+	def dist(self, pkg, resultdir):
+		pkg = packages.Makefile(self, pkg)
+
+		return pkg.dist(resultdir=resultdir)
 
 
 class PakfireBuilder(Pakfire):
@@ -636,11 +640,6 @@ class PakfireBuilder(Pakfire):
 			raise ConfigError, _("Distribution configuration is missing.")
 
 		return c
-
-	def dist(self, pkg, resultdir):
-		pkg = packages.Makefile(self, pkg)
-
-		return pkg.dist(resultdir=resultdir)
 
 	def build(self, pkg, resultdirs=None, shell=False, install_test=True, after_shell=False, **kwargs):
 		# As the BuildEnviron is only able to handle source packages, we must package makefiles.
@@ -706,6 +705,10 @@ class PakfireBuilder(Pakfire):
 			b.shell()
 		finally:
 			b.stop()
+
+
+class PakfireClient(Pakfire):
+	mode = "client"
 
 
 class PakfireServer(Pakfire):
