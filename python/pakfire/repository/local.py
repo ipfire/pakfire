@@ -21,6 +21,8 @@
 
 import os
 import shutil
+import tempfile
+import urlgrabber
 
 import logging
 log = logging.getLogger("pakfire")
@@ -29,6 +31,7 @@ import base
 import metadata
 
 import pakfire.compress as compress
+import pakfire.downloader as downloader
 import pakfire.packages as packages
 import pakfire.util as util
 
@@ -90,9 +93,45 @@ class RepositoryDir(base.RepositoryFactory):
 
 		return files
 
-	def add_packages(self, *paths):
+	def download_package(self, url):
+		basename = os.path.basename(url)
+
+		grabber = downloader.PackageDownloader(self.pakfire, text=basename)
+
+		try:
+			download = grabber.urlopen(url)
+		except urlgrabber.grabber.URLGrabError, e:
+			raise DownloadError, _("Could not download %s: %s") % (url, e)
+
+		tmpfile = None
+		try:
+			tmpfile = tempfile.NamedTemporaryFile(mode="wb", delete=False)
+
+			while True:
+				buf = download.read(BUFFER_SIZE)
+				if not buf:
+					break
+
+				tmpfile.write(buf)
+
+			tmpfile.close()
+			download.close()
+
+			# Add the package to the repository.
+			self.add_package(tmpfile.name)
+
+		finally:
+			# Delete the temporary file afterwards.
+			# Ignore any errors.
+			if tmpfile:
+				try:
+					os.unlink(tmpfile.name)
+				except:
+					pass
+
+	def add_packages(self, files, replace=True):
 		# Search for possible package files in the paths.
-		files = self.search_files(*paths)
+		files = self.search_files(*files)
 
 		# Give up if there are no files to process.
 		if not files:
@@ -107,62 +146,64 @@ class RepositoryDir(base.RepositoryFactory):
 				i += 1
 				pb.update(i)
 
-			# Open the package file we want to add.
-			pkg = packages.open(self.pakfire, self, file)
+			# Add the package to the repository.
+			self.add_package(file, replace=replace, optimize_index=False)
 
-			# Find all packages with the given type and skip those of
-			# the other type.
-			if not pkg.type == self.type:
-				continue
-
-			# Compute the local path.
-			repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
-			pkg2 = None
-
-			# If the file is already located in the repository, we do not need to
-			# copy it.
-			if not pkg.filename == repo_filename:
-				need_copy = True
-
-				# Check if the file is already in the repository.
-				if os.path.exists(repo_filename):
-					# Open it for comparison.
-					pkg2 = packages.open(self.pakfire, self, repo_filename)
-
-					if pkg.uuid == pkg2.uuid:
-						need_copy = False
-
-				# If a copy is still needed, we do it.
-				if need_copy:
-					# Create the directory.
-					repo_dirname = os.path.dirname(repo_filename)
-					if not os.path.exists(repo_dirname):
-						os.makedirs(repo_dirname)
-
-					# Try to use a hard link if possible, if we cannot do that we simply
-					# copy the file.
-					try:
-						os.link(pkg.filename, repo_filename)
-					except OSError:
-						shutil.copy2(pkg.filename, repo_filename)
-
-			# Reopen the new package file (in case it needs to be changed).
-			if pkg2:
-				pkg = pkg2
-			else:
-				pkg = packages.open(self.pakfire, self, repo_filename)
-
-			# Sign all packages.
-			if self.key_id:
-				pkg.sign(self.key_id)
-
-			# Add the package to the index.
-			self.index.add_package(pkg)
+		# Optimize the index.
+		self.optimize_index()
 
 		if pb:
 			pb.finish()
 
 		# Optimize the index.
+		self.index.optimize()
+
+	def add_package(self, filename, replace=True, optimize_index=True):
+		# Open the package file we want to add.
+		pkg = packages.open(self.pakfire, self, filename)
+
+		# Find all packages with the given type and skip those of
+		# the other type.
+		if not pkg.type == self.type:
+			return
+
+		# Compute the local path.
+		repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
+
+		# If a file with the same name does already exists, we don't replace it.
+		if not replace and os.path.exists(repo_filename):
+			return pkg
+
+		# Copy the file to the repository.
+		repo_dirname = os.path.dirname(repo_filename)
+		if not os.path.exists(repo_dirname):
+			os.makedirs(repo_dirname)
+
+		# Try to hard link the package if possible. Otherwise copy.
+		try:
+			os.link(pkg.filename, repo_filename)
+		except OSError:
+			shutil.copy2(pkg.filename, repo_filename)
+
+		# Re-open the package.
+		pkg = packages.open(self.pakfire, self, repo_filename)
+
+		# Sign package.
+		if self.key_id:
+			pkg.sign(self.key_id)
+
+		# Add package to the index.
+		self.index.add_package(pkg)
+
+		if optimize_index:
+			self.optimize_index()
+
+		return pkg
+
+	def optimize_index(self):
+		"""
+			Optimize the index.
+		"""
 		self.index.optimize()
 
 	def save(self, path=None, algo="xz"):

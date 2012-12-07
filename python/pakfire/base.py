@@ -163,7 +163,8 @@ class Pakfire(object):
 		repo = None
 
 		# Sort out what we got...
-		files = []
+		download_packages = []
+		local_packages = []
 		relations = []
 
 		for req in requires:
@@ -172,8 +173,13 @@ class Pakfire(object):
 				continue
 
 			# This looks like a file.
-			if req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req):
-				files.append(req)
+			elif os.path.exists(req):
+				local_packages.append(req)
+				continue
+
+			# Remote files.
+			elif req.startswith("http://") or req.startswith("https://") or req.startswith("ftp://"):
+				download_packages.append(req)
 				continue
 
 			# We treat the rest as relations. The solver will return any errors.
@@ -187,15 +193,19 @@ class Pakfire(object):
 			# If we have got files to install, we need to create a temporary repository
 			# called 'localinstall'.
 			# XXX FIX TMP PATH
-			if files:
+			if local_packages or download_packages:
 				repo = repository.RepositoryDir(self, "localinstall", _("Local install repository"),
 					os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
 
 				# Register the repository.
 				self.repos.add_repo(repo)
 
+				# Download packages.
+				for download_package in download_packages:
+					repo.download_package(download_package)
+
 				# Add all packages to the repository index.
-				repo.add_packages(*files)
+				repo.add_packages(local_packages)
 
 				# Add all packages to the requires.
 				requires += repo

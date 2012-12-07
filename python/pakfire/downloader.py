@@ -99,7 +99,7 @@ class PakfireGrabber(URLGrabber):
 class PackageDownloader(PakfireGrabber):
 	def __init__(self, pakfire, *args, **kwargs):
 		kwargs.update({
-				"progress_obj" : TextMeter(),
+			"progress_obj" : TextMeter(),
 		})
 
 		PakfireGrabber.__init__(self, pakfire, *args, **kwargs)
