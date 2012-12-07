@@ -94,32 +94,18 @@ class RepositoryDir(base.RepositoryFactory):
 		return files
 
 	def download_package(self, url):
-		basename = os.path.basename(url)
-
-		grabber = downloader.PackageDownloader(self.pakfire, text=basename)
-
-		try:
-			download = grabber.urlopen(url)
-		except urlgrabber.grabber.URLGrabError, e:
-			raise DownloadError, _("Could not download %s: %s") % (url, e)
+		grabber = downloader.PackageDownloader(self.pakfire)
 
 		tmpfile = None
 		try:
 			tmpfile = tempfile.NamedTemporaryFile(mode="wb", delete=False)
-
-			while True:
-				buf = download.read(BUFFER_SIZE)
-				if not buf:
-					break
-
-				tmpfile.write(buf)
-
 			tmpfile.close()
-			download.close()
+
+			basename = os.path.basename(url)
+			grabber.urlgrab(url, filename=tmpfile.name, text=basename)
 
 			# Add the package to the repository.
 			self.add_package(tmpfile.name)
-
 		finally:
 			# Delete the temporary file afterwards.
 			# Ignore any errors.
