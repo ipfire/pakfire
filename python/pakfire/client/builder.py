@@ -7,6 +7,7 @@ import sys
 import tempfile
 import time
 
+import pakfire.base
 import pakfire.builder
 import pakfire.config
 import pakfire.downloader
@@ -392,8 +393,17 @@ class ClientBuilder(object):
 			# Get a package grabber and add mirror download capabilities to it.
 			grabber = pakfire.downloader.PackageDownloader(pakfire.config.Config())
 
+			# Create pakfire configuration instance.
+			config = pakfire.config.ConfigDaemon()
+			config.parse(self.build_config)
+
+			# Create pakfire instance.
+			p = None
 			try:
-				## Download the source.
+				p = pakfire.base.PakfireBuilder(config=config, arch=self.build_arch)
+
+				# Download the source package.
+				grabber = pakfire.downloader.PackageDownloader(p)
 				grabber.urlgrab(self.build_source_url, filename=tmpfile)
 
 				# Check if the download checksum matches (if provided).
@@ -411,33 +421,9 @@ class ClientBuilder(object):
 					if not self.build_source_hash512 == h.hexdigest():
 						raise DownloadError, "Hash check did not succeed."
 
-				# Build configuration.
-				config = pakfire.config.ConfigDaemon()
-
-				# Parse the configuration received from the build service.
-				config.parse(self.build_config)
-
-				# Create dict with arguments that are passed to the pakfire
-				# builder.
-				kwargs = {
-					"config"        : config,
-
-					# Of course this is a release build.
-					# i.e. don't use local packages.
-					"builder_mode"  : "release",
-
-					# Set the build_id we got from the build service.
-					"build_id"      : self.build_id,
-
-					# Files and directories (should be self explaining).
-					"logfile"       : logfile,
-
-					# Perform the build for this architecture.
-					"arch"          : self.build_arch,
-				}
-
-				# Create a new instance of the builder.
-				build = pakfire.builder.BuildEnviron(tmpfile, **kwargs)
+				# Create a new instance of a build environment.
+				build = pakfire.builder.BuildEnviron(p, tmpfile,
+					release_build=True, build_id=self.build_id, logfile=logfile)
 
 				try:
 					# Create the build environment.
@@ -482,6 +468,9 @@ class ClientBuilder(object):
 				raise
 
 			finally:
+				if p:
+					p.destroy()
+
 				# Upload the logfile in any case and if it exists.
 				if os.path.exists(logfile):
 					self.upload_file(logfile, "log")
