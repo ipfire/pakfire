@@ -19,7 +19,7 @@
 #                                                                             #
 ###############################################################################
 
-from base import Pakfire, PakfireBuilder
+from base import Pakfire, PakfireBuilder, PakfireServer
 
 from constants import PAKFIRE_VERSION
 
