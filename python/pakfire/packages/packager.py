@@ -43,7 +43,7 @@ import pakfire.util as util
 from pakfire.constants import *
 from pakfire.i18n import _
 
-from file import BinaryPackage, InnerTarFile, InnerTarFileXz, SourcePackage
+import file
 
 class Packager(object):
 	payload_compression = None
@@ -143,9 +143,9 @@ class Packager(object):
 		f = open(filelist, "w")
 
 		if self.payload_compression == "xz":
-			datafile = InnerTarFileXz.open(datafile)
+			datafile = file.InnerTarFileXz.open(datafile)
 		else:
-			datafile = InnerTarFile.open(datafile)
+			datafile = file.InnerTarFile.open(datafile)
 
 		while True:
 			m = datafile.next()
@@ -201,9 +201,9 @@ class Packager(object):
 		size = 0
 
 		if self.payload_compression == "xz":
-			tar = InnerTarFileXz.open(datafile)
+			tar = file.InnerTarFileXz.open(datafile)
 		else:
-			tar = InnerTarFile.open(datafile)
+			tar = file.InnerTarFile.open(datafile)
 
 		while True:
 			m = tar.next()
@@ -232,9 +232,9 @@ class BinaryPackager(Packager):
 		tmpdir = self.mktemp(directory=True)
 
 		if self.payload_compression == "xz":
-			tarfile = InnerTarFileXz.open(datafile)
+			tarfile = file.InnerTarFileXz.open(datafile)
 		else:
-			tarfile = InnerTarFile.open(datafile)
+			tarfile = file.InnerTarFile.open(datafile)
 
 		tarfile.extractall(path=tmpdir)
 		tarfile.close()
@@ -401,9 +401,9 @@ class BinaryPackager(Packager):
 
 		datafile = self.mktemp()
 		if self.payload_compression == "xz":
-			tar = InnerTarFileXz.open(datafile, mode="w")
+			tar = file.InnerTarFileXz.open(datafile, mode="w")
 		else:
-			tar = InnerTarFile.open(datafile, mode="w")
+			tar = file.InnerTarFile.open(datafile, mode="w")
 
 		# All files in the tarball are relative to this directory.
 		basedir = self.buildroot
@@ -528,9 +528,9 @@ class BinaryPackager(Packager):
 
 	def find_files(self, datafile, patterns):
 		if self.payload_compression == "xz":
-			datafile = InnerTarFileXz.open(datafile)
+			datafile = file.InnerTarFileXz.open(datafile)
 		else:
-			datafile = InnerTarFile.open(datafile)
+			datafile = file.InnerTarFile.open(datafile)
 
 		members = datafile.getmembers()
 
@@ -634,7 +634,7 @@ class BinaryPackager(Packager):
 		except OSError:
 			shutil.copy2(tempfile, resultfile)
 
-		return BinaryPackage(self.pakfire, self.pakfire.repos.dummy, resultfile)
+		return file.BinaryPackage(self.pakfire, self.pakfire.repos.dummy, resultfile)
 
 
 class SourcePackager(Packager):
@@ -715,9 +715,9 @@ class SourcePackager(Packager):
 
 		filename = self.mktemp()
 		if self.payload_compression == "xz":
-			datafile = InnerTarFileXz.open(filename, mode="w")
+			datafile = file.InnerTarFileXz.open(filename, mode="w")
 		else:
-			datafile = InnerTarFile.open(filename, mode="w")
+			datafile = file.InnerTarFile.open(filename, mode="w")
 
 		i = 0
 		for arcname, file in files:

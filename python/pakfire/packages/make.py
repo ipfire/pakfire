@@ -40,28 +40,31 @@ import pakfire.downloader as downloader
 import pakfire.util as util
 
 from base import Package
-from file import SourcePackage
 
 from pakfire.constants import *
 from pakfire.i18n import _
 from pakfire.system import system
 
 class MakefileBase(Package):
-	def __init__(self, pakfire, filename):
+	def __init__(self, pakfire, filename=None, lines=None):
 		Package.__init__(self, pakfire)
-
-		# Save the filename of the makefile.
-		self.filename = os.path.abspath(filename)
 
 		# Update environment.
 		environ = self.pakfire.distro.environ
 		environ.update({
-			"BASEDIR"          : os.path.dirname(self.filename),
 			"PARALLELISMFLAGS" : "-j%d" % system.parallelism,
 		})
 
-		# Open and parse the makefile.
-		self.lexer = lexer.RootLexer.open(self.filename, environ=environ)
+		if filename:
+			self.filename = os.path.abspath(filename)
+			environ["BASEDIR"] = os.path.dirname(self.filename)
+
+			# Open and parse the makefile.
+			self.lexer = lexer.RootLexer.open(self.filename, environ=environ)
+
+		else:
+			self.filename = None
+			self.lexer = lexer.RootLexer(lines, environ=environ)
 
 	@property
 	def package_filename(self):
@@ -193,15 +196,19 @@ class MakefileBase(Package):
 class Makefile(MakefileBase):
 	@property
 	def uuid(self):
-		hash1 = util.calc_hash1(self.filename)
+		if self.filename:
+			hash1 = util.calc_hash1(self.filename)
 
-		# Return UUID version 5 (SHA1 hash)
-		return "%8s-%4s-5%3s-%4s-%11s" % \
-			(hash1[0:8], hash1[9:13], hash1[14:17], hash1[18:22], hash1[23:34])
+			# Return UUID version 5 (SHA1 hash)
+			return "%8s-%4s-5%3s-%4s-%11s" % \
+				(hash1[0:8], hash1[9:13], hash1[14:17], hash1[18:22], hash1[23:34])
+
+		return "" # XXX What to do here?
 
 	@property
 	def path(self):
-		return os.path.dirname(self.filename)
+		if self.filename:
+			return os.path.dirname(self.filename)
 
 	@property
 	def arch(self):
@@ -302,6 +309,9 @@ class Makefile(MakefileBase):
 
 	@property
 	def files(self):
+		if not self.filename:
+			return []
+
 		files = []
 		basedir = os.path.dirname(self.filename)
 

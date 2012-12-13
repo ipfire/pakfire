@@ -36,8 +36,9 @@ import pakfire.compress as compress
 from pakfire.constants import *
 from pakfire.i18n import _
 
-from base import Package
-from lexer import FileLexer
+import base
+import lexer
+import make
 
 class InnerTarFile(tarfile.TarFile):
 	def __init__(self, *args, **kwargs):
@@ -123,13 +124,13 @@ class InnerTarFileXz(InnerTarFile):
 		return t
 
 
-class FilePackage(Package):
+class FilePackage(base.Package):
 	"""
 		This class is a wrapper that reads package data from the (outer)
 		tarball and should never be used solely.
 	"""
 	def __init__(self, pakfire, repo, filename):
-		Package.__init__(self, pakfire, repo)
+		base.Package.__init__(self, pakfire, repo)
 		self.filename = os.path.abspath(filename)
 
 		# Place to cache the metadata
@@ -150,7 +151,7 @@ class FilePackage(Package):
 			a = self.open_archive()
 			f = a.extractfile("info")
 
-			self.lexer = FileLexer(f.readlines())
+			self.lexer = lexer.FileLexer(f.readlines())
 
 			f.close()
 			a.close()
@@ -374,6 +375,16 @@ class FilePackage(Package):
 				continue
 
 			return payload_archive.extractfile(member)
+
+	def open_makefile(self):
+		"""
+			Opens the makefile inside the package.
+		"""
+		f = self.open_file("%s.%s" % (self.name, MAKEFILE_EXTENSION))
+		if not f:
+			return
+
+		return make.Makefile(self.pakfire, lines=f.readlines())
 
 	@property
 	def metadata(self):
@@ -1061,6 +1072,17 @@ class SourcePackage(FilePackage):
 
 		assert arches, self
 		return arches
+
+	@property
+	def requires(self):
+		m = self.open_makefile()
+		if not m:
+			return []
+
+		requires = m.lexer.build.get_var("requires")
+		requires = requires.splitlines()
+
+		return self.filter_deps(requires)
 
 
 class BinaryPackage(FilePackage):
