@@ -202,17 +202,3 @@ PyObject *Repo_get_all(RepoObject *self) {
 
 	return list;
 }
-
-PyObject *Repo_rem_solv(RepoObject *self, PyObject *args) {
-	Repo *repo = self->_repo;
-	SolvableObject *solv;
-
-	if (!PyArg_ParseTuple(args, "O", &solv)) {
-		return NULL;
-	}
-
-	Solvable *s = pool_id2solvable(repo->pool, solv->_id);
-	repo_free_solvable(repo, s - repo->pool->solvables, 1);
-
-	Py_RETURN_NONE;
-}
