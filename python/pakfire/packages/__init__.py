@@ -22,7 +22,7 @@
 import tarfile
 
 from base import Package
-from file import BinaryPackage, FilePackage, InnerTarFile, SourcePackage
+from file import BinaryPackage, FilePackage, SourcePackage
 from installed import DatabasePackage, InstalledPackage
 from solv import SolvPackage
 

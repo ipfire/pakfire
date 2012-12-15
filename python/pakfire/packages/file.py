@@ -39,90 +39,7 @@ from pakfire.i18n import _
 import base
 import lexer
 import make
-
-class InnerTarFile(tarfile.TarFile):
-	def __init__(self, *args, **kwargs):
-		# Force the PAX format.
-		kwargs["format"] = tarfile.PAX_FORMAT
-
-		tarfile.TarFile.__init__(self, *args, **kwargs)
-
-	def add(self, name, arcname=None, recursive=None, exclude=None, filter=None):
-		"""
-			Emulate the add function with capability support.
-		"""
-		tarinfo = self.gettarinfo(name, arcname)
-
-		if tarinfo.isreg():
-			attrs = []
-
-			# Save capabilities.
-			caps = util.get_capabilities(name)
-			if caps:
-				log.debug("Saving capabilities for %s: %s" % (name, caps))
-				tarinfo.pax_headers["PAKFIRE.capabilities"] = caps
-
-			# Append the tar header and data to the archive.
-			f = tarfile.bltn_open(name, "rb")
-			self.addfile(tarinfo, f)
-			f.close()
-
-		elif tarinfo.isdir():
-			self.addfile(tarinfo)
-			if recursive:
-				for f in os.listdir(name):
-					self.add(os.path.join(name, f), os.path.join(arcname, f),
-							recursive, exclude, filter)
-
-		else:
-			self.addfile(tarinfo)
-
-		# Return the tar information about the file
-		return tarinfo
-
-	def extract(self, member, path=""):
-		target = os.path.join(path, member.name)
-
-		# Remove symlink targets, because tarfile cannot replace them.
-		if member.issym():
-			try:
-				os.unlink(target)
-			except OSError:
-				pass
-
-		# Extract file the normal way...
-		try:
-			tarfile.TarFile.extract(self, member, path)
-		except OSError, e:
-			log.warning(_("Could not extract file: /%(src)s - %(dst)s") \
-				% { "src" : member.name, "dst" : e, })
-
-		if path:
-			target = os.path.join(path, member.name)
-		else:
-			target = "/%s" % member.name
-
-		# ...and then apply the capabilities.
-		caps = member.pax_headers.get("PAKFIRE.capabilities", None)
-		if caps:
-			log.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
-			util.set_capabilities(target, caps)
-
-
-class InnerTarFileXz(InnerTarFile):
-	@classmethod
-	def open(cls, name=None, mode="r", fileobj=None, **kwargs):
-		fileobj = lzma.LZMAFile(name, mode, fileobj=fileobj)
-
-		try:
-			t = cls.taropen(name, mode, fileobj, **kwargs)
-		except lzma.LZMAError:
-			fileobj.close()
-			raise tarfile.ReadError("not an lzma file")
-
-		t._extfileobj = False
-		return t
-
+import tar
 
 class FilePackage(base.Package):
 	"""
@@ -209,10 +126,10 @@ class FilePackage(base.Package):
 
 		# Decompress the payload if needed.
 		if self.payload_compression == "xz":
-			payload_archive = InnerTarFileXz.open(fileobj=payload)
+			payload_archive = tar.InnerTarFileXz.open(fileobj=payload)
 
 		elif self.payload_compression == "none":
-			payload_archive = InnerTarFile.open(fileobj=payload)
+			payload_archive = tar.InnerTarFile.open(fileobj=payload)
 
 		else:
 			raise Exception, "Unhandled payload compression type: %s" % payload_compression
