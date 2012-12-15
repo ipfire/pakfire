@@ -155,7 +155,7 @@ class Repositories(object):
 
 	def add_repo(self, repo):
 		if self.__repos.has_key(repo.name):
-			raise Exception, "Repository with that name does already exist."
+			raise Exception, "Repository with that name does already exist: %s" % repo.name
 
 		self.__repos[repo.name] = repo
 
