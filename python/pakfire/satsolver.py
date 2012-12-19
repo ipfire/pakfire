@@ -37,7 +37,7 @@ from i18n import _
 # Put some variables into our own namespace, to make them easily accessible
 # for code, that imports the satsolver module.
 SEARCH_STRING = _pakfire.SEARCH_STRING
-SEARCH_FIELS  = _pakfire.SEARCH_FILES
+SEARCH_FILES  = _pakfire.SEARCH_FILES
 SEARCH_GLOB   = _pakfire.SEARCH_GLOB
 
 Repo     = _pakfire.Repo
