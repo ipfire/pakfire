@@ -173,7 +173,7 @@ class Pakfire(object):
 				continue
 
 			# This looks like a file.
-			elif os.path.exists(req):
+			elif req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req) and os.path.isfile(req):
 				local_packages.append(req)
 				continue
 
