@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+#   <v.andrey@i.ua>, 2012.
+# Андрій Вальчишин <v.andrey@i.ua>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-28 15:02+0100\n"
-"PO-Revision-Date: 2011-05-19 21:47+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Catalan (http://www.transifex.com/projects/p/ipfire/language/ca/)\n"
+"PO-Revision-Date: 2012-12-18 10:53+0000\n"
+"Last-Translator: Андрій Вальчишин <v.andrey@i.ua>\n"
+"Language-Team: Ukrainian (http://www.transifex.com/projects/p/ipfire/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ca\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../python/pakfire/actions.py:72
 #, python-format
@@ -41,31 +43,31 @@ msgstr ""
 #: ../python/pakfire/actions.py:210
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
+msgstr "Не можу виконати скрипт. Інтерпретатор не доступний: %s"
 
 #: ../python/pakfire/actions.py:214
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
+msgstr "Не можу виконати скрипт. Інтерпретатор не для виконання: %s"
 
 #: ../python/pakfire/actions.py:253
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
+msgstr "Скрипт вернув помилку:\n%s"
 
 #: ../python/pakfire/actions.py:256
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr ""
+msgstr "Скрипт виконувався більше ніж %s секунд та був вбитий."
 
 #: ../python/pakfire/actions.py:260
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
+msgstr "Скрипт повернутий з невідомою помилкою:\n%s"
 
 #: ../python/pakfire/actions.py:299
 #, python-format
@@ -77,24 +79,24 @@ msgstr ""
 #: ../python/pakfire/actions.py:471 ../python/pakfire/actions.py:490
 #, python-format
 msgid "Running transaction test for %s"
-msgstr ""
+msgstr "Виконується тест транзакції %s"
 
 #: ../python/pakfire/actions.py:381
 msgid "Installing"
-msgstr ""
+msgstr "Інсталяція"
 
 #: ../python/pakfire/actions.py:419
 msgid "Updating"
-msgstr ""
+msgstr "Оновлення"
 
 #: ../python/pakfire/actions.py:438
 msgid "Removing"
-msgstr ""
+msgstr "Видалення"
 
 #. Cleaning up leftover files and stuff.
 #: ../python/pakfire/actions.py:461
 msgid "Cleanup"
-msgstr ""
+msgstr "Очистка"
 
 #: ../python/pakfire/actions.py:483
 msgid "Reinstalling"
@@ -102,7 +104,7 @@ msgstr ""
 
 #: ../python/pakfire/actions.py:499
 msgid "Downgrading"
-msgstr ""
+msgstr "Відновлення"
 
 #: ../python/pakfire/base.py:191
 msgid "Local install repository"
@@ -111,53 +113,53 @@ msgstr ""
 #: ../python/pakfire/base.py:251
 #, python-format
 msgid "Could not find any installed package providing \"%s\"."
-msgstr ""
+msgstr "Не можу знайти жодного інстальованого пакунку, що наданий \"%s\"."
 
 #: ../python/pakfire/base.py:257
 #, python-format
 msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
-msgstr ""
+msgstr "Декілька кандидатів на перевстановлення для \"%(pattern)s\": %(pkgs)s"
 
 #: ../python/pakfire/base.py:261 ../python/pakfire/base.py:327
 #: ../python/pakfire/base.py:366 ../python/pakfire/base.py:434
 #: ../python/pakfire/base.py:461 ../python/pakfire/transaction.py:396
 msgid "Nothing to do"
-msgstr ""
+msgstr "Виконано геть усе"
 
 #: ../python/pakfire/base.py:286
 #, python-format
 msgid "Could not find package %s in a remote repository."
-msgstr ""
+msgstr "Не можу знайти пакунку %s і віддаленому репозиторії."
 
 #: ../python/pakfire/base.py:358
 #, python-format
 msgid "Excluding %s."
-msgstr ""
+msgstr "Виключення %s."
 
 #: ../python/pakfire/base.py:416
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
-msgstr ""
+msgstr "Здається пакунок \"%s\" не встановлений."
 
 #: ../python/pakfire/base.py:584
 msgid "Everything is fine."
-msgstr ""
+msgstr "Все гаразд."
 
 #: ../python/pakfire/base.py:605
 msgid "Build command has failed."
-msgstr ""
+msgstr "Команда Build зазнала невдачі."
 
 #: ../python/pakfire/base.py:638
 msgid "You have not set the distribution for which you want to build."
-msgstr ""
+msgstr "Ви не вказали дистрибуцію, яку ви хочете побудувати."
 
 #: ../python/pakfire/base.py:639
 msgid "Please do so in builder.conf or on the CLI."
-msgstr ""
+msgstr "Будь ласка, зробіть це в builder.conf або CLI."
 
 #: ../python/pakfire/base.py:640
 msgid "Distribution configuration is missing."
-msgstr ""
+msgstr "Відсутня конфігурація дистрибуції."
 
 #: ../python/pakfire/base.py:722
 msgid "New repository"
@@ -166,30 +168,30 @@ msgstr ""
 #: ../python/pakfire/builder.py:80
 #, python-format
 msgid "Cannot build for %s on this host."
-msgstr ""
+msgstr "Не можу побудувати для %s на цьому хості."
 
 #. Log the package information.
 #: ../python/pakfire/builder.py:138
 msgid "Package information:"
-msgstr ""
+msgstr "Інформація про пакет:"
 
 #. Install all packages.
 #: ../python/pakfire/builder.py:407
 msgid "Install packages needed for build..."
-msgstr ""
+msgstr "Встановлення пакунків необхідних для побудови..."
 
 #: ../python/pakfire/builder.py:412
 msgid "Extracting"
-msgstr ""
+msgstr "Розпаковка"
 
 #: ../python/pakfire/builder.py:729
 msgid "You cannot run a build when no package was given."
-msgstr ""
+msgstr "Ви не можете виконати побудову без надання жодного пакету."
 
 #: ../python/pakfire/builder.py:733
 #, python-format
 msgid "Could not find makefile in build root: %s"
-msgstr ""
+msgstr "не можу знайти makefile в корені build: %s"
 
 #: ../python/pakfire/builder.py:765
 msgid "Build failed"
@@ -197,12 +199,12 @@ msgstr ""
 
 #: ../python/pakfire/builder.py:770
 msgid "Build failed."
-msgstr ""
+msgstr "Зборка зазнала невдачі."
 
 #. End here in case of an error.
 #: ../python/pakfire/builder.py:786
 msgid "The build command failed. See logfile for details."
-msgstr ""
+msgstr "Команда build зазнала невдачі. Див. лог-файл для додаткофої інформації."
 
 #: ../python/pakfire/builder.py:789
 msgid "Running installation test..."
@@ -219,68 +221,68 @@ msgstr ""
 
 #: ../python/pakfire/builder.py:873
 msgid "Dumping package information:"
-msgstr ""
+msgstr "Дамп інформації про пакунок."
 
 #. Package the result.
 #. Make all these little package from the build environment.
 #: ../python/pakfire/builder.py:1025
 msgid "Creating packages:"
-msgstr ""
+msgstr "Створення пакунків:"
 
 #. Execute the buildscript of this stage.
 #: ../python/pakfire/builder.py:1039
 #, python-format
 msgid "Running stage %s:"
-msgstr ""
+msgstr "Поточна стадія %s:"
 
 #: ../python/pakfire/builder.py:1057
 #, python-format
 msgid "Could not remove static libraries: %s"
-msgstr ""
+msgstr "Не можу видалити статичні бібліотеки: %s"
 
 #: ../python/pakfire/builder.py:1063
 msgid "Compressing man pages did not complete successfully."
-msgstr ""
+msgstr "Стискання man сторінок не виконано."
 
 #: ../python/pakfire/builder.py:1083
 msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr ""
+msgstr "Видобування debuginfo завершилося невдачею. Переривання побудови."
 
 #: ../python/pakfire/cli.py:52
 msgid "Pakfire command line interface."
-msgstr ""
+msgstr "Інтерфейс командного рядка Pakfire."
 
 #: ../python/pakfire/cli.py:59
 msgid "The path where pakfire should operate in."
-msgstr ""
+msgstr "Шлях за яким буде працювати Pakfire."
 
 #: ../python/pakfire/cli.py:144
 msgid "Enable verbose output."
-msgstr ""
+msgstr "Ввімкнути детальний вивід."
 
 #: ../python/pakfire/cli.py:147
 msgid "Path to a configuration file to load."
-msgstr ""
+msgstr "Шлях до файлу конфігурації для завантаження."
 
 #: ../python/pakfire/cli.py:150
 msgid "Disable a repository temporarily."
-msgstr ""
+msgstr "Тимчасово вимкнути репозиторій."
 
 #: ../python/pakfire/cli.py:153
 msgid "Enable a repository temporarily."
-msgstr ""
+msgstr "Тимчасово ввімкнути репозиторій."
 
 #: ../python/pakfire/cli.py:157
 msgid "Run pakfire in offline mode."
-msgstr ""
+msgstr "Запустіть Pakfire в режимі offline."
 
 #: ../python/pakfire/cli.py:162
 msgid "Install one or more packages to the system."
-msgstr ""
+msgstr "Встановити один або декілька пакунків до системи."
 
 #: ../python/pakfire/cli.py:164
 msgid "Give name of at least one package to install."
-msgstr ""
+msgstr "Вкажіть назву принаймні одного пакунку для встановлення."
 
 #: ../python/pakfire/cli.py:166
 msgid "Don't install recommended packages."
@@ -288,143 +290,143 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:172
 msgid "Reinstall one or more packages."
-msgstr ""
+msgstr "Перевстановіть один або декілька пакунків."
 
 #: ../python/pakfire/cli.py:174
 msgid "Give name of at least one package to reinstall."
-msgstr ""
+msgstr "Вкажіть ім'я хоча-б одного пакунку для перевстановлення."
 
 #: ../python/pakfire/cli.py:180
 msgid "Remove one or more packages from the system."
-msgstr ""
+msgstr "Видалення одного або декількох пакунків з системи."
 
 #: ../python/pakfire/cli.py:182
 msgid "Give name of at least one package to remove."
-msgstr ""
+msgstr "Вкажіть назву принаймні одного пакунку для видалення."
 
 #: ../python/pakfire/cli.py:188
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
+msgstr "Вкажіть назву пакунку для оновлення або залиште пустим для оновлення всіх пакунків."
 
 #: ../python/pakfire/cli.py:190
 msgid "Exclude package from update."
-msgstr ""
+msgstr "Виключити пакунок з оновлення."
 
 #: ../python/pakfire/cli.py:192 ../python/pakfire/cli.py:217
 msgid "Allow changing the vendor of packages."
-msgstr ""
+msgstr "Дозволити зміну постачальника пакунків."
 
 #: ../python/pakfire/cli.py:194 ../python/pakfire/cli.py:219
 msgid "Allow changing the architecture of packages."
-msgstr ""
+msgstr "Дозволити зміну архітектури пакунків."
 
 #: ../python/pakfire/cli.py:199
 msgid "Update the whole system or one specific package."
-msgstr ""
+msgstr "Оновлення всієї системи або одного конкретного пакунку"
 
 #: ../python/pakfire/cli.py:206
 msgid "Check, if there are any updates available."
-msgstr ""
+msgstr "Перевірити наявність оновлень."
 
 #: ../python/pakfire/cli.py:213
 msgid "Downgrade one or more packages."
-msgstr ""
+msgstr "Понизити версію одного або декількох пакунків."
 
 #: ../python/pakfire/cli.py:215
 msgid "Give a name of a package to downgrade."
-msgstr ""
+msgstr "Вкажіть ім'я пакунку для зниження версії."
 
 #: ../python/pakfire/cli.py:225
 msgid "Print some information about the given package(s)."
-msgstr ""
+msgstr "Друк інформації про даний пакет(и)"
 
 #: ../python/pakfire/cli.py:227
 msgid "Give at least the name of one package."
-msgstr ""
+msgstr "Вкажіть принаймні назву одного пакунку."
 
 #: ../python/pakfire/cli.py:233
 msgid "Search for a given pattern."
-msgstr ""
+msgstr "Пошук по заданому шаблону."
 
 #: ../python/pakfire/cli.py:235
 msgid "A pattern to search for."
-msgstr ""
+msgstr "Шаблон для пошуку."
 
 #: ../python/pakfire/cli.py:241
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
+msgstr "Отримати список пакунків, що надають даний файл або функціонал."
 
 #: ../python/pakfire/cli.py:243
 msgid "File or feature to search for."
-msgstr ""
+msgstr "Файл або функціонал для пошуку."
 
 #: ../python/pakfire/cli.py:249
 msgid "Get list of packages that belong to the given group."
-msgstr ""
+msgstr "Отримати список пакунків, що відносяться до даної групи."
 
 #: ../python/pakfire/cli.py:251
 msgid "Group name to search for."
-msgstr ""
+msgstr "Назва групи для пошуку."
 
 #: ../python/pakfire/cli.py:257
 msgid "Install all packages that belong to the given group."
-msgstr ""
+msgstr "Встановити всі пакунки, що відносяться до даної групи."
 
 #: ../python/pakfire/cli.py:259
 msgid "Group name."
-msgstr ""
+msgstr "Назва групи."
 
 #: ../python/pakfire/cli.py:265
 msgid "List all currently enabled repositories."
-msgstr ""
+msgstr "Показати список всіх задіяних репозиторіїв."
 
 #: ../python/pakfire/cli.py:269
 msgid "Cleanup commands."
-msgstr ""
+msgstr "Очистка команд."
 
 #: ../python/pakfire/cli.py:277
 msgid "Cleanup all temporary files."
-msgstr ""
+msgstr "Очистка всіх тимчасових файлів."
 
 #: ../python/pakfire/cli.py:283
 msgid "Check the system for any errors."
-msgstr ""
+msgstr "Перевірте систему на  наявність будь-яких помилок."
 
 #: ../python/pakfire/cli.py:289
 msgid "Check the dependencies for a particular package."
-msgstr ""
+msgstr "Перевірити залежності для окремого пакунку."
 
 #: ../python/pakfire/cli.py:291
 msgid "Give name of at least one package to check."
-msgstr ""
+msgstr "Вкажіть ім'я хоча-б одного пакунку для перевірки."
 
 #: ../python/pakfire/cli.py:373 ../python/pakfire/transaction.py:405
 msgid "Repository"
-msgstr ""
+msgstr "Репозиторій"
 
 #: ../python/pakfire/cli.py:373
 msgid "Enabled"
-msgstr ""
+msgstr "Ввімкнено."
 
 #: ../python/pakfire/cli.py:373 ../python/pakfire/cli.py:1055
 msgid "Priority"
-msgstr ""
+msgstr "Пріоритет"
 
 #: ../python/pakfire/cli.py:373 ../python/pakfire/cli.py:1100
 msgid "Packages"
-msgstr ""
+msgstr "Пакунки"
 
 #: ../python/pakfire/cli.py:381
 msgid "Cleaning up everything..."
-msgstr ""
+msgstr "Очистка всього..."
 
 #: ../python/pakfire/cli.py:409
 msgid "You cannot run pakfire-builder in a pakfire chroot."
-msgstr ""
+msgstr "Ви не можете виконати pakfire-builder в pakfire chroot."
 
 #: ../python/pakfire/cli.py:412 ../python/pakfire/cli.py:736
 msgid "Pakfire builder command line interface."
-msgstr ""
+msgstr "Інтерфейс командного рядка Pakfire builder"
 
 #: ../python/pakfire/cli.py:469
 msgid "Choose the distribution configuration to use for build"
@@ -436,30 +438,30 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:477
 msgid "Update the package indexes."
-msgstr ""
+msgstr "Оновити індекси пакунків."
 
 #: ../python/pakfire/cli.py:483 ../python/pakfire/cli.py:756
 msgid "Build one or more packages."
-msgstr ""
+msgstr "Побудова одного або декількох пакунків"
 
 #: ../python/pakfire/cli.py:485 ../python/pakfire/cli.py:645
 #: ../python/pakfire/cli.py:758
 msgid "Give name of at least one package to build."
-msgstr ""
+msgstr "Вкажіть ім'я хоча-б одного пакунку для побудови. "
 
 #: ../python/pakfire/cli.py:489 ../python/pakfire/cli.py:517
 #: ../python/pakfire/cli.py:764
 msgid "Path were the output files should be copied to."
-msgstr ""
+msgstr "Шлях за яким будуть скопійовані вихідні файли"
 
 #: ../python/pakfire/cli.py:491 ../python/pakfire/cli.py:506
 #: ../python/pakfire/cli.py:766
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
-msgstr ""
+msgstr "Режим запуску: \"Реліз\" або \"Розробка\"(по замовчуванню)."
 
 #: ../python/pakfire/cli.py:493
 msgid "Run a shell after a successful build."
-msgstr ""
+msgstr "Запустити оболонку після вдалої побудови.."
 
 #: ../python/pakfire/cli.py:495
 msgid "Do not perform the install test."
@@ -467,55 +469,55 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:500
 msgid "Go into a shell."
-msgstr ""
+msgstr "Перейти в оболонку"
 
 #: ../python/pakfire/cli.py:502
 msgid "Give name of a package."
-msgstr ""
+msgstr "Призначте ім'я для пакунку."
 
 #: ../python/pakfire/cli.py:511
 msgid "Generate a source package."
-msgstr ""
+msgstr "Створення пакунку з програмним кодом."
 
 #: ../python/pakfire/cli.py:513
 msgid "Give name(s) of a package(s)."
-msgstr ""
+msgstr "Дайте ім'я(імена) пакунку(ів)."
 
 #: ../python/pakfire/cli.py:602
 msgid "Pakfire server command line interface."
-msgstr ""
+msgstr "Інтерфейс командного рядка серверу Pakfire."
 
 #: ../python/pakfire/cli.py:643
 msgid "Send a scrach build job to the server."
-msgstr ""
+msgstr "Відправити роботу scrach build на сервер."
 
 #: ../python/pakfire/cli.py:647
 msgid "Limit build to only these architecture(s)."
-msgstr ""
+msgstr "Обмеження побудови тільки цією архітектурою(ами)."
 
 #: ../python/pakfire/cli.py:653
 msgid "Send a keepalive to the server."
-msgstr ""
+msgstr "Відправити keepalive на сервер."
 
 #: ../python/pakfire/cli.py:660
 msgid "Update all repositories."
-msgstr ""
+msgstr "Оновити всі репозиторії"
 
 #: ../python/pakfire/cli.py:666
 msgid "Repository management commands."
-msgstr ""
+msgstr "Команди управління репозиторієм."
 
 #: ../python/pakfire/cli.py:674
 msgid "Create a new repository index."
-msgstr ""
+msgstr "Створити новий індекс репозиторію."
 
 #: ../python/pakfire/cli.py:676
 msgid "Path to the packages."
-msgstr ""
+msgstr "Шлях до пакунків."
 
 #: ../python/pakfire/cli.py:678
 msgid "Path to input packages."
-msgstr ""
+msgstr "Шлях до вхідних пакунків."
 
 #: ../python/pakfire/cli.py:680
 msgid "Key to sign the repository with."
@@ -523,15 +525,15 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:685
 msgid "Dump some information about this machine."
-msgstr ""
+msgstr "Дамп деякої інформації про цю машину."
 
 #: ../python/pakfire/cli.py:762 ../python/pakfire/cli.py:850
 msgid "Build the package for the given architecture."
-msgstr ""
+msgstr "Побудувати пакунок для заданої архітектури"
 
 #: ../python/pakfire/cli.py:768
 msgid "Do not verify build dependencies."
-msgstr ""
+msgstr "Не перевіряти залежності побудови."
 
 #: ../python/pakfire/cli.py:770
 msgid "Only run the prepare stage."
@@ -539,55 +541,55 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:802
 msgid "Pakfire client command line interface."
-msgstr ""
+msgstr "Інтерфейс командного рядка клієнту Pakfire."
 
 #: ../python/pakfire/cli.py:844
 msgid "Build a package remotely."
-msgstr ""
+msgstr "Віддалено побудувати пакунок."
 
 #: ../python/pakfire/cli.py:846
 msgid "Give name of a package to build."
-msgstr ""
+msgstr "Вкажіть ім'я пакунку для побудови."
 
 #: ../python/pakfire/cli.py:855
 msgid "Print some information about this host."
-msgstr ""
+msgstr "Друк деякої інформації про даний хост."
 
 #: ../python/pakfire/cli.py:861
 msgid "Check the connection to the hub."
-msgstr ""
+msgstr "Перевірте з'єднання з хабом."
 
 #: ../python/pakfire/cli.py:866
 msgid "Show information about build jobs."
-msgstr ""
+msgstr "Показати інформацію про процеси зборки."
 
 #: ../python/pakfire/cli.py:876
 msgid "Show a list of all active jobs."
-msgstr ""
+msgstr "Показати список всіх активних процессів."
 
 #: ../python/pakfire/cli.py:881
 msgid "Show a list of all recently finished of failed build jobs."
-msgstr ""
+msgstr "Показати список всіх недавно закінчених невдачею процессів зборки."
 
 #: ../python/pakfire/cli.py:886
 msgid "Show details about given build job."
-msgstr ""
+msgstr "Показати додаткову інформацію про даний процес зборки."
 
 #: ../python/pakfire/cli.py:887
 msgid "The ID of the build job."
-msgstr ""
+msgstr "ID процесу зборки."
 
 #: ../python/pakfire/cli.py:892
 msgid "Show information about builds."
-msgstr ""
+msgstr "Показати інформацію про зборки."
 
 #: ../python/pakfire/cli.py:900
 msgid "Show details about the given build."
-msgstr ""
+msgstr "Показати додаткову інформацію про дану зборку."
 
 #: ../python/pakfire/cli.py:901
 msgid "The ID of the build."
-msgstr ""
+msgstr "ID зборки."
 
 #: ../python/pakfire/cli.py:906
 msgid "Test the connection to the hub."
@@ -599,28 +601,28 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:956 ../python/pakfire/server.py:302
 msgid "Hostname"
-msgstr ""
+msgstr "Ім'я хосту"
 
 #: ../python/pakfire/cli.py:957
 msgid "Pakfire hub"
-msgstr ""
+msgstr "Хаб Pakfire"
 
 #: ../python/pakfire/cli.py:960
 msgid "Username"
-msgstr ""
+msgstr "Ім'я користувача"
 
 #. Hardware information
 #: ../python/pakfire/cli.py:964 ../python/pakfire/server.py:306
 msgid "Hardware information"
-msgstr ""
+msgstr "Інформація про обладнання"
 
 #: ../python/pakfire/cli.py:965 ../python/pakfire/server.py:307
 msgid "CPU model"
-msgstr ""
+msgstr "Модель процесору"
 
 #: ../python/pakfire/cli.py:966 ../python/pakfire/server.py:308
 msgid "Memory"
-msgstr ""
+msgstr "Пам'ять"
 
 #: ../python/pakfire/cli.py:967
 msgid "Parallelism"
@@ -628,112 +630,112 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:969 ../python/pakfire/server.py:310
 msgid "Native arch"
-msgstr ""
+msgstr "Проста архітектура"
 
 #: ../python/pakfire/cli.py:971
 msgid "Default arch"
-msgstr ""
+msgstr "Архітектура за замовчанням."
 
 #: ../python/pakfire/cli.py:973 ../python/pakfire/server.py:312
 msgid "Supported arches"
-msgstr ""
+msgstr "Архітектури, що підтримуються"
 
 #: ../python/pakfire/cli.py:986
 msgid "Your IP address"
-msgstr ""
+msgstr "Ваша IP-адреса"
 
 #: ../python/pakfire/cli.py:991
 msgid "You are authenticated to the build service:"
-msgstr ""
+msgstr "Ви пройшли аутентифікацію до сервісу побудови:"
 
 #: ../python/pakfire/cli.py:997
 msgid "User name"
-msgstr ""
+msgstr "Ім'я користувача"
 
 #: ../python/pakfire/cli.py:998
 msgid "Real name"
-msgstr ""
+msgstr "Реальне ім'я"
 
 #: ../python/pakfire/cli.py:999
 msgid "Email address"
-msgstr ""
+msgstr "Адреса електронної пошти"
 
 #: ../python/pakfire/cli.py:1000
 msgid "Registered"
-msgstr ""
+msgstr "Зареєстрований"
 
 #: ../python/pakfire/cli.py:1007
 msgid "You could not be authenticated to the build service."
-msgstr ""
+msgstr "Ви не пройшли аутентифікацію до сервісу побудови:"
 
 #: ../python/pakfire/cli.py:1028
 msgid "No ongoing jobs found."
-msgstr ""
+msgstr "Не знайдено поточних процессів."
 
 #: ../python/pakfire/cli.py:1031
 msgid "Active build jobs"
-msgstr ""
+msgstr "Активні процеси зборки."
 
 #: ../python/pakfire/cli.py:1037
 msgid "No jobs found."
-msgstr ""
+msgstr "Не знайдено процесів."
 
 #: ../python/pakfire/cli.py:1040
 msgid "Recently processed build jobs"
-msgstr ""
+msgstr "Останні оброблені процеси зборки."
 
 #: ../python/pakfire/cli.py:1047
 #, python-format
 msgid "A build with ID %s could not be found."
-msgstr ""
+msgstr "Зборка з ID %s не знайдена."
 
 #: ../python/pakfire/cli.py:1050
 #, python-format
 msgid "Build: %(name)s"
-msgstr ""
+msgstr "Зборка: %(name)s"
 
 #: ../python/pakfire/cli.py:1054 ../python/pakfire/cli.py:1082
 msgid "State"
-msgstr ""
+msgstr "Стан"
 
 #: ../python/pakfire/cli.py:1058
 msgid "Jobs"
-msgstr ""
+msgstr "Процеси"
 
 #: ../python/pakfire/cli.py:1071
 #, python-format
 msgid "A job with ID %s could not be found."
-msgstr ""
+msgstr "Процес з ID %s не знайдено."
 
 #: ../python/pakfire/cli.py:1078
 #, python-format
 msgid "Job: %(name)s"
-msgstr ""
+msgstr "Процес: %(name)s"
 
 #: ../python/pakfire/cli.py:1083 ../python/pakfire/packages/base.py:107
 #: ../python/pakfire/transaction.py:404
 msgid "Arch"
-msgstr ""
+msgstr "Архітектура"
 
 #: ../python/pakfire/cli.py:1088 ../python/pakfire/packages/base.py:148
 msgid "Build host"
-msgstr ""
+msgstr "Хост збірки"
 
 #: ../python/pakfire/cli.py:1093
 msgid "Time created"
-msgstr ""
+msgstr "Час створення"
 
 #: ../python/pakfire/cli.py:1094
 msgid "Time started"
-msgstr ""
+msgstr "Час початку"
 
 #: ../python/pakfire/cli.py:1095
 msgid "Time finished"
-msgstr ""
+msgstr "Час закінчення"
 
 #: ../python/pakfire/cli.py:1096
 msgid "Duration"
-msgstr ""
+msgstr "Тривалість"
 
 #: ../python/pakfire/cli.py:1124
 msgid "Invalid error code given."
@@ -746,7 +748,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1133
 msgid "Pakfire daemon command line interface."
-msgstr ""
+msgstr "Інтерфейс командного рядка демона Pakfire."
 
 #: ../python/pakfire/cli.py:1161
 msgid "Pakfire key command line interface."
@@ -798,7 +800,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1242
 msgid "Sign one or more packages."
-msgstr ""
+msgstr "Підпишіть один або декілька пакунків."
 
 #: ../python/pakfire/cli.py:1244
 msgid "Key that is used sign the package(s)."
@@ -865,7 +867,7 @@ msgstr ""
 
 #: ../python/pakfire/client/builder.py:178
 msgid "Less than 2GB of free space. Cannot request a new job."
-msgstr ""
+msgstr "залишилось менше 2ГБ вільного місця. Не можу запросити новий процес."
 
 #. Log all XMLRPC protocol errors.
 #: ../python/pakfire/client/transport.py:90
@@ -894,7 +896,7 @@ msgstr ""
 #: ../python/pakfire/client/transport.py:116
 #, python-format
 msgid "Trying again in %(timeout)s second(s). %(tries)s tries left."
-msgstr ""
+msgstr "Спроба ще раз за %(timeout)s секунд(и). %(tries)s спроб залишилось."
 
 #: ../python/pakfire/client/transport.py:121
 msgid "Maximum number of tries was reached. Giving up."
@@ -903,7 +905,7 @@ msgstr ""
 #: ../python/pakfire/compress.py:85 ../python/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
-msgstr ""
+msgstr "Даний алгоритм '%s' не підтримується"
 
 #: ../python/pakfire/config.py:191
 #, python-format
@@ -912,24 +914,24 @@ msgstr ""
 
 #: ../python/pakfire/config.py:205
 msgid "Configuration:"
-msgstr ""
+msgstr "Конфігурація:"
 
 #: ../python/pakfire/config.py:207
 #, python-format
 msgid "Section: %s"
-msgstr ""
+msgstr "Секція: %s"
 
 #: ../python/pakfire/config.py:212
 msgid "No settings in this section."
-msgstr ""
+msgstr "Немає настройок в цій секції."
 
 #: ../python/pakfire/config.py:214
 msgid "Loaded from files:"
-msgstr ""
+msgstr "Завантажено з файлів:"
 
 #: ../python/pakfire/downloader.py:155
 msgid "Downloading source files:"
-msgstr ""
+msgstr "Завантаження вихідних файлів:"
 
 #: ../python/pakfire/downloader.py:158
 msgid "Cannot download source code in offline mode."
@@ -938,37 +940,37 @@ msgstr ""
 #: ../python/pakfire/downloader.py:181
 #, python-format
 msgid "Downloaded empty file: %s"
-msgstr ""
+msgstr "Завантажено пустий файл: %s"
 
 #: ../python/pakfire/errors.py:30
 msgid "An unhandled error occured."
-msgstr ""
+msgstr "Виникла невідома помилка."
 
 #: ../python/pakfire/errors.py:46
 msgid "Could not compress/decompress data."
-msgstr ""
+msgstr "Не можу запакувати.розпакувати дані."
 
 #: ../python/pakfire/errors.py:58
 msgid "One or more dependencies could not been resolved."
-msgstr ""
+msgstr "Одна або декілька залежностей не можуть бути вирішені."
 
 #: ../python/pakfire/errors.py:61
 msgid "An error occured when pakfire tried to download files."
-msgstr ""
+msgstr "При спробі Pakfire завантажити файли виникла помилка."
 
 #: ../python/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
 "Please connect your system to the network, remove --offline from the command line and try again."
-msgstr ""
+msgstr "Вказана дія не може бути виконана в автономному режимі.\nБудьласка підєднайте систему до мережі, видаліть --offline з командного рядка та повторіть спробу."
 
 #: ../python/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
-msgstr ""
+msgstr "Виконати pakfire-build в контейнері pakfire?"
 
 #: ../python/pakfire/errors.py:98 ../python/pakfire/transaction.py:475
 msgid "Transaction test was not successful"
-msgstr ""
+msgstr "Тест транзакції не виконаний"
 
 #: ../python/pakfire/errors.py:102
 msgid "Generic XMLRPC error."
@@ -995,7 +997,7 @@ msgstr ""
 #: ../python/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
-msgstr ""
+msgstr "%(commas)s і %(last)s"
 
 #: ../python/pakfire/keyring.py:82
 #, python-format
@@ -1058,19 +1060,19 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:99
 msgid "Name"
-msgstr ""
+msgstr "І'мя"
 
 #: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:404
 msgid "Version"
-msgstr ""
+msgstr "Версія"
 
 #: ../python/pakfire/packages/base.py:111
 msgid "Release"
-msgstr ""
+msgstr "Реліз"
 
 #: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:405
 msgid "Size"
-msgstr ""
+msgstr "Розмір"
 
 #: ../python/pakfire/packages/base.py:119
 msgid "Installed size"
@@ -1078,47 +1080,47 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:125
 msgid "Repo"
-msgstr ""
+msgstr "Репозиторій"
 
 #: ../python/pakfire/packages/base.py:128
 msgid "Summary"
-msgstr ""
+msgstr "Резюме"
 
 #: ../python/pakfire/packages/base.py:129
 msgid "Groups"
-msgstr ""
+msgstr "Групи"
 
 #: ../python/pakfire/packages/base.py:130
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: ../python/pakfire/packages/base.py:131
 msgid "License"
-msgstr ""
+msgstr "Ліцензія"
 
 #: ../python/pakfire/packages/base.py:134
 msgid "Description"
-msgstr ""
+msgstr "Опис"
 
 #: ../python/pakfire/packages/base.py:141
 msgid "Maintainer"
-msgstr ""
+msgstr "Спеціаліст з обслуговування"
 
 #: ../python/pakfire/packages/base.py:143
 msgid "Vendor"
-msgstr ""
+msgstr "Постачальник"
 
 #: ../python/pakfire/packages/base.py:145
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: ../python/pakfire/packages/base.py:146
 msgid "Build ID"
-msgstr ""
+msgstr "ID збірки"
 
 #: ../python/pakfire/packages/base.py:147
 msgid "Build date"
-msgstr ""
+msgstr "Дата збірки"
 
 #: ../python/pakfire/packages/base.py:150
 msgid "Signatures"
@@ -1126,23 +1128,23 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:155
 msgid "Provides"
-msgstr ""
+msgstr "Забезпечує"
 
 #: ../python/pakfire/packages/base.py:160
 msgid "Pre-requires"
-msgstr ""
+msgstr "Попередньо вимагається"
 
 #: ../python/pakfire/packages/base.py:165
 msgid "Requires"
-msgstr ""
+msgstr "Вимагає"
 
 #: ../python/pakfire/packages/base.py:170
 msgid "Conflicts"
-msgstr ""
+msgstr "Конфлікти"
 
 #: ../python/pakfire/packages/base.py:175
 msgid "Obsoletes"
-msgstr ""
+msgstr "Застарілі"
 
 #: ../python/pakfire/packages/base.py:180
 msgid "Recommends"
@@ -1154,16 +1156,16 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:193
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: ../python/pakfire/packages/base.py:383
 msgid "Not set"
-msgstr ""
+msgstr "Не призначено"
 
 #: ../python/pakfire/packages/base.py:570
 #, python-format
 msgid "Config file saved as %s."
-msgstr ""
+msgstr "Конфігурація збережена як %s"
 
 #: ../python/pakfire/packages/base.py:575
 #, python-format
@@ -1173,22 +1175,22 @@ msgstr ""
 #: ../python/pakfire/packages/file.py:96
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
-msgstr ""
+msgstr "Не можу видобути файл: /%(src)s - %(dst)s"
 
 #: ../python/pakfire/packages/file.py:162
 #, python-format
 msgid "Filename: %s"
-msgstr ""
+msgstr "Назва файлу: %s"
 
 #: ../python/pakfire/packages/file.py:259
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
-msgstr ""
+msgstr "Файл в архіві відсутній в файлі метадані: %s. Пропускаю."
 
 #: ../python/pakfire/packages/file.py:315
 #, python-format
 msgid "Config file created as %s"
-msgstr ""
+msgstr "Конфігурація створена як %s"
 
 #: ../python/pakfire/packages/file.py:320
 #, python-format
@@ -1198,47 +1200,47 @@ msgstr ""
 #: ../python/pakfire/packages/file.py:334
 #, python-format
 msgid "Could not remove file: /%s"
-msgstr ""
+msgstr "Не можу видалити файл: /%s"
 
 #: ../python/pakfire/packages/lexer.py:756
 #, python-format
 msgid "Template does not exist: %s"
-msgstr ""
+msgstr "Шаблон не існує: %s"
 
 #: ../python/pakfire/packages/make.py:80
 msgid "Package name is undefined."
-msgstr ""
+msgstr "Назва пакунку невизначена."
 
 #: ../python/pakfire/packages/make.py:83
 msgid "Package version is undefined."
-msgstr ""
+msgstr "Версія пакунку не визначена"
 
 #: ../python/pakfire/packages/make.py:433
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
-msgstr ""
+msgstr "Шукаю автоматичні залежності для %s..."
 
 #: ../python/pakfire/packages/make.py:487
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
-msgstr ""
+msgstr "Регулярний вираз неправильний і був пропущений: %s"
 
 #. Let the user know what has been done.
 #: ../python/pakfire/packages/make.py:503
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
-msgstr ""
+msgstr "Фільтр  '%(pattern)s' відфільтрував %(dep)s."
 
 #. Load progressbar.
 #: ../python/pakfire/packages/packager.py:399
 #: ../python/pakfire/packages/packager.py:713
 msgid "Packaging"
-msgstr ""
+msgstr "Упаковка"
 
 #: ../python/pakfire/packages/packager.py:741
 #, python-format
 msgid "Building source package %s:"
-msgstr ""
+msgstr "Побудова вихідного пакунку %s:"
 
 #: ../python/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
@@ -1247,17 +1249,17 @@ msgstr ""
 #: ../python/pakfire/repository/database.py:127
 msgid ""
 "The format of the database is not supported by this version of pakfire."
-msgstr ""
+msgstr "Формат бази даних не підтримується цією версією Pakfire."
 
 #: ../python/pakfire/repository/database.py:238
 #, python-format
 msgid "Cannot use database with version greater than %s."
-msgstr ""
+msgstr "Не можу використати базу даних з версією більше ніж %s."
 
 #: ../python/pakfire/repository/database.py:240
 #, python-format
 msgid "Migrating database from format %(old)s to %(new)s."
-msgstr ""
+msgstr "Міграція бази даних з формату %(old)s до %(new)s."
 
 #. Create progress bar.
 #: ../python/pakfire/repository/local.py:102
@@ -1268,7 +1270,7 @@ msgstr ""
 #. Make a nice progress bar.
 #: ../python/pakfire/repository/local.py:205
 msgid "Compressing database..."
-msgstr ""
+msgstr "Стискання бази даних."
 
 #. Create progress bar.
 #: ../python/pakfire/repository/local.py:263
@@ -1298,12 +1300,12 @@ msgstr ""
 #: ../python/pakfire/repository/remote.py:235
 #, python-format
 msgid "%s: package database"
-msgstr ""
+msgstr "%s: база даних пакетів"
 
 #: ../python/pakfire/repository/remote.py:309
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
-msgstr ""
+msgstr "Не мажу завантажити вказаний файл в автономному режимі: %s"
 
 #: ../python/pakfire/repository/remote.py:315
 #, python-format
@@ -1312,7 +1314,7 @@ msgstr ""
 
 #: ../python/pakfire/repository/remote.py:340
 msgid "The checksum of the downloaded file did not match."
-msgstr ""
+msgstr "Контрольна сума завантаженого файлу не збігається."
 
 #: ../python/pakfire/repository/remote.py:341
 #, python-format
@@ -1321,7 +1323,7 @@ msgstr ""
 
 #: ../python/pakfire/repository/remote.py:342
 msgid "Trying an other mirror."
-msgstr ""
+msgstr "Спроба іншого зеркала."
 
 #. Create a progressbar.
 #: ../python/pakfire/repository/system.py:59
@@ -1335,37 +1337,37 @@ msgstr ""
 
 #: ../python/pakfire/satsolver.py:341 ../python/pakfire/satsolver.py:367
 msgid "The solver returned one problem:"
-msgstr ""
+msgstr "Знайдено одну проблему:"
 
 #. Ask the user if he or she want to modify the request. If not, just exit.
 #: ../python/pakfire/satsolver.py:383
 msgid "Do you want to manually alter the request?"
-msgstr ""
+msgstr "Ви хочете вручну змінити запит?"
 
 #: ../python/pakfire/satsolver.py:386
 msgid "You can now try to satisfy the solver by modifying your request."
-msgstr ""
+msgstr "Можна попробувати змінити запит для вирішення проблеми."
 
 #: ../python/pakfire/satsolver.py:391
 msgid "Which problem to you want to resolve?"
-msgstr ""
+msgstr "Яку з проблем Ви хочете вирішити?"
 
 #: ../python/pakfire/satsolver.py:393
 msgid "Press enter to try to re-solve the request."
-msgstr ""
+msgstr "Нажміть Enter, щоб попробувати заново вирішити проблему"
 
 #: ../python/pakfire/satsolver.py:424
 #, python-format
 msgid "    Solution: %s"
-msgstr ""
+msgstr "Рішення: %s"
 
 #: ../python/pakfire/satsolver.py:433
 msgid "    Solutions:"
-msgstr ""
+msgstr "Рішення:"
 
 #: ../python/pakfire/server.py:278 ../python/pakfire/system.py:132
 msgid "Could not be determined"
-msgstr ""
+msgstr "Не може бути визначений"
 
 #: ../python/pakfire/shell.py:84
 #, python-format
@@ -1408,75 +1410,75 @@ msgstr ""
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
+msgstr "Недостатньо місця на %(name)s. Необхідно як мінімум %(size)s для підготовки транзакції."
 
 #: ../python/pakfire/transaction.py:327
 #, python-format
 msgid "Not enough space to download %s of packages."
-msgstr ""
+msgstr "Недостатньо місця для завантаження %s пакунків."
 
 #: ../python/pakfire/transaction.py:330
 msgid "Downloading packages:"
-msgstr ""
+msgstr "Завантаження пакунків:"
 
 #: ../python/pakfire/transaction.py:404
 msgid "Package"
-msgstr ""
+msgstr "Пакунок"
 
 #: ../python/pakfire/transaction.py:409
 msgid "Installing:"
-msgstr ""
+msgstr "Інсталяція:"
 
 #: ../python/pakfire/transaction.py:410
 msgid "Reinstalling:"
-msgstr ""
+msgstr "Перевстановлення:"
 
 #: ../python/pakfire/transaction.py:411
 msgid "Updating:"
-msgstr ""
+msgstr "Оновлення:"
 
 #: ../python/pakfire/transaction.py:412
 msgid "Downgrading:"
-msgstr ""
+msgstr "Відновлення:"
 
 #: ../python/pakfire/transaction.py:413
 msgid "Removing:"
-msgstr ""
+msgstr "Видалення:"
 
 #: ../python/pakfire/transaction.py:419
 msgid "Transaction Summary"
-msgstr ""
+msgstr "Інформація про транзакцію"
 
 #: ../python/pakfire/transaction.py:426
 msgid "package"
-msgstr ""
+msgstr "пакунок"
 
 #: ../python/pakfire/transaction.py:432
 #, python-format
 msgid "Total download size: %s"
-msgstr ""
+msgstr "Загальний об'єм завантаження: %s"
 
 #: ../python/pakfire/transaction.py:436
 #, python-format
 msgid "Installed size: %s"
-msgstr ""
+msgstr "Розмір після встановлення: %s"
 
 #: ../python/pakfire/transaction.py:439
 #, python-format
 msgid "Freed size: %s"
-msgstr ""
+msgstr "Звільнено: %s"
 
 #: ../python/pakfire/transaction.py:450
 msgid "Is this okay?"
-msgstr ""
+msgstr "Все вірно?"
 
 #: ../python/pakfire/transaction.py:456
 msgid "Running Transaction Test"
-msgstr ""
+msgstr "Виконання тесту транзакції."
 
 #: ../python/pakfire/transaction.py:468
 msgid "Transaction Test Succeeded"
-msgstr ""
+msgstr "Тест транзакції виконано успішно"
 
 #. Make a nice progressbar.
 #: ../python/pakfire/transaction.py:501
@@ -1498,219 +1500,219 @@ msgstr ""
 
 #: ../python/pakfire/transaction.py:560
 msgid "Running transaction"
-msgstr ""
+msgstr "Запуск транзакції"
 
 #: ../python/pakfire/util.py:68
 #, python-format
 msgid "%s [y/N]"
-msgstr ""
+msgstr "%s [так/Ні] "
 
 #: ../python/pakfire/util.py:260
 msgid "Killing orphans..."
-msgstr ""
+msgstr "Знищення сиріт..."
 
 #: ../python/pakfire/util.py:267
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
+msgstr "Process ID %s досі виконується в chroot. Переривання."
 
 #: ../python/pakfire/util.py:279
 msgid "Waiting for processes to terminate..."
-msgstr ""
+msgstr "Жду на завершення процесу."
 
 #: ../python/src/problem.c:159
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
-msgstr ""
+msgstr "%s не належить до distupgrade репозиторію"
 
 #: ../python/src/problem.c:166
 #, c-format
 msgid "%s has inferior architecture"
-msgstr ""
+msgstr "%s належить до більш ранньої архітектури"
 
 #: ../python/src/problem.c:173
 #, c-format
 msgid "problem with installed package %s"
-msgstr ""
+msgstr "Проблема з встановленим пакунком %s"
 
 #: ../python/src/problem.c:179
 #, c-format
 msgid "conflicting requests"
-msgstr ""
+msgstr "конфлікт запитів"
 
 #: ../python/src/problem.c:184
 #, c-format
 msgid "nothing provides requested %s"
-msgstr ""
+msgstr "ніщо не надає питомий %s "
 
 #: ../python/src/problem.c:190
 #, c-format
 msgid "some dependency problem"
-msgstr ""
+msgstr "проблема в залежностях"
 
 #: ../python/src/problem.c:195
 #, c-format
 msgid "package %s is not installable"
-msgstr ""
+msgstr "пакунок %s не може бути встановлений"
 
 #: ../python/src/problem.c:202
 #, c-format
 msgid "nothing provides %s needed by %s"
-msgstr ""
+msgstr "ніщо не надає %s необхідний для %s"
 
 #: ../python/src/problem.c:209
 #, c-format
 msgid "cannot install both %s and %s"
-msgstr ""
+msgstr "неможливо встановити %s та %s"
 
 #: ../python/src/problem.c:216
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
-msgstr ""
+msgstr "пакунок %s конфліктує з %s наданий %s"
 
 #: ../python/src/problem.c:224
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "пакунок %s відміняє %s наданий %s"
 
 #: ../python/src/problem.c:232
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "встановлений пакунок %s відміняє %s наданий %s"
 
 #: ../python/src/problem.c:240
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
-msgstr ""
+msgstr "пакунок %s неявно відміняє %s наданий %s"
 
 #: ../python/src/problem.c:248
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
-msgstr ""
+msgstr "пакунок %s вимагає %s, але обидва пакунки не можуть бути встановлені"
 
 #: ../python/src/problem.c:255
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
-msgstr ""
+msgstr "пакунок %s конфліктує з %s наданий самим собою"
 
 #: ../python/src/problem.c:264
 #, c-format
 msgid "bad rule type"
-msgstr ""
+msgstr "невірний тип правила"
 
 #: ../python/src/solution.c:86
 #, c-format
 msgid "do not keep %s installed"
-msgstr ""
+msgstr "не залишайте %s встановленим"
 
 #: ../python/src/solution.c:89
 #, c-format
 msgid "do not install a solvable %s"
-msgstr ""
+msgstr "не встановлюйте вирішальні %s"
 
 #: ../python/src/solution.c:92
 #, c-format
 msgid "do not install %s"
-msgstr ""
+msgstr "не встановлюйте %s"
 
 #: ../python/src/solution.c:98
 #, c-format
 msgid "do not forbid installation of %s"
-msgstr ""
+msgstr "не забороняйте встановлення %s"
 
 #: ../python/src/solution.c:101
 #, c-format
 msgid "do not deinstall all solvables %s"
-msgstr ""
+msgstr "не де-інсталюйте всі вирішальні %s"
 
 #: ../python/src/solution.c:104
 #, c-format
 msgid "do not deinstall %s"
-msgstr ""
+msgstr "не де-інсталюйте %s"
 
 #: ../python/src/solution.c:109
 #, c-format
 msgid "do not install most recent version of %s"
-msgstr ""
+msgstr "не встановлюйте більш новішу версію %s"
 
 #: ../python/src/solution.c:114
 #, c-format
 msgid "do not lock %s"
-msgstr ""
+msgstr "не блокуйте %s"
 
 #: ../python/src/solution.c:119
 #, c-format
 msgid "do something different"
-msgstr ""
+msgstr "виконати щось інше"
 
 #: ../python/src/solution.c:126
 #, c-format
 msgid "keep %s despite the inferior architecture"
-msgstr ""
+msgstr "залишити %s незважаючи на більш ранню архітектуру"
 
 #: ../python/src/solution.c:129
 #, c-format
 msgid "install %s despite the inferior architecture"
-msgstr ""
+msgstr "встановити %s незважаючи на більш ранню архітектуру"
 
 #: ../python/src/solution.c:135
 #, c-format
 msgid "keep obsolete %s"
-msgstr ""
+msgstr "залишити застарілий %s"
 
 #: ../python/src/solution.c:138
 #, c-format
 msgid "install %s from excluded repository"
-msgstr ""
+msgstr "встановити %s з виключених репозиторіїв"
 
 #: ../python/src/solution.c:150
 #, c-format
 msgid "allow downgrade of %s to %s"
-msgstr ""
+msgstr "дозволити пониження версії з %s на %s"
 
 #: ../python/src/solution.c:154
 #, c-format
 msgid "allow architecture change of %s to %s"
-msgstr ""
+msgstr "дозволити зміну архітектури з %s на %s"
 
 #: ../python/src/solution.c:159
 #, c-format
 msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr ""
+msgstr "дозволити зміну постачальника з '%s' (%s) на '%s' (%s)"
 
 #: ../python/src/solution.c:163
 #, c-format
 msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr ""
+msgstr "дозволити зміну постачальника з '%s' (%s) на відсутність постачальника (%s)"
 
 #: ../python/src/solution.c:169
 #, c-format
 msgid "allow replacement of %s with %s"
-msgstr ""
+msgstr "дозволити заміну з %s на %s"
 
 #. XXX Maybe we can make a more beautiful message here?!
 #: ../tools/pakfire-multicall.py:25
 msgid ""
 "There has been an error when trying to import one or more of the modules, "
 "that are required to run Pakfire."
-msgstr ""
+msgstr "Виникла помилка при спробі імпортувати один або декілька модулів, необхідних для запуску Pakfire."
 
 #: ../tools/pakfire-multicall.py:27
 msgid "Please check your installation of Pakfire."
-msgstr ""
+msgstr "Будь-ласка перевірте Вашу інсталяцію Pakfire."
 
 #: ../tools/pakfire-multicall.py:29
 msgid "The error that lead to this:"
-msgstr ""
+msgstr "Помилка, що призвела до наступного:"
 
 #: ../tools/pakfire-multicall.py:70
 msgid "An error has occured when running Pakfire."
-msgstr ""
+msgstr "Помилка при запуску Pakfire."
 
 #: ../tools/pakfire-multicall.py:73
 msgid "Error message:"
-msgstr ""
+msgstr "Сповіщення про помилку:"
 
 #: ../tools/pakfire-multicall.py:80
 msgid "Further description:"
-msgstr ""
+msgstr "Детальний опис:"
