@@ -112,7 +112,6 @@ class RepositorySystem(base.RepositoryFactory):
 
 		# Remove package from the database.
 		self.db.rem_package(pkg)
-		self.index.rem_package(pkg)
 
 	@property
 	def filelist(self):

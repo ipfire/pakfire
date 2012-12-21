@@ -157,14 +157,6 @@ class Index(object):
 			rel = self.pakfire.pool.create_relation(sugg)
 			solvable.add_suggests(rel)
 
-	def rem_package(self, pkg):
-		"""
-			Delete the solvable from the index.
-		"""
-		assert isinstance(pkg, packages.SolvPackage)
-
-		self.solver_repo.rem_solv(pkg)
-
 	def clear(self):
 		"""
 			Forget all packages from memory.

@@ -102,7 +102,6 @@ static PyMethodDef Repo_methods[] = {
 	{"internalize", (PyCFunction)Repo_internalize, METH_NOARGS, NULL},
 	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
 	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
-	{"rem_solv", (PyCFunction)Repo_rem_solv, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
