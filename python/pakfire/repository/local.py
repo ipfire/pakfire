@@ -39,15 +39,11 @@ from pakfire.constants import *
 from pakfire.i18n import _
 
 class RepositoryDir(base.RepositoryFactory):
-	def __init__(self, pakfire, name, description, path, type="binary", key_id=None):
+	def __init__(self, pakfire, name, description, path, key_id=None):
 		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Path to files.
 		self.path = path
-
-		# Save type.
-		assert type in ("binary", "source",)
-		self.type = type
 
 		# The key that is used to sign all added packages.
 		self.key_id = key_id
@@ -115,7 +111,7 @@ class RepositoryDir(base.RepositoryFactory):
 				except:
 					pass
 
-	def add_packages(self, files, replace=True):
+	def add_packages(self, files):
 		# Search for possible package files in the paths.
 		files = self.search_files(*files)
 
@@ -133,7 +129,7 @@ class RepositoryDir(base.RepositoryFactory):
 				pb.update(i)
 
 			# Add the package to the repository.
-			self.add_package(file, replace=replace, optimize_index=False)
+			self.add_package(file, optimize_index=False)
 
 		# Optimize the index.
 		self.optimize_index()
@@ -144,47 +140,48 @@ class RepositoryDir(base.RepositoryFactory):
 		# Optimize the index.
 		self.index.optimize()
 
-	def add_package(self, filename, replace=True, optimize_index=True):
-		# Open the package file we want to add.
-		pkg = packages.open(self.pakfire, self, filename)
+	def add_package(self, filename, optimize_index=True, check_uuids=False):
+		repo_filename = os.path.join(self.path, os.path.basename(filename))
 
-		# Find all packages with the given type and skip those of
-		# the other type.
-		if not pkg.type == self.type:
-			return
+		# Check if the package needs to be copied.
+		needs_copy = True
 
-		# Compute the local path.
-		repo_filename = os.path.join(self.path, os.path.basename(pkg.filename))
+		if os.path.exists(repo_filename):
+			pkg2 = packages.open(self.pakfire, self, repo_filename)
 
-		# If a file with the same name does already exists, we don't replace it.
-		if not replace and os.path.exists(repo_filename):
-			return pkg
+			if check_uuids:
+				pkg1 = packages.open(self.pakfire, None, filename)
 
-		# Copy the file to the repository.
-		repo_dirname = os.path.dirname(repo_filename)
-		if not os.path.exists(repo_dirname):
-			os.makedirs(repo_dirname)
+				# Package file does already exist, but the UUID don't match.
+				# Copy the package file and then re-open it.
+				if pkg1.uuid == pkg2.uuid:
+					needs_copy = False
+			else:
+				needs_copy = False
 
-		# Try to hard link the package if possible. Otherwise copy.
-		try:
-			os.link(pkg.filename, repo_filename)
-		except OSError:
-			shutil.copy2(pkg.filename, repo_filename)
+		# Copy the package file
+		if needs_copy:
+			if not os.path.exists(self.path):
+				os.makedirs(self.path)
 
-		# Re-open the package.
-		pkg = packages.open(self.pakfire, self, repo_filename)
+			# Copy the file.
+			try:
+				os.link(filename, repo_filename)
+			except OSError:
+				shutil.copy2(filename, repo_filename)
 
-		# Sign package.
-		if self.key_id:
-			pkg.sign(self.key_id)
+			# Re-open the package.
+			pkg2 = packages.open(self.pakfire, self, repo_filename)
+
+			# The package needs to be signed.
+			if self.key_id:
+				pkg2.sign(self.key_id)
 
 		# Add package to the index.
-		self.index.add_package(pkg)
+		self.index.add_package(pkg2)
 
 		if optimize_index:
 			self.optimize_index()
-
-		return pkg
 
 	def optimize_index(self):
 		"""

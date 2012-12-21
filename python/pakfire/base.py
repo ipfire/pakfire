@@ -732,10 +732,10 @@ class PakfireServer(Pakfire):
 
 		# Create new repository.
 		repo = repository.RepositoryDir(self, name=name, description="New repository.",
-			path=path, type=type, key_id=key_id)
+			path=path, key_id=key_id)
 
 		# Add all packages.
-		repo.add_packages(*input_paths)
+		repo.add_packages(input_paths)
 
 		# Write metadata to disk.
 		repo.save()
