@@ -544,7 +544,13 @@ class FilePackage(base.Package):
 		"""
 			Check if the file a signature of the given key.
 		"""
-		return self.signatures.has_key(key_id)
+		f = self.open_file("signatures/%s" % key_id)
+		if f:
+			f.close()
+
+			return True
+
+		return False
 
 	def __has_hardlinks(self):
 		"""
