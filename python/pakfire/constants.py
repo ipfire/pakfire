@@ -194,6 +194,7 @@ PACKAGE_INFO_DESCRIPTION_LINE = PACKAGE_INFO_DEPENDENCY_LINE = "\t\t%s"
 # XXX make this configurable in pakfire.conf
 PAKFIRE_MULTIINSTALL = [
 	"kernel",
+	"kernel-exynos",
 	"kernel-kirkwood",
 	"kernel-legacy",
 	"kernel-omap",
