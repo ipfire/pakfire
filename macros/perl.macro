@@ -1,0 +1,9 @@
+# Perl constants.
+perl = /usr/bin/perl
+
+perl_sitearch   = %(eval "$(%{perl} -V:installsitearch)";   echo ${installsitearch})
+perl_sitelib    = %(eval "$(%{perl} -V:installsitelib)";    echo ${installsitelib})
+perl_vendorarch = %(eval "$(%{perl} -V:installvendorarch)"; echo ${installvendorarch})
+perl_vendorlib  = %(eval "$(%{perl} -V:installvendorlib)";  echo ${installvendorlib})
+perl_archlib    = %(eval "$(%{perl} -V:installarchlib)";    echo ${installarchlib})
+perl_privlib    = %(eval "$(%{perl} -V:installprivlib)";    echo ${installprivlib})
