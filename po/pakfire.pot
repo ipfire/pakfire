@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-21 16:13+0100\n"
+"POT-Creation-Date: 2013-01-24 01:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,58 +191,62 @@ msgstr ""
 msgid "Could not find makefile in build root: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:765
+#: ../python/pakfire/builder.py:763
 msgid "Build failed"
 msgstr ""
 
-#: ../python/pakfire/builder.py:770
+#: ../python/pakfire/builder.py:766
+msgid "Build interrupted"
+msgstr ""
+
+#: ../python/pakfire/builder.py:772
 msgid "Build failed."
 msgstr ""
 
 #. End here in case of an error.
-#: ../python/pakfire/builder.py:786
+#: ../python/pakfire/builder.py:788
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
-#: ../python/pakfire/builder.py:789
+#: ../python/pakfire/builder.py:791
 msgid "Running installation test..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:795
+#: ../python/pakfire/builder.py:797
 msgid "Installation test succeeded."
 msgstr ""
 
 #. Create a progressbar.
-#: ../python/pakfire/builder.py:838
+#: ../python/pakfire/builder.py:840
 msgid "Signing packages..."
 msgstr ""
 
-#: ../python/pakfire/builder.py:872
+#: ../python/pakfire/builder.py:874
 msgid "Dumping package information:"
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../python/pakfire/builder.py:1024
+#: ../python/pakfire/builder.py:1026
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../python/pakfire/builder.py:1038
+#: ../python/pakfire/builder.py:1040
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1056
+#: ../python/pakfire/builder.py:1058
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../python/pakfire/builder.py:1062
+#: ../python/pakfire/builder.py:1064
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
-#: ../python/pakfire/builder.py:1082
+#: ../python/pakfire/builder.py:1084
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
