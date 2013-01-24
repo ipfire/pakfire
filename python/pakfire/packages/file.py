@@ -132,7 +132,8 @@ class FilePackage(base.Package):
 			payload_archive = tar.InnerTarFile.open(fileobj=payload)
 
 		else:
-			raise Exception, "Unhandled payload compression type: %s" % payload_compression
+			raise Exception, "Unhandled payload compression type: %s" % \
+				self.payload_compression
 
 		return payload_archive
 
