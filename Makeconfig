@@ -39,6 +39,8 @@ ifeq "$(DEBIAN)" "1"
 else
 	PYTHON_DIR = $(LIBDIR)/python$(PYTHON_VERSION)/site-packages
 endif
+PYTHON_FILES   = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
+PYTHON_FILES  += tools/pakfire-multicall.py
 
 # The place, where all internally used scripts and bins are copied.
 SCRIPT_DIR     = $(PREFIX)/lib/$(PACKAGE_NAME)
@@ -47,5 +49,4 @@ TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 
 # A list of all files that contain translations and need to
 # be indexed.
-TRANS_FILES  = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
-TRANS_FILES += python/src/*.c tools/pakfire-multicall.py
+TRANS_FILES  = $(PYTHON_FILES) python/src/*.c
