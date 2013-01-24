@@ -135,10 +135,6 @@ class SolvPackage(base.Package):
 		return vendor
 
 	@property
-	def uuid(self):
-		return self.solvable.get_uuid()
-
-	@property
 	def build_host(self):
 		return self.solvable.get_buildhost()
 
