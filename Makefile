@@ -39,8 +39,8 @@ install: build
 	done
 
 .PHONY: check
-check:
-	./runpychecker.sh
+check: all
+	PYTHONPATH=python/src/ pylint -E python/pakfire
 
 .PHONY: po
 po:
