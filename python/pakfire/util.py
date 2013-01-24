@@ -197,7 +197,7 @@ def format_speed(s):
 	return "%sB/s" % format_size(s)
 
 def calc_hash1(filename=None, data=None):
-	h = hashlib.sha1()
+	h = hashlib.new("sha1")
 
 	if filename:
 		f = open(filename)

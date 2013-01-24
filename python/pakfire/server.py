@@ -82,7 +82,8 @@ class Source(object):
 
 	@property
 	def path(self):
-		h = hashlib.sha1(self.url)
+		h = hashlib.new("sha1")
+		h.update(self.url)
 
 		# XXX path is to be changed
 		return "/var/cache/pakfire/sources/%s" % h.hexdigest()

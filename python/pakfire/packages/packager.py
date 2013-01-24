@@ -104,7 +104,7 @@ class Packager(object):
 			# Calculating the hash sum of the added file
 			# and store it in the chksums file.
 			f = open(filename)
-			h = hashlib.sha512()
+			h = hashlib.new("sha512")
 			while True:
 				buf = f.read(BUFFER_SIZE)
 				if not buf:
@@ -164,7 +164,7 @@ class Packager(object):
 			# Calculate SHA512 hash of regular files.
 			if m.isreg():
 				mobj = datafile.extractfile(m)
-				h = hashlib.sha512()
+				h = hashlib.new("sha512")
 
 				while True:
 					buf = mobj.read(BUFFER_SIZE)

@@ -211,7 +211,7 @@ class FilePackage(base.Package):
 						continue
 
 					# Calc hash of the current configuration file.
-					config_hash1 = hashlib.sha512()
+					config_hash1 = hashlib.new("sha512")
 					f = open(target)
 					while True:
 						buf = f.read(BUFFER_SIZE)

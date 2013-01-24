@@ -408,7 +408,7 @@ class ClientBuilder(object):
 
 				# Check if the download checksum matches (if provided).
 				if self.build_source_hash512:
-					h = hashlib.sha512()
+					h = hashlib.new("sha512")
 					f = open(tmpfile, "rb")
 					while True:
 						buf = f.read(BUFFER_SIZE)
