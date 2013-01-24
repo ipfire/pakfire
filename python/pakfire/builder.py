@@ -752,7 +752,6 @@ class BuildEnviron(object):
 
 		build_command = " ".join(build_command)
 
-		error = False
 		try:
 			self.execute(build_command, logger=self.log)
 
@@ -761,18 +760,15 @@ class BuildEnviron(object):
 				self.install_test()
 
 		except ShellEnvironmentError:
-			error = True
 			self.log.error(_("Build failed"))
 
 		except KeyboardInterrupt:
-			error = True
 			self.log.error(_("Build interrupted"))
 
 			raise
 
 		# Catch all other errors.
 		except:
-			error = True
 			self.log.error(_("Build failed."), exc_info=True)
 
 		else:
