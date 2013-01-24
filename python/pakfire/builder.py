@@ -764,6 +764,12 @@ class BuildEnviron(object):
 			error = True
 			self.log.error(_("Build failed"))
 
+		except KeyboardInterrupt:
+			error = True
+			self.log.error(_("Build interrupted"))
+
+			raise
+
 		# Catch all other errors.
 		except:
 			error = True
