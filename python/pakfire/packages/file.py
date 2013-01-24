@@ -46,6 +46,8 @@ class FilePackage(base.Package):
 		This class is a wrapper that reads package data from the (outer)
 		tarball and should never be used solely.
 	"""
+	_type = None
+
 	def __init__(self, pakfire, repo, filename):
 		base.Package.__init__(self, pakfire, repo)
 		self.filename = os.path.abspath(filename)
