@@ -251,8 +251,6 @@ class PakfireDaemon(object):
 
 					# Finally, remove the process from the process list.
 					self.processes.remove(process)
-					if self.pid2jobid.has_key(process.id):
-						del self.pid2jobid[process.id]
 
 			return ret
 
@@ -276,6 +274,7 @@ class PakfireDaemon(object):
 			for process in self.processes[:]:
 				job_id = self.pid2jobid.get(process.pid, None)
 				if job_id and job_id in aborted_jobs:
+
 					# Kill the process.
 					log.info("Killing process %s which was aborted by the user." \
 						% process.pid)
@@ -284,8 +283,6 @@ class PakfireDaemon(object):
 					# Remove the process from the process list to avoid
 					# that is will be cleaned up in the normal way.
 					self.processes.remove(process)
-					if self.pid2jobid.has_key(process.id):
-						del self.pid2jobid[process.id]
 
 			return True
 
