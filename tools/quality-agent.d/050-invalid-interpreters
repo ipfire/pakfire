@@ -28,7 +28,8 @@ check() {
 				sed -i ${file} \
 					-e "s,/usr/bin/env python\(.*\),/usr/bin/python\1," \
 					-e "s,/usr/bin/env python,/usr/bin/python," \
-					-e "s,/usr/bin/env perl,/usr/bin/perl,"
+					-e "s,/usr/bin/env perl,/usr/bin/perl," \
+					-e "s,/usr/bin/env ruby,/usr/bin/ruby,"
 
 				# If we could not fix it, raise an error
 				if [ "${interpreter}" = "$(file_get_interpreter ${file})" ]; then
