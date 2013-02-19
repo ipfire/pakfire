@@ -55,6 +55,7 @@ packages
 			%{datadir}/cmake
 			%{mandir}/man2
 			%{mandir}/man3
+			%{datadir}/gir*/
 			%{datadir}/pkgconfig
 			%{datadir}/vala
 		end

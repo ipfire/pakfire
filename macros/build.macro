@@ -59,15 +59,6 @@ def MACRO_PYTHON_COMPILE
 	fi
 end
 
-MACRO_PERL_CLEANUP
-	# Remove perllocal.pod.
-	rm -f %{BUILDROOT}/usr/lib*/perl*/perllocal.pod
-
-	# Remove all .packlist files.
-	find %{BUILDROOT}/usr/{lib,share}/perl* -name ".packlist" 2>/dev/null | \
-		xargs --no-run-if-empty rm -f
-end
-
 MACRO_PATCHES = /usr/lib/pakfire/patch --search-path=%{DIR_PATCHES} "%{patches}"
 
 # Pre-defined build scripts.
@@ -145,7 +136,9 @@ build
 
 		%{MACRO_INSTALL_FILES}
 		%{MACRO_PYTHON_COMPILE}
-		%{MACRO_PERL_CLEANUP}
+
+		# Cleanup perl modules.
+		%{perl_cleanup}
 
 		%{install_post}
 

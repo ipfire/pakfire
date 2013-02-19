@@ -7,3 +7,22 @@ perl_vendorarch = %(eval "$(%{perl} -V:installvendorarch)"; echo ${installvendor
 perl_vendorlib  = %(eval "$(%{perl} -V:installvendorlib)";  echo ${installvendorlib})
 perl_archlib    = %(eval "$(%{perl} -V:installarchlib)";    echo ${installarchlib})
 perl_privlib    = %(eval "$(%{perl} -V:installprivlib)";    echo ${installprivlib})
+
+perl_all_paths  = {%{perl_vendorarch},%{perl_vendorlib},%{perl_archlib},%{perl_privlib}}
+
+# perl_cleanup: Removes unwanted perl files.
+perl_cleanup
+	# Remove perllocal.pod.
+	rm -f %{BUILDROOT}%{perl_all_paths}/perllocal.pod
+
+	# Remove all .packlist files.
+	find %{BUILDROOT}%{perl_all_paths} -name ".packlist" 2>/dev/null | \
+		xargs --no-run-if-empty rm -f
+
+	# Remove all empty .bs files.
+	find %{BUILDROOT}%{perl_all_paths} -name ".bs" -type f -empty 2>/dev/null | \
+		xargs --no-run-if-empty rm -f
+
+	# Run user-defined stuff.
+	%{perl_cleanup_cmds}
+end

@@ -156,10 +156,16 @@ class System(object):
 			Calculates how many processes should be run
 			simulatneously when compiling.
 		"""
-		# Count the number of online CPU cores.
-		cpucount = os.sysconf("SC_NPROCESSORS_CONF")
+		# Check how many processes would fit into the
+		# memory when each process takes up to 128MB.
+		multiplicator = self.memory / (128 * 1024 * 1024)
+		multiplicator = round(multiplicator)
 
-		return cpucount * 2
+		# Count the number of online CPU cores.
+		cpucount = os.sysconf("SC_NPROCESSORS_CONF") * 2
+		cpucount += 1
+
+		return min(multiplicator, cpucount)
 
 
 # Create an instance of this class to only keep it once in memory.
