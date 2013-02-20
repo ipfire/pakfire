@@ -68,7 +68,7 @@ class PakfireGrabber(URLGrabber):
 		# Configure HTTP proxy.
 		http_proxy = config.get("downloader", "http_proxy")
 		if http_proxy:
-			kwargs.update({ "proxies" : { "http" : http_proxy }})
+			kwargs.update({ "proxies" : { "http" : http_proxy, "https" : http_proxy }})
 
 		URLGrabber.__init__(self, *args, **kwargs)
 

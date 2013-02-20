@@ -34,6 +34,9 @@ from pakfire.i18n import _
 # Set the default socket timeout to 30 seconds.
 socket.setdefaulttimeout(30)
 
+
+
+
 class XMLRPCMixin:
 	user_agent = "pakfire/%s" % PAKFIRE_VERSION
 
