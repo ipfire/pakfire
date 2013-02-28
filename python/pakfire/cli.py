@@ -29,6 +29,7 @@ import tempfile
 import base
 import client
 import config
+import daemon
 import logger
 import packages
 import repository
@@ -879,15 +880,11 @@ class CliClient(Cli):
 			"test"        : self.handle_test,
 		}
 
-		# Read configuration for the pakfire client.
+		# Read configuration.
 		self.config = config.ConfigClient()
 
 		# Create connection to pakfire hub.
-		self.client = client.PakfireUserClient(
-			self.config.get("client", "server"),
-			self.config.get("client", "username"),
-			self.config.get("client", "password"),
-		)
+		self.client = client.PakfireClient(self.config)
 
 	@property
 	def pakfire_args(self):
@@ -989,20 +986,22 @@ class CliClient(Cli):
 
 			# Format arches.
 			if self.args.arch:
-				arches = self.args.arch.replace(",", " ")
+				arches = self.args.arch.split(",")
 			else:
 				arches = None
 
 			# Create a new build on the server.
-			build = self.client.build_create(package, arches=arches)
-
-			# XXX Print the resulting build.
-			print build
+			build_id = self.client.build_create(package, build_type="scratch",
+				arches=arches)
 
 		finally:
 			# Cleanup the temporary directory and all files.
 			if os.path.exists(temp_dir):
 				shutil.rmtree(temp_dir, ignore_errors=True)
+
+		# Monitor the build.
+		if build_id:
+			self.watch_build(build_id)
 
 	def handle_info(self):
 		ret = []
@@ -1183,6 +1182,11 @@ class CliClient(Cli):
 		res = self.client.test_code(error_code)
 		print _("Reponse from the server: %s") % res
 
+	def watch_build(self, build_id):
+		print self.client.build_get(build_id)
+		# XXX TODO
+		print build_id
+
 
 class CliDaemon(Cli):
 	def __init__(self):
@@ -1200,10 +1204,11 @@ class CliDaemon(Cli):
 			Runs the pakfire daemon with provided settings.
 		"""
 		# Read the configuration file for the daemon.
-		conf = config.ConfigDaemon()
+		self.config = config.ConfigDaemon()
+		logger.setup_logging(self.config)
 
 		# Create daemon instance.
-		d = client.PakfireDaemon()
+		d = daemon.PakfireDaemon(self.config)
 		try:
 			d.run()
 

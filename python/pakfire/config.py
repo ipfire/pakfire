@@ -253,6 +253,13 @@ class ConfigClient(_Config):
 		},
 	}
 
+	def get_hub_credentials(self):
+		hub_url  = self.get("client", "server")
+		username = self.get("client", "username")
+		password = self.get("client", "password")
+
+		return hub_url, username, password
+
 
 class ConfigDaemon(_Config):
 	files = ["general.conf", "daemon.conf"]
@@ -268,3 +275,10 @@ class ConfigDaemon(_Config):
 			"hostname" : system.hostname,
 		},
 	}
+
+	def get_hub_credentials(self):
+		hub_url  = self.get("daemon", "server")
+		hostname = self.get("daemon", "hostname")
+		password = self.get("daemon", "secret")
+
+		return hub_url, hostname, password

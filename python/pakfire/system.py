@@ -25,6 +25,8 @@ import multiprocessing
 import os
 import socket
 
+import distro
+
 from i18n import _
 
 class System(object):
@@ -41,6 +43,13 @@ class System(object):
 			hn = "%s.localdomain" % hn
 
 		return hn
+
+	@property
+	def distro(self):
+		if not hasattr(self, "_distro"):
+			self._distro = distro.Distribution()
+
+		return self._distro
 
 	@property
 	def native_arch(self):
@@ -98,24 +107,32 @@ class System(object):
 		"""
 		return multiprocessing.cpu_count()
 
-	@property
-	def cpu_model(self):
-		# Determine CPU model
-		cpuinfo = {}
+	def parse_cpuinfo(self):
+		ret = {}
+
 		with open("/proc/cpuinfo") as f:
 			for line in f.readlines():
-				# Break at an empty line, because all information after that
-				# is redundant.
-				if not line:
+				# Only parse the first block.
+				if line == "\n":
 					break
 
 				try:
-					key, value = line.split(":")
-				except:
-					pass # Skip invalid lines
+					# Split the lines by colons.
+					a, b = line.split(":")
 
-				key, value = key.strip(), value.strip()
-				cpuinfo[key] = value
+					# Strip whitespace.
+					a = a.strip()
+					b = b.strip()
+
+					ret[a] = b
+				except:
+					pass
+
+		return ret
+
+	@property
+	def cpu_model(self):
+		cpuinfo = self.parse_cpuinfo()
 
 		ret = None
 		if self.arch.startswith("arm"):
@@ -132,20 +149,85 @@ class System(object):
 		return ret or _("Could not be determined")
 
 	@property
-	def memory(self):
-		# Determine memory size
-		memory = 0
+	def cpu_bogomips(self):
+		cpuinfo = self.parse_cpuinfo()
+
+		bogomips = cpuinfo.get("bogomips", None)
+		try:
+			return float(bogomips) * self.cpu_count
+		except:
+			pass
+
+	def get_loadavg(self):
+		return os.getloadavg()
+
+	@property
+	def loadavg1(self):
+		return self.get_loadavg()[0]
+
+	@property
+	def loadavg5(self):
+		return self.get_loadavg()[1]
+
+	@property
+	def loadavg15(self):
+		return self.get_loadavg()[2]
+
+	def has_overload(self):
+		"""
+			Checks, if the load average is not too high.
+
+			On this is to be decided if a new job is taken.
+		"""
+		# If there are more than 2 processes in the process queue per CPU
+		# core we will assume that the system has heavy load and to not request
+		# a new job.
+		return self.loadavg5 >= self.cpu_count * 2
+
+	def parse_meminfo(self):
+		ret = {}
+
 		with open("/proc/meminfo") as f:
-			line = f.readline()
+			for line in f.readlines():
+				try:
+					a, b, c = line.split()
 
-			try:
-				a, b, c = line.split()
-			except:
-				pass
-			else:
-				memory = int(b) * 1024
+					a = a.strip()
+					a = a.replace(":", "")
+					b = int(b)
 
-		return memory
+					ret[a] = b * 1024
+				except:
+					pass
+
+		return ret
+
+	@property
+	def memory_total(self):
+		meminfo = self.parse_meminfo()
+
+		return meminfo.get("MemTotal", None)
+
+	# For compatibility
+	memory = memory_total
+
+	@property
+	def memory_free(self):
+		meminfo = self.parse_meminfo()
+
+		return meminfo.get("MemFree", None)
+
+	@property
+	def swap_total(self):
+		meminfo = self.parse_meminfo()
+
+		return meminfo.get("SwapTotal", None)
+
+	@property
+	def swap_free(self):
+		meminfo = self.parse_meminfo()
+
+		return meminfo.get("SwapFree", None)
 
 	def get_mountpoint(self, path):
 		return Mountpoint(path)

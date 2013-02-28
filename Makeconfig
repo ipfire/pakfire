@@ -33,7 +33,7 @@ endif
 
 PYTHON_CC      = $(CC) -pthread -fPIC
 PYTHON_CFLAGS  = $(shell python-config --cflags)
-PYTHON_MODULES = pakfire pakfire/client pakfire/packages pakfire/repository
+PYTHON_MODULES = pakfire pakfire/packages pakfire/repository
 ifeq "$(DEBIAN)" "1"
 	PYTHON_DIR = $(LIBDIR)/python$(PYTHON_VERSION)/dist-packages
 else

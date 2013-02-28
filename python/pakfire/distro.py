@@ -25,7 +25,7 @@ import re
 import logging
 log = logging.getLogger("pakfire")
 
-from system import system
+import system
 
 class Distribution(object):
 	def __init__(self,  data=None):
@@ -47,8 +47,9 @@ class Distribution(object):
 			return
 
 		keymap = {
-			"NAME"       : "name",
-			"VERSION_ID" : "release",
+			"NAME"        : "name",
+			"PRETTY_NAME" : "pretty_name",
+			"VERSION_ID"  : "release",
 		}
 
 		data = {}
@@ -110,6 +111,14 @@ class Distribution(object):
 		return self._data.get("name", "unknown")
 
 	@property
+	def pretty_name(self):
+		pretty_name = self._data.get("pretty_name", None)
+		if not pretty_name:
+			pretty_name = " ".join((self.name, self.release))
+
+		return pretty_name
+
+	@property
 	def release(self):
 		return self._data.get("release", "0")
 
@@ -134,11 +143,11 @@ class Distribution(object):
 		return self._data.get("contact", "N/A")
 
 	def get_arch(self):
-		arch = self._data.get("arch", None) or system.arch
+		arch = self._data.get("arch", None) or system.system.arch
 
 		# We can not set up a build environment for noarch.
 		if arch == "noarch":
-			arch = system.arch
+			arch = system.system.arch
 
 		return arch
 	
@@ -228,7 +237,7 @@ class Distribution(object):
 			None to skip the setting of the personality in the build chroot.
 		"""
 
-		if self.arch == system.native_arch:
+		if self.arch == system.system.native_arch:
 			return None
 
 		arch2personality = {

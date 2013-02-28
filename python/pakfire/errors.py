@@ -98,6 +98,62 @@ class TransactionCheckError(Error):
 	message = _("Transaction test was not successful")
 
 
+class TransportError(Error):
+	pass
+
+
+class TransportConnectionError(TransportError):
+	pass
+
+
+class TransportConnectionDNSError(TransportConnectionError):
+	pass
+
+
+class TransportConnectionProxyError(TransportConnectionError):
+	pass
+
+
+class TransportConnectionReadError(TransportConnectionError):
+	pass
+
+
+class TransportConnectionResetError(TransportConnectionError):
+	pass
+
+
+class TransportConnectionTimeoutError(TransportConnectionError):
+	pass
+
+
+class TransportConnectionWriteError(TransportConnectionError):
+	pass
+
+
+class TransportSSLError(TransportConnectionError):
+	pass
+
+
+class TransportSSLCertificateExpiredError(TransportSSLError):
+	pass
+
+
+class TransportInternalServerError(TransportError):
+	pass
+
+
+class TransportForbiddenError(TransportError):
+	pass
+
+
+class TransportMaxTriesExceededError(TransportError):
+	pass
+
+
+class TransportNotFoundError(TransportError):
+	pass
+
+
 class XMLRPCError(Error):
 	message = _("Generic XMLRPC error.")
 
