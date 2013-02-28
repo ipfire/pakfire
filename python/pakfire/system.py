@@ -213,7 +213,12 @@ class System(object):
 	def memory_free(self):
 		meminfo = self.parse_meminfo()
 
-		return meminfo.get("MemFree", None)
+		free = meminfo.get("MemFree", None)
+		if free:
+			buffers = meminfo.get("Buffers")
+			cached  = meminfo.get("Cached")
+
+			return free + buffers + cached
 
 	@property
 	def swap_total(self):
