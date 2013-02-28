@@ -112,10 +112,6 @@ class System(object):
 
 		with open("/proc/cpuinfo") as f:
 			for line in f.readlines():
-				# Only parse the first block.
-				if line == "\n":
-					break
-
 				try:
 					# Split the lines by colons.
 					a, b = line.split(":")
