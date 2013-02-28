@@ -237,7 +237,6 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 
 		# Create connection to the hub.
 		self.transport = transport.PakfireHubTransport(self.config)
-		self.transport.fork()
 
 		# Send our profile to the hub.
 		self.send_builder_info()
@@ -358,7 +357,6 @@ class PakfireWorker(multiprocessing.Process):
 
 		# Create connection to the hub.
 		self.transport = transport.PakfireHubTransport(self.config)
-		self.transport.fork()
 
 		while self.__running:
 			# Try to get a new build job.

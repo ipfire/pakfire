@@ -74,17 +74,6 @@ class PakfireGrabber(URLGrabber):
 
 		URLGrabber.__init__(self, *args, **kwargs)
 
-	def fork(self):
-		"""
-			Reset Curl object after forking a process.
-		"""
-		# XXX this is a very ugly hack and fiddles around with the internals
-		# or urlgrabber. We should not touch these, but apparently nobody
-		# else uses multiple threads or processes to talk to their servers.
-		# So we simply replace Curl with a new instance without closing
-		# the old one. This should be fixed in urlgrabber and/or pycurl.
-		urlgrabber.grabber._curl_cache = pycurl.Curl()
-
 	def check_offline_mode(self):
 		offline = self.config.get("downloader", "offline")
 		if not offline:

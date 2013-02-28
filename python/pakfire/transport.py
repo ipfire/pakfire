@@ -193,9 +193,6 @@ class PakfireHubTransport(object):
 			self.config, prefix=self.url,
 		)
 
-	def fork(self):
-		return self.grabber.fork()
-
 	@property
 	def url(self):
 		"""
