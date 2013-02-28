@@ -159,7 +159,8 @@ class PakfireHubTransportUploader(object):
 			self.send_file(upload_id, progress_callback=progress.update)
 
 		except:
-			progress.finish()
+			if progress:
+				progress.finish()
 
 			# Remove broken upload from server.
 			if upload_id:
@@ -169,7 +170,8 @@ class PakfireHubTransportUploader(object):
 			raise
 
 		else:
-			progress.finish()
+			if progress:
+				progress.finish()
 
 			# If no exception was raised, the upload
 			# has finished.
