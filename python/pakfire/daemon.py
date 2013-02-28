@@ -144,15 +144,15 @@ class PakfireDaemon(object):
 		"""
 			Terminates all workers.
 		"""
+		# First send SIGTERM to all processes.
+		self.terminate_worker(self.keepalive)
 		for worker in self.workers:
 			self.terminate_worker(worker)
 
-			# Wait until the worker has finished.
-			worker.join()
-
-		# Terminate the keepalive process.
-		self.terminate_worker(self.keepalive)
+		# Then wait until they all have finished.
 		self.keepalive.join()
+		for worker in self.workers:
+			worker.join()
 
 	def remove_worker(self, worker):
 		"""
