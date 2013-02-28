@@ -103,10 +103,18 @@ class PakfireGrabber(URLGrabber):
 	def urlopen(self, filename, *args, **kwargs):
 		self.check_offline_mode()
 
-		# However, urlopen requires the filename to be an ordinary string object.
-		filename = str(filename)
+		# This is for older versions of urlgrabber which are packaged in Debian
+		# and Ubuntu and cannot handle filenames as a normal Python string but need
+		# a unicode string.
+		return URLGrabber.urlopen(self, filename.encode("utf-8"), *args, **kwargs)
 
-		return URLGrabber.urlopen(self, filename, *args, **kwargs)
+	def urlgrab(self, url, *args, **kwargs):
+		self.check_offline_mode()
+
+		# This is for older versions of urlgrabber which are packaged in Debian
+		# and Ubuntu and cannot handle filenames as a normal Python string but need
+		# a unicode string.
+		return URLGrabber.urlgrab(self, url.encode("utf-8"), *args, **kwargs)
 
 
 class PackageDownloader(PakfireGrabber):
