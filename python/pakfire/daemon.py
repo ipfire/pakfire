@@ -46,11 +46,11 @@ class PakfireDaemon(object):
 		# Indicates if this daemon is in running mode.
 		self.__running = True
 
-		# List of worker processes.
-		self.__workers = []
+		# Create daemon that sends keep-alive messages.
+		self.keepalive = PakfireDaemonKeepalive(self.config)
 
-		# Create connection to the hub.
-		self.transport = transport.PakfireHubTransport(self.config)
+		# List of worker processes.
+		self.__workers = [self.keepalive]
 
 		### Configuration
 		# Number of workers in waiting state.
@@ -66,14 +66,12 @@ class PakfireDaemon(object):
 		# Register signal handlers.
 		self.register_signal_handlers()
 
-		# Send our profile to the hub.
-		self.send_builder_info()
+		# Start keepalive process.
+		self.keepalive.start()
 
+		# Run main loop.
 		while self.__running:
 			time_started = time.time()
-
-			# Send keepalive message.
-			self.send_keepalive()
 
 			# Spawn a sufficient number of worker processes.
 			self.spawn_workers_if_needed()
@@ -152,6 +150,10 @@ class PakfireDaemon(object):
 			# Wait until the worker has finished.
 			worker.join()
 
+		# Terminate the keepalive process.
+		self.terminate_worker(self.keepalive)
+		self.keepalive.join()
+
 	def remove_worker(self, worker):
 		"""
 			Removes a worker from the internal list of worker processes.
@@ -176,7 +178,7 @@ class PakfireDaemon(object):
 
 	@property
 	def workers(self):
-		return self.__workers[:]
+		return [w for w in self.__workers if isinstance(w, PakfireWorker)]
 
 	@property
 	def running_workers(self):
@@ -213,6 +215,66 @@ class PakfireDaemon(object):
 		"""
 		# Spawn new workers if necessary.
 		self.spawn_workers_if_needed()
+
+	def handle_SIGTERM(self, signum, frame):
+		"""
+			Handle signal SIGTERM.
+		"""
+		# Just shut down.
+		self.shutdown()
+
+
+class PakfireDaemonKeepalive(multiprocessing.Process):
+	def __init__(self, config):
+		multiprocessing.Process.__init__(self)
+
+		# Save config.
+		self.config = config
+
+	def run(self, heartbeat=30):
+		# Register signal handlers.
+		self.register_signal_handlers()
+
+		# Create connection to the hub.
+		self.transport = transport.PakfireHubTransport(self.config)
+		self.transport.fork()
+
+		# Send our profile to the hub.
+		self.send_builder_info()
+
+		while True:
+			time_started = time.time()
+
+			# Send keepalive message.
+			self.send_keepalive()
+
+			# Get runtime of this loop iteration.
+			time_elapsed = time.time() - time_started
+
+			# Wait if the heartbeat time has not been reached, yet.
+			if time_elapsed < heartbeat:
+				time.sleep(heartbeat - time_elapsed)
+
+	def shutdown(self):
+		"""
+			Ends this process immediately.
+		"""
+		sys.exit(1)
+
+	# Signal handling.
+
+	def register_signal_handlers(self):
+		signal.signal(signal.SIGCHLD, self.handle_SIGCHLD)
+		signal.signal(signal.SIGINT,  self.handle_SIGTERM)
+		signal.signal(signal.SIGTERM, self.handle_SIGTERM)
+
+	def handle_SIGCHLD(self, signum, frame):
+		"""
+			Handle signal SIGCHLD.
+		"""
+		# Must be here so that SIGCHLD won't be propagated to
+		# PakfireDaemon.
+		pass
 
 	def handle_SIGTERM(self, signum, frame):
 		"""
