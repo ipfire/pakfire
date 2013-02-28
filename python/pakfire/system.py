@@ -148,11 +148,13 @@ class System(object):
 	def cpu_bogomips(self):
 		cpuinfo = self.parse_cpuinfo()
 
-		bogomips = cpuinfo.get("bogomips", None)
-		try:
+		for key in ("bogomips", "BogoMIPS"):
+			bogomips = cpuinfo.get(key, None)
+
+			if bogomips is None:
+				continue
+
 			return float(bogomips) * self.cpu_count
-		except:
-			pass
 
 	def get_loadavg(self):
 		return os.getloadavg()
