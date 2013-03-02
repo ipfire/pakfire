@@ -401,7 +401,7 @@ class Mountpoint(object):
 	def rem(self, file):
 		assert file.name.startswith(self.path)
 
-		self.disk_usage += file.size
+		self.disk_usage -= file.size
 
 
 if __name__ == "__main__":
