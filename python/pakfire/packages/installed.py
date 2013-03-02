@@ -141,8 +141,14 @@ class DatabasePackage(Package):
 
 	@property
 	def inst_size(self):
-		# XXX to be done
-		return 0
+		inst_size = self.metadata.get("inst_size", None)
+
+		# As install size has not always been saved in the database
+		# use the package size instead.
+		if inst_size is None:
+			return self.size
+
+		return inst_size
 
 	@property
 	def provides(self):

@@ -31,6 +31,7 @@ log = logging.getLogger("pakfire")
 import pakfire.packages as packages
 
 from pakfire.constants import *
+from pakfire.errors import *
 from pakfire.i18n import _
 
 class Cursor(sqlite3.Cursor):
@@ -264,6 +265,9 @@ class DatabaseLocal(Database):
 		if self.format < 5:
 			c.execute("ALTER TABLE files ADD COLUMN datafile INTEGER AFTER config")
 
+		if self.format < 6:
+			c.execute("ALTER TABLE packages ADD COLUMN inst_size INTEGER AFTER size")
+
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
 		self.__format = DATABASE_FORMAT
@@ -287,6 +291,7 @@ class DatabaseLocal(Database):
 					groups,
 					filename,
 					size,
+					inst_size,
 					hash1,
 					provides,
 					requires,
@@ -306,7 +311,7 @@ class DatabaseLocal(Database):
 					installed,
 					repository,
 					reason
-				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 				(
 					pkg.name,
 					pkg.epoch,
@@ -316,6 +321,7 @@ class DatabaseLocal(Database):
 					" ".join(pkg.groups),
 					pkg.filename,
 					pkg.size,
+					pkg.inst_size,
 					pkg.hash1,
 					"\n".join(pkg.provides),
 					"\n".join(pkg.requires),
