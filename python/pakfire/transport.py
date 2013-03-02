@@ -156,7 +156,10 @@ class PakfireHubTransportUploader(object):
 			upload_id = self.get_upload_id()
 
 			# Send the file content.
-			self.send_file(upload_id, progress_callback=progress.update)
+			if progress:
+				self.send_file(upload_id, progress_callback=progress.update)
+			else:
+				self.send_file(upload_id)
 
 		except:
 			if progress:
