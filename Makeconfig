@@ -1,9 +1,9 @@
 
 PACKAGE_NAME    = pakfire
-PACKAGE_VERSION = 0.9.24
+PACKAGE_VERSION = 0.9.25
 PACKAGE_AUTHOR  = IPFire.org Team
 PACKAGE_AUTHOR_EMAIL = info@ipfire.org
-PACKAGE_URL     = http://redmine.ipfire.org/projects/buildsystem3
+PACKAGE_URL     = http://git.ipfire.org/?p=pakfire.git;a=summary
 PACKAGE_VERSION_FILE = pakfire/__version__.py
 
 PREFIX ?= /usr
