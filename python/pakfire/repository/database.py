@@ -190,6 +190,7 @@ class DatabaseLocal(Database):
 				groups		TEXT,
 				filename	TEXT,
 				size		INTEGER,
+				inst_size	INTEGER,
 				hash1		TEXT,
 				provides	TEXT,
 				requires	TEXT,
