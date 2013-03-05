@@ -119,6 +119,12 @@ class BuildEnviron(object):
 			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
 		}
 
+		# Get ccache settings.
+		if self.settings.get("enable_ccache", False):
+			self.settings.update({
+				"ccache_compress" : self.config.get_bool("ccache", "compress", True),
+			})
+
 		# Try to get the configured host key. If it is available,
 		# we will automatically sign all packages with it.
 		if self.keyring.get_host_key(secret=True):
@@ -614,6 +620,15 @@ class BuildEnviron(object):
 
 		# Inherit environment from distro
 		env.update(self.pakfire.distro.environ)
+
+		# ccache environment settings
+		if self.settings.get("enable_ccache", False):
+			compress = self.settings.get("ccache_compress", False)
+			if compress:
+				env["CCACHE_COMPRESS"] = "1"
+
+			# Let ccache create its temporary files in /tmp.
+			env["CCACHE_TEMPDIR"] = "/tmp"
 
 		# Icecream environment settings
 		if self.settings.get("enable_icecream", False):
