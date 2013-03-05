@@ -572,6 +572,7 @@ class BuildEnviron(object):
 			("pakfire_tmpfs", "/dev",      "tmpfs", "mode=755,nosuid"),
 			("/dev/pts",      "/dev/pts",  "bind",  "bind"),
 			("pakfire_tmpfs", "/run",      "tmpfs", "mode=755,nosuid,nodev"),
+			("pakfire_tmpfs", "/tmp",      "tmpfs", "mode=755,nosuid,nodev"),
 		]
 
 		# If selinux is enabled.
