@@ -8,40 +8,14 @@ import time
 import logging
 log = logging.getLogger("pakfire.cgroups")
 
-CGROUP_PATH_CANDIDATES = (
-	"/sys/fs/cgroup",
-)
-
-def find_cgroup_path():
-	"""
-		This function tries to find the right place
-		where to put the cgroups.
-	"""
-	for path in CGROUP_PATH_CANDIDATES:
-		check_path = os.path.join(path, "tasks")
-		if not os.path.exists(check_path):
-			continue
-
-		return path
-
-CGROUP_PATH = find_cgroup_path()
-
-def supported():
-	"""
-		Returns True or False depending on
-		whether cgroups are supported or not.
-	"""
-	if CGROUP_PATH is None:
-		return False
-
-	return True
+CGROUP_MOUNTPOINT = "/sys/fs/cgroup/systemd"
 
 class CGroup(object):
 	def __init__(self, name):
 		assert supported(), "cgroups are not supported by this kernel"
 
 		self.name = name
-		self.path = os.path.join(CGROUP_PATH, name)
+		self.path = os.path.join(CGROUP_MOUNTPOINT, name)
 		self.path = os.path.abspath(self.path)
 
 		# The parent cgroup.
@@ -58,6 +32,31 @@ class CGroup(object):
 	def __cmp__(self, other):
 		return cmp(self.path, other.path)
 
+	@classmethod
+	def find_by_pid(cls, pid):
+		"""
+			Returns the cgroup of the process with the given PID.
+
+			If no cgroup can be found, None is returned.
+		"""
+		if not cls.supported:
+			return
+
+		for d, subdirs, files in os.walk(CGROUP_MOUNTPOINT):
+			if not "tasks" in files:
+				continue
+
+			cgroup = cls(d)
+			if pid in cgroup.tasks:
+				return cgroup
+
+	@staticmethod
+	def supported():
+		"""
+			Returns true, if this hosts supports cgroups.
+		"""
+		return os.path.ismount(CGROUP_MOUNTPOINT)
+
 	def create(self):
 		"""
 			Creates the filesystem structure for
@@ -68,6 +67,13 @@ class CGroup(object):
 
 		log.debug("cgroup '%s' has been created." % self.name)
 		os.makedirs(self.path)
+
+	def create_child_cgroup(self, name):
+		"""
+			Create a child cgroup with name relative to the
+			parent cgroup.
+		"""
+		return self.__class__(os.path.join(self.name, name))
 
 	def attach(self):
 		"""
@@ -152,8 +158,8 @@ class CGroup(object):
 
 	@property
 	def parent(self):
-		# Cannot go above CGROUP_PATH.
-		if self.path == CGROUP_PATH:
+		# Cannot go above CGROUP_MOUNTPOINT.
+		if self.path == CGROUP_MOUNTPOINT:
 			return
 
 		if self._parent is None:
@@ -317,3 +323,10 @@ class CGroup(object):
 			time.sleep(0.2)
 
 		return self.is_empty()
+
+
+# Alias for simple access to check if this host supports cgroups.
+supported = CGroup.supported
+
+# Alias for simple access to find the cgroup of a certain process.
+find_by_pid = CGroup.find_by_pid

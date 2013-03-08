@@ -309,10 +309,16 @@ class BuildEnviron(object):
 			self.cgroup = None
 			return
 
-		self.cgroup = cgroup.CGroup("pakfire/builder/%s" % self.build_id)
+		# Search for the cgroup this process is currently running in.
+		parent_cgroup = cgroup.find_by_pid(os.getpid())
+		if not parent_cgroup:
+			return
 
-		# Attach the pakfire-builder process to the parent group.
-		self.cgroup.parent.attach()
+		# Create our own cgroup inside the parent cgroup.
+		self.cgroup = parent_cgroup.create_child_cgroup("pakfire/builder/%s" % self.build_id)
+
+		# Attach the pakfire-builder process to the group.
+		self.cgroup.attach()
 
 	def init_logging(self, logfile):
 		if logfile:
