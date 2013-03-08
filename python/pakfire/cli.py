@@ -543,6 +543,8 @@ class CliBuilder(Cli):
 			help=_("Run a shell after a successful build."))
 		sub_build.add_argument("--no-install-test", action="store_true",
 			help=_("Do not perform the install test."))
+		sub_build.add_argument("--private-network", action="store_true",
+			help=_("Disable network in container."))
 
 	def parse_command_shell(self):
 		# Implement the "shell" command.
@@ -554,6 +556,8 @@ class CliBuilder(Cli):
 
 		sub_shell.add_argument("-m", "--mode", nargs="?", default="development",
 			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
+		sub_shell.add_argument("--private-network", action="store_true",
+			help=_("Disable network in container."))
 
 	def parse_command_dist(self):
 		# Implement the "dist" command.
@@ -580,22 +584,25 @@ class CliBuilder(Cli):
 		else:
 			raise FileNotFoundError, pkg
 
-		# Check whether to enable the install test.
-		install_test = not self.args.no_install_test
+		# Build argument list.
+		kwargs = {
+			"after_shell"   : self.args.after_shell,
+			# Check whether to enable the install test.
+			"install_test"  : not self.args.no_install_test,
+			"result_dir"    : [self.args.resultdir,],
+			"shell"         : True,
+		}
 
 		if self.args.mode == "release":
-			release_build = True
+			kwargs["release_build"] = True
 		else:
-			release_build = False
+			kwargs["release_build"] = False
+
+		if self.args.private_network:
+			kwargs["private_network"] = True
 
 		p = self.create_pakfire()
-		p.build(pkg,
-			install_test=install_test,
-			resultdirs=[self.args.resultdir,],
-			shell=True,
-			after_shell=self.args.after_shell,
-			release_build=release_build,
-		)
+		p.build(pkg, **kwargs)
 
 	def handle_shell(self):
 		pkg = None
@@ -617,7 +624,16 @@ class CliBuilder(Cli):
 			release_build = False
 
 		p = self.create_pakfire()
-		p.shell(pkg, release_build=release_build)
+
+		kwargs = {
+			"release_build" : release_build,
+		}
+
+		# Private network
+		if self.args.private_network:
+			kwargs["private_network"] = True
+
+		p.shell(pkg, **kwargs)
 
 	def handle_dist(self):
 		# Get the packages from the command line options

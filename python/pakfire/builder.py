@@ -69,7 +69,7 @@ class BuildEnviron(object):
 	# The version of the kernel this machine is running.
 	kernel_version = os.uname()[2]
 
-	def __init__(self, pakfire, filename=None, distro_name=None, build_id=None, logfile=None, release_build=True):
+	def __init__(self, pakfire, filename=None, distro_name=None, build_id=None, logfile=None, release_build=True, **kwargs):
 		self.pakfire = pakfire
 
 		# Check if the given pakfire instance is of the correct type.
@@ -117,6 +117,7 @@ class BuildEnviron(object):
 			"enable_icecream"     : self.config.get_bool("builder", "use_icecream", False),
 			"sign_packages"       : False,
 			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
+			"private_network"     : self.config.get_bool("builder", "private_network", False),
 		}
 
 		# Get ccache settings.
@@ -129,6 +130,9 @@ class BuildEnviron(object):
 		# we will automatically sign all packages with it.
 		if self.keyring.get_host_key(secret=True):
 			self.settings["sign_packages"] = True
+
+		# Add settings from keyword arguments.
+		self.settings.update(kwargs)
 
 		# Where do we put the result?
 		self.resultdir = os.path.join(self.pakfire.path, "result")
@@ -164,6 +168,14 @@ class BuildEnviron(object):
 	def start(self):
 		assert not self.pakfire.initialized, "Pakfire has already been initialized"
 
+		# Unshare namepsace.
+		# If this fails because the kernel has no support for CLONE_NEWIPC or CLONE_NEWUTS,
+		# we try to fall back to just set CLONE_NEWNS.
+		try:
+			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS|_pakfire.SCHED_CLONE_NEWIPC|_pakfire.SCHED_CLONE_NEWUTS)
+		except RuntimeError, e:
+			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS)
+
 		# Mount the directories.
 		self._mountall()
 
@@ -172,6 +184,10 @@ class BuildEnviron(object):
 
 		# Initialize pakfire instance.
 		self.pakfire.initialize()
+
+		# Optionally enable private networking.
+		if self.settings.get("private_network", None):
+			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNET)
 
 		# Populate /dev.
 		self.populate_dev()

@@ -18,9 +18,14 @@
 #                                                                             #
 #############################################################################*/
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <Python.h>
 
 #include <locale.h>
+#include <sched.h>
 #include <sys/personality.h>
 
 #include "capabilities.h"
@@ -43,6 +48,7 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"set_capabilities", (PyCFunction)set_capabilities, METH_VARARGS, NULL},
 	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
 	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
+	{"unshare", (PyCFunction)_unshare, METH_VARARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -274,6 +280,13 @@ void init_pakfire(void) {
 	// Personalities
 	PyDict_SetItemString(d, "PERSONALITY_LINUX",   Py_BuildValue("i", PER_LINUX));
 	PyDict_SetItemString(d, "PERSONALITY_LINUX32", Py_BuildValue("i", PER_LINUX32));
+
+	// Namespace stuff
+	PyDict_SetItemString(d, "SCHED_CLONE_NEWIPC", Py_BuildValue("i", CLONE_NEWIPC));
+	PyDict_SetItemString(d, "SCHED_CLONE_NEWPID", Py_BuildValue("i", CLONE_NEWPID));
+	PyDict_SetItemString(d, "SCHED_CLONE_NEWNET", Py_BuildValue("i", CLONE_NEWNET));
+	PyDict_SetItemString(d, "SCHED_CLONE_NEWNS",  Py_BuildValue("i", CLONE_NEWNS));
+	PyDict_SetItemString(d, "SCHED_CLONE_NEWUTS", Py_BuildValue("i", CLONE_NEWUTS));
 
 	// Add constants for relations
 	PyDict_SetItemString(d, "REL_EQ", Py_BuildValue("i", REL_EQ));
