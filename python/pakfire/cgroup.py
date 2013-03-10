@@ -316,7 +316,7 @@ class CGroup(object):
 
 			if sig:
 				# Send sig to all processes in the cgroup.
-				log.info("Sending signal %s to all processes in '%s'." % (sig, self.name))
+				log.debug("Sending signal %s to all processes in '%s'." % (sig, self.name))
 				self.kill(sig=sig, recursive=True)
 
 			# Sleep for 200ms.
