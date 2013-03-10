@@ -200,11 +200,13 @@ class BuildEnviron(object):
 
 	def stop(self):
 		if self.cgroup:
+			# Move the builder process out of the cgroup.
+			self.cgroup.migrate_task(self.cgroup.parent, os.getpid())
+
 			# Kill all still running processes in the cgroup.
 			self.cgroup.kill_and_wait()
 
 			# Remove cgroup and all parent cgroups if they are empty.
-			self.cgroup.migrate_task(self.cgroup.root, os.getpid())
 			self.cgroup.destroy()
 
 			parent = self.cgroup.parent
