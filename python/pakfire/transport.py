@@ -260,6 +260,8 @@ class PakfireHubTransport(object):
 					raise TransportNotFoundError, url
 				elif e.code == 500:
 					raise TransportInternalServerError, url
+				elif e.code == 503:
+					raise TransportBadGatewayError, url
 				elif e.code == 504:
 					raise TransportConnectionTimeoutError, url
 
