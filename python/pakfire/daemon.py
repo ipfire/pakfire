@@ -73,6 +73,10 @@ class PakfireDaemon(object):
 		while self.__running:
 			time_started = time.time()
 
+			# Check if keepalive process is still alive.
+			if not self.keepalive.is_alive():
+				self.restart_keepalive(wait=10)
+
 			# Spawn a sufficient number of worker processes.
 			self.spawn_workers_if_needed()
 
@@ -95,6 +99,29 @@ class PakfireDaemon(object):
 
 		log.info(_("Shutting down..."))
 		self.__running = False
+
+	def restart_keepalive(self, wait=None):
+		log.critial(_("Restarting keepalive process"))
+
+		# Send SIGTERM to really end the process.
+		self.keepalive.terminate()
+
+		# Wait for the process to terminate.
+		if wait:
+			self.keepalive.join(wait)
+
+		# Remove the keepalive process from the process list.
+		try:
+			self.__workers.remove(self.keepalive)
+		except ValueError:
+			pass
+
+		# Create a new process and start it.
+		self.keepalive = PakfireDaemonKeepalive(self.config)
+		self.keepalive.start()
+
+		# Add the process to the process list.
+		self.__workers.append(self.keepalive)
 
 	def spawn_workers_if_needed(self, *args, **kwargs):
 		"""
