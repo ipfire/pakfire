@@ -101,7 +101,7 @@ class PakfireDaemon(object):
 		self.__running = False
 
 	def restart_keepalive(self, wait=None):
-		log.critial(_("Restarting keepalive process"))
+		log.critical(_("Restarting keepalive process"))
 
 		# Send SIGTERM to really end the process.
 		self.keepalive.terminate()
