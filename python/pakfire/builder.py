@@ -501,7 +501,12 @@ class BuildEnviron(object):
 		for node in nodes:
 			# Stat the original node of the host system and copy it to
 			# the build chroot.
-			node_stat = os.stat(node)
+			try:
+				node_stat = os.stat(node)
+
+			# If it cannot be found, just go on.
+			except OSError:
+				continue
 
 			self._create_node(node, node_stat.st_mode, node_stat.st_rdev)
 
