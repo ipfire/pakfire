@@ -130,17 +130,19 @@ class System(object):
 	def cpu_model(self):
 		cpuinfo = self.parse_cpuinfo()
 
-		ret = None
-		if self.arch.startswith("arm"):
+		ret = cpuinfo.get("model name", None)
+
+		# Some ARM platforms do not provide "model name", so we
+		# try an other way.
+		if ret is None:
 			try:
 				ret = "%(Hardware)s - %(Processor)s" % cpuinfo
 			except KeyError:
 				pass
-		else:
-			ret = cpuinfo.get("model name", None)
 
 		# Remove too many spaces.
-		ret = " ".join(ret.split())
+		if ret:
+			ret = " ".join(ret.split())
 
 		return ret or _("Could not be determined")
 
