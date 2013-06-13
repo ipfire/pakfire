@@ -79,19 +79,6 @@ def random_string(length=20):
 
 	return s
 
-
-class Bar(progressbar.Bar):
-	def update(self, pbar, width):
-		percent = pbar.percentage()
-		if pbar.finished:
-			return " " * width
-
-		cwidth = width - len(self.left) - len(self.right)
-		marked_width = int(percent * cwidth / 100)
-		m = self._format_marker(pbar)
-		bar = (self.left + (m*marked_width).ljust(cwidth) + self.right)
-		return bar
-
 def make_progress(message, maxval, eta=True, speed=False):
 	# Return nothing if stdout is not a terminal.
 	if not sys.stdout.isatty():
@@ -101,7 +88,7 @@ def make_progress(message, maxval, eta=True, speed=False):
 		"  ",
 		"%s" % message,
 		" ",
-		Bar(left="[", right="]"),
+		progressbar.Bar(left="[", right="]"),
 		"  ",
 	]
 
