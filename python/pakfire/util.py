@@ -86,7 +86,7 @@ def make_progress(message, maxval, eta=True, speed=False):
 
 	widgets = [
 		"  ",
-		"%s" % message,
+		"%-64s" % message,
 		" ",
 		progressbar.Bar(left="[", right="]"),
 		"  ",
