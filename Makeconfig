@@ -50,3 +50,6 @@ TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 # A list of all files that contain translations and need to
 # be indexed.
 TRANS_FILES  = $(PYTHON_FILES) python/src/*.c
+
+# systemd unit files
+UNIT_FILES = $(wildcard systemd/*.service)

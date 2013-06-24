@@ -40,7 +40,10 @@ install: build
 
 	# Install systemd file.
 	-mkdir -pv $(DESTDIR)/usr/lib/systemd/system
-	cp -vf systemd/*.systemd $(DESTDIR)/usr/lib/systemd/system
+	for file in $(UNIT_FILES); do \
+		install -v -m 644 $${file} \
+			$(DESTDIR)/usr/lib/systemd/system || exit 1; \
+	done
 
 .PHONY: check
 check: all
