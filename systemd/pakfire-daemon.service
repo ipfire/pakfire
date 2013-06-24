@@ -1,0 +1,15 @@
+[Unit]
+Description=Pakfire Daemon
+After=network.target
+Requires=network.target
+
+[Service]
+KillMode=process
+SendSIGKILL=false
+TimeoutStopSec=0
+
+ExecStart=/usr/bin/pakfire-daemon
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
