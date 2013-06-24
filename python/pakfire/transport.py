@@ -279,7 +279,7 @@ class PakfireHubTransport(object):
 				return self.one_request(url, **kwargs)
 
 			# 500 - Internal Server Error, 502 + 503 Bad Gateway Error
-			except (TransportInternalServerError, TransportBadGateway), e:
+			except (TransportInternalServerError, TransportBadGatewayError), e:
 				log.exception("%s" % e.__class__.__name__)
 
 				# Wait a minute before trying again.
