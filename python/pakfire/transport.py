@@ -292,6 +292,9 @@ class PakfireHubTransport(object):
 				# Wait for 10 seconds.
 				time.sleep(10)
 
+			except (KeyboardInterrupt, SystemExit):
+				break
+
 		raise TransportMaxTriesExceededError
 
 	def escape_args(self, **kwargs):
