@@ -386,6 +386,11 @@ class PakfireWorker(multiprocessing.Process):
 		self.transport = transport.PakfireHubTransport(self.config)
 
 		while self.__running:
+			# Check if the build root is file.
+			if not self.check_buildroot():
+				time.sleep(60)
+				continue
+
 			# Try to get a new build job.
 			job = self.get_new_build_job()
 			if not job:
@@ -428,9 +433,27 @@ class PakfireWorker(multiprocessing.Process):
 		"""
 		self.shutdown()
 
+	def check_buildroot(self):
+		"""
+			Checks if the buildroot is fine.
+		"""
+		mp = system.get_mountpoint(BUILD_ROOT)
+
+		# Check if the mountpoint is read-only.
+		if mp.is_readonly():
+			log.warning("Build directory is read-only: %s" % BUILD_ROOT)
+
+			# Trying to remount.
+			try:
+				mp.remount("rw")
+			except:
+				log.warning("Remounting (rw) %s has failed" % BUILD_ROOT)
+				return False
+			else:
+				log.warning("Successfully remounted as rw: %s" % BUILD_ROOT)
+
 	def get_new_build_job(self, timeout=600):
 		log.debug("Requesting new job...")
-
 		try:
 			job = self.transport.get_json("/builders/jobs/queue",
 				data={ "timeout" : timeout, }, timeout=timeout)

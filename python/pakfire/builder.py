@@ -168,6 +168,11 @@ class BuildEnviron(object):
 	def start(self):
 		assert not self.pakfire.initialized, "Pakfire has already been initialized"
 
+		# Check if we can write our build directory.
+		build_mp = system.get_mountpoint(self.pakfire.path)
+		if build_mp and build_mp.is_readonly():
+			raise RuntimeError, "Build directory is read-only: %s" % self.pakfire.path
+
 		# Unshare namepsace.
 		# If this fails because the kernel has no support for CLONE_NEWIPC or CLONE_NEWUTS,
 		# we try to fall back to just set CLONE_NEWNS.

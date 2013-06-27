@@ -24,8 +24,10 @@ from __future__ import division
 import multiprocessing
 import os
 import socket
+import tempfile
 
 import distro
+import shell
 
 from i18n import _
 
@@ -346,6 +348,9 @@ class Mountpoint(object):
 		# Save the amount of data that is used or freed.
 		self.disk_usage = 0
 
+	def __repr__(self):
+		return "<%s %s>" % (self.__class__.__name__, self.fullpath)
+
 	def __cmp__(self, other):
 		return cmp(self.fullpath, other.fullpath)
 
@@ -404,6 +409,45 @@ class Mountpoint(object):
 		assert file.name.startswith(self.path)
 
 		self.disk_usage -= file.size
+
+	def is_readonly(self):
+		"""
+			Returns True if the mountpoint is mounted read-only.
+			Otherwise False.
+		"""
+		# Using the statvfs output does not really work, so we use
+		# a very naive approach here, were we just try to create a
+		# new file. If that works, it's writable.
+
+		try:
+			handle, path = tempfile.mkstemp(prefix="ro-test-", dir=self.fullpath)
+		except OSError, e:
+			# Read-only file system.
+			if e.errno == 30:
+				return True
+
+			# Raise all other exceptions.
+			raise
+		else:
+			# Close the file and remove it.
+			os.close(handle)
+			os.unlink(path)
+
+		return False
+
+	def remount(self, rorw=None):
+		options = "remount"
+		if rorw in ("ro", "rw"):
+			options = "%s,%s" % (options, rorw)
+
+		try:
+			shellenv = shell.ShellExecuteEnvironment(
+				["mount", "-o", options, self.fullpath],
+				shell=False,
+			)
+			shellenv.execute()
+		except ShellEnvironmentError, e:
+			raise OSError
 
 
 if __name__ == "__main__":
