@@ -452,6 +452,9 @@ class PakfireWorker(multiprocessing.Process):
 			else:
 				log.warning("Successfully remounted as rw: %s" % BUILD_ROOT)
 
+		# Everything looks fine.
+		return True
+
 	def get_new_build_job(self, timeout=600):
 		log.debug("Requesting new job...")
 		try:
