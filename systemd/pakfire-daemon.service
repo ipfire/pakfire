@@ -1,7 +1,8 @@
 [Unit]
 Description=Pakfire Daemon
-After=network.target
-Requires=network.target
+After=network-online.target remote-fs.target
+Requires=network-online.target
+Wants=remote-fs.target
 
 [Service]
 KillMode=process
