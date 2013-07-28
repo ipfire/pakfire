@@ -98,6 +98,20 @@ class Action(object):
 		"""
 		return self.pakfire.repos.local
 
+	def get_logger_name(self):
+		return "pakfire.action.%s" % self.pkg.friendly_name
+
+	def get_logger(self):
+		logger_name = self.get_logger_name()
+
+		logger = logging.getLogger(logger_name)
+		logger.setLevel(logging.INFO)
+
+		# Propagate everything to upstream logger.
+		logger.propagate = True
+
+		return logger
+
 	def execute(self, command, **kwargs):
 		# If we are running in /, we do not need to chroot there.
 		chroot_path = None
@@ -118,6 +132,7 @@ class Action(object):
 
 		args = {
 			"cwd"         : cwd,
+			"logger"      : self.get_logger(),
 			"personality" : self.pakfire.distro.personality,
 			"shell"       : False,
 			"timeout"     : SCRIPTLET_TIMEOUT,
@@ -140,6 +155,11 @@ class ActionScript(Action):
 
 	def init(self):
 		self._scriptlet = None
+
+	def get_logger_name(self):
+		logger_name = Action.get_logger_name(self)
+
+		return "%s.%s" % (logger_name, self.script_action or "unknown")
 
 	@property
 	def scriptlet(self):
@@ -201,7 +221,7 @@ class ActionScript(Action):
 			raise ActionError, _("Could not handle scriptlet of unknown type. Skipping.")
 
 	def run_exec(self):
-		log.debug(_("Executing python scriptlet..."))
+		log.debug(_("Executing scriptlet..."))
 
 		# Check if the interpreter does exist and is executable.
 		if self.interpreter:
