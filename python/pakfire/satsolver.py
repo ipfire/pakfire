@@ -159,7 +159,7 @@ class Pool(_pakfire.Pool):
 
 		raise DependencyError, solver.get_problem_string()
 
-	def solve(self, request, interactive=False, logger=None, **kwargs):
+	def solve(self, request, interactive=False, logger=None, force_best=False, **kwargs):
 		# XXX implement interactive
 
 		if not logger:
@@ -173,7 +173,7 @@ class Pool(_pakfire.Pool):
 			solver.set(key, val)
 
 		# Do the solving.
-		solver.solve()
+		solver.solve(force_best=force_best)
 
 		# Return the solver so one can do stuff with it...
 		return solver
@@ -315,12 +315,12 @@ class Solver(object):
 			raise Exception, "Unknown configuration setting: %s" % option
 		return self.solver.get_flag(flag)
 
-	def solve(self):
+	def solve(self, force_best=False):
 		assert self.status is None, "Solver did already solve something."
 
 		# Actually solve the request.
 		start_time = time.time()
-		self.status = self.solver.solve(self.request)
+		self.status = self.solver.solve(self.request, force_best)
 
 		# Save the amount of time that was needed to solve the request.
 		self.time = time.time() - start_time

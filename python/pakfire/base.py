@@ -344,7 +344,7 @@ class Pakfire(object):
 
 		t.run(logger=logger)
 
-	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, **kwargs):
+	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, sync=False, **kwargs):
 		"""
 			check indicates, if the method should return after calculation
 			of the transaction.
@@ -369,6 +369,14 @@ class Pakfire(object):
 
 			exclude = self.pool.create_relation(exclude)
 			request.lock(exclude)
+
+		# Update or downgrade to the latest version of all packages
+		# in the enabled repositories.
+		if sync:
+			kwargs.update({
+				"allow_downgrade" : True,
+				"allow_uninstall" : True,
+			})
 
 		solver = self.pool.solve(request, logger=logger, **kwargs)
 

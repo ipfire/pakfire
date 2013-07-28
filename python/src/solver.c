@@ -56,6 +56,9 @@ PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 	/* enable splitprovides by default */
 	solver_set_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES, 1);
 
+	/* keep explicit obsoletes */
+	solver_set_flag(self->_solver, SOLVER_FLAG_KEEP_EXPLICIT_OBSOLETES, 1);
+
 	return (PyObject *)self;
 }
 
@@ -192,14 +195,21 @@ PyObject *Solver_set_do_split_provides(SolverObject *self, PyObject *args) {
 
 PyObject *Solver_solve(SolverObject *self, PyObject *args) {
 	RequestObject *request;
+	int force_best = 0;
 	int res = 0;
 
-	if (!PyArg_ParseTuple(args, "O", &request)) {
+	if (!PyArg_ParseTuple(args, "O|i", &request, &force_best)) {
 		return NULL;
 	}
 
 	// Make sure, the pool is prepared.
 	_Pool_prepare(self->_solver->pool);
+
+	/* Force best solution. */
+	if (force_best) {
+		for (int i = 0; i < request->_queue.count; i += 2)
+			request->_queue.elements[i] |= SOLVER_FORCEBEST;
+	}
 
 	res = solver_solve(self->_solver, &request->_queue);
 

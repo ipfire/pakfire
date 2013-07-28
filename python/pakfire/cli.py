@@ -68,6 +68,7 @@ class Cli(object):
 		self.parse_command_info()
 		self.parse_command_search()
 		self.parse_command_check_update()
+		self.parse_command_distro_sync()
 		self.parse_command_update()
 		self.parse_command_downgrade()
 		self.parse_command_provides()
@@ -87,6 +88,7 @@ class Cli(object):
 			"reinstall"    : self.handle_reinstall,
 			"remove"       : self.handle_remove,
 			"check_update" : self.handle_check_update,
+			"distro_sync"  : self.handle_distro_sync,
 			"update"       : self.handle_update,
 			"downgrade"    : self.handle_downgrade,
 			"info"         : self.handle_info,
@@ -186,9 +188,11 @@ class Cli(object):
 		sub_remove.add_argument("action", action="store_const", const="remove")
 
 	@staticmethod
-	def _parse_command_update(parser):
-		parser.add_argument("package", nargs="*",
-			help=_("Give a name of a package to update or leave emtpy for all."))
+	def _parse_command_update(parser, package=True):
+		if package:
+			parser.add_argument("package", nargs="*",
+				help=_("Give a name of a package to update or leave emtpy for all."))
+
 		parser.add_argument("--exclude", "-x", nargs="+",
 			help=_("Exclude package from update."))
 		parser.add_argument("--allow-vendorchange", action="store_true",
@@ -202,6 +206,13 @@ class Cli(object):
 			help=_("Update the whole system or one specific package."))
 		sub_update.add_argument("action", action="store_const", const="update")
 		self._parse_command_update(sub_update)
+
+	def parse_command_distro_sync(self):
+		# Implement the "distro-sync" command.
+		sub_distro_sync = self.sub_commands.add_parser("distro-sync",
+			help=_("Sync all installed with the latest one in the distribution."))
+		sub_distro_sync.add_argument("action", action="store_const", const="distro_sync")
+		self._parse_command_update(sub_distro_sync, package=False)
 
 	def parse_command_check_update(self):
 		# Implement the "check-update" command.
@@ -328,13 +339,19 @@ class Cli(object):
 
 	def handle_update(self, **args):
 		p = self.create_pakfire()
-		p.update(
-			self.args.package,
-			excludes=self.args.exclude,
-			allow_vendorchange=self.args.allow_vendorchange,
-			allow_archchange=not self.args.disallow_archchange,
-			**args
-		)
+
+		packages = getattr(self.args, "package", [])
+
+		args.update({
+			"allow_archchange"   : not self.args.disallow_archchange,
+			"allow_vendorchange" : self.args.allow_vendorchange,
+			"excludes"           : self.args.exclude,
+		})
+
+		p.update(packages, **args)
+
+	def handle_distro_sync(self):
+		self.handle_update(sync=True)
 
 	def handle_check_update(self):
 		self.handle_update(check=True)
