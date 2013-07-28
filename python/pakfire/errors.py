@@ -102,6 +102,10 @@ class TransportError(Error):
 	pass
 
 
+class TransportBadGatewayError(TransportError):
+	pass
+
+
 class TransportConnectionError(TransportError):
 	pass
 

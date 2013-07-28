@@ -71,15 +71,17 @@ class Keyring(object):
 		os.chmod(filename, 600)
 
 	def dump_key(self, keyfp):
-		ret = []
-
 		key = self.get_key(keyfp, secret=False)
-		key_priv = self.get_key(keyfp, secret=True)
+		if not key:
+			return ["  " + _("Not in key store: %s") % keyfp, ""]
 
+		ret = []
 		for uid in key.uids:
 			ret.append(uid.uid)
 
 		ret.append("  " + _("Fingerprint: %s") % keyfp)
+
+		key_priv = self.get_key(keyfp, secret=True)
 		if key_priv:
 			ret.append("    " + _("Private key available!"))
 		ret.append("")

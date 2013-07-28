@@ -177,7 +177,14 @@ class BuildEnviron(object):
 			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS)
 
 		# Mount the directories.
-		self._mountall()
+		try:
+			self._mountall()
+		except OSError, e:
+			if e.errno == 30: # Read-only FS
+				raise BuildError, "Buildroot is read-only: %s" % self.pakfire.path
+
+			# Raise all other errors.
+			raise
 
 		# Lock the build environment.
 		self.lock()
@@ -501,7 +508,12 @@ class BuildEnviron(object):
 		for node in nodes:
 			# Stat the original node of the host system and copy it to
 			# the build chroot.
-			node_stat = os.stat(node)
+			try:
+				node_stat = os.stat(node)
+
+			# If it cannot be found, just go on.
+			except OSError:
+				continue
 
 			self._create_node(node, node_stat.st_mode, node_stat.st_rdev)
 

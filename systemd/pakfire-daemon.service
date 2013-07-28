@@ -1,0 +1,16 @@
+[Unit]
+Description=Pakfire Daemon
+After=network-online.target remote-fs.target
+Requires=network-online.target
+Wants=remote-fs.target
+
+[Service]
+KillMode=process
+SendSIGKILL=false
+TimeoutStopSec=0
+
+ExecStart=/usr/bin/pakfire-daemon
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

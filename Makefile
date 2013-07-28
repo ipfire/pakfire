@@ -38,6 +38,13 @@ install: build
 		cp -rvf examples/$${file} $(DESTDIR)/etc/pakfire/; \
 	done
 
+	# Install systemd file.
+	-mkdir -pv $(DESTDIR)/usr/lib/systemd/system
+	for file in $(UNIT_FILES); do \
+		install -v -m 644 $${file} \
+			$(DESTDIR)/usr/lib/systemd/system || exit 1; \
+	done
+
 .PHONY: check
 check: all
 	PYTHONPATH=python/src/ pylint -E python/pakfire

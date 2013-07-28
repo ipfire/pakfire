@@ -260,6 +260,8 @@ class PakfireHubTransport(object):
 					raise TransportNotFoundError, url
 				elif e.code == 500:
 					raise TransportInternalServerError, url
+				elif e.code in (502, 503):
+					raise TransportBadGatewayError, url
 				elif e.code == 504:
 					raise TransportConnectionTimeoutError, url
 
@@ -276,8 +278,8 @@ class PakfireHubTransport(object):
 			try:
 				return self.one_request(url, **kwargs)
 
-			# 500 - Internal Server Error
-			except TransportInternalServerError, e:
+			# 500 - Internal Server Error, 502 + 503 Bad Gateway Error
+			except (TransportInternalServerError, TransportBadGatewayError), e:
 				log.exception("%s" % e.__class__.__name__)
 
 				# Wait a minute before trying again.
@@ -289,6 +291,9 @@ class PakfireHubTransport(object):
 
 				# Wait for 10 seconds.
 				time.sleep(10)
+
+			except (KeyboardInterrupt, SystemExit):
+				break
 
 		raise TransportMaxTriesExceededError
 
