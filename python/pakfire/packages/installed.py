@@ -151,38 +151,44 @@ class DatabasePackage(Package):
 		return inst_size
 
 	@property
+	def dependencies(self):
+		if not hasattr(self, "__dependencies"):
+			self.__dependencies = {}
+
+			c = self.db.cursor()
+			c.execute("SELECT type, dependency FROM dependencies WHERE pkg = ?", (self.id,))
+
+			for type, dependency in c.fetchall():
+				try:
+					self.__dependencies[type].append(dependency)
+				except KeyError:
+					self.__dependencies[type] = [dependency,]
+
+		return self.__dependencies
+
+	@property
 	def provides(self):
-		return self.metadata.get("provides", "").splitlines()
+		return self.dependencies.get("provides", [])
 
 	@property
 	def requires(self):
-		return self.metadata.get("requires", "").splitlines()
+		return self.dependencies.get("requires", [])
 
 	@property
 	def conflicts(self):
-		return self.metadata.get("conflicts", "").splitlines()
+		return self.dependencies.get("conflicts", [])
 
 	@property
 	def obsoletes(self):
-		return self.metadata.get("obsoletes", "").splitlines()
+		return self.dependencies.get("obsoletes", [])
 
 	@property
 	def recommends(self):
-		recommends = self.metadata.get("recommends", None)
-
-		if recommends:
-			return recommends.splitlines()
-
-		return []
+		return self.dependencies.get("recommends", [])
 
 	@property
 	def suggests(self):
-		suggests = self.metadata.get("suggests", None)
-
-		if suggests:
-			return suggests.splitlines()
-
-		return []
+		return self.dependencies.get("suggests", [])
 
 	@property
 	def hash1(self):

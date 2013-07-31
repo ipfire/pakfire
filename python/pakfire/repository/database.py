@@ -34,14 +34,6 @@ from pakfire.constants import *
 from pakfire.errors import *
 from pakfire.i18n import _
 
-class Cursor(sqlite3.Cursor):
-	def execute(self, *args, **kwargs):
-		# For debugging of SQL queries.
-		#print args, kwargs
-
-		return sqlite3.Cursor.execute(self, *args, **kwargs)
-
-
 class Database(object):
 	def __init__(self, pakfire, filename):
 		self.pakfire = pakfire
@@ -100,7 +92,7 @@ class Database(object):
 
 	def cursor(self):
 		self.open()
-		return self._db.cursor(Cursor)
+		return self._db.cursor()
 
 	def executescript(self, *args, **kwargs):
 		self.open()
@@ -179,6 +171,7 @@ class DatabaseLocal(Database):
 				mtime		INTEGER,
 				capabilities	TEXT
 			);
+			CREATE INDEX files_pkg_index ON files(pkg);
 
 			CREATE TABLE packages(
 				id		INTEGER PRIMARY KEY,
@@ -192,12 +185,6 @@ class DatabaseLocal(Database):
 				size		INTEGER,
 				inst_size	INTEGER,
 				hash1		TEXT,
-				provides	TEXT,
-				requires	TEXT,
-				conflicts	TEXT,
-				obsoletes	TEXT,
-				recommends	TEXT,
-				suggests	TEXT,
 				license		TEXT,
 				summary		TEXT,
 				description	TEXT,
@@ -211,6 +198,7 @@ class DatabaseLocal(Database):
 				reason		TEXT,
 				repository	TEXT
 			);
+			CREATE INDEX packages_name_index ON packages(name);
 
 			CREATE TABLE scriptlets(
 				id			INTEGER PRIMARY KEY,
@@ -218,13 +206,14 @@ class DatabaseLocal(Database):
 				action		TEXT,
 				scriptlet	TEXT
 			);
+			CREATE INDEX scriptlets_pkg_index ON scriptlets(pkg);
 
-			CREATE TABLE triggers(
-				id			INTEGER PRIMARY KEY,
-				pkg			INTEGER,
-				dependency	TEXT,
-				scriptlet	TEXT
+			CREATE TABLE dependencies(
+				pkg		INTEGER,
+				type		TEXT,
+				dependency	TEXT
 			);
+			CREATE INDEX dependencies_pkg_index ON dependencies(pkg);
 		""" % DATABASE_FORMAT)
 		# XXX add some indexes here
 		self.commit()
@@ -269,6 +258,72 @@ class DatabaseLocal(Database):
 		if self.format < 6:
 			c.execute("ALTER TABLE packages ADD COLUMN inst_size INTEGER AFTER size")
 
+		if self.format < 7:
+			c.executescript("""
+				CREATE TABLE dependencies(pkg INTEGER, type TEXT, dependency TEXT);
+				CREATE INDEX dependencies_pkg_index ON dependencies(pkg);
+			""")
+
+			c.execute("SELECT id, provides, requires, conflicts, obsoletes, recommends, suggests FROM packages")
+			pkgs = c.fetchall()
+
+			for pkg in pkgs:
+				(pkg_id, provides, requires, conflicts, obsoletes, recommends, suggests) = pkg
+
+				dependencies = (
+					("provides", provides),
+					("requires", requires),
+					("conflicts", conflicts),
+					("obsoletes", obsoletes),
+					("recommends", recommends),
+					("suggests", suggests),
+				)
+
+				for type, deps in dependencies:
+					c.executemany("INSERT INTO dependencies(pkg, type, dependency) VALUES(?, ?, ?)",
+						((pkg_id, type, d) for d in deps))
+
+			c.executescript("""
+				CREATE TABLE packages_(
+					id INTEGER PRIMARY KEY,
+					name TEXT,
+					epoch INTEGER,
+					version TEXT,
+					release TEXT,
+					arch TEXT,
+					groups TEXT,
+					filename TEXT,
+					size INTEGER,
+					inst_size INTEGER,
+					hash1 TEXT,
+					license TEXT,
+					summary TEXT,
+					description TEXT,
+					uuid TEXT,
+					vendor TEXT,
+					build_id TEXT,
+					build_host TEXT,
+					build_date TEXT,
+					build_time INTEGER,
+					installed INT,
+					reason TEXT,
+					repository TEXT
+				);
+
+				INSERT INTO packages_ SELECT id, name, epoch, version, release, arch, groups, filename,
+					size, inst_size, hash1, license, summary, description, uuid, vendor, build_id,
+					build_host, build_date, build_time, installed, reason, repository FROM packages;
+
+				DROP TABLE packages;
+				ALTER TABLE packages_ RENAME TO packages;
+
+				DROP TABLE triggers;
+
+				CREATE INDEX files_pkg_index ON files(pkg);
+				CREATE INDEX scriptlets_pkg_index ON scriptlets(pkg);
+				CREATE INDEX packages_name_index ON packages(name);
+			""")
+
 		# In the end, we can easily update the version of the database.
 		c.execute("UPDATE settings SET val = ? WHERE key = 'version'", (DATABASE_FORMAT,))
 		self.__format = DATABASE_FORMAT
@@ -294,12 +349,6 @@ class DatabaseLocal(Database):
 					size,
 					inst_size,
 					hash1,
-					provides,
-					requires,
-					conflicts,
-					obsoletes,
-					recommends,
-					suggests,
 					license,
 					summary,
 					description,
@@ -312,7 +361,7 @@ class DatabaseLocal(Database):
 					installed,
 					repository,
 					reason
-				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+				) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
 				(
 					pkg.name,
 					pkg.epoch,
@@ -324,12 +373,6 @@ class DatabaseLocal(Database):
 					pkg.size,
 					pkg.inst_size,
 					pkg.hash1,
-					"\n".join(pkg.provides),
-					"\n".join(pkg.requires),
-					"\n".join(pkg.conflicts),
-					"\n".join(pkg.obsoletes),
-					"\n".join(pkg.recommends),
-					"\n".join(pkg.suggests),
 					pkg.license,
 					pkg.summary,
 					pkg.description,
@@ -346,6 +389,18 @@ class DatabaseLocal(Database):
 			)
 
 			pkg_id = c.lastrowid
+
+			# Add all dependencies.
+			dependencies = (
+				("provides",   pkg.provides),
+				("requires",   pkg.requires),
+				("conflicts",  pkg.conflicts),
+				("obsoletes",  pkg.obsoletes),
+				("recommends", pkg.recommends),
+				("suggests",   pkg.suggests),
+			)
+			for type, deps in dependencies:
+				c.executemany("INSERT INTO dependencies(pkg, type, dependency) VALUES(?, ?, ?)", ((pkg_id, type, d) for d in deps))
 
 			c.executemany("INSERT INTO files(`name`, `pkg`, `size`, `config`, `datafile`, `type`, `hash1`, `mode`, `user`, `group`, `mtime`, `capabilities`)"
 					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
