@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Huginn <huginn@naglfar.hu>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
@@ -10,33 +11,33 @@ msgstr ""
 "POT-Creation-Date: 2013-01-24 01:36+0100\n"
 "PO-Revision-Date: 2013-04-29 09:36+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Catalan (http://www.transifex.com/projects/p/ipfire/language/ca/)\n"
+"Language-Team: Hungarian (http://www.transifex.com/projects/p/ipfire/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ca\n"
+"Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../python/pakfire/actions.py:72
 #, python-format
 msgid "%s has got no signatures"
-msgstr ""
+msgstr "Nem rendelkezik hitelesítéssel: %s"
 
 #: ../python/pakfire/actions.py:78
 #, python-format
 msgid "%s has got no valid signatures"
-msgstr ""
+msgstr "Nincs érvényes hitelesítése: %s"
 
 #: ../python/pakfire/actions.py:201
 msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
+msgstr "Nem lehetséges ismeretlen típusú parancsfájlt futtatni. Kihagyva."
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
 #: ../python/pakfire/actions.py:204 ../python/pakfire/actions.py:274
 msgid "Executing python scriptlet..."
-msgstr ""
+msgstr "Python parancsfájl futtatása..."
 
 #: ../python/pakfire/actions.py:210
 #, python-format
@@ -70,7 +71,7 @@ msgstr ""
 #: ../python/pakfire/actions.py:299
 #, python-format
 msgid "Exception occured: %s"
-msgstr ""
+msgstr "Kivételes esemény történt: %s"
 
 #: ../python/pakfire/actions.py:372 ../python/pakfire/actions.py:410
 #: ../python/pakfire/actions.py:432 ../python/pakfire/actions.py:454
@@ -81,28 +82,28 @@ msgstr ""
 
 #: ../python/pakfire/actions.py:381
 msgid "Installing"
-msgstr ""
+msgstr "Telepítés"
 
 #: ../python/pakfire/actions.py:419
 msgid "Updating"
-msgstr ""
+msgstr "Frissítés"
 
 #: ../python/pakfire/actions.py:438
 msgid "Removing"
-msgstr ""
+msgstr "Eltávolítás"
 
 #. Cleaning up leftover files and stuff.
 #: ../python/pakfire/actions.py:461
 msgid "Cleanup"
-msgstr ""
+msgstr "Takarítás"
 
 #: ../python/pakfire/actions.py:483
 msgid "Reinstalling"
-msgstr ""
+msgstr "Újratelepítés"
 
 #: ../python/pakfire/actions.py:499
 msgid "Downgrading"
-msgstr ""
+msgstr "Visszaállítás"
 
 #: ../python/pakfire/base.py:197
 msgid "Local install repository"
@@ -122,7 +123,7 @@ msgstr ""
 #: ../python/pakfire/base.py:376 ../python/pakfire/base.py:440
 #: ../python/pakfire/base.py:467 ../python/pakfire/transaction.py:396
 msgid "Nothing to do"
-msgstr ""
+msgstr "Nincs mit végrehajtanom"
 
 #: ../python/pakfire/base.py:296
 #, python-format
@@ -132,7 +133,7 @@ msgstr ""
 #: ../python/pakfire/base.py:368
 #, python-format
 msgid "Excluding %s."
-msgstr ""
+msgstr "Kihagyva: %s"
 
 #: ../python/pakfire/base.py:426
 #, python-format
@@ -141,7 +142,7 @@ msgstr ""
 
 #: ../python/pakfire/base.py:590
 msgid "Everything is fine."
-msgstr ""
+msgstr "Minden rendben."
 
 #: ../python/pakfire/base.py:611
 msgid "Build command has failed."
@@ -171,7 +172,7 @@ msgstr ""
 #. Log the package information.
 #: ../python/pakfire/builder.py:138
 msgid "Package information:"
-msgstr ""
+msgstr "Csomaginformáció:"
 
 #. Install all packages.
 #: ../python/pakfire/builder.py:407
@@ -180,7 +181,7 @@ msgstr ""
 
 #: ../python/pakfire/builder.py:412 ../python/pakfire/cli.py:446
 msgid "Extracting"
-msgstr ""
+msgstr "Kicsomagolás"
 
 #: ../python/pakfire/builder.py:729
 msgid "You cannot run a build when no package was given."
@@ -197,7 +198,7 @@ msgstr ""
 
 #: ../python/pakfire/builder.py:766
 msgid "Build interrupted"
-msgstr ""
+msgstr "Felépítés megszakítva"
 
 #: ../python/pakfire/builder.py:772
 msgid "Build failed."
@@ -210,16 +211,16 @@ msgstr ""
 
 #: ../python/pakfire/builder.py:791
 msgid "Running installation test..."
-msgstr ""
+msgstr "Telepítési teszt futtatása..."
 
 #: ../python/pakfire/builder.py:797
 msgid "Installation test succeeded."
-msgstr ""
+msgstr "A telepítési teszt sikeres."
 
 #. Create a progressbar.
 #: ../python/pakfire/builder.py:840
 msgid "Signing packages..."
-msgstr ""
+msgstr "Csomagok hitelesítése..."
 
 #: ../python/pakfire/builder.py:874
 msgid "Dumping package information:"
@@ -229,7 +230,7 @@ msgstr ""
 #. Make all these little package from the build environment.
 #: ../python/pakfire/builder.py:1026
 msgid "Creating packages:"
-msgstr ""
+msgstr "Csomag készítése:"
 
 #. Execute the buildscript of this stage.
 #: ../python/pakfire/builder.py:1040
@@ -252,23 +253,23 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:52
 msgid "Pakfire command line interface."
-msgstr ""
+msgstr "Pakfire parancssor."
 
 #: ../python/pakfire/cli.py:59
 msgid "The path where pakfire should operate in."
-msgstr ""
+msgstr "Az elérési út, ahol a Pakfire dolgozzon."
 
 #: ../python/pakfire/cli.py:146
 msgid "Enable verbose output."
-msgstr ""
+msgstr "Bővített kimenet engedélyezése."
 
 #: ../python/pakfire/cli.py:149
 msgid "Path to a configuration file to load."
-msgstr ""
+msgstr "A konfigurációs fájl elérési útvonala."
 
 #: ../python/pakfire/cli.py:152
 msgid "Disable a repository temporarily."
-msgstr ""
+msgstr "A gyűjtő letiltása ideiglenesen."
 
 #: ../python/pakfire/cli.py:155
 msgid "Enable a repository temporarily."
@@ -276,15 +277,15 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:159
 msgid "Run pakfire in offline mode."
-msgstr ""
+msgstr "Pakfire futtatása kapcsolat nélküli módban."
 
 #: ../python/pakfire/cli.py:164
 msgid "Install one or more packages to the system."
-msgstr ""
+msgstr "Csomagok telepítése a rendszerhez."
 
 #: ../python/pakfire/cli.py:166
 msgid "Give name of at least one package to install."
-msgstr ""
+msgstr "Add meg a telepítendő csomagok nevét."
 
 #: ../python/pakfire/cli.py:168
 msgid "Don't install recommended packages."
@@ -292,7 +293,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:174
 msgid "Reinstall one or more packages."
-msgstr ""
+msgstr "Egy vagy több csomag újratelepítése."
 
 #: ../python/pakfire/cli.py:176
 msgid "Give name of at least one package to reinstall."
@@ -300,39 +301,39 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:182
 msgid "Remove one or more packages from the system."
-msgstr ""
+msgstr "Csomagok eltávolítása a rendszerből."
 
 #: ../python/pakfire/cli.py:184
 msgid "Give name of at least one package to remove."
-msgstr ""
+msgstr "Add meg az eltávolítandó csomagok neveit."
 
 #: ../python/pakfire/cli.py:190
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
+msgstr "Add meg a frissítendő csomag nevét, vagy hagyd üresen mindhez."
 
 #: ../python/pakfire/cli.py:192
 msgid "Exclude package from update."
-msgstr ""
+msgstr "Csomag eltávolítása a frissítésből."
 
 #: ../python/pakfire/cli.py:194 ../python/pakfire/cli.py:219
 msgid "Allow changing the vendor of packages."
-msgstr ""
+msgstr "Csomagok forgalmazócseréjének engedélyezése."
 
 #: ../python/pakfire/cli.py:196 ../python/pakfire/cli.py:221
 msgid "Disallow changing the architecture of packages."
-msgstr ""
+msgstr "A csomagok típusváltásának letiltása."
 
 #: ../python/pakfire/cli.py:201
 msgid "Update the whole system or one specific package."
-msgstr ""
+msgstr "A teljes rendszer frissítése, vagy csak egy csomagé."
 
 #: ../python/pakfire/cli.py:208
 msgid "Check, if there are any updates available."
-msgstr ""
+msgstr "Frissítések ellenőrzése."
 
 #: ../python/pakfire/cli.py:215
 msgid "Downgrade one or more packages."
-msgstr ""
+msgstr "Egy vagy több csomag korábbi verzióra cserélése."
 
 #: ../python/pakfire/cli.py:217
 msgid "Give a name of a package to downgrade."
@@ -360,7 +361,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:245
 msgid "File or feature to search for."
-msgstr ""
+msgstr "Fájl vagy szolgáltatás keresése."
 
 #: ../python/pakfire/cli.py:251
 msgid "Get list of packages that belong to the given group."
@@ -376,7 +377,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:261
 msgid "Group name."
-msgstr ""
+msgstr "Csoportnév."
 
 #: ../python/pakfire/cli.py:267
 msgid "List all currently enabled repositories."
@@ -392,7 +393,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:285
 msgid "Check the system for any errors."
-msgstr ""
+msgstr "Ellenőrizd, nincs-e hiba a rendszerben."
 
 #: ../python/pakfire/cli.py:291
 msgid "Check the dependencies for a particular package."
@@ -404,31 +405,31 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:299
 msgid "Extract a package to a directory."
-msgstr ""
+msgstr "Csomag kibontása egy könyvtárba."
 
 #: ../python/pakfire/cli.py:301
 msgid "Give name of the file to extract."
-msgstr ""
+msgstr "Add meg a kicsomagolandó fájl nevét."
 
 #: ../python/pakfire/cli.py:303
 msgid "Target directory where to extract to."
-msgstr ""
+msgstr "A célkönyvtár, ahova ki lesznek bontva a fájlok."
 
 #: ../python/pakfire/cli.py:385 ../python/pakfire/transaction.py:405
 msgid "Repository"
-msgstr ""
+msgstr "Tárház"
 
 #: ../python/pakfire/cli.py:385
 msgid "Enabled"
-msgstr ""
+msgstr "Engedélyezve"
 
 #: ../python/pakfire/cli.py:385 ../python/pakfire/cli.py:1112
 msgid "Priority"
-msgstr ""
+msgstr "Prioritás"
 
 #: ../python/pakfire/cli.py:385 ../python/pakfire/cli.py:1157
 msgid "Packages"
-msgstr ""
+msgstr "Csomag"
 
 #: ../python/pakfire/cli.py:393
 msgid "Cleaning up everything..."
@@ -436,15 +437,15 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:429
 msgid "Cannot extract mixed package types"
-msgstr ""
+msgstr "Nem lehetséges eltérő csomagokat kibontani egyszerre"
 
 #: ../python/pakfire/cli.py:432
 msgid "You must provide an install directory with --target=..."
-msgstr ""
+msgstr "Meg kell adnod egy telepítési könyvtárat a --target=... paraméteren keresztül"
 
 #: ../python/pakfire/cli.py:438
 msgid "Cannot extract to /."
-msgstr ""
+msgstr "Nem lehet kicsomagolni ide: /."
 
 #: ../python/pakfire/cli.py:456
 msgid "You cannot run pakfire-builder in a pakfire chroot."
@@ -464,7 +465,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:526
 msgid "Update the package indexes."
-msgstr ""
+msgstr "Csomaginformációk frissítése."
 
 #: ../python/pakfire/cli.py:532 ../python/pakfire/cli.py:805
 msgid "Build one or more packages."
@@ -539,7 +540,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:725
 msgid "Path to the packages."
-msgstr ""
+msgstr "Csomagok elérési útvonala."
 
 #: ../python/pakfire/cli.py:727
 msgid "Path to input packages."
@@ -619,15 +620,15 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:963
 msgid "Test the connection to the hub."
-msgstr ""
+msgstr "A kapcsolat  ellenőrzése az elosztóig."
 
 #: ../python/pakfire/cli.py:964
 msgid "Error code to test."
-msgstr ""
+msgstr "Hibakód a teszteléshez."
 
 #: ../python/pakfire/cli.py:1013 ../python/pakfire/server.py:302
 msgid "Hostname"
-msgstr ""
+msgstr "Csomópont"
 
 #: ../python/pakfire/cli.py:1014
 msgid "Pakfire hub"
@@ -635,24 +636,24 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1017
 msgid "Username"
-msgstr ""
+msgstr "Felhasználónév"
 
 #. Hardware information
 #: ../python/pakfire/cli.py:1021 ../python/pakfire/server.py:306
 msgid "Hardware information"
-msgstr ""
+msgstr "Hardverinformáció"
 
 #: ../python/pakfire/cli.py:1022 ../python/pakfire/server.py:307
 msgid "CPU model"
-msgstr ""
+msgstr "CPU modell"
 
 #: ../python/pakfire/cli.py:1023 ../python/pakfire/server.py:308
 msgid "Memory"
-msgstr ""
+msgstr "Memória"
 
 #: ../python/pakfire/cli.py:1024
 msgid "Parallelism"
-msgstr ""
+msgstr "Párhuzamosság"
 
 #: ../python/pakfire/cli.py:1026 ../python/pakfire/server.py:310
 msgid "Native arch"
@@ -668,7 +669,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1043
 msgid "Your IP address"
-msgstr ""
+msgstr "IP címed"
 
 #: ../python/pakfire/cli.py:1048
 msgid "You are authenticated to the build service:"
@@ -676,19 +677,19 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1054
 msgid "User name"
-msgstr ""
+msgstr "Felhasználói név"
 
 #: ../python/pakfire/cli.py:1055
 msgid "Real name"
-msgstr ""
+msgstr "Valódi név"
 
 #: ../python/pakfire/cli.py:1056
 msgid "Email address"
-msgstr ""
+msgstr "Emailcím"
 
 #: ../python/pakfire/cli.py:1057
 msgid "Registered"
-msgstr ""
+msgstr "Regisztrálva"
 
 #: ../python/pakfire/cli.py:1064
 msgid "You could not be authenticated to the build service."
@@ -722,7 +723,7 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1111 ../python/pakfire/cli.py:1139
 msgid "State"
-msgstr ""
+msgstr "Státusz"
 
 #: ../python/pakfire/cli.py:1115
 msgid "Jobs"
@@ -741,11 +742,11 @@ msgstr ""
 #: ../python/pakfire/cli.py:1140 ../python/pakfire/packages/base.py:107
 #: ../python/pakfire/transaction.py:404
 msgid "Arch"
-msgstr ""
+msgstr "Arch"
 
 #: ../python/pakfire/cli.py:1145 ../python/pakfire/packages/base.py:148
 msgid "Build host"
-msgstr ""
+msgstr "Forrás"
 
 #: ../python/pakfire/cli.py:1150
 msgid "Time created"
@@ -761,11 +762,11 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1153
 msgid "Duration"
-msgstr ""
+msgstr "Időtartam"
 
 #: ../python/pakfire/cli.py:1181
 msgid "Invalid error code given."
-msgstr ""
+msgstr "Érvénytelen hibakódot kaptam."
 
 #: ../python/pakfire/cli.py:1184
 #, python-format
@@ -818,11 +819,11 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1292
 msgid "List all imported keys."
-msgstr ""
+msgstr "Az összes importált kulcs listázása."
 
 #: ../python/pakfire/cli.py:1298
 msgid "Sign one or more packages."
-msgstr ""
+msgstr "Egy vagy több csomag hitelesítése."
 
 #: ../python/pakfire/cli.py:1300
 msgid "Key that is used sign the package(s)."
@@ -830,24 +831,24 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1302
 msgid "Package(s) to sign."
-msgstr ""
+msgstr "Csomag(ok) hitelesítése."
 
 #: ../python/pakfire/cli.py:1308
 msgid "Verify one or more packages."
-msgstr ""
+msgstr "Egy vagy több csomag ellenőrzése."
 
 #: ../python/pakfire/cli.py:1312
 msgid "Package(s) to verify."
-msgstr ""
+msgstr "Csomag(ok) ellenőrzése."
 
 #: ../python/pakfire/cli.py:1319
 msgid "Generating the key may take a moment..."
-msgstr ""
+msgstr "A kulcsgenerálás eltarthat egy ideig..."
 
 #: ../python/pakfire/cli.py:1373
 #, python-format
 msgid "Signing %s..."
-msgstr ""
+msgstr "Bejelentkezés: %s"
 
 #: ../python/pakfire/cli.py:1393
 #, python-format
@@ -856,25 +857,25 @@ msgstr ""
 
 #: ../python/pakfire/cli.py:1403
 msgid "This signature is valid."
-msgstr ""
+msgstr "A hitelesítés érvényes."
 
 #: ../python/pakfire/cli.py:1406
 msgid "Unknown key"
-msgstr ""
+msgstr "Ismeretlen kulcs"
 
 #: ../python/pakfire/cli.py:1407
 msgid "Could not check if this signature is valid."
-msgstr ""
+msgstr "Nem lehetséges ennek a hitelesítésnek az ellenőrzése."
 
 #: ../python/pakfire/cli.py:1410 ../python/pakfire/keyring.py:96
 #, python-format
 msgid "Created: %s"
-msgstr ""
+msgstr "Létrehozva: %s"
 
 #: ../python/pakfire/cli.py:1414 ../python/pakfire/keyring.py:99
 #, python-format
 msgid "Expires: %s"
-msgstr ""
+msgstr "Lejár: %s"
 
 #. If the keepalive message could not successfully be sent, we don't
 #. bother, because the client will soon retry.
@@ -894,26 +895,26 @@ msgstr ""
 #. Log all XMLRPC protocol errors.
 #: ../python/pakfire/client/transport.py:90
 msgid "XMLRPC protocol error:"
-msgstr ""
+msgstr "XMLRPC protokollhiba:"
 
 #: ../python/pakfire/client/transport.py:91
 #, python-format
 msgid "URL: %s"
-msgstr ""
+msgstr "URL: %s"
 
 #: ../python/pakfire/client/transport.py:92
 msgid "  HTTP headers:"
-msgstr ""
+msgstr "HTTP fejléc:"
 
 #: ../python/pakfire/client/transport.py:95
 #, python-format
 msgid "Error code: %s"
-msgstr ""
+msgstr "Hibakód: %s"
 
 #: ../python/pakfire/client/transport.py:96
 #, python-format
 msgid "Error message: %s"
-msgstr ""
+msgstr "Hibaüzenet: %s"
 
 #: ../python/pakfire/client/transport.py:116
 #, python-format
@@ -922,12 +923,12 @@ msgstr ""
 
 #: ../python/pakfire/client/transport.py:121
 msgid "Maximum number of tries was reached. Giving up."
-msgstr ""
+msgstr "A maximális próbálkozások száma elérve. Feladat vége."
 
 #: ../python/pakfire/compress.py:85 ../python/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
-msgstr ""
+msgstr "A megadott algoritmus nincs támogatva: %s"
 
 #: ../python/pakfire/config.py:191
 #, python-format
@@ -936,16 +937,16 @@ msgstr ""
 
 #: ../python/pakfire/config.py:205
 msgid "Configuration:"
-msgstr ""
+msgstr "Konfiguráció:"
 
 #: ../python/pakfire/config.py:207
 #, python-format
 msgid "Section: %s"
-msgstr ""
+msgstr "Rész: %s"
 
 #: ../python/pakfire/config.py:212
 msgid "No settings in this section."
-msgstr ""
+msgstr "Nincsenek beállítások ebben a részben."
 
 #: ../python/pakfire/config.py:214
 msgid "Loaded from files:"
@@ -953,11 +954,11 @@ msgstr ""
 
 #: ../python/pakfire/downloader.py:155
 msgid "Downloading source files:"
-msgstr ""
+msgstr "Forrásfájlok letöltése:"
 
 #: ../python/pakfire/downloader.py:158
 msgid "Cannot download source code in offline mode."
-msgstr ""
+msgstr "Forráskódot nem lehet letölteni kapcsolat nélküli módban."
 
 #: ../python/pakfire/downloader.py:181
 #, python-format
@@ -996,7 +997,7 @@ msgstr ""
 
 #: ../python/pakfire/errors.py:102
 msgid "Generic XMLRPC error."
-msgstr ""
+msgstr "Általános XMLRPC hiba."
 
 #: ../python/pakfire/errors.py:106
 msgid ""
@@ -1010,7 +1011,7 @@ msgstr ""
 
 #: ../python/pakfire/errors.py:114
 msgid "Could not find the requested URL."
-msgstr ""
+msgstr "A kért cím nem található."
 
 #: ../python/pakfire/errors.py:118
 msgid "An unforseable problem on the XML-RPC transport connection occured."
@@ -1024,11 +1025,11 @@ msgstr ""
 #: ../python/pakfire/keyring.py:82
 #, python-format
 msgid "Fingerprint: %s"
-msgstr ""
+msgstr "Ujjlenyomat: %s"
 
 #: ../python/pakfire/keyring.py:84
 msgid "Private key available!"
-msgstr ""
+msgstr "Privát kulcs érhető el!"
 
 #: ../python/pakfire/keyring.py:88
 #, python-format
@@ -1037,29 +1038,29 @@ msgstr ""
 
 #: ../python/pakfire/keyring.py:90
 msgid "This key has expired!"
-msgstr ""
+msgstr "Ez a kulcs lejárt!"
 
 #: ../python/pakfire/keyring.py:93
 msgid "This is a secret key."
-msgstr ""
+msgstr "Ez egy titkos kulcs."
 
 #: ../python/pakfire/keyring.py:101
 msgid "This key does not expire."
-msgstr ""
+msgstr "Ez a kulcs nem jár le."
 
 #: ../python/pakfire/keyring.py:149
 #, python-format
 msgid "Generating new key for %(realname)s <%(email)s>..."
-msgstr ""
+msgstr "Új kulcs létrehozása a számára: %(realname)s <%(email)s>..."
 
 #: ../python/pakfire/keyring.py:150
 msgid "This may take a while..."
-msgstr ""
+msgstr "Ez némi időt vehet igénybe..."
 
 #: ../python/pakfire/keyring.py:169
 #, python-format
 msgid "Successfully imported %s."
-msgstr ""
+msgstr "Sikeresen importálás:  %s"
 
 #: ../python/pakfire/keyring.py:189
 msgid "Host key:"
@@ -1082,75 +1083,75 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:99
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:404
 msgid "Version"
-msgstr ""
+msgstr "Verzió"
 
 #: ../python/pakfire/packages/base.py:111
 msgid "Release"
-msgstr ""
+msgstr "Kiadás"
 
 #: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:405
 msgid "Size"
-msgstr ""
+msgstr "Méret"
 
 #: ../python/pakfire/packages/base.py:119
 msgid "Installed size"
-msgstr ""
+msgstr "Telepített méret"
 
 #: ../python/pakfire/packages/base.py:125
 msgid "Repo"
-msgstr ""
+msgstr "Repo"
 
 #: ../python/pakfire/packages/base.py:128
 msgid "Summary"
-msgstr ""
+msgstr "Összefoglalás"
 
 #: ../python/pakfire/packages/base.py:129
 msgid "Groups"
-msgstr ""
+msgstr "Csoport"
 
 #: ../python/pakfire/packages/base.py:130
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: ../python/pakfire/packages/base.py:131
 msgid "License"
-msgstr ""
+msgstr "Licenc"
 
 #: ../python/pakfire/packages/base.py:134
 msgid "Description"
-msgstr ""
+msgstr "Leírás"
 
 #: ../python/pakfire/packages/base.py:141
 msgid "Maintainer"
-msgstr ""
+msgstr "Fenntartó"
 
 #: ../python/pakfire/packages/base.py:143
 msgid "Vendor"
-msgstr ""
+msgstr "Forgalmazó"
 
 #: ../python/pakfire/packages/base.py:145
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: ../python/pakfire/packages/base.py:146
 msgid "Build ID"
-msgstr ""
+msgstr "Azonosító"
 
 #: ../python/pakfire/packages/base.py:147
 msgid "Build date"
-msgstr ""
+msgstr "Készült"
 
 #: ../python/pakfire/packages/base.py:150
 msgid "Signatures"
-msgstr ""
+msgstr "Hitelesítések"
 
 #: ../python/pakfire/packages/base.py:155
 msgid "Provides"
-msgstr ""
+msgstr "Ellátás"
 
 #: ../python/pakfire/packages/base.py:160
 msgid "Pre-requires"
@@ -1158,19 +1159,19 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:165
 msgid "Requires"
-msgstr ""
+msgstr "Követelmény"
 
 #: ../python/pakfire/packages/base.py:170
 msgid "Conflicts"
-msgstr ""
+msgstr "Ütközés"
 
 #: ../python/pakfire/packages/base.py:175
 msgid "Obsoletes"
-msgstr ""
+msgstr "Megszűnt"
 
 #: ../python/pakfire/packages/base.py:180
 msgid "Recommends"
-msgstr ""
+msgstr "Javaslatok"
 
 #: ../python/pakfire/packages/base.py:185
 msgid "Suggests"
@@ -1178,16 +1179,16 @@ msgstr ""
 
 #: ../python/pakfire/packages/base.py:193
 msgid "File"
-msgstr ""
+msgstr "Fájl"
 
 #: ../python/pakfire/packages/base.py:383
 msgid "Not set"
-msgstr ""
+msgstr "Nem beállított"
 
 #: ../python/pakfire/packages/base.py:570
 #, python-format
 msgid "Config file saved as %s."
-msgstr ""
+msgstr "Beállítások elmentve ide: %s"
 
 #: ../python/pakfire/packages/base.py:575
 #, python-format
@@ -1197,7 +1198,7 @@ msgstr ""
 #: ../python/pakfire/packages/file.py:80
 #, python-format
 msgid "Filename: %s"
-msgstr ""
+msgstr "Fájlnév: %s"
 
 #: ../python/pakfire/packages/file.py:181
 #, python-format
@@ -1207,7 +1208,7 @@ msgstr ""
 #: ../python/pakfire/packages/file.py:237
 #, python-format
 msgid "Config file created as %s"
-msgstr ""
+msgstr "Beállítások létrehozva így: %s"
 
 #: ../python/pakfire/packages/file.py:242
 #, python-format
@@ -1226,11 +1227,11 @@ msgstr ""
 
 #: ../python/pakfire/packages/make.py:83
 msgid "Package name is undefined."
-msgstr ""
+msgstr "Nem lett csomagnév megadva."
 
 #: ../python/pakfire/packages/make.py:86
 msgid "Package version is undefined."
-msgstr ""
+msgstr "A csomagverzió nem beállított."
 
 #: ../python/pakfire/packages/make.py:443
 #, python-format
@@ -1252,7 +1253,7 @@ msgstr ""
 #: ../python/pakfire/packages/packager.py:400
 #: ../python/pakfire/packages/packager.py:714
 msgid "Packaging"
-msgstr ""
+msgstr "Tömörítés"
 
 #: ../python/pakfire/packages/packager.py:742
 #, python-format
@@ -1266,7 +1267,7 @@ msgstr ""
 
 #: ../python/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
-msgstr ""
+msgstr "Gyűjtemények inicializálása..."
 
 #: ../python/pakfire/repository/database.py:127
 msgid ""
@@ -1287,18 +1288,18 @@ msgstr ""
 #: ../python/pakfire/repository/local.py:123
 #, python-format
 msgid "%s: Adding packages..."
-msgstr ""
+msgstr "%s: Csomagok hozzáadása..."
 
 #. Make a nice progress bar.
 #: ../python/pakfire/repository/local.py:229
 msgid "Compressing database..."
-msgstr ""
+msgstr "Adatbázis tömörítése..."
 
 #. Create progress bar.
 #: ../python/pakfire/repository/local.py:287
 #, python-format
 msgid "%s: Reading packages..."
-msgstr ""
+msgstr "%s: csomagok beolvasása..."
 
 #: ../python/pakfire/repository/remote.py:151
 #, python-format
@@ -1312,27 +1313,27 @@ msgstr ""
 
 #: ../python/pakfire/repository/remote.py:185
 msgid "The downloaded metadata was less recent than the current one."
-msgstr ""
+msgstr "A letöltött leíróadat régebbi az aktuálisnál."
 
 #: ../python/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
-msgstr ""
+msgstr "Nem lehetséges csomagadatbázist letölteni kapcsolat nélküli módban ehhez: %s"
 
 #: ../python/pakfire/repository/remote.py:235
 #, python-format
 msgid "%s: package database"
-msgstr ""
+msgstr "%s: csomagok adatbázisa"
 
 #: ../python/pakfire/repository/remote.py:309
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
-msgstr ""
+msgstr "Nem sikerült a következő fájlt letöltenem kapcsolat nélküli módban: %s"
 
 #: ../python/pakfire/repository/remote.py:315
 #, python-format
 msgid "Could not download %s: %s"
-msgstr ""
+msgstr "Nem lehet letölteni a %s -t: %s"
 
 #: ../python/pakfire/repository/remote.py:340
 msgid "The checksum of the downloaded file did not match."
@@ -1350,12 +1351,12 @@ msgstr ""
 #. Create a progressbar.
 #: ../python/pakfire/repository/system.py:59
 msgid "Loading installed packages"
-msgstr ""
+msgstr "Telepített csomagok betöltése"
 
 #: ../python/pakfire/satsolver.py:329
 #, python-format
 msgid "Dependency solving finished in %.2f ms"
-msgstr ""
+msgstr "Függőségek kiszámítva %.2f ms alatt"
 
 #: ../python/pakfire/satsolver.py:344 ../python/pakfire/satsolver.py:370
 msgid "The solver returned one problem:"
@@ -1381,11 +1382,11 @@ msgstr ""
 #: ../python/pakfire/satsolver.py:427
 #, python-format
 msgid "    Solution: %s"
-msgstr ""
+msgstr "Megoldás: %s"
 
 #: ../python/pakfire/satsolver.py:436
 msgid "    Solutions:"
-msgstr ""
+msgstr "Megoldások:"
 
 #: ../python/pakfire/server.py:278 ../python/pakfire/system.py:132
 msgid "Could not be determined"
@@ -1394,22 +1395,22 @@ msgstr ""
 #: ../python/pakfire/shell.py:84
 #, python-format
 msgid "Executing command: %s in %s"
-msgstr ""
+msgstr "Végrehajtott parancs: %s itt: %s"
 
 #: ../python/pakfire/shell.py:123
 #, python-format
 msgid "Command exceeded timeout (%(timeout)d): %(command)s"
-msgstr ""
+msgstr "A parancs időtúllépést generált (%(timeout)d): %(command)s"
 
 #: ../python/pakfire/shell.py:129
 #, python-format
 msgid "Child returncode was: %s"
-msgstr ""
+msgstr "A folyamat visszatérési értéke: %s"
 
 #: ../python/pakfire/shell.py:132
 #, python-format
 msgid "Command failed: %s"
-msgstr ""
+msgstr "Sikertelen parancs: %s"
 
 #: ../python/pakfire/transaction.py:94
 #, python-format
@@ -1441,58 +1442,58 @@ msgstr ""
 
 #: ../python/pakfire/transaction.py:330
 msgid "Downloading packages:"
-msgstr ""
+msgstr "Csomagok letöltése:"
 
 #: ../python/pakfire/transaction.py:404
 msgid "Package"
-msgstr ""
+msgstr "Csomag"
 
 #: ../python/pakfire/transaction.py:409
 msgid "Installing:"
-msgstr ""
+msgstr "Telepítés:"
 
 #: ../python/pakfire/transaction.py:410
 msgid "Reinstalling:"
-msgstr ""
+msgstr "Újratelepítés:"
 
 #: ../python/pakfire/transaction.py:411
 msgid "Updating:"
-msgstr ""
+msgstr "Frissítés:"
 
 #: ../python/pakfire/transaction.py:412
 msgid "Downgrading:"
-msgstr ""
+msgstr "Visszaállítás:"
 
 #: ../python/pakfire/transaction.py:413
 msgid "Removing:"
-msgstr ""
+msgstr "Eltávolítás:"
 
 #: ../python/pakfire/transaction.py:419
 msgid "Transaction Summary"
-msgstr ""
+msgstr "Változások összegzése"
 
 #: ../python/pakfire/transaction.py:426
 msgid "package"
-msgstr ""
+msgstr "csomag"
 
 #: ../python/pakfire/transaction.py:432
 #, python-format
 msgid "Total download size: %s"
-msgstr ""
+msgstr "Teljes letöltési méret: %s"
 
 #: ../python/pakfire/transaction.py:436
 #, python-format
 msgid "Installed size: %s"
-msgstr ""
+msgstr "Telepített méret: %s"
 
 #: ../python/pakfire/transaction.py:439
 #, python-format
 msgid "Freed size: %s"
-msgstr ""
+msgstr "Felszabadított terület: %s"
 
 #: ../python/pakfire/transaction.py:450
 msgid "Is this okay?"
-msgstr ""
+msgstr "Ez rendben van?"
 
 #: ../python/pakfire/transaction.py:456
 msgid "Running Transaction Test"
@@ -1505,12 +1506,12 @@ msgstr ""
 #. Make a nice progressbar.
 #: ../python/pakfire/transaction.py:501
 msgid "Verifying signatures..."
-msgstr ""
+msgstr "Hitelesítések ellenőrzése..."
 
 #: ../python/pakfire/transaction.py:533
 #, python-format
 msgid "Found %s signature error(s)!"
-msgstr ""
+msgstr "%s hitelesítési problémát találtam!"
 
 #: ../python/pakfire/transaction.py:538
 msgid "Going on because we are running in permissive mode."
@@ -1518,16 +1519,16 @@ msgstr ""
 
 #: ../python/pakfire/transaction.py:539
 msgid "This is dangerous!"
-msgstr ""
+msgstr "Ez veszélyes!"
 
 #: ../python/pakfire/transaction.py:560
 msgid "Running transaction"
-msgstr ""
+msgstr "Futtatott művelet"
 
 #: ../python/pakfire/util.py:68
 #, python-format
 msgid "%s [y/N]"
-msgstr ""
+msgstr "%s [y/N]"
 
 #: ../python/pakfire/util.py:260
 msgid "Killing orphans..."
@@ -1555,7 +1556,7 @@ msgstr ""
 #: ../python/src/problem.c:173
 #, c-format
 msgid "problem with installed package %s"
-msgstr ""
+msgstr "probléma a telepített csomaggal: %s"
 
 #: ../python/src/problem.c:179
 #, c-format
@@ -1575,7 +1576,7 @@ msgstr ""
 #: ../python/src/problem.c:195
 #, c-format
 msgid "package %s is not installable"
-msgstr ""
+msgstr "A csomag nem telepíthető: %s"
 
 #: ../python/src/problem.c:202
 #, c-format
@@ -1585,7 +1586,7 @@ msgstr ""
 #: ../python/src/problem.c:209
 #, c-format
 msgid "cannot install both %s and %s"
-msgstr ""
+msgstr "Nem telepíthető egyszerre: %s és %s"
 
 #: ../python/src/problem.c:216
 #, c-format
@@ -1635,12 +1636,12 @@ msgstr ""
 #: ../python/src/solution.c:92
 #, c-format
 msgid "do not install %s"
-msgstr ""
+msgstr "Ne telepítsd: %s"
 
 #: ../python/src/solution.c:98
 #, c-format
 msgid "do not forbid installation of %s"
-msgstr ""
+msgstr "Ne tiltsd le a telepítését: %s"
 
 #: ../python/src/solution.c:101
 #, c-format
@@ -1650,7 +1651,7 @@ msgstr ""
 #: ../python/src/solution.c:104
 #, c-format
 msgid "do not deinstall %s"
-msgstr ""
+msgstr "Ne távolítsd el: %s"
 
 #: ../python/src/solution.c:109
 #, c-format
@@ -1660,7 +1661,7 @@ msgstr ""
 #: ../python/src/solution.c:114
 #, c-format
 msgid "do not lock %s"
-msgstr ""
+msgstr "Ne zárold: %s"
 
 #: ../python/src/solution.c:119
 #, c-format
@@ -1680,7 +1681,7 @@ msgstr ""
 #: ../python/src/solution.c:135
 #, c-format
 msgid "keep obsolete %s"
-msgstr ""
+msgstr "Régi megtartása: %s"
 
 #: ../python/src/solution.c:138
 #, c-format
@@ -1690,27 +1691,27 @@ msgstr ""
 #: ../python/src/solution.c:150
 #, c-format
 msgid "allow downgrade of %s to %s"
-msgstr ""
+msgstr "Visszaállítás engedélyezése: %s -> %s"
 
 #: ../python/src/solution.c:154
 #, c-format
 msgid "allow architecture change of %s to %s"
-msgstr ""
+msgstr "Architektúraváltás: %s -> %s"
 
 #: ../python/src/solution.c:159
 #, c-format
 msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr ""
+msgstr "Forgalmazó módosításának engedélyezése: '%s' (%s) -> '%s' (%s)"
 
 #: ../python/src/solution.c:163
 #, c-format
 msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr ""
+msgstr "%s (%s) forgalmazó eltávolításának engedélyezése (%s)"
 
 #: ../python/src/solution.c:169
 #, c-format
 msgid "allow replacement of %s with %s"
-msgstr ""
+msgstr "%s cseréjének engedélyezése erre: %s"
 
 #. XXX Maybe we can make a more beautiful message here?!
 #: ../tools/pakfire-multicall.py:25
@@ -1721,7 +1722,7 @@ msgstr ""
 
 #: ../tools/pakfire-multicall.py:27
 msgid "Please check your installation of Pakfire."
-msgstr ""
+msgstr "Ellenőrizd a Pakfire telepítését."
 
 #: ../tools/pakfire-multicall.py:29
 msgid "The error that lead to this:"
@@ -1729,12 +1730,12 @@ msgstr ""
 
 #: ../tools/pakfire-multicall.py:70
 msgid "An error has occured when running Pakfire."
-msgstr ""
+msgstr "A Pakfire futtatása közben hiba történt."
 
 #: ../tools/pakfire-multicall.py:73
 msgid "Error message:"
-msgstr ""
+msgstr "Hibaüzenet:"
 
 #: ../tools/pakfire-multicall.py:80
 msgid "Further description:"
-msgstr ""
+msgstr "További leírás:"

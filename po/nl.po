@@ -1,1780 +1,1742 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-#   <dutchtux@gmail.com>, 2013.
+# dutchtux <dutchtux@gmail.com>, 2013
+# dutchtux <dutchtux@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-04 19:07+0200\n"
-"PO-Revision-Date: 2013-01-11 21:46+0000\n"
-"Last-Translator: dutchtux <dutchtux@gmail.com>\n"
-"Language-Team: Dutch (http://www.transifex.com/projects/p/ipfire/language/"
-"nl/)\n"
-"Language: nl\n"
+"POT-Creation-Date: 2013-01-24 01:36+0100\n"
+"PO-Revision-Date: 2013-04-29 09:36+0000\n"
+"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
+"Language-Team: Dutch (http://www.transifex.com/projects/p/ipfire/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/_pakfire/problem.c:159
-#, c-format
-msgid "%s does not belong to a distupgrade repository"
-msgstr "%s behoort niet tot een distro-upgrade repository"
-
-#: ../src/_pakfire/problem.c:166
-#, c-format
-msgid "%s has inferior architecture"
-msgstr "%s heeft een inferieure architectuur"
-
-#: ../src/_pakfire/problem.c:173
-#, c-format
-msgid "problem with installed package %s"
-msgstr "probleem met geïnstalleerd pakket %s"
-
-#: ../src/_pakfire/problem.c:179
-#, c-format
-msgid "conflicting requests"
-msgstr "conflicterende verzoeken"
-
-#: ../src/_pakfire/problem.c:184
-#, c-format
-msgid "nothing provides requested %s"
-msgstr "%s kan niet geleverd worden"
-
-#: ../src/_pakfire/problem.c:190
-#, c-format
-msgid "some dependency problem"
-msgstr "enkele afhankelijkheidsproblemen"
-
-#: ../src/_pakfire/problem.c:195
-#, c-format
-msgid "package %s is not installable"
-msgstr "pakket %s is niet installeerbaar"
-
-#: ../src/_pakfire/problem.c:202
-#, c-format
-msgid "nothing provides %s needed by %s"
-msgstr "%s kan niet geleverd worden, noodzakelijk voor %s"
-
-#: ../src/_pakfire/problem.c:209
-#, c-format
-msgid "cannot install both %s and %s"
-msgstr "kan %s en %s niet tegelijk installeren"
-
-#: ../src/_pakfire/problem.c:216
-#, c-format
-msgid "package %s conflicts with %s provided by %s"
-msgstr "pakket %s conflicteert met %s geleverd door %s"
-
-#: ../src/_pakfire/problem.c:224
-#, c-format
-msgid "package %s obsoletes %s provided by %s"
-msgstr "pakket %s maakt %s geleverd door %s overbodig"
-
-#: ../src/_pakfire/problem.c:232
-#, c-format
-msgid "installed package %s obsoletes %s provided by %s"
-msgstr "geïnstalleerd pakket %s maakt %s geleverd door %s overbodig"
-
-#: ../src/_pakfire/problem.c:240
-#, c-format
-msgid "package %s implicitely obsoletes %s provided by %s"
-msgstr "pakket %s maakt %s geleverd door %s impliciet overbodig"
-
-#: ../src/_pakfire/problem.c:248
-#, c-format
-msgid "package %s requires %s, but none of the providers can be installed"
-msgstr ""
-"pakket %s vereist %s, maar geen van de aanbieders kan worden geïnstalleerd"
-
-#: ../src/_pakfire/problem.c:255
-#, c-format
-msgid "package %s conflicts with %s provided by itself"
-msgstr "pakket %s conflicteert met %s welke door zichzelf is geleverd"
-
-#: ../src/_pakfire/problem.c:264
-#, c-format
-msgid "bad rule type"
-msgstr "verkeerde regel-type"
-
-#: ../src/_pakfire/solution.c:86
-#, c-format
-msgid "do not keep %s installed"
-msgstr "houd %s niet geïnstalleerd"
-
-#: ../src/_pakfire/solution.c:89
-#, c-format
-msgid "do not install a solvable %s"
-msgstr "installeer niet een solvable %s"
-
-#: ../src/_pakfire/solution.c:92
-#, c-format
-msgid "do not install %s"
-msgstr "installeer %s niet"
-
-#: ../src/_pakfire/solution.c:98
-#, c-format
-msgid "do not forbid installation of %s"
-msgstr "de installatie van %s niet verbieden"
-
-#: ../src/_pakfire/solution.c:101
-#, c-format
-msgid "do not deinstall all solvables %s"
-msgstr "alle oplosbare %s niet de-installeren"
-
-#: ../src/_pakfire/solution.c:104
-#, c-format
-msgid "do not deinstall %s"
-msgstr "de-installeer %s niet"
-
-#: ../src/_pakfire/solution.c:109
-#, c-format
-msgid "do not install most recent version of %s"
-msgstr "de meest recente versie van %s niet installeren"
-
-#: ../src/_pakfire/solution.c:114
-#, c-format
-msgid "do not lock %s"
-msgstr "zet %s niet vast"
-
-#: ../src/_pakfire/solution.c:119
-#, c-format
-msgid "do something different"
-msgstr "doe iets anders"
-
-#: ../src/_pakfire/solution.c:126
-#, c-format
-msgid "keep %s despite the inferior architecture"
-msgstr "houd %s ondanks de inferieure architectuur"
-
-#: ../src/_pakfire/solution.c:129
-#, c-format
-msgid "install %s despite the inferior architecture"
-msgstr "installeer %s ondanks inferieure architectuur"
-
-#: ../src/_pakfire/solution.c:135
-#, c-format
-msgid "keep obsolete %s"
-msgstr "houd verouderde %s"
-
-#: ../src/_pakfire/solution.c:138
-#, c-format
-msgid "install %s from excluded repository"
-msgstr "installeer %s vanuit een uitgezonderde repository"
-
-#: ../src/_pakfire/solution.c:150
-#, c-format
-msgid "allow downgrade of %s to %s"
-msgstr "sta downgrade toe van %s naar %s"
-
-#: ../src/_pakfire/solution.c:154
-#, c-format
-msgid "allow architecture change of %s to %s"
-msgstr "sta architectuurverandering toe van %s naar %s"
-
-#: ../src/_pakfire/solution.c:159
-#, c-format
-msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr "sta vendor-verandering toe van '%s' (%s) naar '%s' (%s)"
-
-#: ../src/_pakfire/solution.c:163
-#, c-format
-msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr "sta vendor-verandering toe van '%s' (%s) naar geen vendor (%s)"
-
-#: ../src/_pakfire/solution.c:169
-#, c-format
-msgid "allow replacement of %s with %s"
-msgstr "sta vervanging toe van %s door %s"
-
-#: ../src/pakfire/actions.py:72
+#: ../python/pakfire/actions.py:72
 #, python-format
 msgid "%s has got no signatures"
 msgstr "%s heeft geen ondertekeningen"
 
-#: ../src/pakfire/actions.py:78
+#: ../python/pakfire/actions.py:78
 #, python-format
 msgid "%s has got no valid signatures"
 msgstr "%s heeft geen geldige ondertekeningen"
 
-#: ../src/pakfire/actions.py:221
+#: ../python/pakfire/actions.py:201
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr "Kan scriptlet niet afhandelen of onbekend type. Overgeslagen."
-
-#: ../src/pakfire/actions.py:224
-#, fuzzy
-msgid "Executing scriptlet..."
-msgstr "Uitvoeren van python scriptlet..."
-
-#: ../src/pakfire/actions.py:230
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
-
-#: ../src/pakfire/actions.py:234
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
-
-#: ../src/pakfire/actions.py:273
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"De scriptlet gaf een fout:\n"
-"%s"
-
-#: ../src/pakfire/actions.py:276
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
-
-#: ../src/pakfire/actions.py:280
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"De scriptlet geeft een niet-afgehandelde fout:\n"
-"%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:294
+#: ../python/pakfire/actions.py:204 ../python/pakfire/actions.py:274
 msgid "Executing python scriptlet..."
 msgstr "Uitvoeren van python scriptlet..."
 
-#: ../src/pakfire/actions.py:319
+#: ../python/pakfire/actions.py:210
+#, python-format
+msgid "Cannot run scriptlet because no interpreter is available: %s"
+msgstr "Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
+
+#: ../python/pakfire/actions.py:214
+#, python-format
+msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+msgstr "Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
+
+#: ../python/pakfire/actions.py:253
+#, python-format
+msgid ""
+"The scriptlet returned an error:\n"
+"%s"
+msgstr "De scriptlet gaf een fout:\n%s"
+
+#: ../python/pakfire/actions.py:256
+#, python-format
+msgid "The scriptlet ran more than %s seconds and was killed."
+msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
+
+#: ../python/pakfire/actions.py:260
+#, python-format
+msgid ""
+"The scriptlet returned with an unhandled error:\n"
+"%s"
+msgstr "De scriptlet geeft een niet-afgehandelde fout:\n%s"
+
+#: ../python/pakfire/actions.py:299
 #, python-format
 msgid "Exception occured: %s"
 msgstr "Er heeft zich een uitzondering voorgedaan: %s"
 
-#: ../src/pakfire/actions.py:392 ../src/pakfire/actions.py:430
-#: ../src/pakfire/actions.py:452 ../src/pakfire/actions.py:474
-#: ../src/pakfire/actions.py:491 ../src/pakfire/actions.py:510
+#: ../python/pakfire/actions.py:372 ../python/pakfire/actions.py:410
+#: ../python/pakfire/actions.py:432 ../python/pakfire/actions.py:454
+#: ../python/pakfire/actions.py:471 ../python/pakfire/actions.py:490
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Draait transactietest voor %s"
 
-#: ../src/pakfire/actions.py:401
+#: ../python/pakfire/actions.py:381
 msgid "Installing"
 msgstr "Installeren"
 
-#: ../src/pakfire/actions.py:439
+#: ../python/pakfire/actions.py:419
 msgid "Updating"
 msgstr "Bijwerken"
 
-#: ../src/pakfire/actions.py:458
+#: ../python/pakfire/actions.py:438
 msgid "Removing"
 msgstr "Verwijderen"
 
 #. Cleaning up leftover files and stuff.
-#: ../src/pakfire/actions.py:481
+#: ../python/pakfire/actions.py:461
 msgid "Cleanup"
 msgstr "Opschonen"
 
-#: ../src/pakfire/actions.py:503
+#: ../python/pakfire/actions.py:483
 msgid "Reinstalling"
 msgstr "Herinstalleren"
 
-#: ../src/pakfire/actions.py:519
+#: ../python/pakfire/actions.py:499
 msgid "Downgrading"
 msgstr "Downgrading"
 
-#: ../src/pakfire/base.py:197
+#: ../python/pakfire/base.py:197
 msgid "Local install repository"
 msgstr "Lokale installatie repository"
 
-#: ../src/pakfire/base.py:261
+#: ../python/pakfire/base.py:261
 #, python-format
 msgid "Could not find any installed package providing \"%s\"."
 msgstr "Kan geen geïnstalleerd pakket vinden dat \"%s\" bevat. "
 
-#: ../src/pakfire/base.py:267
+#: ../python/pakfire/base.py:267
 #, python-format
 msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
 msgstr "Meerdere herinstallatie kandidaten voor \"%(pattern)s\": %(pkgs)s"
 
-#: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
-#: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
-#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:396
+#: ../python/pakfire/base.py:271 ../python/pakfire/base.py:337
+#: ../python/pakfire/base.py:376 ../python/pakfire/base.py:440
+#: ../python/pakfire/base.py:467 ../python/pakfire/transaction.py:396
 msgid "Nothing to do"
 msgstr "Niets meer te doen"
 
-#: ../src/pakfire/base.py:296
+#: ../python/pakfire/base.py:296
 #, python-format
 msgid "Could not find package %s in a remote repository."
 msgstr "Kan het pakket %s niet vinden in repository op afstand."
 
-#: ../src/pakfire/base.py:368
+#: ../python/pakfire/base.py:368
 #, python-format
 msgid "Excluding %s."
 msgstr "Uitgezonderd %s."
 
-#: ../src/pakfire/base.py:434
+#: ../python/pakfire/base.py:426
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "Pakket \"%s\" lijkt niet geïnstalleerd."
 
-#: ../src/pakfire/base.py:598
+#: ../python/pakfire/base.py:590
 msgid "Everything is fine."
 msgstr "Alles is goed."
 
-#: ../src/pakfire/base.py:619
+#: ../python/pakfire/base.py:611
 msgid "Build command has failed."
 msgstr "Build-commando is mislukt."
 
-#: ../src/pakfire/base.py:656
+#: ../python/pakfire/base.py:648
 msgid "You have not set the distribution for which you want to build."
 msgstr "U heeft niet aangegeven welke distributie u wilt opbouwen."
 
-#: ../src/pakfire/base.py:657
+#: ../python/pakfire/base.py:649
 msgid "Please do so in builder.conf or on the CLI."
 msgstr "Dat doet u in de builder.conf in de CLI."
 
-#: ../src/pakfire/base.py:658
+#: ../python/pakfire/base.py:650
 msgid "Distribution configuration is missing."
 msgstr "Distributie configuratie ontbreekt."
 
-#: ../src/pakfire/base.py:739
+#: ../python/pakfire/base.py:731
 msgid "New repository"
 msgstr "Nieuwe repository"
 
-#: ../src/pakfire/builder.py:80
+#: ../python/pakfire/builder.py:80
 #, python-format
 msgid "Cannot build for %s on this host."
 msgstr "Kan niet builden voor %s op deze host."
 
 #. Log the package information.
-#: ../src/pakfire/builder.py:148
+#: ../python/pakfire/builder.py:138
 msgid "Package information:"
 msgstr "Pakketinformatie:"
 
 #. Install all packages.
-#: ../src/pakfire/builder.py:444
+#: ../python/pakfire/builder.py:407
 msgid "Install packages needed for build..."
 msgstr "Installeer pakketten noodzakelijk voor build..."
 
-#: ../src/pakfire/builder.py:449 ../src/pakfire/cli.py:464
+#: ../python/pakfire/builder.py:412 ../python/pakfire/cli.py:446
 msgid "Extracting"
 msgstr "Uitpakken"
 
-#: ../src/pakfire/builder.py:781
+#: ../python/pakfire/builder.py:729
 msgid "You cannot run a build when no package was given."
 msgstr "U kunt geen build draaien zonder dat een pakket is gegeven."
 
-#: ../src/pakfire/builder.py:785
+#: ../python/pakfire/builder.py:733
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr "Kan makefile niet vinden in build root: %s"
 
-#: ../src/pakfire/builder.py:815
+#: ../python/pakfire/builder.py:763
 msgid "Build failed"
 msgstr "Build mislukt"
 
-#: ../src/pakfire/builder.py:818
-#, fuzzy
+#: ../python/pakfire/builder.py:766
 msgid "Build interrupted"
-msgstr "Build mislukt"
+msgstr "Build onderbroken"
 
-#: ../src/pakfire/builder.py:824
+#: ../python/pakfire/builder.py:772
 msgid "Build failed."
 msgstr "Build mislukt."
 
 #. End here in case of an error.
-#: ../src/pakfire/builder.py:840
+#: ../python/pakfire/builder.py:788
 msgid "The build command failed. See logfile for details."
 msgstr "Het build-commando is mislukt. Kijk in het logbestand voor details."
 
-#: ../src/pakfire/builder.py:843
+#: ../python/pakfire/builder.py:791
 msgid "Running installation test..."
 msgstr "Draait installatie-test..."
 
-#: ../src/pakfire/builder.py:849
+#: ../python/pakfire/builder.py:797
 msgid "Installation test succeeded."
 msgstr "Installatietest succesvol."
 
 #. Create a progressbar.
-#: ../src/pakfire/builder.py:892
+#: ../python/pakfire/builder.py:840
 msgid "Signing packages..."
 msgstr "Ondertekenen van pakketten..."
 
-#: ../src/pakfire/builder.py:926
+#: ../python/pakfire/builder.py:874
 msgid "Dumping package information:"
 msgstr "Dumpt pakketinformatie:"
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../src/pakfire/builder.py:1078
+#: ../python/pakfire/builder.py:1026
 msgid "Creating packages:"
 msgstr "Aanmaken van pakketten:"
 
 #. Execute the buildscript of this stage.
-#: ../src/pakfire/builder.py:1092
+#: ../python/pakfire/builder.py:1040
 #, python-format
 msgid "Running stage %s:"
 msgstr "Actieve stadium %s:"
 
-#: ../src/pakfire/builder.py:1110
+#: ../python/pakfire/builder.py:1058
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr "Kan statische libraries niet verwijderen: %s"
 
-#: ../src/pakfire/builder.py:1116
+#: ../python/pakfire/builder.py:1064
 msgid "Compressing man pages did not complete successfully."
 msgstr "Comprimeren van man pagina's is niet succesvol afgerond."
 
-#: ../src/pakfire/builder.py:1136
+#: ../python/pakfire/builder.py:1084
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr "Extraheren van debuginfo was niet succesvol. Build wordt afgebroken."
 
-#: ../src/pakfire/cli.py:53
+#: ../python/pakfire/cli.py:52
 msgid "Pakfire command line interface."
 msgstr "Pakfire command line interface."
 
-#: ../src/pakfire/cli.py:60
+#: ../python/pakfire/cli.py:59
 msgid "The path where pakfire should operate in."
 msgstr "Het pad waar pakfire in zou moeten werken."
 
-#: ../src/pakfire/cli.py:149
+#: ../python/pakfire/cli.py:146
 msgid "Enable verbose output."
 msgstr "Zet uitgebreide output aan."
 
-#: ../src/pakfire/cli.py:152
+#: ../python/pakfire/cli.py:149
 msgid "Path to a configuration file to load."
 msgstr "Pad naar een configuratiebestand "
 
-#: ../src/pakfire/cli.py:155
+#: ../python/pakfire/cli.py:152
 msgid "Disable a repository temporarily."
 msgstr "Schakel een repository tijdelijk uit."
 
-#: ../src/pakfire/cli.py:158
+#: ../python/pakfire/cli.py:155
 msgid "Enable a repository temporarily."
 msgstr "Schakel repository tijdelijk in."
 
-#: ../src/pakfire/cli.py:162
+#: ../python/pakfire/cli.py:159
 msgid "Run pakfire in offline mode."
 msgstr "Start pakfire in offline modus."
 
-#: ../src/pakfire/cli.py:167
+#: ../python/pakfire/cli.py:164
 msgid "Install one or more packages to the system."
 msgstr "Installeer een of meerdere pakketten op het systeem."
 
-#: ../src/pakfire/cli.py:169
+#: ../python/pakfire/cli.py:166
 msgid "Give name of at least one package to install."
 msgstr "Geef de naam van tenminste een pakket dat geïnstalleerd moet worden."
 
-#: ../src/pakfire/cli.py:171
+#: ../python/pakfire/cli.py:168
 msgid "Don't install recommended packages."
 msgstr "Installeer niet de aanbevolen pakketten."
 
-#: ../src/pakfire/cli.py:177
+#: ../python/pakfire/cli.py:174
 msgid "Reinstall one or more packages."
 msgstr "Herinstalleren van een of meer pakketten."
 
-#: ../src/pakfire/cli.py:179
+#: ../python/pakfire/cli.py:176
 msgid "Give name of at least one package to reinstall."
 msgstr "Geef de naam van tenminste een pakket om te herinstalleren."
 
-#: ../src/pakfire/cli.py:185
+#: ../python/pakfire/cli.py:182
 msgid "Remove one or more packages from the system."
 msgstr "Verwijder een of meerdere pakketten van het systeem."
 
-#: ../src/pakfire/cli.py:187
+#: ../python/pakfire/cli.py:184
 msgid "Give name of at least one package to remove."
 msgstr "Geef de naam van ten minste een pakket dat verwijderd moet worden."
 
-#: ../src/pakfire/cli.py:194
+#: ../python/pakfire/cli.py:190
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
-"Geef de naam van het pakket welke bijgewerkt moet worden of laat leeg voor "
-"alles."
+msgstr "Geef de naam van het pakket welke bijgewerkt moet worden of laat leeg voor alles."
 
-#: ../src/pakfire/cli.py:197
+#: ../python/pakfire/cli.py:192
 msgid "Exclude package from update."
 msgstr "Pakket wordt uitgezonderd van update."
 
-#: ../src/pakfire/cli.py:199 ../src/pakfire/cli.py:231
+#: ../python/pakfire/cli.py:194 ../python/pakfire/cli.py:219
 msgid "Allow changing the vendor of packages."
 msgstr "Wijzigen van leverancier pakketten is toegestaan."
 
-#: ../src/pakfire/cli.py:201 ../src/pakfire/cli.py:233
+#: ../python/pakfire/cli.py:196 ../python/pakfire/cli.py:221
 msgid "Disallow changing the architecture of packages."
 msgstr "Sta het veranderen van de architectuur van de pakketten niet toe."
 
-#: ../src/pakfire/cli.py:206
+#: ../python/pakfire/cli.py:201
 msgid "Update the whole system or one specific package."
 msgstr "Werk het hele systeem bij of een specifiek pakket."
 
-#: ../src/pakfire/cli.py:213
-msgid "Sync all installed with the latest one in the distribution."
-msgstr ""
-
-#: ../src/pakfire/cli.py:220
+#: ../python/pakfire/cli.py:208
 msgid "Check, if there are any updates available."
 msgstr "Controleer of er updates beschikbaar zijn."
 
-#: ../src/pakfire/cli.py:227
+#: ../python/pakfire/cli.py:215
 msgid "Downgrade one or more packages."
 msgstr "Downgrade een of meer pakketten."
 
-#: ../src/pakfire/cli.py:229
+#: ../python/pakfire/cli.py:217
 msgid "Give a name of a package to downgrade."
 msgstr "Geef de naam van het pakket om te downgraden."
 
-#: ../src/pakfire/cli.py:239
+#: ../python/pakfire/cli.py:227
 msgid "Print some information about the given package(s)."
 msgstr "Print informatie over de opgegeven pakket(ten)."
 
-#: ../src/pakfire/cli.py:241
+#: ../python/pakfire/cli.py:229
 msgid "Give at least the name of one package."
 msgstr "Geef tenminste de naam van een pakket."
 
-#: ../src/pakfire/cli.py:247
+#: ../python/pakfire/cli.py:235
 msgid "Search for a given pattern."
 msgstr "Zoek voor een gegeven patroon."
 
-#: ../src/pakfire/cli.py:249
+#: ../python/pakfire/cli.py:237
 msgid "A pattern to search for."
 msgstr "Een patroon om naar te zoeken."
 
-#: ../src/pakfire/cli.py:255
+#: ../python/pakfire/cli.py:243
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
-"Vraag een lijst van pakketten die een bepaalde functie of bestand bevatten."
+msgstr "Vraag een lijst van pakketten die een bepaalde functie of bestand bevatten."
 
-#: ../src/pakfire/cli.py:257
+#: ../python/pakfire/cli.py:245
 msgid "File or feature to search for."
 msgstr "Bestand of functie waar naar gezocht moet worden."
 
-#: ../src/pakfire/cli.py:263
+#: ../python/pakfire/cli.py:251
 msgid "Get list of packages that belong to the given group."
 msgstr "Vraag een lijst van pakketten die behoren tot een gegeven groep."
 
-#: ../src/pakfire/cli.py:265
+#: ../python/pakfire/cli.py:253
 msgid "Group name to search for."
 msgstr "Groepsnaam waar naar gezocht moet worden."
 
-#: ../src/pakfire/cli.py:271
+#: ../python/pakfire/cli.py:259
 msgid "Install all packages that belong to the given group."
 msgstr "Installeer alle pakketten die behoren tot de gegeven groep."
 
-#: ../src/pakfire/cli.py:273
+#: ../python/pakfire/cli.py:261
 msgid "Group name."
 msgstr "Groepsnaam."
 
-#: ../src/pakfire/cli.py:279
+#: ../python/pakfire/cli.py:267
 msgid "List all currently enabled repositories."
 msgstr "Lijst met alle ingeschakelde repositories."
 
-#: ../src/pakfire/cli.py:283
+#: ../python/pakfire/cli.py:271
 msgid "Cleanup commands."
 msgstr "Opschooncommando's."
 
-#: ../src/pakfire/cli.py:291
+#: ../python/pakfire/cli.py:279
 msgid "Cleanup all temporary files."
 msgstr "Opschonen van alle tijdelijke bestanden."
 
-#: ../src/pakfire/cli.py:297
+#: ../python/pakfire/cli.py:285
 msgid "Check the system for any errors."
 msgstr "Controleer het systeem op fouten."
 
-#: ../src/pakfire/cli.py:303
+#: ../python/pakfire/cli.py:291
 msgid "Check the dependencies for a particular package."
 msgstr "Controleer de afhankelijkheden voor een bepaald pakket."
 
-#: ../src/pakfire/cli.py:305
+#: ../python/pakfire/cli.py:293
 msgid "Give name of at least one package to check."
 msgstr "Geef tenminste de naam van een pakket."
 
-#: ../src/pakfire/cli.py:311
+#: ../python/pakfire/cli.py:299
 msgid "Extract a package to a directory."
 msgstr "Pak een pakket uit in een directory."
 
-#: ../src/pakfire/cli.py:313
+#: ../python/pakfire/cli.py:301
 msgid "Give name of the file to extract."
 msgstr "Geef de naam van het uit te pakken bestand."
 
-#: ../src/pakfire/cli.py:315
+#: ../python/pakfire/cli.py:303
 msgid "Target directory where to extract to."
 msgstr "Doel-directory waar uit te pakken."
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:405
+#: ../python/pakfire/cli.py:385 ../python/pakfire/transaction.py:405
 msgid "Repository"
 msgstr "Repository"
 
-#: ../src/pakfire/cli.py:403
+#: ../python/pakfire/cli.py:385
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1144
+#: ../python/pakfire/cli.py:385 ../python/pakfire/cli.py:1112
 msgid "Priority"
 msgstr "Prioriteit"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1189
+#: ../python/pakfire/cli.py:385 ../python/pakfire/cli.py:1157
 msgid "Packages"
 msgstr "Pakketten"
 
-#: ../src/pakfire/cli.py:411
+#: ../python/pakfire/cli.py:393
 msgid "Cleaning up everything..."
 msgstr "Alles opschonen..."
 
-#: ../src/pakfire/cli.py:447
+#: ../python/pakfire/cli.py:429
 msgid "Cannot extract mixed package types"
 msgstr "Kan gemengde pakket-types niet uitpakken"
 
-#: ../src/pakfire/cli.py:450
+#: ../python/pakfire/cli.py:432
 msgid "You must provide an install directory with --target=..."
 msgstr "U moet een installatie-directory opgeven met --target=..."
 
-#: ../src/pakfire/cli.py:456
+#: ../python/pakfire/cli.py:438
 msgid "Cannot extract to /."
 msgstr "Kan niet uitpakken in /."
 
-#: ../src/pakfire/cli.py:474
+#: ../python/pakfire/cli.py:456
 msgid "You cannot run pakfire-builder in a pakfire chroot."
 msgstr "U kunt pakfire-builder niet in een pakfire chroot draaien."
 
-#: ../src/pakfire/cli.py:477 ../src/pakfire/cli.py:819
+#: ../python/pakfire/cli.py:459 ../python/pakfire/cli.py:785
 msgid "Pakfire builder command line interface."
 msgstr "Pakfire builder commando regel interface."
 
-#: ../src/pakfire/cli.py:536
+#: ../python/pakfire/cli.py:518
 msgid "Choose the distribution configuration to use for build"
 msgstr "Kies de distributie-configuratie die gebruikt wordt voor de build."
 
-#: ../src/pakfire/cli.py:539
+#: ../python/pakfire/cli.py:521
 msgid "Run pakfire for the given architecture."
 msgstr "Start pakfire voor de gegeven architectuur."
 
-#: ../src/pakfire/cli.py:544
+#: ../python/pakfire/cli.py:526
 msgid "Update the package indexes."
 msgstr "Werk de pakketindex bij."
 
-#: ../src/pakfire/cli.py:550 ../src/pakfire/cli.py:839
+#: ../python/pakfire/cli.py:532 ../python/pakfire/cli.py:805
 msgid "Build one or more packages."
 msgstr "Build een of meer pakketten."
 
-#: ../src/pakfire/cli.py:552 ../src/pakfire/cli.py:728
-#: ../src/pakfire/cli.py:841
+#: ../python/pakfire/cli.py:534 ../python/pakfire/cli.py:694
+#: ../python/pakfire/cli.py:807
 msgid "Give name of at least one package to build."
 msgstr "Geef tenminste de naam van een pakket."
 
-#: ../src/pakfire/cli.py:556 ../src/pakfire/cli.py:588
-#: ../src/pakfire/cli.py:847
+#: ../python/pakfire/cli.py:538 ../python/pakfire/cli.py:566
+#: ../python/pakfire/cli.py:813
 msgid "Path were the output files should be copied to."
 msgstr "Pad waar de output bestanden naartoe gekopieerd moeten worden."
 
-#: ../src/pakfire/cli.py:558 ../src/pakfire/cli.py:575
-#: ../src/pakfire/cli.py:849
+#: ../python/pakfire/cli.py:540 ../python/pakfire/cli.py:555
+#: ../python/pakfire/cli.py:815
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr "De modus. Dit is of 'release' of 'development' (standaard)."
 
-#: ../src/pakfire/cli.py:560
+#: ../python/pakfire/cli.py:542
 msgid "Run a shell after a successful build."
 msgstr "Start een shell na een succesvolle build."
 
-#: ../src/pakfire/cli.py:562
+#: ../python/pakfire/cli.py:544
 msgid "Do not perform the install test."
 msgstr "Voer de installatie-test niet uit."
 
-#: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
-msgid "Disable network in container."
-msgstr ""
-
-#: ../src/pakfire/cli.py:569
+#: ../python/pakfire/cli.py:549
 msgid "Go into a shell."
 msgstr "Ga naar een shell."
 
-#: ../src/pakfire/cli.py:571
+#: ../python/pakfire/cli.py:551
 msgid "Give name of a package."
 msgstr "Geef de naam van het pakket."
 
-#: ../src/pakfire/cli.py:582
+#: ../python/pakfire/cli.py:560
 msgid "Generate a source package."
 msgstr "Genereer een bron-pakket."
 
-#: ../src/pakfire/cli.py:584
+#: ../python/pakfire/cli.py:562
 msgid "Give name(s) of a package(s)."
 msgstr "Geef na(a)m(en) van pakket(ten)."
 
-#: ../src/pakfire/cli.py:685
+#: ../python/pakfire/cli.py:651
 msgid "Pakfire server command line interface."
 msgstr "Pakfire server commandoregel interface"
 
-#: ../src/pakfire/cli.py:726
+#: ../python/pakfire/cli.py:692
 msgid "Send a scrach build job to the server."
 msgstr "Stuur een scratch build-taak naar de server."
 
-#: ../src/pakfire/cli.py:730
+#: ../python/pakfire/cli.py:696
 msgid "Limit build to only these architecture(s)."
 msgstr "Beperk build tot alleen deze architecturen."
 
-#: ../src/pakfire/cli.py:736
+#: ../python/pakfire/cli.py:702
 msgid "Send a keepalive to the server."
 msgstr "Stuur een keepalive naar de server."
 
-#: ../src/pakfire/cli.py:743
+#: ../python/pakfire/cli.py:709
 msgid "Update all repositories."
 msgstr "Bijwerken van alle repositories."
 
-#: ../src/pakfire/cli.py:749
+#: ../python/pakfire/cli.py:715
 msgid "Repository management commands."
 msgstr "Repository beheer commando's."
 
-#: ../src/pakfire/cli.py:757
+#: ../python/pakfire/cli.py:723
 msgid "Create a new repository index."
 msgstr "Maak een nieuwe repository-index aan."
 
-#: ../src/pakfire/cli.py:759
+#: ../python/pakfire/cli.py:725
 msgid "Path to the packages."
 msgstr "Pad naar de pakketten."
 
-#: ../src/pakfire/cli.py:761
+#: ../python/pakfire/cli.py:727
 msgid "Path to input packages."
 msgstr "Pad naar de input-pakketten."
 
-#: ../src/pakfire/cli.py:763
+#: ../python/pakfire/cli.py:729
 msgid "Key to sign the repository with."
 msgstr "Sleutel om de repository te ondertekenen."
 
-#: ../src/pakfire/cli.py:768
+#: ../python/pakfire/cli.py:734
 msgid "Dump some information about this machine."
 msgstr "Dump informatie over deze machine."
 
-#: ../src/pakfire/cli.py:845 ../src/pakfire/cli.py:937
+#: ../python/pakfire/cli.py:811 ../python/pakfire/cli.py:907
 msgid "Build the package for the given architecture."
 msgstr "Build het pakket voor de gegeven architectuur."
 
-#: ../src/pakfire/cli.py:851
+#: ../python/pakfire/cli.py:817
 msgid "Do not verify build dependencies."
 msgstr "Controleer niet op build-afhankelijkheden."
 
-#: ../src/pakfire/cli.py:853
+#: ../python/pakfire/cli.py:819
 msgid "Only run the prepare stage."
 msgstr "Draai alleen de voorbereidings-fase."
 
-#: ../src/pakfire/cli.py:887
+#: ../python/pakfire/cli.py:853
 msgid "Pakfire client command line interface."
 msgstr "Pakfire commandoregel interface."
 
-#: ../src/pakfire/cli.py:931
+#: ../python/pakfire/cli.py:901
 msgid "Build a package remotely."
 msgstr "Build een pakket op afstand."
 
-#: ../src/pakfire/cli.py:933
+#: ../python/pakfire/cli.py:903
 msgid "Give name of a package to build."
 msgstr "Geef de naam van het pakket om te builden."
 
-#: ../src/pakfire/cli.py:942
+#: ../python/pakfire/cli.py:912
 msgid "Print some information about this host."
 msgstr "Print informatie over deze host."
 
-#: ../src/pakfire/cli.py:948
+#: ../python/pakfire/cli.py:918
 msgid "Check the connection to the hub."
 msgstr "Controleer de connectie naar de hub."
 
-#: ../src/pakfire/cli.py:953
+#: ../python/pakfire/cli.py:923
 msgid "Show information about build jobs."
 msgstr "Toon informatie over build-taken."
 
-#: ../src/pakfire/cli.py:963
+#: ../python/pakfire/cli.py:933
 msgid "Show a list of all active jobs."
 msgstr "Toon een lijst van alle actieve taken."
 
-#: ../src/pakfire/cli.py:968
+#: ../python/pakfire/cli.py:938
 msgid "Show a list of all recently finished of failed build jobs."
 msgstr "Toon een lijst van alle recentelijk beëindigde of mislukte taken."
 
-#: ../src/pakfire/cli.py:973
+#: ../python/pakfire/cli.py:943
 msgid "Show details about given build job."
 msgstr "Toon details van de gegeven build-taak."
 
-#: ../src/pakfire/cli.py:974
+#: ../python/pakfire/cli.py:944
 msgid "The ID of the build job."
 msgstr "De ID van de build-taak."
 
-#: ../src/pakfire/cli.py:979
+#: ../python/pakfire/cli.py:949
 msgid "Show information about builds."
 msgstr "Toon informatie over de builds."
 
-#: ../src/pakfire/cli.py:987
+#: ../python/pakfire/cli.py:957
 msgid "Show details about the given build."
 msgstr "Toon details van de gegeven build."
 
-#: ../src/pakfire/cli.py:988
+#: ../python/pakfire/cli.py:958
 msgid "The ID of the build."
 msgstr "Het ID van de build."
 
-#: ../src/pakfire/cli.py:993
+#: ../python/pakfire/cli.py:963
 msgid "Test the connection to the hub."
 msgstr "Test de verbinding naar de hub."
 
-#: ../src/pakfire/cli.py:994
+#: ../python/pakfire/cli.py:964
 msgid "Error code to test."
 msgstr "Foutcode voor test."
 
-#: ../src/pakfire/cli.py:1045 ../src/pakfire/server.py:303
+#: ../python/pakfire/cli.py:1013 ../python/pakfire/server.py:302
 msgid "Hostname"
 msgstr "Hostnaam"
 
-#: ../src/pakfire/cli.py:1046
+#: ../python/pakfire/cli.py:1014
 msgid "Pakfire hub"
 msgstr "Pakfire hub"
 
-#: ../src/pakfire/cli.py:1049
+#: ../python/pakfire/cli.py:1017
 msgid "Username"
 msgstr "Gebruikersnaam"
 
 #. Hardware information
-#: ../src/pakfire/cli.py:1053 ../src/pakfire/server.py:307
+#: ../python/pakfire/cli.py:1021 ../python/pakfire/server.py:306
 msgid "Hardware information"
 msgstr "Hardware informatie"
 
-#: ../src/pakfire/cli.py:1054 ../src/pakfire/server.py:308
+#: ../python/pakfire/cli.py:1022 ../python/pakfire/server.py:307
 msgid "CPU model"
 msgstr "CPU model"
 
-#: ../src/pakfire/cli.py:1055 ../src/pakfire/server.py:309
+#: ../python/pakfire/cli.py:1023 ../python/pakfire/server.py:308
 msgid "Memory"
 msgstr "Geheugen"
 
-#: ../src/pakfire/cli.py:1056
+#: ../python/pakfire/cli.py:1024
 msgid "Parallelism"
 msgstr "parallelliteit"
 
-#: ../src/pakfire/cli.py:1058 ../src/pakfire/server.py:311
+#: ../python/pakfire/cli.py:1026 ../python/pakfire/server.py:310
 msgid "Native arch"
 msgstr "Eigen arch"
 
-#: ../src/pakfire/cli.py:1060
+#: ../python/pakfire/cli.py:1028
 msgid "Default arch"
 msgstr "Standaard arch"
 
-#: ../src/pakfire/cli.py:1062 ../src/pakfire/server.py:313
+#: ../python/pakfire/cli.py:1030 ../python/pakfire/server.py:312
 msgid "Supported arches"
 msgstr "Ondersteunde arches"
 
-#: ../src/pakfire/cli.py:1075
+#: ../python/pakfire/cli.py:1043
 msgid "Your IP address"
 msgstr "Uw IP-adres"
 
-#: ../src/pakfire/cli.py:1080
+#: ../python/pakfire/cli.py:1048
 msgid "You are authenticated to the build service:"
 msgstr "U bent geauthenticeerd voor build-service:"
 
-#: ../src/pakfire/cli.py:1086
+#: ../python/pakfire/cli.py:1054
 msgid "User name"
 msgstr "Gebruikersnaam"
 
-#: ../src/pakfire/cli.py:1087
+#: ../python/pakfire/cli.py:1055
 msgid "Real name"
 msgstr "Volledige naam"
 
-#: ../src/pakfire/cli.py:1088
+#: ../python/pakfire/cli.py:1056
 msgid "Email address"
 msgstr "E-mailadres"
 
-#: ../src/pakfire/cli.py:1089
+#: ../python/pakfire/cli.py:1057
 msgid "Registered"
 msgstr "Geregistreerd"
 
-#: ../src/pakfire/cli.py:1096
+#: ../python/pakfire/cli.py:1064
 msgid "You could not be authenticated to the build service."
 msgstr "U kon niet worden geauthenticeerd voor de build-service."
 
-#: ../src/pakfire/cli.py:1117
+#: ../python/pakfire/cli.py:1085
 msgid "No ongoing jobs found."
 msgstr "Geen lopende taken gevonden."
 
-#: ../src/pakfire/cli.py:1120
+#: ../python/pakfire/cli.py:1088
 msgid "Active build jobs"
 msgstr "Actieve build-taken"
 
-#: ../src/pakfire/cli.py:1126
+#: ../python/pakfire/cli.py:1094
 msgid "No jobs found."
 msgstr "Geen taken gevonden."
 
-#: ../src/pakfire/cli.py:1129
+#: ../python/pakfire/cli.py:1097
 msgid "Recently processed build jobs"
 msgstr "Recentelijk verwerkte build-taken"
 
-#: ../src/pakfire/cli.py:1136
+#: ../python/pakfire/cli.py:1104
 #, python-format
 msgid "A build with ID %s could not be found."
 msgstr "Een build met ID %s kon niet worden gevonden."
 
-#: ../src/pakfire/cli.py:1139
+#: ../python/pakfire/cli.py:1107
 #, python-format
 msgid "Build: %(name)s"
 msgstr "Build: %(name)s"
 
-#: ../src/pakfire/cli.py:1143 ../src/pakfire/cli.py:1171
+#: ../python/pakfire/cli.py:1111 ../python/pakfire/cli.py:1139
 msgid "State"
 msgstr "Status"
 
-#: ../src/pakfire/cli.py:1147
+#: ../python/pakfire/cli.py:1115
 msgid "Jobs"
 msgstr "Taken"
 
-#: ../src/pakfire/cli.py:1160
+#: ../python/pakfire/cli.py:1128
 #, python-format
 msgid "A job with ID %s could not be found."
 msgstr "Een taak met ID %s kon niet worden gevonden."
 
-#: ../src/pakfire/cli.py:1167
+#: ../python/pakfire/cli.py:1135
 #, python-format
 msgid "Job: %(name)s"
 msgstr "Taak: %(name)s"
 
-#: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:404
+#: ../python/pakfire/cli.py:1140 ../python/pakfire/packages/base.py:107
+#: ../python/pakfire/transaction.py:404
 msgid "Arch"
 msgstr "Arch"
 
-#: ../src/pakfire/cli.py:1177 ../src/pakfire/packages/base.py:148
+#: ../python/pakfire/cli.py:1145 ../python/pakfire/packages/base.py:148
 msgid "Build host"
 msgstr "Build host"
 
-#: ../src/pakfire/cli.py:1182
+#: ../python/pakfire/cli.py:1150
 msgid "Time created"
 msgstr "Aanmaakdatum"
 
-#: ../src/pakfire/cli.py:1183
+#: ../python/pakfire/cli.py:1151
 msgid "Time started"
 msgstr "Starttijd"
 
-#: ../src/pakfire/cli.py:1184
+#: ../python/pakfire/cli.py:1152
 msgid "Time finished"
 msgstr "Eindtijd"
 
-#: ../src/pakfire/cli.py:1185
+#: ../python/pakfire/cli.py:1153
 msgid "Duration"
 msgstr "Duur"
 
-#: ../src/pakfire/cli.py:1213
+#: ../python/pakfire/cli.py:1181
 msgid "Invalid error code given."
 msgstr "Ongeldige foutcode opgegeven."
 
-#: ../src/pakfire/cli.py:1216
+#: ../python/pakfire/cli.py:1184
 #, python-format
 msgid "Reponse from the server: %s"
 msgstr "Antwoord van de server: %s"
 
-#: ../src/pakfire/cli.py:1227
+#: ../python/pakfire/cli.py:1190
 msgid "Pakfire daemon command line interface."
 msgstr "Pakfire daemon commandoregel interface."
 
-#: ../src/pakfire/cli.py:1258
+#: ../python/pakfire/cli.py:1220
 msgid "Pakfire key command line interface."
 msgstr "Pakfire sleutel commandoregel interface."
 
-#: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
+#: ../python/pakfire/cli.py:1256 ../python/pakfire/cli.py:1266
 msgid "Import a key from file."
 msgstr "Importeer een sleutel uit een bestand."
 
-#: ../src/pakfire/cli.py:1296
+#: ../python/pakfire/cli.py:1258
 msgid "The real name of the owner of this key."
 msgstr "De echte naam van de eigenaar van deze sleutel."
 
-#: ../src/pakfire/cli.py:1298
+#: ../python/pakfire/cli.py:1260
 msgid "The email address of the owner of this key."
 msgstr "Het e-mailadres van de eigenaar van deze sleutel."
 
-#: ../src/pakfire/cli.py:1306
+#: ../python/pakfire/cli.py:1268
 msgid "Filename of that key to import."
 msgstr "Bestandsnaam van de sleutel die geïmporteerd wordt."
 
-#: ../src/pakfire/cli.py:1312
+#: ../python/pakfire/cli.py:1274
 msgid "Export a key to a file."
 msgstr "Exporteer een sleutel naar een bestand."
 
-#: ../src/pakfire/cli.py:1314
+#: ../python/pakfire/cli.py:1276
 msgid "The ID of the key to export."
 msgstr "Het ID van de sleutel die wordt geëxporteerd."
 
-#: ../src/pakfire/cli.py:1316
+#: ../python/pakfire/cli.py:1278
 msgid "Write the key to this file."
 msgstr "Schrijf de sleutel naar dit bestand."
 
-#: ../src/pakfire/cli.py:1322
+#: ../python/pakfire/cli.py:1284
 msgid "Delete a key from the local keyring."
 msgstr "Verwijder een sleutel van een lokale sleutelring."
 
-#: ../src/pakfire/cli.py:1324
+#: ../python/pakfire/cli.py:1286
 msgid "The ID of the key to delete."
 msgstr "Het ID van de sleutel die wordt verwijderd."
 
-#: ../src/pakfire/cli.py:1330
+#: ../python/pakfire/cli.py:1292
 msgid "List all imported keys."
 msgstr "Toon alle geïmporteerde sleutels."
 
-#: ../src/pakfire/cli.py:1336
+#: ../python/pakfire/cli.py:1298
 msgid "Sign one or more packages."
 msgstr "Onderteken een of meerdere pakketten."
 
-#: ../src/pakfire/cli.py:1338
+#: ../python/pakfire/cli.py:1300
 msgid "Key that is used sign the package(s)."
 msgstr "Sleutel die is gebruikt om de pakket(ten) te ondertekenen."
 
-#: ../src/pakfire/cli.py:1340
+#: ../python/pakfire/cli.py:1302
 msgid "Package(s) to sign."
 msgstr "Te ondertekenen pakket(ten)."
 
-#: ../src/pakfire/cli.py:1346
+#: ../python/pakfire/cli.py:1308
 msgid "Verify one or more packages."
 msgstr "Verifieer een of meerdere pakketten."
 
-#: ../src/pakfire/cli.py:1350
+#: ../python/pakfire/cli.py:1312
 msgid "Package(s) to verify."
 msgstr "Te verifiëren pakket(ten)."
 
-#: ../src/pakfire/cli.py:1357
+#: ../python/pakfire/cli.py:1319
 msgid "Generating the key may take a moment..."
 msgstr "Het genereren van de sleutel kan even duren..."
 
-#: ../src/pakfire/cli.py:1411
+#: ../python/pakfire/cli.py:1373
 #, python-format
 msgid "Signing %s..."
 msgstr "Ondertekent %s..."
 
-#: ../src/pakfire/cli.py:1431
+#: ../python/pakfire/cli.py:1393
 #, python-format
 msgid "Verifying %s..."
 msgstr "Verifieert %s..."
 
-#: ../src/pakfire/cli.py:1441
+#: ../python/pakfire/cli.py:1403
 msgid "This signature is valid."
 msgstr "Deze ondertekening is geldig."
 
-#: ../src/pakfire/cli.py:1444
+#: ../python/pakfire/cli.py:1406
 msgid "Unknown key"
 msgstr "Onbekende sleutel"
 
-#: ../src/pakfire/cli.py:1445
+#: ../python/pakfire/cli.py:1407
 msgid "Could not check if this signature is valid."
 msgstr "Kon niet controleren of ondertekening geldig is."
 
-#: ../src/pakfire/cli.py:1448 ../src/pakfire/keyring.py:98
+#: ../python/pakfire/cli.py:1410 ../python/pakfire/keyring.py:96
 #, python-format
 msgid "Created: %s"
 msgstr "Aangemaakt: %s"
 
-#: ../src/pakfire/cli.py:1452 ../src/pakfire/keyring.py:101
+#: ../python/pakfire/cli.py:1414 ../python/pakfire/keyring.py:99
 #, python-format
 msgid "Expires: %s"
 msgstr "Verloopt: %s"
 
-#: ../src/pakfire/compress.py:85 ../src/pakfire/compress.py:95
+#. If the keepalive message could not successfully be sent, we don't
+#. bother, because the client will soon retry.
+#: ../python/pakfire/client/base.py:213
+msgid "Could not send a keepalive message to the hub."
+msgstr "Kan geen keepalive bericht sturen naar de hub."
+
+#. Don't give a shit either.
+#: ../python/pakfire/client/base.py:247
+msgid "Could not update the host information."
+msgstr "Kan de host-informatie niet bijwerken."
+
+#: ../python/pakfire/client/builder.py:179
+msgid "Less than 2GB of free space. Cannot request a new job."
+msgstr "Minder dan 2GB vrije schijfruimte. Kan geen nieuwe taak aanmaken."
+
+#. Log all XMLRPC protocol errors.
+#: ../python/pakfire/client/transport.py:90
+msgid "XMLRPC protocol error:"
+msgstr "XMLRPC protocolfout:"
+
+#: ../python/pakfire/client/transport.py:91
+#, python-format
+msgid "URL: %s"
+msgstr "URL: %s"
+
+#: ../python/pakfire/client/transport.py:92
+msgid "  HTTP headers:"
+msgstr "HTTP headers:"
+
+#: ../python/pakfire/client/transport.py:95
+#, python-format
+msgid "Error code: %s"
+msgstr "Foutcode: %s"
+
+#: ../python/pakfire/client/transport.py:96
+#, python-format
+msgid "Error message: %s"
+msgstr "Foutmelding: %s"
+
+#: ../python/pakfire/client/transport.py:116
+#, python-format
+msgid "Trying again in %(timeout)s second(s). %(tries)s tries left."
+msgstr "Opnieuw proberen over %(timeout)s second(en). %(tries)s pogingen over."
+
+#: ../python/pakfire/client/transport.py:121
+msgid "Maximum number of tries was reached. Giving up."
+msgstr "Maximum aantal pogingen is bereikt. Geeft op."
+
+#: ../python/pakfire/compress.py:85 ../python/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
 msgstr "Gegeven algoritme '%s' wordt niet ondersteund."
 
-#: ../src/pakfire/config.py:191
+#: ../python/pakfire/config.py:191
 #, python-format
 msgid "Unhandled configuration update: %s = %s"
 msgstr "Niet-afgehandelde configuratie update: %s = %s"
 
-#: ../src/pakfire/config.py:205
+#: ../python/pakfire/config.py:205
 msgid "Configuration:"
 msgstr "Configuratie:"
 
-#: ../src/pakfire/config.py:207
+#: ../python/pakfire/config.py:207
 #, python-format
 msgid "Section: %s"
 msgstr "Sectie: %s"
 
-#: ../src/pakfire/config.py:212
+#: ../python/pakfire/config.py:212
 msgid "No settings in this section."
 msgstr "Geen instellingen in deze sectie."
 
-#: ../src/pakfire/config.py:214
+#: ../python/pakfire/config.py:214
 msgid "Loaded from files:"
 msgstr "Geladen vanuit bestanden:"
 
-#: ../src/pakfire/daemon.py:100
-msgid "Shutting down..."
-msgstr ""
-
-#: ../src/pakfire/daemon.py:104
-msgid "Restarting keepalive process"
-msgstr ""
-
-#: ../src/pakfire/daemon.py:166
-#, python-format
-msgid "Terminating worker process: %s"
-msgstr ""
-
-#: ../src/pakfire/daemon.py:315
-msgid "Sending builder information to hub..."
-msgstr ""
-
-#: ../src/pakfire/downloader.py:165
+#: ../python/pakfire/downloader.py:155
 msgid "Downloading source files:"
 msgstr "Binnenhalen van bronbestanden:"
 
-#: ../src/pakfire/downloader.py:168
+#: ../python/pakfire/downloader.py:158
 msgid "Cannot download source code in offline mode."
 msgstr "Kan de broncode niet downloaden in offline modus."
 
-#: ../src/pakfire/downloader.py:191
+#: ../python/pakfire/downloader.py:181
 #, python-format
 msgid "Downloaded empty file: %s"
 msgstr "Downloaded leeg bestand: %s"
 
-#: ../src/pakfire/errors.py:30
+#: ../python/pakfire/errors.py:30
 msgid "An unhandled error occured."
 msgstr "Er is een niet afgehandelde fout opgetreden."
 
-#: ../src/pakfire/errors.py:46
+#: ../python/pakfire/errors.py:46
 msgid "Could not compress/decompress data."
 msgstr "Kan data niet comprimeren/decomprimeren."
 
-#: ../src/pakfire/errors.py:58
+#: ../python/pakfire/errors.py:58
 msgid "One or more dependencies could not been resolved."
 msgstr "Een of meer afhankelijkheden konden niet worden opgelost."
 
-#: ../src/pakfire/errors.py:61
+#: ../python/pakfire/errors.py:61
 msgid "An error occured when pakfire tried to download files."
-msgstr ""
-"Er is een fout opgetreden toen pakfire de bestanden probeerde te downloaden."
+msgstr "Er is een fout opgetreden toen pakfire de bestanden probeerde te downloaden."
 
-#: ../src/pakfire/errors.py:74
+#: ../python/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"De gevraagde actie kan niet in offline modus worden uitgevoerd. Controleer "
-"of uw systeem met het netwerk is verbonden, verwijder --offline van de "
-"commandoregel en probeer opnieuw."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "De gevraagde actie kan niet in offline modus worden uitgevoerd. Controleer of uw systeem met het netwerk is verbonden, verwijder --offline van de commandoregel en probeer opnieuw."
 
-#: ../src/pakfire/errors.py:86
+#: ../python/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Draait u pakfire-build in een pakfire-container?"
 
-#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:475
+#: ../python/pakfire/errors.py:98 ../python/pakfire/transaction.py:475
 msgid "Transaction test was not successful"
 msgstr "Transactietest was niet succesvol"
 
-#: ../src/pakfire/errors.py:162
+#: ../python/pakfire/errors.py:102
 msgid "Generic XMLRPC error."
 msgstr "Algemene XMLRPC fout."
 
-#: ../src/pakfire/errors.py:166
+#: ../python/pakfire/errors.py:106
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr ""
-"Het is niet toegestaan om deze actie uit te voeren. Controleer uw "
-"bevoegdheden."
+msgstr "Het is niet toegestaan om deze actie uit te voeren. Controleer uw bevoegdheden."
 
-#: ../src/pakfire/errors.py:170
+#: ../python/pakfire/errors.py:110
 msgid "A request could not be fulfilled by the server."
 msgstr "Een verzoek kon niet worden uitgevoerd door de server."
 
-#: ../src/pakfire/errors.py:174
+#: ../python/pakfire/errors.py:114
 msgid "Could not find the requested URL."
 msgstr "Kan de gevraagde URL niet vinden."
 
-#: ../src/pakfire/errors.py:178
+#: ../python/pakfire/errors.py:118
 msgid "An unforseable problem on the XML-RPC transport connection occured."
-msgstr ""
-"Er heeft zich een onvoorzien probleem voorgedaan op de XML-RPC verbinding."
+msgstr "Er heeft zich een onvoorzien probleem voorgedaan op de XML-RPC verbinding."
 
-#: ../src/pakfire/i18n.py:54
+#: ../python/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
 msgstr "%(commas)s en %(last)s"
 
-#: ../src/pakfire/keyring.py:76
-#, python-format
-msgid "Not in key store: %s"
-msgstr ""
-
-#: ../src/pakfire/keyring.py:82
+#: ../python/pakfire/keyring.py:82
 #, python-format
 msgid "Fingerprint: %s"
 msgstr "Fingerprint: %s"
 
-#: ../src/pakfire/keyring.py:86
+#: ../python/pakfire/keyring.py:84
 msgid "Private key available!"
 msgstr "Persoonlijke sleutel beschikbaar!"
 
-#: ../src/pakfire/keyring.py:90
+#: ../python/pakfire/keyring.py:88
 #, python-format
 msgid "Subkey: %s"
 msgstr "Sub-sleutel: %s"
 
-#: ../src/pakfire/keyring.py:92
+#: ../python/pakfire/keyring.py:90
 msgid "This key has expired!"
 msgstr "Deze sleutel is verlopen!"
 
-#: ../src/pakfire/keyring.py:95
+#: ../python/pakfire/keyring.py:93
 msgid "This is a secret key."
 msgstr "Dit is een geheime sleutel."
 
-#: ../src/pakfire/keyring.py:103
+#: ../python/pakfire/keyring.py:101
 msgid "This key does not expire."
 msgstr "Deze sleutel verloopt niet."
 
-#: ../src/pakfire/keyring.py:151
+#: ../python/pakfire/keyring.py:149
 #, python-format
 msgid "Generating new key for %(realname)s <%(email)s>..."
 msgstr "Genereren van nieuwe sleutel voor %(realname)s <%(email)s>..."
 
-#: ../src/pakfire/keyring.py:152
+#: ../python/pakfire/keyring.py:150
 msgid "This may take a while..."
 msgstr "Dit kan even duren..."
 
-#: ../src/pakfire/keyring.py:171
+#: ../python/pakfire/keyring.py:169
 #, python-format
 msgid "Successfully imported %s."
 msgstr "%s succesvol geïmporteerd."
 
-#: ../src/pakfire/keyring.py:191
+#: ../python/pakfire/keyring.py:189
 msgid "Host key:"
 msgstr "Hostsleutel:"
 
-#: ../src/pakfire/keyring.py:198
+#: ../python/pakfire/keyring.py:196
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
-"WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar de geheime sleutel "
-"ontbreekt!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar de geheime sleutel ontbreekt!"
 
-#: ../src/pakfire/keyring.py:201
+#: ../python/pakfire/keyring.py:199
 #, python-format
 msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr ""
-"WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar niet gevonden!"
+msgstr "WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar niet gevonden!"
 
-#: ../src/pakfire/keyring.py:203
+#: ../python/pakfire/keyring.py:201
 msgid "No host key available or configured."
 msgstr "Geen hostsleutel beschikbaar of geconfigureerd."
 
-#: ../src/pakfire/packages/base.py:99
+#: ../python/pakfire/packages/base.py:99
 msgid "Name"
 msgstr "Naam"
 
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:404
+#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:404
 msgid "Version"
 msgstr "Versie"
 
-#: ../src/pakfire/packages/base.py:111
+#: ../python/pakfire/packages/base.py:111
 msgid "Release"
 msgstr "Uitgave"
 
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:405
+#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:405
 msgid "Size"
 msgstr "Grootte"
 
-#: ../src/pakfire/packages/base.py:119
+#: ../python/pakfire/packages/base.py:119
 msgid "Installed size"
 msgstr "Geïnstalleerde grootte"
 
-#: ../src/pakfire/packages/base.py:125
+#: ../python/pakfire/packages/base.py:125
 msgid "Repo"
 msgstr "Repo"
 
-#: ../src/pakfire/packages/base.py:128
+#: ../python/pakfire/packages/base.py:128
 msgid "Summary"
 msgstr "Samenvatting"
 
-#: ../src/pakfire/packages/base.py:129
+#: ../python/pakfire/packages/base.py:129
 msgid "Groups"
 msgstr "Groepen"
 
-#: ../src/pakfire/packages/base.py:130
+#: ../python/pakfire/packages/base.py:130
 msgid "URL"
 msgstr "URL"
 
-#: ../src/pakfire/packages/base.py:131
+#: ../python/pakfire/packages/base.py:131
 msgid "License"
 msgstr "Licentie"
 
-#: ../src/pakfire/packages/base.py:134
+#: ../python/pakfire/packages/base.py:134
 msgid "Description"
 msgstr "Omschrijving"
 
-#: ../src/pakfire/packages/base.py:141
+#: ../python/pakfire/packages/base.py:141
 msgid "Maintainer"
 msgstr "Onderhouder"
 
-#: ../src/pakfire/packages/base.py:143
+#: ../python/pakfire/packages/base.py:143
 msgid "Vendor"
 msgstr "Leverancier"
 
-#: ../src/pakfire/packages/base.py:145
+#: ../python/pakfire/packages/base.py:145
 msgid "UUID"
 msgstr "UUID"
 
-#: ../src/pakfire/packages/base.py:146
+#: ../python/pakfire/packages/base.py:146
 msgid "Build ID"
 msgstr "Build ID"
 
-#: ../src/pakfire/packages/base.py:147
+#: ../python/pakfire/packages/base.py:147
 msgid "Build date"
 msgstr "Build datum"
 
-#: ../src/pakfire/packages/base.py:150
+#: ../python/pakfire/packages/base.py:150
 msgid "Signatures"
 msgstr "Ondertekeningen"
 
-#: ../src/pakfire/packages/base.py:155
+#: ../python/pakfire/packages/base.py:155
 msgid "Provides"
 msgstr "Levert"
 
-#: ../src/pakfire/packages/base.py:160
+#: ../python/pakfire/packages/base.py:160
 msgid "Pre-requires"
 msgstr "Pre-vereist"
 
-#: ../src/pakfire/packages/base.py:165
+#: ../python/pakfire/packages/base.py:165
 msgid "Requires"
 msgstr "Vereist"
 
-#: ../src/pakfire/packages/base.py:170
+#: ../python/pakfire/packages/base.py:170
 msgid "Conflicts"
 msgstr "Conflicteert"
 
-#: ../src/pakfire/packages/base.py:175
+#: ../python/pakfire/packages/base.py:175
 msgid "Obsoletes"
 msgstr "Overbodig"
 
-#: ../src/pakfire/packages/base.py:180
+#: ../python/pakfire/packages/base.py:180
 msgid "Recommends"
 msgstr "Adviseert"
 
-#: ../src/pakfire/packages/base.py:185
+#: ../python/pakfire/packages/base.py:185
 msgid "Suggests"
 msgstr "Stelt voor"
 
-#: ../src/pakfire/packages/base.py:193
+#: ../python/pakfire/packages/base.py:193
 msgid "File"
 msgstr "Bestand"
 
-#: ../src/pakfire/packages/base.py:383
+#: ../python/pakfire/packages/base.py:383
 msgid "Not set"
 msgstr "Niet ingesteld"
 
-#: ../src/pakfire/packages/base.py:570
+#: ../python/pakfire/packages/base.py:570
 #, python-format
 msgid "Config file saved as %s."
 msgstr "Configuratiebestand opgeslagen als %s."
 
-#: ../src/pakfire/packages/base.py:575
+#: ../python/pakfire/packages/base.py:575
 #, python-format
 msgid "Preserving datafile '/%s'"
 msgstr "Bewaren van databestand '/%s'"
 
-#: ../src/pakfire/packages/file.py:82
+#: ../python/pakfire/packages/file.py:80
 #, python-format
 msgid "Filename: %s"
 msgstr "Bestandsnaam: %s"
 
-#: ../src/pakfire/packages/file.py:184
+#: ../python/pakfire/packages/file.py:181
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
 msgstr "Bestand in archief mist bestand-metadata: %s. Overslaan."
 
-#: ../src/pakfire/packages/file.py:240
+#: ../python/pakfire/packages/file.py:237
 #, python-format
 msgid "Config file created as %s"
 msgstr "Configuratiebestand aangemaakt als %s"
 
-#: ../src/pakfire/packages/file.py:245
+#: ../python/pakfire/packages/file.py:242
 #, python-format
 msgid "Don't overwrite already existing datafile '/%s'"
 msgstr "Overschrijf niet het reeds bestaande databestand '/%s'"
 
-#: ../src/pakfire/packages/file.py:259
+#: ../python/pakfire/packages/file.py:256
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr "Kan bestand /%s niet verwijderen"
 
-#: ../src/pakfire/packages/lexer.py:756
+#: ../python/pakfire/packages/lexer.py:756
 #, python-format
 msgid "Template does not exist: %s"
 msgstr "Template bestaat niet: %s"
 
-#: ../src/pakfire/packages/make.py:83
+#: ../python/pakfire/packages/make.py:83
 msgid "Package name is undefined."
 msgstr "Pakketnaam is ongedefinieerd."
 
-#: ../src/pakfire/packages/make.py:86
+#: ../python/pakfire/packages/make.py:86
 msgid "Package version is undefined."
 msgstr "Pakketversie is ongedefinieerd."
 
-#: ../src/pakfire/packages/make.py:443
+#: ../python/pakfire/packages/make.py:443
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
 msgstr "Zoeken naar automatische afhankelijkheden voor %s..."
 
-#: ../src/pakfire/packages/make.py:497
+#: ../python/pakfire/packages/make.py:497
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
 msgstr "Regular expression is ongeldig en wordt overgeslagen: %s"
 
 #. Let the user know what has been done.
-#: ../src/pakfire/packages/make.py:513
+#: ../python/pakfire/packages/make.py:513
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr "Filter '%(pattern)s' filterde %(dep)s."
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:400
-#: ../src/pakfire/packages/packager.py:714
+#: ../python/pakfire/packages/packager.py:400
+#: ../python/pakfire/packages/packager.py:714
 msgid "Packaging"
 msgstr "Inpakken"
 
-#: ../src/pakfire/packages/packager.py:742
+#: ../python/pakfire/packages/packager.py:742
 #, python-format
 msgid "Building source package %s:"
 msgstr "Building bronpakket %s:"
 
-#: ../src/pakfire/packages/tar.py:87
+#: ../python/pakfire/packages/tar.py:87
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Kan bestand: /%(src)s - %(dst)s niet uitpakken."
 
-#: ../src/pakfire/repository/__init__.py:93
+#: ../python/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
 msgstr "Initialiseren van repositories..."
 
-#: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
-msgstr ""
-"Het formaat van de database is niet ondersteund in deze versie van pakfire."
+#: ../python/pakfire/repository/database.py:127
+msgid ""
+"The format of the database is not supported by this version of pakfire."
+msgstr "Het formaat van de database is niet ondersteund in deze versie van pakfire."
 
-#: ../src/pakfire/repository/database.py:229
+#: ../python/pakfire/repository/database.py:238
 #, python-format
 msgid "Cannot use database with version greater than %s."
 msgstr "Kan database met versie groter dan %s niet gebruiken."
 
-#: ../src/pakfire/repository/database.py:231
+#: ../python/pakfire/repository/database.py:240
 #, python-format
 msgid "Migrating database from format %(old)s to %(new)s."
 msgstr "Migreren van database van formaat %(old)s naar %(new)s."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:123
+#: ../python/pakfire/repository/local.py:123
 #, python-format
 msgid "%s: Adding packages..."
 msgstr "%s: Voegt pakketten toe..."
 
 #. Make a nice progress bar.
-#: ../src/pakfire/repository/local.py:229
+#: ../python/pakfire/repository/local.py:229
 msgid "Compressing database..."
 msgstr "Comprimeren van database..."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:287
+#: ../python/pakfire/repository/local.py:287
 #, python-format
 msgid "%s: Reading packages..."
 msgstr "%s: Inlezen van pakketten..."
 
-#: ../src/pakfire/repository/remote.py:151
+#: ../python/pakfire/repository/remote.py:151
 #, python-format
 msgid "No metadata available for repository %s. Cannot download any."
 msgstr "Geen metadata beschikbaar voor repository %s. Kan niets downloaden."
 
-#: ../src/pakfire/repository/remote.py:176
+#: ../python/pakfire/repository/remote.py:176
 #, python-format
 msgid "Could not update metadata for %s from any mirror server"
 msgstr "Kan de metadata niet bijwerken voor %s van geen van de mirror servers"
 
-#: ../src/pakfire/repository/remote.py:185
+#: ../python/pakfire/repository/remote.py:185
 msgid "The downloaded metadata was less recent than the current one."
 msgstr "De gedownloade metadata was minder recent dan de huidige."
 
-#: ../src/pakfire/repository/remote.py:224
+#: ../python/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
 msgstr "Kan pakketdatabase voor %s niet downloaden in offline modus."
 
-#: ../src/pakfire/repository/remote.py:235
+#: ../python/pakfire/repository/remote.py:235
 #, python-format
 msgid "%s: package database"
 msgstr "%s: pakket database"
 
-#: ../src/pakfire/repository/remote.py:309
+#: ../python/pakfire/repository/remote.py:309
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
 msgstr "Kan dit bestand niet downloaden in offline modus: %s"
 
-#: ../src/pakfire/repository/remote.py:315
+#: ../python/pakfire/repository/remote.py:315
 #, python-format
 msgid "Could not download %s: %s"
 msgstr "Kan %s niet downloaden: %s"
 
-#: ../src/pakfire/repository/remote.py:340
+#: ../python/pakfire/repository/remote.py:340
 msgid "The checksum of the downloaded file did not match."
 msgstr "Het controlegetal van het gedownloade bestand komt niet overeen."
 
-#: ../src/pakfire/repository/remote.py:341
+#: ../python/pakfire/repository/remote.py:341
 #, python-format
 msgid "Expected %(good)s but got %(bad)s."
 msgstr "Verwachtte %(good)s, maar kreeg %(bad)s."
 
-#: ../src/pakfire/repository/remote.py:342
+#: ../python/pakfire/repository/remote.py:342
 msgid "Trying an other mirror."
 msgstr "Probeert een andere mirror."
 
 #. Create a progressbar.
-#: ../src/pakfire/repository/system.py:59
+#: ../python/pakfire/repository/system.py:59
 msgid "Loading installed packages"
 msgstr "Laden van geïnstalleerde pakketten"
 
-#: ../src/pakfire/satsolver.py:329
+#: ../python/pakfire/satsolver.py:329
 #, python-format
 msgid "Dependency solving finished in %.2f ms"
 msgstr "Afhandelen van afhankelijkheden is beëindigd in %.2f ms"
 
-#: ../src/pakfire/satsolver.py:344 ../src/pakfire/satsolver.py:370
+#: ../python/pakfire/satsolver.py:344 ../python/pakfire/satsolver.py:370
 msgid "The solver returned one problem:"
 msgstr "De solver geeft een probleem terug:"
 
 #. Ask the user if he or she want to modify the request. If not, just exit.
-#: ../src/pakfire/satsolver.py:386
+#: ../python/pakfire/satsolver.py:386
 msgid "Do you want to manually alter the request?"
 msgstr "Wilt u echt het verzoek handmatig aanpassen?"
 
-#: ../src/pakfire/satsolver.py:389
+#: ../python/pakfire/satsolver.py:389
 msgid "You can now try to satisfy the solver by modifying your request."
 msgstr "U kunt de solver nogmaals proberen door het verzoek aan te passen."
 
-#: ../src/pakfire/satsolver.py:394
+#: ../python/pakfire/satsolver.py:394
 msgid "Which problem to you want to resolve?"
 msgstr "Welk probleem wilt u oplossen?"
 
-#: ../src/pakfire/satsolver.py:396
+#: ../python/pakfire/satsolver.py:396
 msgid "Press enter to try to re-solve the request."
 msgstr "Geef enter om het verzoek op te lossen."
 
-#: ../src/pakfire/satsolver.py:427
+#: ../python/pakfire/satsolver.py:427
 #, python-format
 msgid "    Solution: %s"
 msgstr "Oplossing: %s"
 
-#: ../src/pakfire/satsolver.py:436
+#: ../python/pakfire/satsolver.py:436
 msgid "    Solutions:"
 msgstr "Oplossingen:"
 
-#: ../src/pakfire/server.py:279 ../src/pakfire/system.py:149
+#: ../python/pakfire/server.py:278 ../python/pakfire/system.py:132
 msgid "Could not be determined"
 msgstr "Kon niet worden bepaald"
 
-#: ../src/pakfire/shell.py:84
+#: ../python/pakfire/shell.py:84
 #, python-format
 msgid "Executing command: %s in %s"
 msgstr "Uitvoeren van commando: %s in %s"
 
-#: ../src/pakfire/shell.py:123
+#: ../python/pakfire/shell.py:123
 #, python-format
 msgid "Command exceeded timeout (%(timeout)d): %(command)s"
 msgstr "Commando heeft time-out overschreden (%(timeout)d): %(command)s"
 
-#: ../src/pakfire/shell.py:129
+#: ../python/pakfire/shell.py:129
 #, python-format
 msgid "Child returncode was: %s"
 msgstr "Child returncode was: %s"
 
-#: ../src/pakfire/shell.py:132
+#: ../python/pakfire/shell.py:132
 #, python-format
 msgid "Command failed: %s"
 msgstr "Commando mislukt: %s"
 
-#: ../src/pakfire/transaction.py:94
+#: ../python/pakfire/transaction.py:94
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr ""
-"Bestand %(name)s van %(pkg1)s conflicteert met bestand van pakket %(pkg2)s"
+msgstr "Bestand %(name)s van %(pkg1)s conflicteert met bestand van pakket %(pkg2)s"
 
-#: ../src/pakfire/transaction.py:100
+#: ../python/pakfire/transaction.py:100
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
 msgstr "Bestand %(name)s van %(pkg)s conflicteert met bestanden van %(pkgs)s"
 
-#: ../src/pakfire/transaction.py:106
+#: ../python/pakfire/transaction.py:106
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
-"Bestand %(name)s veroorzaakte een mislukte transactietest met onbekende "
-"oorzaak"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
+msgstr "Bestand %(name)s veroorzaakte een mislukte transactietest met onbekende oorzaak"
 
-#: ../src/pakfire/transaction.py:114
+#: ../python/pakfire/transaction.py:114
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Er is niet voldoende diskruimte over op %(name)s. Heb minstens %(size)s "
-"nodig om transactie uit te voeren."
+msgstr "Er is niet voldoende diskruimte over op %(name)s. Heb minstens %(size)s nodig om transactie uit te voeren."
 
-#: ../src/pakfire/transaction.py:327
+#: ../python/pakfire/transaction.py:327
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr "Onvoldoende ruimte om %s pakketten te downloaden."
 
-#: ../src/pakfire/transaction.py:330
+#: ../python/pakfire/transaction.py:330
 msgid "Downloading packages:"
 msgstr "Binnenhalen pakketten:"
 
-#: ../src/pakfire/transaction.py:404
+#: ../python/pakfire/transaction.py:404
 msgid "Package"
 msgstr "Pakket"
 
-#: ../src/pakfire/transaction.py:409
+#: ../python/pakfire/transaction.py:409
 msgid "Installing:"
 msgstr "Installeert:"
 
-#: ../src/pakfire/transaction.py:410
+#: ../python/pakfire/transaction.py:410
 msgid "Reinstalling:"
 msgstr "Herinstalleren:"
 
-#: ../src/pakfire/transaction.py:411
+#: ../python/pakfire/transaction.py:411
 msgid "Updating:"
 msgstr "Bijwerken:"
 
-#: ../src/pakfire/transaction.py:412
+#: ../python/pakfire/transaction.py:412
 msgid "Downgrading:"
 msgstr "Downgrading:"
 
-#: ../src/pakfire/transaction.py:413
+#: ../python/pakfire/transaction.py:413
 msgid "Removing:"
 msgstr "Verwijdert:"
 
-#: ../src/pakfire/transaction.py:419
+#: ../python/pakfire/transaction.py:419
 msgid "Transaction Summary"
 msgstr "Transactie samenvatting"
 
-#: ../src/pakfire/transaction.py:426
+#: ../python/pakfire/transaction.py:426
 msgid "package"
 msgstr "pakket"
 
-#: ../src/pakfire/transaction.py:432
+#: ../python/pakfire/transaction.py:432
 #, python-format
 msgid "Total download size: %s"
 msgstr "Totale download grootte: %s"
 
-#: ../src/pakfire/transaction.py:436
+#: ../python/pakfire/transaction.py:436
 #, python-format
 msgid "Installed size: %s"
 msgstr "Geïnstalleerde grootte: %s"
 
-#: ../src/pakfire/transaction.py:439
+#: ../python/pakfire/transaction.py:439
 #, python-format
 msgid "Freed size: %s"
 msgstr "Vrijgemaakte grootte: %s"
 
-#: ../src/pakfire/transaction.py:450
+#: ../python/pakfire/transaction.py:450
 msgid "Is this okay?"
 msgstr "Is dit in orde?"
 
-#: ../src/pakfire/transaction.py:456
+#: ../python/pakfire/transaction.py:456
 msgid "Running Transaction Test"
 msgstr "Draait transactietest"
 
-#: ../src/pakfire/transaction.py:468
+#: ../python/pakfire/transaction.py:468
 msgid "Transaction Test Succeeded"
 msgstr "Transactietest was succesvol"
 
 #. Make a nice progressbar.
-#: ../src/pakfire/transaction.py:501
+#: ../python/pakfire/transaction.py:501
 msgid "Verifying signatures..."
 msgstr "Verifiëren ondertekeningen..."
 
-#: ../src/pakfire/transaction.py:533
+#: ../python/pakfire/transaction.py:533
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr "%s ondertekening-fout(en) gevonden!"
 
-#: ../src/pakfire/transaction.py:538
+#: ../python/pakfire/transaction.py:538
 msgid "Going on because we are running in permissive mode."
 msgstr "Doorgaan omdat we in permissive modus draaien."
 
-#: ../src/pakfire/transaction.py:539
+#: ../python/pakfire/transaction.py:539
 msgid "This is dangerous!"
 msgstr "Dit is gevaarlijk!"
 
-#: ../src/pakfire/transaction.py:560
+#: ../python/pakfire/transaction.py:560
 msgid "Running transaction"
 msgstr "Lopende transactie"
 
-#: ../src/pakfire/util.py:68
+#: ../python/pakfire/util.py:68
 #, python-format
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-#: ../src/pakfire/util.py:247
+#: ../python/pakfire/util.py:260
 msgid "Killing orphans..."
 msgstr "Stoppen van orphans..."
 
-#: ../src/pakfire/util.py:254
+#: ../python/pakfire/util.py:267
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "Proces ID %s draait nog steeds in chroot. Stoppen..."
 
-#: ../src/pakfire/util.py:266
+#: ../python/pakfire/util.py:279
 msgid "Waiting for processes to terminate..."
 msgstr "Wachten op het afsluiten van de processen..."
 
-#~ msgid "Could not send a keepalive message to the hub."
-#~ msgstr "Kan geen keepalive bericht sturen naar de hub."
+#: ../python/src/problem.c:159
+#, c-format
+msgid "%s does not belong to a distupgrade repository"
+msgstr "%s behoort niet tot een distro-upgrade repository"
 
-#~ msgid "Could not update the host information."
-#~ msgstr "Kan de host-informatie niet bijwerken."
+#: ../python/src/problem.c:166
+#, c-format
+msgid "%s has inferior architecture"
+msgstr "%s heeft een inferieure architectuur"
 
-#~ msgid "Less than 2GB of free space. Cannot request a new job."
-#~ msgstr "Minder dan 2GB vrije schijfruimte. Kan geen nieuwe taak aanmaken."
+#: ../python/src/problem.c:173
+#, c-format
+msgid "problem with installed package %s"
+msgstr "probleem met geïnstalleerd pakket %s"
 
-#~ msgid "XMLRPC protocol error:"
-#~ msgstr "XMLRPC protocolfout:"
+#: ../python/src/problem.c:179
+#, c-format
+msgid "conflicting requests"
+msgstr "conflicterende verzoeken"
 
-#~ msgid "URL: %s"
-#~ msgstr "URL: %s"
+#: ../python/src/problem.c:184
+#, c-format
+msgid "nothing provides requested %s"
+msgstr "%s kan niet geleverd worden"
 
-#~ msgid "  HTTP headers:"
-#~ msgstr "HTTP headers:"
+#: ../python/src/problem.c:190
+#, c-format
+msgid "some dependency problem"
+msgstr "enkele afhankelijkheidsproblemen"
 
-#~ msgid "Error code: %s"
-#~ msgstr "Foutcode: %s"
+#: ../python/src/problem.c:195
+#, c-format
+msgid "package %s is not installable"
+msgstr "pakket %s is niet installeerbaar"
 
-#~ msgid "Error message: %s"
-#~ msgstr "Foutmelding: %s"
+#: ../python/src/problem.c:202
+#, c-format
+msgid "nothing provides %s needed by %s"
+msgstr "%s kan niet geleverd worden, noodzakelijk voor %s"
 
-#~ msgid "Trying again in %(timeout)s second(s). %(tries)s tries left."
-#~ msgstr ""
-#~ "Opnieuw proberen over %(timeout)s second(en). %(tries)s pogingen over."
+#: ../python/src/problem.c:209
+#, c-format
+msgid "cannot install both %s and %s"
+msgstr "kan %s en %s niet tegelijk installeren"
 
-#~ msgid "Maximum number of tries was reached. Giving up."
-#~ msgstr "Maximum aantal pogingen is bereikt. Geeft op."
+#: ../python/src/problem.c:216
+#, c-format
+msgid "package %s conflicts with %s provided by %s"
+msgstr "pakket %s conflicteert met %s geleverd door %s"
 
-#~ msgid ""
-#~ "There has been an error when trying to import one or more of the modules, "
-#~ "that are required to run Pakfire."
-#~ msgstr ""
-#~ "Er heeft zich een fout voorgedaan bij het importeren van een of meer "
-#~ "modules die noodzakelijk zijn om Pakfire te draaien."
+#: ../python/src/problem.c:224
+#, c-format
+msgid "package %s obsoletes %s provided by %s"
+msgstr "pakket %s maakt %s geleverd door %s overbodig"
 
-#~ msgid "Please check your installation of Pakfire."
-#~ msgstr "Controleer uw Pakfire installatie."
+#: ../python/src/problem.c:232
+#, c-format
+msgid "installed package %s obsoletes %s provided by %s"
+msgstr "geïnstalleerd pakket %s maakt %s geleverd door %s overbodig"
 
-#~ msgid "The error that lead to this:"
-#~ msgstr "De fout die hier naar leidt:"
+#: ../python/src/problem.c:240
+#, c-format
+msgid "package %s implicitely obsoletes %s provided by %s"
+msgstr "pakket %s maakt %s geleverd door %s impliciet overbodig"
 
-#~ msgid "An error has occured when running Pakfire."
-#~ msgstr "Er heeft zich een fout voorgedaan tijdens het draaien van Pakfire."
+#: ../python/src/problem.c:248
+#, c-format
+msgid "package %s requires %s, but none of the providers can be installed"
+msgstr "pakket %s vereist %s, maar geen van de aanbieders kan worden geïnstalleerd"
 
-#~ msgid "Error message:"
-#~ msgstr "Foutmelding:"
+#: ../python/src/problem.c:255
+#, c-format
+msgid "package %s conflicts with %s provided by itself"
+msgstr "pakket %s conflicteert met %s welke door zichzelf is geleverd"
 
-#~ msgid "Further description:"
-#~ msgstr "Uitgebreide omschrijving:"
+#: ../python/src/problem.c:264
+#, c-format
+msgid "bad rule type"
+msgstr "verkeerde regel-type"
+
+#: ../python/src/solution.c:86
+#, c-format
+msgid "do not keep %s installed"
+msgstr "houd %s niet geïnstalleerd"
+
+#: ../python/src/solution.c:89
+#, c-format
+msgid "do not install a solvable %s"
+msgstr "installeer niet een solvable %s"
+
+#: ../python/src/solution.c:92
+#, c-format
+msgid "do not install %s"
+msgstr "installeer %s niet"
+
+#: ../python/src/solution.c:98
+#, c-format
+msgid "do not forbid installation of %s"
+msgstr "de installatie van %s niet verbieden"
+
+#: ../python/src/solution.c:101
+#, c-format
+msgid "do not deinstall all solvables %s"
+msgstr "alle oplosbare %s niet de-installeren"
+
+#: ../python/src/solution.c:104
+#, c-format
+msgid "do not deinstall %s"
+msgstr "de-installeer %s niet"
+
+#: ../python/src/solution.c:109
+#, c-format
+msgid "do not install most recent version of %s"
+msgstr "de meest recente versie van %s niet installeren"
+
+#: ../python/src/solution.c:114
+#, c-format
+msgid "do not lock %s"
+msgstr "zet %s niet vast"
+
+#: ../python/src/solution.c:119
+#, c-format
+msgid "do something different"
+msgstr "doe iets anders"
+
+#: ../python/src/solution.c:126
+#, c-format
+msgid "keep %s despite the inferior architecture"
+msgstr "houd %s ondanks de inferieure architectuur"
+
+#: ../python/src/solution.c:129
+#, c-format
+msgid "install %s despite the inferior architecture"
+msgstr "installeer %s ondanks inferieure architectuur"
+
+#: ../python/src/solution.c:135
+#, c-format
+msgid "keep obsolete %s"
+msgstr "houd verouderde %s"
+
+#: ../python/src/solution.c:138
+#, c-format
+msgid "install %s from excluded repository"
+msgstr "installeer %s vanuit een uitgezonderde repository"
+
+#: ../python/src/solution.c:150
+#, c-format
+msgid "allow downgrade of %s to %s"
+msgstr "sta downgrade toe van %s naar %s"
+
+#: ../python/src/solution.c:154
+#, c-format
+msgid "allow architecture change of %s to %s"
+msgstr "sta architectuurverandering toe van %s naar %s"
+
+#: ../python/src/solution.c:159
+#, c-format
+msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
+msgstr "sta vendor-verandering toe van '%s' (%s) naar '%s' (%s)"
+
+#: ../python/src/solution.c:163
+#, c-format
+msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
+msgstr "sta vendor-verandering toe van '%s' (%s) naar geen vendor (%s)"
+
+#: ../python/src/solution.c:169
+#, c-format
+msgid "allow replacement of %s with %s"
+msgstr "sta vervanging toe van %s door %s"
+
+#. XXX Maybe we can make a more beautiful message here?!
+#: ../tools/pakfire-multicall.py:25
+msgid ""
+"There has been an error when trying to import one or more of the modules, "
+"that are required to run Pakfire."
+msgstr "Er heeft zich een fout voorgedaan bij het importeren van een of meer modules die noodzakelijk zijn om Pakfire te draaien."
+
+#: ../tools/pakfire-multicall.py:27
+msgid "Please check your installation of Pakfire."
+msgstr "Controleer uw Pakfire installatie."
+
+#: ../tools/pakfire-multicall.py:29
+msgid "The error that lead to this:"
+msgstr "De fout die hier naar leidt:"
+
+#: ../tools/pakfire-multicall.py:70
+msgid "An error has occured when running Pakfire."
+msgstr "Er heeft zich een fout voorgedaan tijdens het draaien van Pakfire."
+
+#: ../tools/pakfire-multicall.py:73
+msgid "Error message:"
+msgstr "Foutmelding:"
+
+#: ../tools/pakfire-multicall.py:80
+msgid "Further description:"
+msgstr "Uitgebreide omschrijving:"
