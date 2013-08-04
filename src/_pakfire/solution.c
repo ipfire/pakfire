@@ -23,7 +23,7 @@
 #include <solv/policy.h>
 #include <solv/solverdebug.h>
 
-#include "config.h"
+#include "constants.h"
 #include "problem.h"
 #include "solution.h"
 

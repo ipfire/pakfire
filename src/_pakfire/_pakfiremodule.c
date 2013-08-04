@@ -18,18 +18,15 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
 #include <Python.h>
 
+#include <libintl.h>
 #include <locale.h>
 #include <sched.h>
 #include <sys/personality.h>
 
 #include "capabilities.h"
-#include "config.h"
+#include "constants.h"
 #include "pool.h"
 #include "problem.h"
 #include "relation.h"
@@ -196,8 +193,8 @@ static PyMethodDef Transaction_methods[] = {
 void init_pakfire(void) {
 	/* Initialize locale */
 	setlocale(LC_ALL, "");
-	bindtextdomain(TEXTDOMAIN, "/usr/share/locale");
-	textdomain(TEXTDOMAIN);
+	bindtextdomain(PACKAGE_TARNAME, "/usr/share/locale");
+	textdomain(PACKAGE_TARNAME);
 
 	/* Load the python module */
 	PyObject *m, *d;

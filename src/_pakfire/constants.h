@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2011 Pakfire development team                                 #
+# Copyright (C) 2013 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -18,72 +18,16 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#ifndef _PAKFIRE_CONSTANTS_H
+#define _PAKFIRE_CONSTANTS_H
+
+#define STRING_SIZE	2048
+
+/*
+	Load all required modules for the translation.
+*/
+
+#include <libintl.h>
+#define _(x) gettext(x)
+
 #endif
-
-#include <Python.h>
-
-#include <errno.h>
-#include <sched.h>
-#include <sys/personality.h>
-#include <unistd.h>
-
-#include "config.h"
-#include "util.h"
-
-PyObject *_personality(PyObject *self, PyObject *args) {
-	unsigned long persona;
-	int ret = 0;
-
-	if (!PyArg_ParseTuple(args, "l", &persona)) {
-		/* XXX raise exception */
-		return NULL;
-	}
-
-	/* Change personality here. */
-	ret = personality(persona);
-
-	if (ret < 0) {
-		PyErr_SetString(PyExc_RuntimeError, "Could not set personality.");
-		return NULL;
-	}
-
-	return Py_BuildValue("i", ret);
-}
-
-PyObject *_sync(PyObject *self, PyObject *args) {
-	/* Just sync everything to disks. */
-	sync();
-
-	Py_RETURN_NONE;
-}
-
-PyObject *_unshare(PyObject *self, PyObject *args) {
-	int flags = 0;
-
-	if (!PyArg_ParseTuple(args, "i", &flags)) {
-		return NULL;
-	}
-
-	int ret = unshare(flags);
-	if (ret < 0) {
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
-	}
-
-	return Py_BuildValue("i", ret);
-}
-
-PyObject *version_compare(PyObject *self, PyObject *args) {
-	Pool *pool;
-	const char *evr1, *evr2;
-
-	if (!PyArg_ParseTuple(args, "Oss", &pool, &evr1, &evr2)) {
-		/* XXX raise exception */
-		return NULL;
-	}
-
-	int ret = pool_evrcmp_str(pool, evr1, evr2, EVRCMP_COMPARE);
-
-	return Py_BuildValue("i", ret);
-}

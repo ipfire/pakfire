@@ -9,7 +9,7 @@ KillMode=process
 SendSIGKILL=false
 TimeoutStopSec=0
 
-ExecStart=/usr/bin/pakfire-daemon
+ExecStart=@bindir@/pakfire-daemon
 Restart=on-failure
 
 [Install]

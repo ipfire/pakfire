@@ -5,8 +5,8 @@
  * \file rpmdb/rpmtag.h
  */
 
-#include <rpmiotypes.h>
-#include <rpmsw.h>
+#include "rpmiotypes.h"
+#include "rpmsw.h"
 
 #ifdef __cplusplus
 extern "C" {

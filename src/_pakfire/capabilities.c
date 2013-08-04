@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <sys/capability.h>
 
-#include "config.h"
+#include "constants.h"
 
 PyObject *
 get_capabilities(PyObject *self, PyObject *args) {

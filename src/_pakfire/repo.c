@@ -25,7 +25,7 @@
 #include <solv/repo_solv.h>
 #include <solv/repo_write.h>
 
-#include "config.h"
+#include "constants.h"
 #include "pool.h"
 #include "repo.h"
 #include "solvable.h"

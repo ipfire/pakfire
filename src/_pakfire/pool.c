@@ -23,7 +23,7 @@
 #include <solv/poolarch.h>
 #include <solv/solver.h>
 
-#include "config.h"
+#include "constants.h"
 #include "pool.h"
 #include "relation.h"
 #include "repo.h"

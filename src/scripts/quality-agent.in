@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_QA=/usr/lib/quality-agent
+DIR_QA="@qualityagentdir@"
 
 failed=0
 for file in ${DIR_QA}/*; do

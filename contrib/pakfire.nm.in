@@ -1,0 +1,200 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = @PACKAGE_NAME@
+version    = @PACKAGE_VERSION@
+release    = 1
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Packaging
+url        = @PACKAGE_URL@
+license    = GPLv3+
+summary    = Package installer/updater.
+
+description
+	Pakfire optains package lists from the mirrors and can install and update
+	packages.
+end
+
+source_dl  = http://source.ipfire.org/releases/pakfire/
+
+build
+	requires
+		beecrypt-devel
+		elfutils-devel
+		gettext
+		libcap-devel
+		libsolv-devel >= 0.0.0-4
+		popt-devel
+		python-devel
+		systemd-units
+		xz-devel
+	end
+
+	# libgomp was broken in earlier releases.
+	requires += gcc >= 4.6.2-4
+	requires += beecrypt >= 4.2.1-2
+
+	test
+		make check
+	end
+
+	install_cmds
+		# Remove all example repository definitions.
+		# Those will be solely provided by system-release.
+		rm -rfv %{BUILDROOT}%{sysconfdir}/pakfire/repos/*
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+
+		requires = pakfire-common = %{thisver}
+	end
+
+	package %{name}-common
+		requires
+			libsolv >= 0.0.0-4
+			pygpgme
+			python-progressbar
+			python-urlgrabber
+			system-release
+		end
+
+		files
+			%{sysconfdir}/pakfire/general.conf
+			%{bindir}/pakfire-key
+			%{libdir}/python*/site-packages/pakfire*
+			/usr/share/locale
+		end
+		configfiles = %{sysconfdir}/pakfire/general.conf
+	end
+
+	package %{name}-builder
+		summary = The Pakfire builder.
+		description
+			The tools that are needed to build new pakfire packages.
+		end
+		groups += Build
+
+		requires
+			# For --rpm-requires.
+			bash >= 4.2-7
+
+			%{name} = %{thisver}
+			quality-agent = %{thisver}
+			cpio
+			elfutils
+		end
+		provides = pakfire-build = %{thisver}
+		obsoletes = pakfire-build < %{thisver}
+
+		conflicts
+			build-essentials
+			systemd-devel < 38
+		end
+
+		configfiles
+			/etc/pakfire/builder.conf
+			/etc/pakfire/distros
+		end
+
+		files
+			/etc/pakfire/builder.conf
+			/etc/pakfire/distros
+			%{libdir}/libpakfire_preload.so
+			%{bindir}/pakfire-builder
+			%{bindir}/pakfire-server
+			/usr/lib/pakfire/*
+			!/usr/lib/pakfire/pakfire-multicall.py
+		end
+	end
+
+	package %{name}-client
+		summary = The Pakfire Hub client.
+		description
+			The pakfire client has the power to create build jobs
+			and communicate with the Pakfire Build Service.
+		end
+
+		requires
+			pakfire-common = %{thisver}
+		end
+
+		files
+			%{sysconfdir}/pakfire/client.conf
+			%{bindir}/pakfire-client
+		end
+		configfiles = %{sysconfdir}/pakfire/client.conf
+	end
+
+	package %{name}-daemon
+		summary = The Pakfire daemon.
+		description
+			The Pakfire daemon takes build jobs from the
+			Pakfire Build Service and compiles them.
+		end
+
+		requires
+			pakfire-builder = %{thisver}
+		end
+
+		files
+			%{sysconfdir}/pakfire/daemon.conf
+			%{bindir}/pakfire-daemon
+		end
+		configfiles = %{sysconfdir}/pakfire/daemon.conf
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable pakfire-daemon.service > /dev/null 2>&1 || :
+			systemctl stop pakfire-daemon.service > /dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload 2>&1 || :
+			systemctl reload-or-try-restart pakfire-daemon.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package quality-agent
+		arch = noarch
+
+		summary = The pakfire quality agent.
+		description
+			The quality agent tests resulting packages that come out
+			of the build service.
+			It is a collection of scripts that check if everything is
+			working right.
+		end
+
+		files
+			/usr/lib/pakfire/quality-agent
+			/usr/lib/quality-agent*
+		end
+
+		requires
+			gawk
+			binutils
+			coreutils
+			findutils
+			file
+			grep
+			sed
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

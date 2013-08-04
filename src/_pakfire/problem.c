@@ -20,7 +20,7 @@
 
 #include <Python.h>
 
-#include "config.h"
+#include "constants.h"
 #include "problem.h"
 #include "relation.h"
 #include "request.h"

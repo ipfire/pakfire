@@ -67,7 +67,7 @@
 
 #include <beecrypt/beecrypt.h>
 #include "hashtab.h"
-#include <rpmtag.h>
+#include "rpmtag.h"
 
 #define DW_TAG_partial_unit 0x3c
 #define DW_FORM_sec_offset 0x17
