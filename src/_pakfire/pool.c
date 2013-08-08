@@ -220,7 +220,7 @@ PyObject *Pool_providers(PoolObject *self, PyObject *args) {
 				if (i == job.count)
 					queue_push2(&job, SOLVER_SOLVABLE, *provides);
 
-				*provides++;
+				provides++;
 			}
 		}
 	}
