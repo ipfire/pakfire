@@ -370,3 +370,15 @@ src/scripts/%: src/scripts/%.in Makefile
 
 src/systemd/%: src/systemd/%.in Makefile
 	$(SED_PROCESS)
+
+# - testsuite ------------------------------------------------------------------
+
+TESTS_ENVIRONMENT = \
+	PYTHONPATH="$(top_srcdir)/.libs:$(top_srcdir)/src" \
+	topdir="$(shell pwd)"
+
+dist_check_SCRIPTS = \
+	tests/module-load.py
+
+TESTS = \
+	$(dist_check_SCRTIPS)

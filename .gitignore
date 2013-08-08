@@ -23,6 +23,7 @@
 *.mo
 *.o
 *.stamp
+*.trs
 *~
 .deps
 .dirstamp
