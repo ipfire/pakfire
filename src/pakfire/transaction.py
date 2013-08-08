@@ -35,7 +35,7 @@ log = logging.getLogger("pakfire")
 
 from constants import *
 from i18n import _
-from pakfire._pakfire import Transaction, sync
+from _pakfire import Transaction, sync
 _Transaction = Transaction
 
 PKG_DUMP_FORMAT = " %-21s %-8s %-21s %-18s %6s "
