@@ -160,7 +160,6 @@ AM_CONDITIONAL(HAVE_SYSTEMD, [test -n "$with_systemdsystemunitdir"])
 AC_CONFIG_FILES([
 	Makefile
 	po/Makefile.in
-	contrib/pakfire.nm
 	src/pakfire/__version__.py
 ])
 
