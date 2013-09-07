@@ -31,6 +31,7 @@ AUTOMAKE_OPTIONS = color-tests
 SUBDIRS = . po
 
 libexecdir = $(libdir)/pakfire
+pythondir  = $(pyexecdir)
 
 configsdir = $(sysconfdir)/pakfire
 configsdistrosdir = $(configsdir)/distros
