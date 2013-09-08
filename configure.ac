@@ -21,7 +21,7 @@
 AC_PREREQ([2.64])
 
 AC_INIT([pakfire],
-	[0.9.25],
+	[0.9.26],
 	[info@ipfire.org],
 	[pakfire],
 	[http://git.ipfire.org/?p=pakfire.git;a=summary])
