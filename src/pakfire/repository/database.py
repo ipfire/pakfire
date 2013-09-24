@@ -281,7 +281,7 @@ class DatabaseLocal(Database):
 
 				for type, deps in dependencies:
 					c.executemany("INSERT INTO dependencies(pkg, type, dependency) VALUES(?, ?, ?)",
-						((pkg_id, type, d) for d in deps))
+						((pkg_id, type, d) for d in deps.splitlines()))
 
 			c.executescript("""
 				CREATE TABLE packages_(
