@@ -194,6 +194,9 @@ class Repositories(object):
 			if repo.name == name or name == "*":
 				repo.enabled = False
 
+	def whatprovides(self, *args, **kwargs):
+		return self.pool.whatprovides(self.pakfire, *args, **kwargs)
+
 	def clean(self):
 		log.info("Cleaning up all repository caches...")
 
