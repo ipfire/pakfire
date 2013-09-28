@@ -24,7 +24,6 @@ import fnmatch
 import glob
 import hashlib
 import os
-import progressbar
 import re
 import shutil
 import sys

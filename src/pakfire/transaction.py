@@ -498,12 +498,17 @@ class Transaction(object):
 			actions.append(action)
 
 		# Make a nice progressbar.
-		p = util.make_progress(_("Verifying signatures..."), len(actions))
+		p = progressbar.ProgressBar(len(actions))
+		p.add(_("Verifying signatures..."))
+		p.add(progressbar.WidgetBar())
+		p.add(progressbar.WidgetPercentage())
 
 		# Collect all errors.
 		errors = []
 
 		try:
+			p.start()
+
 			# Do the verification for every action.
 			i = 0
 			for action in actions:
