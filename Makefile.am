@@ -60,6 +60,10 @@ DISTCHECK_CONFIGURE_FLAGS = \
 
 @INTLTOOL_POLICY_RULE@
 
+.PHONY: update-po
+update-po:
+	$(MAKE) -C po update-po
+
 # ------------------------------------------------------------------------------
 
 dist_doc_DATA = \
