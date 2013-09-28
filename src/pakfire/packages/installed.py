@@ -335,7 +335,14 @@ class DatabasePackage(Package):
 		remove_files = []
 
 		for f in files:
-			if f.name in installed_files:
+			# Try to find the if an other package owns the file.
+			# Handles packages that move files from / to /usr.
+			try:
+				filename = os.path.abspath(f.name)
+			except OSError:
+				filename = f.name
+
+			if filename in installed_files:
 				continue
 
 			remove_files.append(f)
