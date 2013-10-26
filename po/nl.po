@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-04 19:07+0200\n"
+"POT-Creation-Date: 2013-10-26 21:51+0200\n"
 "PO-Revision-Date: 2013-08-05 08:54+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/ipfire/language/"
@@ -191,37 +191,37 @@ msgstr "sta vendor-verandering toe van '%s' (%s) naar geen vendor (%s)"
 msgid "allow replacement of %s with %s"
 msgstr "sta vervanging toe van %s door %s"
 
-#: ../src/pakfire/actions.py:72
+#: ../src/pakfire/actions.py:69
 #, python-format
 msgid "%s has got no signatures"
 msgstr "%s heeft geen ondertekeningen"
 
-#: ../src/pakfire/actions.py:78
+#: ../src/pakfire/actions.py:75
 #, python-format
 msgid "%s has got no valid signatures"
 msgstr "%s heeft geen geldige ondertekeningen"
 
-#: ../src/pakfire/actions.py:221
+#: ../src/pakfire/actions.py:234
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr "Kan scriptlet niet afhandelen of onbekend type. Overgeslagen."
 
-#: ../src/pakfire/actions.py:224
+#: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
 msgstr ""
 
-#: ../src/pakfire/actions.py:230
+#: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 "Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
 
-#: ../src/pakfire/actions.py:234
+#: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 "Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
 
-#: ../src/pakfire/actions.py:273
+#: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
@@ -230,12 +230,12 @@ msgstr ""
 "De scriptlet gaf een fout:\n"
 "%s"
 
-#: ../src/pakfire/actions.py:276
+#: ../src/pakfire/actions.py:289
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
 
-#: ../src/pakfire/actions.py:280
+#: ../src/pakfire/actions.py:293
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
@@ -247,46 +247,44 @@ msgstr ""
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:294
+#: ../src/pakfire/actions.py:307
 msgid "Executing python scriptlet..."
 msgstr "Uitvoeren van python scriptlet..."
 
-#: ../src/pakfire/actions.py:319
+#: ../src/pakfire/actions.py:332
 #, python-format
 msgid "Exception occured: %s"
 msgstr "Er heeft zich een uitzondering voorgedaan: %s"
 
-#: ../src/pakfire/actions.py:392 ../src/pakfire/actions.py:430
-#: ../src/pakfire/actions.py:452 ../src/pakfire/actions.py:474
-#: ../src/pakfire/actions.py:491 ../src/pakfire/actions.py:510
+#: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
+#: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Draait transactietest voor %s"
 
-#: ../src/pakfire/actions.py:401
-msgid "Installing"
-msgstr "Installeren"
-
-#: ../src/pakfire/actions.py:439
-msgid "Updating"
-msgstr "Bijwerken"
-
-#: ../src/pakfire/actions.py:458
-msgid "Removing"
-msgstr "Verwijderen"
-
-#. Cleaning up leftover files and stuff.
-#: ../src/pakfire/actions.py:481
-msgid "Cleanup"
-msgstr "Opschonen"
-
-#: ../src/pakfire/actions.py:503
+#: ../src/pakfire/actions.py:415
 msgid "Reinstalling"
 msgstr "Herinstalleren"
 
-#: ../src/pakfire/actions.py:519
+#: ../src/pakfire/actions.py:417
+msgid "Updating"
+msgstr "Bijwerken"
+
+#: ../src/pakfire/actions.py:419
 msgid "Downgrading"
 msgstr "Downgrading"
+
+#: ../src/pakfire/actions.py:421
+msgid "Installing"
+msgstr "Installeren"
+
+#: ../src/pakfire/actions.py:469
+msgid "Cleanup"
+msgstr "Opschonen"
+
+#: ../src/pakfire/actions.py:471
+msgid "Removing"
+msgstr "Verwijderen"
 
 #: ../src/pakfire/base.py:197
 msgid "Local install repository"
@@ -304,7 +302,7 @@ msgstr "Meerdere herinstallatie kandidaten voor \"%(pattern)s\": %(pkgs)s"
 
 #: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
 #: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
-#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:396
+#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:414
 msgid "Nothing to do"
 msgstr "Niets meer te doen"
 
@@ -605,7 +603,7 @@ msgstr "Geef de naam van het uit te pakken bestand."
 msgid "Target directory where to extract to."
 msgstr "Doel-directory waar uit te pakken."
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:405
+#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:425
 msgid "Repository"
 msgstr "Repository"
 
@@ -934,7 +932,7 @@ msgid "Job: %(name)s"
 msgstr "Taak: %(name)s"
 
 #: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:404
+#: ../src/pakfire/transaction.py:423
 msgid "Arch"
 msgstr "Arch"
 
@@ -1159,7 +1157,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Draait u pakfire-build in een pakfire-container?"
 
-#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:475
+#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
 msgid "Transaction test was not successful"
 msgstr "Transactietest was niet succesvol"
 
@@ -1263,7 +1261,7 @@ msgstr "Geen hostsleutel beschikbaar of geconfigureerd."
 msgid "Name"
 msgstr "Naam"
 
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:404
+#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:427
 msgid "Version"
 msgstr "Versie"
 
@@ -1271,7 +1269,7 @@ msgstr "Versie"
 msgid "Release"
 msgstr "Uitgave"
 
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:405
+#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:426
 msgid "Size"
 msgstr "Grootte"
 
@@ -1428,12 +1426,12 @@ msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr "Filter '%(pattern)s' filterde %(dep)s."
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:400
-#: ../src/pakfire/packages/packager.py:714
+#: ../src/pakfire/packages/packager.py:399
+#: ../src/pakfire/packages/packager.py:713
 msgid "Packaging"
 msgstr "Inpakken"
 
-#: ../src/pakfire/packages/packager.py:742
+#: ../src/pakfire/packages/packager.py:741
 #, python-format
 msgid "Building source package %s:"
 msgstr "Building bronpakket %s:"
@@ -1442,6 +1440,19 @@ msgstr "Building bronpakket %s:"
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Kan bestand: /%(src)s - %(dst)s niet uitpakken."
+
+#: ../src/pakfire/progressbar.py:206
+#, fuzzy, python-format
+msgid "Elapsed Time: %s"
+msgstr "Vrijgemaakte grootte: %s"
+
+#: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
+msgid "ETA"
+msgstr ""
+
+#: ../src/pakfire/progressbar.py:231
+msgid "Time"
+msgstr ""
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
@@ -1590,25 +1601,25 @@ msgstr "Child returncode was: %s"
 msgid "Command failed: %s"
 msgstr "Commando mislukt: %s"
 
-#: ../src/pakfire/transaction.py:94
+#: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
 msgstr ""
 "Bestand %(name)s van %(pkg1)s conflicteert met bestand van pakket %(pkg2)s"
 
-#: ../src/pakfire/transaction.py:100
+#: ../src/pakfire/transaction.py:97
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
 msgstr "Bestand %(name)s van %(pkg)s conflicteert met bestanden van %(pkgs)s"
 
-#: ../src/pakfire/transaction.py:106
+#: ../src/pakfire/transaction.py:103
 #, python-format
 msgid "file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr ""
 "Bestand %(name)s veroorzaakte een mislukte transactietest met onbekende "
 "oorzaak"
 
-#: ../src/pakfire/transaction.py:114
+#: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
@@ -1617,93 +1628,93 @@ msgstr ""
 "Er is niet voldoende diskruimte over op %(name)s. Heb minstens %(size)s "
 "nodig om transactie uit te voeren."
 
-#: ../src/pakfire/transaction.py:327
+#: ../src/pakfire/transaction.py:355
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr "Onvoldoende ruimte om %s pakketten te downloaden."
 
-#: ../src/pakfire/transaction.py:330
+#: ../src/pakfire/transaction.py:358
 msgid "Downloading packages:"
 msgstr "Binnenhalen pakketten:"
 
-#: ../src/pakfire/transaction.py:404
+#: ../src/pakfire/transaction.py:424
 msgid "Package"
 msgstr "Pakket"
 
-#: ../src/pakfire/transaction.py:409
+#: ../src/pakfire/transaction.py:441
 msgid "Installing:"
 msgstr "Installeert:"
 
-#: ../src/pakfire/transaction.py:410
+#: ../src/pakfire/transaction.py:442
 msgid "Reinstalling:"
 msgstr "Herinstalleren:"
 
-#: ../src/pakfire/transaction.py:411
+#: ../src/pakfire/transaction.py:443
 msgid "Updating:"
 msgstr "Bijwerken:"
 
-#: ../src/pakfire/transaction.py:412
+#: ../src/pakfire/transaction.py:444
 msgid "Downgrading:"
 msgstr "Downgrading:"
 
-#: ../src/pakfire/transaction.py:413
+#: ../src/pakfire/transaction.py:445
 msgid "Removing:"
 msgstr "Verwijdert:"
 
-#: ../src/pakfire/transaction.py:419
+#. Append the transaction summary
+#: ../src/pakfire/transaction.py:455
 msgid "Transaction Summary"
 msgstr "Transactie samenvatting"
 
-#: ../src/pakfire/transaction.py:426
+#: ../src/pakfire/transaction.py:463
 msgid "package"
 msgstr "pakket"
 
-#: ../src/pakfire/transaction.py:432
+#: ../src/pakfire/transaction.py:468
 #, python-format
 msgid "Total download size: %s"
 msgstr "Totale download grootte: %s"
 
-#: ../src/pakfire/transaction.py:436
+#: ../src/pakfire/transaction.py:472
 #, python-format
 msgid "Installed size: %s"
 msgstr "Geïnstalleerde grootte: %s"
 
-#: ../src/pakfire/transaction.py:439
+#: ../src/pakfire/transaction.py:474
 #, python-format
 msgid "Freed size: %s"
 msgstr "Vrijgemaakte grootte: %s"
 
-#: ../src/pakfire/transaction.py:450
+#: ../src/pakfire/transaction.py:485
 msgid "Is this okay?"
 msgstr "Is dit in orde?"
 
-#: ../src/pakfire/transaction.py:456
+#: ../src/pakfire/transaction.py:491
 msgid "Running Transaction Test"
 msgstr "Draait transactietest"
 
-#: ../src/pakfire/transaction.py:468
+#: ../src/pakfire/transaction.py:503
 msgid "Transaction Test Succeeded"
 msgstr "Transactietest was succesvol"
 
-#. Make a nice progressbar.
-#: ../src/pakfire/transaction.py:501
+#: ../src/pakfire/transaction.py:536
 msgid "Verifying signatures..."
 msgstr "Verifiëren ondertekeningen..."
 
-#: ../src/pakfire/transaction.py:533
+#: ../src/pakfire/transaction.py:572
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr "%s ondertekening-fout(en) gevonden!"
 
-#: ../src/pakfire/transaction.py:538
+#: ../src/pakfire/transaction.py:577
 msgid "Going on because we are running in permissive mode."
 msgstr "Doorgaan omdat we in permissive modus draaien."
 
-#: ../src/pakfire/transaction.py:539
+#: ../src/pakfire/transaction.py:578
 msgid "This is dangerous!"
 msgstr "Dit is gevaarlijk!"
 
-#: ../src/pakfire/transaction.py:560
+#: ../src/pakfire/transaction.py:618
 msgid "Running transaction"
 msgstr "Lopende transactie"
 
@@ -1712,15 +1723,15 @@ msgstr "Lopende transactie"
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-#: ../src/pakfire/util.py:247
+#: ../src/pakfire/util.py:242
 msgid "Killing orphans..."
 msgstr "Stoppen van orphans..."
 
-#: ../src/pakfire/util.py:254
+#: ../src/pakfire/util.py:249
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "Proces ID %s draait nog steeds in chroot. Stoppen..."
 
-#: ../src/pakfire/util.py:266
+#: ../src/pakfire/util.py:261
 msgid "Waiting for processes to terminate..."
 msgstr "Wachten op het afsluiten van de processen..."

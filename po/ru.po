@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-04 19:07+0200\n"
+"POT-Creation-Date: 2013-10-26 21:51+0200\n"
 "PO-Revision-Date: 2013-08-05 08:54+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/ipfire/language/"
@@ -195,37 +195,37 @@ msgstr "разрешить изменение поставщика с '%s' (%s) 
 msgid "allow replacement of %s with %s"
 msgstr "разрешить замену %s на %s"
 
-#: ../src/pakfire/actions.py:72
+#: ../src/pakfire/actions.py:69
 #, python-format
 msgid "%s has got no signatures"
 msgstr "%s пока нет подписей"
 
-#: ../src/pakfire/actions.py:78
+#: ../src/pakfire/actions.py:75
 #, python-format
 msgid "%s has got no valid signatures"
 msgstr "%s пока нет достоверных подписей"
 
-#: ../src/pakfire/actions.py:221
+#: ../src/pakfire/actions.py:234
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr ""
 
-#: ../src/pakfire/actions.py:224
+#: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
 msgstr ""
 
-#: ../src/pakfire/actions.py:230
+#: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr "Невозможно запустить скрипт, потому что интерпретатор не доступен: %s"
 
-#: ../src/pakfire/actions.py:234
+#: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 "Невозможно запустить скрипт, потому что интерпретатор не является "
 "исполняемым: %s"
 
-#: ../src/pakfire/actions.py:273
+#: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
@@ -234,12 +234,12 @@ msgstr ""
 "Скрипт завершился с ошибкой:\n"
 "%s"
 
-#: ../src/pakfire/actions.py:276
+#: ../src/pakfire/actions.py:289
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr "Скрипт выполнялся более %s секунд и был прерван."
 
-#: ../src/pakfire/actions.py:280
+#: ../src/pakfire/actions.py:293
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
@@ -249,46 +249,44 @@ msgstr "Скрипт завершился с не обработанной ош�
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:294
+#: ../src/pakfire/actions.py:307
 msgid "Executing python scriptlet..."
 msgstr ""
 
-#: ../src/pakfire/actions.py:319
+#: ../src/pakfire/actions.py:332
 #, python-format
 msgid "Exception occured: %s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:392 ../src/pakfire/actions.py:430
-#: ../src/pakfire/actions.py:452 ../src/pakfire/actions.py:474
-#: ../src/pakfire/actions.py:491 ../src/pakfire/actions.py:510
+#: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
+#: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Выполняется тест транзакции для %s"
 
-#: ../src/pakfire/actions.py:401
-msgid "Installing"
-msgstr "Производится установка"
-
-#: ../src/pakfire/actions.py:439
-msgid "Updating"
-msgstr "Производится обновление"
-
-#: ../src/pakfire/actions.py:458
-msgid "Removing"
-msgstr "Удаление"
-
-#. Cleaning up leftover files and stuff.
-#: ../src/pakfire/actions.py:481
-msgid "Cleanup"
-msgstr "Чистка"
-
-#: ../src/pakfire/actions.py:503
+#: ../src/pakfire/actions.py:415
 msgid "Reinstalling"
 msgstr "Переустановка"
 
-#: ../src/pakfire/actions.py:519
+#: ../src/pakfire/actions.py:417
+msgid "Updating"
+msgstr "Производится обновление"
+
+#: ../src/pakfire/actions.py:419
 msgid "Downgrading"
 msgstr "Производится откат"
+
+#: ../src/pakfire/actions.py:421
+msgid "Installing"
+msgstr "Производится установка"
+
+#: ../src/pakfire/actions.py:469
+msgid "Cleanup"
+msgstr "Чистка"
+
+#: ../src/pakfire/actions.py:471
+msgid "Removing"
+msgstr "Удаление"
 
 #: ../src/pakfire/base.py:197
 msgid "Local install repository"
@@ -306,7 +304,7 @@ msgstr ""
 
 #: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
 #: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
-#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:396
+#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:414
 msgid "Nothing to do"
 msgstr "Нет заданий"
 
@@ -608,7 +606,7 @@ msgstr ""
 msgid "Target directory where to extract to."
 msgstr ""
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:405
+#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:425
 msgid "Repository"
 msgstr "Репозиторий"
 
@@ -937,7 +935,7 @@ msgid "Job: %(name)s"
 msgstr "Задание: %(name)s"
 
 #: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:404
+#: ../src/pakfire/transaction.py:423
 msgid "Arch"
 msgstr "Архитектура"
 
@@ -1161,7 +1159,7 @@ msgstr ""
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Выполнить pakfire-build в контейнере pakfire?"
 
-#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:475
+#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
 msgid "Transaction test was not successful"
 msgstr "Тест транзакции не выполнен"
 
@@ -1259,7 +1257,7 @@ msgstr ""
 msgid "Name"
 msgstr "Имя"
 
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:404
+#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:427
 msgid "Version"
 msgstr "Версия"
 
@@ -1267,7 +1265,7 @@ msgstr "Версия"
 msgid "Release"
 msgstr "Релиз"
 
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:405
+#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:426
 msgid "Size"
 msgstr "Размер"
 
@@ -1424,12 +1422,12 @@ msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr ""
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:400
-#: ../src/pakfire/packages/packager.py:714
+#: ../src/pakfire/packages/packager.py:399
+#: ../src/pakfire/packages/packager.py:713
 msgid "Packaging"
 msgstr "Упаковка"
 
-#: ../src/pakfire/packages/packager.py:742
+#: ../src/pakfire/packages/packager.py:741
 #, python-format
 msgid "Building source package %s:"
 msgstr "Создание исходного пакета %s:"
@@ -1438,6 +1436,19 @@ msgstr "Создание исходного пакета %s:"
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Не удалось извлечь файл: /%(src)s - %(dst)s"
+
+#: ../src/pakfire/progressbar.py:206
+#, fuzzy, python-format
+msgid "Elapsed Time: %s"
+msgstr "Освобождено: %s."
+
+#: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
+msgid "ETA"
+msgstr ""
+
+#: ../src/pakfire/progressbar.py:231
+msgid "Time"
+msgstr ""
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
@@ -1585,22 +1596,22 @@ msgstr ""
 msgid "Command failed: %s"
 msgstr ""
 
-#: ../src/pakfire/transaction.py:94
+#: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
 msgstr ""
 
-#: ../src/pakfire/transaction.py:100
+#: ../src/pakfire/transaction.py:97
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
 msgstr ""
 
-#: ../src/pakfire/transaction.py:106
+#: ../src/pakfire/transaction.py:103
 #, python-format
 msgid "file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr ""
 
-#: ../src/pakfire/transaction.py:114
+#: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
@@ -1609,93 +1620,93 @@ msgstr ""
 "Недостаточно свободного места на %(name)s. Нужно минимум %(size)s чтобы "
 "выполнить транзакцию"
 
-#: ../src/pakfire/transaction.py:327
+#: ../src/pakfire/transaction.py:355
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr "Недостаточно места для загрузки %s пакетов."
 
-#: ../src/pakfire/transaction.py:330
+#: ../src/pakfire/transaction.py:358
 msgid "Downloading packages:"
 msgstr "Скачивание пакетов:"
 
-#: ../src/pakfire/transaction.py:404
+#: ../src/pakfire/transaction.py:424
 msgid "Package"
 msgstr "Пакет"
 
-#: ../src/pakfire/transaction.py:409
+#: ../src/pakfire/transaction.py:441
 msgid "Installing:"
 msgstr "Устанавливается"
 
-#: ../src/pakfire/transaction.py:410
+#: ../src/pakfire/transaction.py:442
 msgid "Reinstalling:"
 msgstr "Переустановка:"
 
-#: ../src/pakfire/transaction.py:411
+#: ../src/pakfire/transaction.py:443
 msgid "Updating:"
 msgstr "Обновляется"
 
-#: ../src/pakfire/transaction.py:412
+#: ../src/pakfire/transaction.py:444
 msgid "Downgrading:"
 msgstr "Откат:"
 
-#: ../src/pakfire/transaction.py:413
+#: ../src/pakfire/transaction.py:445
 msgid "Removing:"
 msgstr "Удаляется"
 
-#: ../src/pakfire/transaction.py:419
+#. Append the transaction summary
+#: ../src/pakfire/transaction.py:455
 msgid "Transaction Summary"
 msgstr "Информация о транзакции"
 
-#: ../src/pakfire/transaction.py:426
+#: ../src/pakfire/transaction.py:463
 msgid "package"
 msgstr "пакет"
 
-#: ../src/pakfire/transaction.py:432
+#: ../src/pakfire/transaction.py:468
 #, python-format
 msgid "Total download size: %s"
 msgstr "Суммарный объём загрузки: %s"
 
-#: ../src/pakfire/transaction.py:436
+#: ../src/pakfire/transaction.py:472
 #, python-format
 msgid "Installed size: %s"
 msgstr "Размер после установки: %s"
 
-#: ../src/pakfire/transaction.py:439
+#: ../src/pakfire/transaction.py:474
 #, python-format
 msgid "Freed size: %s"
 msgstr "Освобождено: %s."
 
-#: ../src/pakfire/transaction.py:450
+#: ../src/pakfire/transaction.py:485
 msgid "Is this okay?"
 msgstr "Всё верно?"
 
-#: ../src/pakfire/transaction.py:456
+#: ../src/pakfire/transaction.py:491
 msgid "Running Transaction Test"
 msgstr "Выполняю тест транзакции"
 
-#: ../src/pakfire/transaction.py:468
+#: ../src/pakfire/transaction.py:503
 msgid "Transaction Test Succeeded"
 msgstr "Тест транзакции выполнен успешно"
 
-#. Make a nice progressbar.
-#: ../src/pakfire/transaction.py:501
+#: ../src/pakfire/transaction.py:536
 msgid "Verifying signatures..."
 msgstr "Проверка подписей..."
 
-#: ../src/pakfire/transaction.py:533
+#: ../src/pakfire/transaction.py:572
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr ""
 
-#: ../src/pakfire/transaction.py:538
+#: ../src/pakfire/transaction.py:577
 msgid "Going on because we are running in permissive mode."
 msgstr ""
 
-#: ../src/pakfire/transaction.py:539
+#: ../src/pakfire/transaction.py:578
 msgid "This is dangerous!"
 msgstr "Это опасно!"
 
-#: ../src/pakfire/transaction.py:560
+#: ../src/pakfire/transaction.py:618
 msgid "Running transaction"
 msgstr "Запуск транзакции"
 
@@ -1704,15 +1715,15 @@ msgstr "Запуск транзакции"
 msgid "%s [y/N]"
 msgstr "%s [Да/Нет]"
 
-#: ../src/pakfire/util.py:247
+#: ../src/pakfire/util.py:242
 msgid "Killing orphans..."
 msgstr "Уничтожение сирот..."
 
-#: ../src/pakfire/util.py:254
+#: ../src/pakfire/util.py:249
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "Процесс с ID %s все еще работает в chroot. Останавливаю..."
 
-#: ../src/pakfire/util.py:266
+#: ../src/pakfire/util.py:261
 msgid "Waiting for processes to terminate..."
 msgstr "Ожидание завершения процесса..."
