@@ -108,10 +108,19 @@ class RepositorySystem(base.RepositoryFactory):
 		self.index.add_package(pkg)
 
 	def rem_package(self, pkg):
-		assert isinstance(pkg, packages.SolvPackage), pkg
+		if isinstance(pkg, packages.SolvPackage):
+			pkg = pkg.get_from_db()
+
+			# If the package can not be found in the database,
+			# we cannot remove it. This does not seem right...
+			if pkg is None:
+				return
 
 		# Remove package from the database.
 		self.db.rem_package(pkg)
+
+	def get_package_by_uuid(self, uuid):
+		return self.db.get_package_by_uuid(uuid)
 
 	@property
 	def filelist(self):
