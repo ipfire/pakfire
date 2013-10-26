@@ -483,6 +483,9 @@ class Package(object):
 	def scriptlets(self):
 		return self.metadata.get("PKG_SCRIPTLETS", "").splitlines()
 
+	def get_scriptlet(self, action):
+		raise NotImplementedError
+
 	@property
 	def filelist(self):
 		raise NotImplementedError

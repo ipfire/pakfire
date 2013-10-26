@@ -406,6 +406,17 @@ class DatabaseLocal(Database):
 					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				((f.name, pkg_id, f.size, f.is_config(), f.is_datafile(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime, f.capabilities or "") for f in pkg.filelist))
 
+			# Add scriptlets
+			for scriptlet_action in SCRIPTS:
+				scriptlet = pkg.get_scriptlet(scriptlet_action)
+
+				# If there is no scriptlet, just skip to the next one.
+				if not scriptlet:
+					continue
+
+				c.execute("INSERT INTO scriptlets(pkg, action, scriptlet) VALUES(?, ?, ?)",
+					(pkg_id, scriptlet_action, scriptlet))
+
 		except:
 			raise
 
@@ -422,6 +433,7 @@ class DatabaseLocal(Database):
 		# First, delete all files from the database and then delete the pkg itself.
 		c = self.cursor()
 		c.execute("DELETE FROM files WHERE pkg = ?", (pkg.id,))
+		c.execute("DELETE FROM scriptlets WHERE pkg = ?", (pkg.id,))
 		c.execute("DELETE FROM packages WHERE id = ?", (pkg.id,))
 		c.close()
 
