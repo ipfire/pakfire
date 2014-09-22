@@ -33,15 +33,12 @@ from constants import *
 from i18n import _
 
 class Action(object):
-	def __init__(self, pakfire, pkg):
+	def __init__(self, pakfire, pkg_solv, pkg_bin=None):
 		self.pakfire = pakfire
-		self.pkg_solv = self.pkg = pkg
 
-		# Try to get the binary version of the package from the cache if
-		# any.
-		binary_package = self.pkg.get_from_cache()
-		if binary_package:
-			self.pkg = binary_package
+		self.pkg_solv = pkg_solv
+		if pkg_bin:
+			self.pkg_bin = pkg_bin
 
 		self.init()
 
@@ -60,7 +57,7 @@ class Action(object):
 		return filelist
 
 	def verify(self):
-		assert self.pkg, "No package! %s" % self.pkg_solv
+		assert self.pkg, "No package! %s" % self.pkg
 		assert self.pkg.repo, "Package has no repository? %s" % self.pkg
 
 		# Local packages need no verification.
@@ -78,15 +75,31 @@ class Action(object):
 			raise SignatureError, _("%s has got no valid signatures") % self.pkg.friendly_name
 
 	@property
-	def needs_download(self):
-		return self.type in ("install", "reinstall", "upgrade", "downgrade", "change",) \
-			and not isinstance(self.pkg, packages.BinaryPackage)
+	def pkg(self):
+		"""
+			Return the best version of the package we can use.
+		"""
+		return self.pkg_bin or self.pkg_solv
 
-	def download(self, text, logger=None):
-		if not self.needs_download:
-			return
+	def get_binary_package(self):
+		"""
+			Tries to find the binary version of the package in the local cache.
+		"""
+		return self.pkg_solv.get_from_cache()
 
-		self.pkg = self.pkg.download(text, logger=logger)
+	def _get_pkg_bin(self):
+		if not hasattr(self, "_pkg_bin"):
+			self._pkg_bin = self.get_binary_package()
+
+		return self._pkg_bin
+
+	def _set_pkg_bin(self, pkg):
+		if pkg and not self.pkg_solv.uuid == pkg.uuid:
+			raise RuntimeError, "Not the same package: %s != %s" % (self.pkg_solv, pkg)
+
+		self._pkg_bin = pkg
+
+	pkg_bin = property(_get_pkg_bin, _set_pkg_bin)
 
 	def run(self):
 		raise NotImplementedError
@@ -398,7 +411,16 @@ class ActionInstall(Action):
 		# Add package to the database.
 		self.local.add_package(self.pkg)
 
-		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
+		if isinstance(self, ActionReinstall):
+			msg = _("Reinstalling")
+		elif isinstance(self, ActionUpdate):
+			msg = _("Updating")
+		elif isinstance(self, ActionDowngrade):
+			msg = _("Downgrading")
+		else:
+			msg = _("Installing")
+
+		self.pkg.extract(msg, prefix=self.pakfire.path)
 
 		# Check if shared objects were extracted. If this is the case, we need
 		# to run ldconfig.
@@ -423,7 +445,7 @@ class ActionInstall(Action):
 				log.debug("ldconfig is not present or not executable.")
 
 
-class ActionUpdate(Action):
+class ActionUpdate(ActionInstall):
 	type = "upgrade"
 
 	def check(self, check):
@@ -432,21 +454,9 @@ class ActionUpdate(Action):
 		# Check if this package can be updated.
 		check.update(self.pkg)
 
-	def run(self):
-		# Add new package to the database.
-		self.local.add_package(self.pkg)
-
-		self.pkg.extract(_("Updating"), prefix=self.pakfire.path)
-
 
 class ActionRemove(Action):
 	type = "erase"
-
-	def __init__(self, *args, **kwargs):
-		Action.__init__(self, *args, **kwargs)
-
-		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
-		assert self.pkg
 
 	def check(self, check):
 		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
@@ -455,20 +465,19 @@ class ActionRemove(Action):
 		check.remove(self.pkg)
 
 	def run(self):
-		self.pkg.cleanup(_("Removing"), prefix=self.pakfire.path)
+		if isinstance(self, ActionCleanup):
+			msg = _("Cleanup")
+		else:
+			msg = _("Removing")
+
+		self.pkg.cleanup(msg, prefix=self.pakfire.path)
 
 		# Remove package from the database.
-		self.local.rem_package(self.pkg_solv)
+		self.local.rem_package(self.pkg)
 
 
-class ActionCleanup(Action):
+class ActionCleanup(ActionRemove):
 	type = "ignore"
-
-	def __init__(self, *args, **kwargs):
-		Action.__init__(self, *args, **kwargs)
-
-		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
-		assert self.pkg
 
 	def check(self, check):
 		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
@@ -476,44 +485,10 @@ class ActionCleanup(Action):
 		# Check if this package can be removed.
 		check.cleanup(self.pkg)
 
-	def run(self):
-		# Cleaning up leftover files and stuff.
-		self.pkg.cleanup(_("Cleanup"), prefix=self.pakfire.path)
 
-		# Remove package from the database.
-		self.local.rem_package(self.pkg_solv)
-
-
-class ActionReinstall(Action):
+class ActionReinstall(ActionInstall):
 	type = "reinstall"
 
-	def check(self, check):
-		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
 
-		# Check if this package can be reinstalled.
-		check.remove(self.pkg)
-		check.install(self.pkg)
-
-	def run(self):
-		# Remove package from the database and add it afterwards.
-		# Sounds weird, but fixes broken entries in the database.
-		self.local.rem_package(self.pkg_solv)
-		self.local.add_package(self.pkg)
-
-		self.pkg.extract(_("Reinstalling"), prefix=self.pakfire.path)
-
-
-class ActionDowngrade(Action):
+class ActionDowngrade(ActionInstall):
 	type = "downgrade"
-
-	def check(self, check):
-		log.debug(_("Running transaction test for %s") % self.pkg.friendly_name)
-
-		# Check if this package can be downgraded.
-		check.install(self.pkg)
-
-	def run(self):
-		# Add new package to database.
-		self.local.add_package(self.pkg)
-
-		self.pkg.extract(_("Downgrading"), prefix=self.pakfire.path)

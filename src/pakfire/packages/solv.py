@@ -247,12 +247,11 @@ class SolvPackage(base.Package):
 			path = self.repo.cache.abspath(self.cache_filename)
 			return file.BinaryPackage(self.pakfire, self.repo, path)
 
+	def get_from_db(self):
+		return self.pakfire.repos.local.get_package_by_uuid(self.uuid)
+
 	def download(self, text="", logger=None):
 		if not self.repo.local:
 			self.repo.download(self, text=text, logger=logger)
 
 		return self.get_from_cache()
-
-	def get_scriptlet(self, type):
-		# XXX TODO
-		return None

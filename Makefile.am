@@ -60,6 +60,10 @@ DISTCHECK_CONFIGURE_FLAGS = \
 
 @INTLTOOL_POLICY_RULE@
 
+.PHONY: update-po
+update-po:
+	$(MAKE) -C po update-po
+
 # ------------------------------------------------------------------------------
 
 dist_doc_DATA = \
@@ -107,6 +111,7 @@ pakfire_PYTHON = \
 	src/pakfire/keyring.py \
 	src/pakfire/logger.py \
 	src/pakfire/lzma.py \
+	src/pakfire/progressbar.py \
 	src/pakfire/satsolver.py \
 	src/pakfire/server.py \
 	src/pakfire/shell.py \

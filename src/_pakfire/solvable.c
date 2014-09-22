@@ -87,7 +87,7 @@ PyObject *Solvable_string(SolvableObject *self) {
 PyObject *Solvable_get_name(SolvableObject *self) {
 	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
 
-	const char *name = pool_id2str(solvable->repo->pool, solvable->name);
+	const char *name = pool_id2str(self->_pool, solvable->name);
 
 	return Py_BuildValue("s", name);
 }
@@ -95,7 +95,7 @@ PyObject *Solvable_get_name(SolvableObject *self) {
 PyObject *Solvable_get_evr(SolvableObject *self) {
 	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
 
-	const char *evr = pool_id2str(solvable->repo->pool, solvable->evr);
+	const char *evr = pool_id2str(self->_pool, solvable->evr);
 
 	return Py_BuildValue("s", evr);
 }
@@ -103,7 +103,7 @@ PyObject *Solvable_get_evr(SolvableObject *self) {
 PyObject *Solvable_get_arch(SolvableObject *self) {
 	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
 
-	const char *arch = pool_id2str(solvable->repo->pool, solvable->arch);
+	const char *arch = pool_id2str(self->_pool, solvable->arch);
 
 	return Py_BuildValue("s", arch);
 }
@@ -111,7 +111,7 @@ PyObject *Solvable_get_arch(SolvableObject *self) {
 PyObject *Solvable_get_vendor(SolvableObject *self) {
 	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
 
-	const char *vendor = pool_id2str(solvable->repo->pool, solvable->vendor);
+	const char *vendor = pool_id2str(self->_pool, solvable->vendor);
 
 	return Py_BuildValue("s", vendor);
 }
@@ -132,6 +132,7 @@ PyObject *Solvable_set_vendor(SolvableObject *self, PyObject *args) {
 
 PyObject *Solvable_get_repo_name(SolvableObject *self) {
 	Solvable *solvable = pool_id2solvable(self->_pool, self->_id);
+	assert(solvable->repo);
 
 	return Py_BuildValue("s", solvable->repo->name);
 }

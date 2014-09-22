@@ -84,30 +84,27 @@ def make_progress(message, maxval, eta=True, speed=False):
 	if not sys.stdout.isatty():
 		return
 
-	widgets = [
-		"  ",
-		"%-64s" % message,
-		" ",
-		progressbar.Bar(left="[", right="]"),
-		"  ",
-	]
-
-	if speed:
-		widgets += [
-			progressbar.Percentage(), " ",
-			progressbar.FileTransferSpeed(), "  "
-		]
-
-	if eta:
-		widgets += [progressbar.ETA(), "  ",]
-
 	if not maxval:
 		maxval = 1
 
-	pb = progressbar.ProgressBar(widgets=widgets, maxval=maxval)
-	pb.start()
+	pb = progressbar.ProgressBar(maxval)
+	pb.add("%-50s" % message)
 
-	return pb
+	bar = progressbar.WidgetBar()
+	pb.add(bar)
+
+	if speed:
+		percentage = progressbar.WidgetPercentage()
+		pb.add(percentage)
+
+		filetransfer = progressbar.WidgetFileTransferSpeed()
+		pb.add(filetransfer)
+
+	if eta:
+		eta = progressbar.WidgetETA()
+		pb.add(eta)
+
+	return pb.start()
 
 def rm(path, *args, **kargs):
 	"""
@@ -134,11 +131,9 @@ def rm(path, *args, **kargs):
 
 def ioctl_GWINSZ(fd):
 	try:
-		cr = struct.unpack("hh", fcntl.ioctl(fd, termios.TIOCGWINSZ, "1234"))
+		return struct.unpack("hh", fcntl.ioctl(fd, termios.TIOCGWINSZ, "1234"))
 	except:
-		return None
-
-	return cr
+		pass
 
 def terminal_size():
 	cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)

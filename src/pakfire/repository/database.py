@@ -406,6 +406,17 @@ class DatabaseLocal(Database):
 					" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				((f.name, pkg_id, f.size, f.is_config(), f.is_datafile(), f.type, f.hash1, f.mode, f.user, f.group, f.mtime, f.capabilities or "") for f in pkg.filelist))
 
+			# Add scriptlets
+			for scriptlet_action in SCRIPTS:
+				scriptlet = pkg.get_scriptlet(scriptlet_action)
+
+				# If there is no scriptlet, just skip to the next one.
+				if not scriptlet:
+					continue
+
+				c.execute("INSERT INTO scriptlets(pkg, action, scriptlet) VALUES(?, ?, ?)",
+					(pkg_id, scriptlet_action, scriptlet))
+
 		except:
 			raise
 
@@ -415,32 +426,33 @@ class DatabaseLocal(Database):
 		c.close()
 
 	def rem_package(self, pkg):
+		assert isinstance(pkg, packages.DatabasePackage), pkg
+
 		log.debug("Removing package from database: %s" % pkg.friendly_name)
 
-		assert pkg.uuid
-
-		# Get the ID of the package in the database.
-		c = self.cursor()
-		c.execute("SELECT id FROM packages WHERE uuid = ? LIMIT 1", (pkg.uuid,))
-		#c.execute("SELECT id FROM packages WHERE name = ? AND epoch = ? AND version = ?"
-		#	" AND release = ? LIMIT 1", (pkg.name, pkg.epoch, pkg.version, pkg.release,))
-
-		row = c.fetchone()
-		if not row:
-			return
-
-		id = row["id"]
-
 		# First, delete all files from the database and then delete the pkg itself.
-		c.execute("DELETE FROM files WHERE pkg = ?", (id,))
-		c.execute("DELETE FROM packages WHERE id = ?", (id,))
-
+		c = self.cursor()
+		c.execute("DELETE FROM files WHERE pkg = ?", (pkg.id,))
+		c.execute("DELETE FROM scriptlets WHERE pkg = ?", (pkg.id,))
+		c.execute("DELETE FROM packages WHERE id = ?", (pkg.id,))
 		c.close()
+
 		self.commit()
 
 	def get_package_by_id(self, id):
 		c = self.cursor()
 		c.execute("SELECT * FROM packages WHERE id = ?", (id,))
+
+		try:
+			for row in c:
+				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+
+		finally:
+			c.close()
+
+	def get_package_by_uuid(self, uuid):
+		c = self.cursor()
+		c.execute("SELECT * FROM packages WHERE uuid = ?", (uuid,))
 
 		try:
 			for row in c:
@@ -466,14 +478,12 @@ class DatabaseLocal(Database):
 	def get_package_from_solv(self, solv_pkg):
 		assert solv_pkg.uuid
 
-		c = self.db.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
+		c = self.cursor()
+		c.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
 
 		try:
-			row = c.fetchone()
-			if row is None:
-				return
-
-			return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+			for row in c:
+				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
 
 		finally:
 			c.close()

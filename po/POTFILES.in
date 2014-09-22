@@ -18,6 +18,7 @@ src/pakfire/packages/lexer.py
 src/pakfire/packages/make.py
 src/pakfire/packages/packager.py
 src/pakfire/packages/tar.py
+src/pakfire/progressbar.py
 src/pakfire/repository/__init__.py
 src/pakfire/repository/database.py
 src/pakfire/repository/local.py
