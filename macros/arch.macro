@@ -17,8 +17,12 @@ infodir           = %{datadir}/info
 mandir            = %{datadir}/man
 unitdir           = %{prefix}/lib/systemd/system
 
+# Libs are installed in /lib64 and %{prefix}/lib64 on aarch64 and x86_64
+if "%{DISTRO_ARCH}" == "aarch64"
+	lib = lib64
+end
+
 if "%{DISTRO_ARCH}" == "x86_64"
-	# Libs are installed in /lib64 and %{prefix}/lib64 on x86_64
 	lib = lib64
 end
 

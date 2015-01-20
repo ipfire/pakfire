@@ -165,7 +165,7 @@ class Distribution(object):
 		"""
 			Returns the "class" this architecture belongs to.
 		"""
-		if self.arch.startswith("arm"):
+		if self.arch.startswith("arm") or self.arch == "aarch64":
 			return "arm"
 
 		if self.arch in ("i686", "x86_64"):

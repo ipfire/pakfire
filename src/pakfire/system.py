@@ -89,6 +89,8 @@ class System(object):
 			"armv6l"    : ["armv5tel",],
 			"armv7l"    : ["armv7hl", "armv5tel",],
 			"armv7hl"   : ["armv7hl", "armv5tel",],
+
+			"aarch64"   : ["aarch64",],
 		}
 
 		try:
