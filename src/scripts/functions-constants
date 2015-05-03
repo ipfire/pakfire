@@ -19,3 +19,5 @@ done
 ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/pkgconfig"
 ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/python*"
 
+# Mark for 64bit
+mark64="()(64bit)"
