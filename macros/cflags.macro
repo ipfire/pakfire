@@ -1,6 +1,6 @@
 
 # Export CFLAGS + CXXFLAGS
-GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Werror=format-security
+GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -Werror=format-security
 GLOBAL_CFLAGS  += -fexceptions -fPIC -fstack-protector-strong --param=ssp-buffer-size=4
 GLOBAL_CFLAGS  += -grecord-gcc-switches
 
@@ -12,4 +12,4 @@ CFLAGS_armv7hl  = -march=armv7-a -mfpu=vfpv3-d16  -mfloat-abi=hard -mthumb
 export CFLAGS   = %{GLOBAL_CFLAGS} %{CFLAGS_%{DISTRO_ARCH}}
 export CXXFLAGS = %{CFLAGS}
 
-export LDFLAGS  =
+export LDFLAGS  = -Wl,-z,relro
