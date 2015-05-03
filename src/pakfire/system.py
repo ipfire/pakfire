@@ -248,8 +248,8 @@ class System(object):
 			simulatneously when compiling.
 		"""
 		# Check how many processes would fit into the
-		# memory when each process takes up to 128MB.
-		multiplicator = self.memory / (128 * 1024 * 1024)
+		# memory when each process takes up to 192MB.
+		multiplicator = self.memory / (192 * 1024 * 1024)
 		multiplicator = round(multiplicator)
 
 		# Count the number of online CPU cores.
