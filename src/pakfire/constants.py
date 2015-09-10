@@ -90,6 +90,14 @@ SHELL_SCRIPT = "/usr/lib/pakfire/chroot-shell"
 SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
+MINIMAL_ENVIRONMENT = {
+	"HOME" : "/root",
+	"LANG" : "C",
+	"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
+	"PS1"  : "\u:\w\$ ",
+	"TERM" : "vt100",
+}
+
 SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"
 SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
 

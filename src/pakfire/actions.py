@@ -145,6 +145,7 @@ class Action(object):
 
 		args = {
 			"cwd"         : cwd,
+			"env"         : MINIMAL_ENVIRONMENT,
 			"logger"      : self.get_logger(),
 			"personality" : self.pakfire.distro.personality,
 			"shell"       : False,

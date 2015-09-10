@@ -638,13 +638,11 @@ class BuildEnviron(object):
 
 	@property
 	def environ(self):
-		env = {
+		env = MINIMAL_ENVIRONMENT.copy()
+		env.update({
 			# Add HOME manually, because it is occasionally not set
 			# and some builds get in trouble then.
-			"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
-			"HOME" : "/root",
 			"TERM" : os.environ.get("TERM", "vt100"),
-			"PS1"  : "\u:\w\$ ",
 
 			# Sanitize language.
 			"LANG" : os.environ.setdefault("LANG", "en_US.UTF-8"),
@@ -652,7 +650,7 @@ class BuildEnviron(object):
 			# Set the container that we can detect, if we are inside a
 			# chroot.
 			"container" : "pakfire-builder",
-		}
+		})
 
 		# Inherit environment from distro
 		env.update(self.pakfire.distro.environ)
