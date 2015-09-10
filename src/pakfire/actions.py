@@ -145,6 +145,10 @@ class Action(object):
 
 		args = {
 			"cwd"         : cwd,
+			"env"         : {
+				"LANG" : "C",
+				"PATH" : "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin",
+			},
 			"logger"      : self.get_logger(),
 			"personality" : self.pakfire.distro.personality,
 			"shell"       : False,
