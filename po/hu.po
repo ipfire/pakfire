@@ -1,23 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# Huginn <huginn@naglfar.hu>, 2013
+# Gábor Sávolyi, 2013
 # csibesas <varga.mrk@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-10-15 19:07+0000\n"
-"Last-Translator: csibesas <varga.mrk@gmail.com>\n"
-"Language-Team: Hungarian (http://www.transifex.com/projects/p/ipfire/"
-"language/hu/)\n"
-"Language: hu\n"
+"PO-Revision-Date: 2013-11-20 09:12+0000\n"
+"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
+"Language-Team: Hungarian (http://www.transifex.com/mstremer/ipfire/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/_pakfire/problem.c:159
@@ -98,7 +97,7 @@ msgstr ""
 #: ../src/_pakfire/problem.c:264
 #, c-format
 msgid "bad rule type"
-msgstr ""
+msgstr "hibás szabálytípus"
 
 #: ../src/_pakfire/solution.c:86
 #, c-format
@@ -312,7 +311,7 @@ msgstr "Kihagyva: %s"
 #: ../src/pakfire/base.py:434
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
-msgstr ""
+msgstr "A \"%s\" csomag nem tűnik telepíthetőnek."
 
 #: ../src/pakfire/base.py:598
 msgid "Everything is fine."
@@ -535,9 +534,7 @@ msgstr "Sablon keresése."
 
 #: ../src/pakfire/cli.py:255
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
-"Azoknak a csomagoknak a keresése, amik tartalmazzák a megadott fájlt vagy "
-"tulajdonságot."
+msgstr "Azoknak a csomagoknak a keresése, amik tartalmazzák a megadott fájlt vagy tulajdonságot."
 
 #: ../src/pakfire/cli.py:257
 msgid "File or feature to search for."
@@ -545,8 +542,7 @@ msgstr "Fájl vagy szolgáltatás keresése."
 
 #: ../src/pakfire/cli.py:263
 msgid "Get list of packages that belong to the given group."
-msgstr ""
-"Azoknak a csomagoknak a keresése, amelyek a megadott csoportba tartoznak."
+msgstr "Azoknak a csomagoknak a keresése, amelyek a megadott csoportba tartoznak."
 
 #: ../src/pakfire/cli.py:265
 msgid "Group name to search for."
@@ -622,8 +618,7 @@ msgstr "Nem lehetséges eltérő csomagokat kibontani egyszerre"
 
 #: ../src/pakfire/cli.py:450
 msgid "You must provide an install directory with --target=..."
-msgstr ""
-"Meg kell adnod egy telepítési könyvtárat a --target=... paraméteren keresztül"
+msgstr "Meg kell adnod egy telepítési könyvtárat a --target=... paraméteren keresztül"
 
 #: ../src/pakfire/cli.py:456
 msgid "Cannot extract to /."
@@ -936,15 +931,15 @@ msgstr "Forrás"
 
 #: ../src/pakfire/cli.py:1182
 msgid "Time created"
-msgstr ""
+msgstr "Létrehozva"
 
 #: ../src/pakfire/cli.py:1183
 msgid "Time started"
-msgstr ""
+msgstr "Elindítva"
 
 #: ../src/pakfire/cli.py:1184
 msgid "Time finished"
-msgstr ""
+msgstr "Befejezve"
 
 #: ../src/pakfire/cli.py:1185
 msgid "Duration"
@@ -969,7 +964,7 @@ msgstr ""
 
 #: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
 msgid "Import a key from file."
-msgstr ""
+msgstr "Kulcs importálása fájlból."
 
 #: ../src/pakfire/cli.py:1296
 msgid "The real name of the owner of this key."
@@ -985,7 +980,7 @@ msgstr ""
 
 #: ../src/pakfire/cli.py:1312
 msgid "Export a key to a file."
-msgstr ""
+msgstr "Kulcs mentése fájlba."
 
 #: ../src/pakfire/cli.py:1314
 msgid "The ID of the key to export."
@@ -993,7 +988,7 @@ msgstr ""
 
 #: ../src/pakfire/cli.py:1316
 msgid "Write the key to this file."
-msgstr ""
+msgstr "Kulcs írása ebbe a fájlba."
 
 #: ../src/pakfire/cli.py:1322
 msgid "Delete a key from the local keyring."
@@ -1039,7 +1034,7 @@ msgstr "Bejelentkezés: %s"
 #: ../src/pakfire/cli.py:1431
 #, python-format
 msgid "Verifying %s..."
-msgstr ""
+msgstr "Ellenőrzés: %s..."
 
 #: ../src/pakfire/cli.py:1441
 msgid "This signature is valid."
@@ -1088,11 +1083,11 @@ msgstr "Nincsenek beállítások ebben a részben."
 
 #: ../src/pakfire/config.py:214
 msgid "Loaded from files:"
-msgstr ""
+msgstr "Betöltve fájlokból:"
 
 #: ../src/pakfire/daemon.py:100
 msgid "Shutting down..."
-msgstr ""
+msgstr "Leállítás..."
 
 #: ../src/pakfire/daemon.py:104
 msgid "Restarting keepalive process"
@@ -1118,7 +1113,7 @@ msgstr "Forráskódot nem lehet letölteni kapcsolat nélküli módban."
 #: ../src/pakfire/downloader.py:191
 #, python-format
 msgid "Downloaded empty file: %s"
-msgstr ""
+msgstr "Letöltött üres fájl: %s"
 
 #: ../src/pakfire/errors.py:30
 msgid "An unhandled error occured."
@@ -1139,8 +1134,7 @@ msgstr ""
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
+"Please connect your system to the network, remove --offline from the command line and try again."
 msgstr ""
 
 #: ../src/pakfire/errors.py:86
@@ -1229,7 +1223,8 @@ msgstr ""
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
 msgstr ""
 
 #: ../src/pakfire/keyring.py:201
@@ -1378,12 +1373,12 @@ msgstr ""
 #: ../src/pakfire/packages/file.py:259
 #, python-format
 msgid "Could not remove file: /%s"
-msgstr ""
+msgstr "Nem sikerült törölni: /%s"
 
 #: ../src/pakfire/packages/lexer.py:756
 #, python-format
 msgid "Template does not exist: %s"
-msgstr ""
+msgstr "Nem létező sablon: %s"
 
 #: ../src/pakfire/packages/make.py:83
 msgid "Package name is undefined."
@@ -1426,9 +1421,9 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr ""
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Felszabadított terület: %s"
+msgstr ""
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
@@ -1443,7 +1438,8 @@ msgid "Initializing repositories..."
 msgstr "Gyűjtemények inicializálása..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
 msgstr ""
 
 #: ../src/pakfire/repository/database.py:229
@@ -1490,8 +1486,7 @@ msgstr "A letöltött leíróadat régebbi az aktuálisnál."
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
-msgstr ""
-"Nem lehetséges csomagadatbázist letölteni kapcsolat nélküli módban ehhez: %s"
+msgstr "Nem lehetséges csomagadatbázist letölteni kapcsolat nélküli módban ehhez: %s"
 
 #: ../src/pakfire/repository/remote.py:235
 #, python-format
@@ -1519,7 +1514,7 @@ msgstr ""
 
 #: ../src/pakfire/repository/remote.py:342
 msgid "Trying an other mirror."
-msgstr ""
+msgstr "Próbálkozás másik tükörszerverrel."
 
 #. Create a progressbar.
 #: ../src/pakfire/repository/system.py:59
@@ -1597,7 +1592,8 @@ msgstr ""
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr ""
 
 #: ../src/pakfire/transaction.py:111

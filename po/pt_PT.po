@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # cda.mrmib <cda.mrmib@gmail.com>, 2012
 msgid ""
@@ -9,14 +9,13 @@ msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-05 08:54+0000\n"
+"PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Portuguese (Portugal) (http://www.transifex.com/projects/p/"
-"ipfire/language/pt_PT/)\n"
-"Language: pt_PT\n"
+"Language-Team: Portuguese (Portugal) (http://www.transifex.com/mstremer/ipfire/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt_PT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/_pakfire/problem.c:159
@@ -1134,8 +1133,7 @@ msgstr ""
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
+"Please connect your system to the network, remove --offline from the command line and try again."
 msgstr ""
 
 #: ../src/pakfire/errors.py:86
@@ -1224,7 +1222,8 @@ msgstr ""
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
 msgstr ""
 
 #: ../src/pakfire/keyring.py:201
@@ -1438,7 +1437,8 @@ msgid "Initializing repositories..."
 msgstr ""
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
 msgstr ""
 
 #: ../src/pakfire/repository/database.py:229
@@ -1591,7 +1591,8 @@ msgstr ""
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr ""
 
 #: ../src/pakfire/transaction.py:111

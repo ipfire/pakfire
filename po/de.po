@@ -1,27 +1,29 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Wlanfr3ak <fabian.horst.mail@googlemail.com>, 2012
-# moonman <flash-x@gmx.net>, 2012
+# Hans Dampf <flash-x@gmx.net>, 2012
+# jsbc <jsbc@gmx.de>, 2013
 # Michael Tremer <michael.tremer@ipfire.org>, 2011-2012
-# wheeler <michael@waeh.li>, 2012
+# Michael Waehli <michael@waeh.li>, 2012
+# Peter Cloudstone <rmg-mainz@web.de>, 2013
 # romank <roman.kornfeld@gmail.com>, 2013
-# iLLogical, 2013
+# Sun Tiger, 2015
+# Tobias, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-14 18:57+0000\n"
-"Last-Translator: iLLogical\n"
-"Language-Team: German (http://www.transifex.com/projects/p/ipfire/language/"
-"de/)\n"
-"Language: de\n"
+"PO-Revision-Date: 2015-05-07 17:01+0000\n"
+"Last-Translator: Sun Tiger\n"
+"Language-Team: German (http://www.transifex.com/mstremer/ipfire/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/_pakfire/problem.c:159
@@ -47,7 +49,7 @@ msgstr "wiedersprüchliche Anfragen"
 #: ../src/_pakfire/problem.c:184
 #, c-format
 msgid "nothing provides requested %s"
-msgstr "Nichts bringt das angefragte %s mit"
+msgstr "Nichts stellt das angefragte %s zur Verfügung"
 
 #: ../src/_pakfire/problem.c:190
 #, c-format
@@ -97,8 +99,7 @@ msgstr "Paket %s erfordert %s, jedoch kann kein angebotenes installiert werden"
 #: ../src/_pakfire/problem.c:255
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
-msgstr ""
-"Paket %s steht in Konflikt mit %s, das von sich selbst bereitgestellt wurde"
+msgstr "Paket %s steht in Konflikt mit %s, das von sich selbst bereitgestellt wurde"
 
 #: ../src/_pakfire/problem.c:264
 #, c-format
@@ -207,9 +208,7 @@ msgstr "%s hat keine gültigen Signaturen"
 
 #: ../src/pakfire/actions.py:234
 msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
-"Das Script, dessen Typ nicht bestimmt werden konnte, konnte nicht bearbeitet "
-"werden und wird übersprungen."
+msgstr "Das Script, dessen Typ nicht bestimmt werden konnte, konnte nicht bearbeitet werden und wird übersprungen."
 
 #: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
@@ -218,23 +217,19 @@ msgstr "Führe Python-Skript aus ..."
 #: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Kann das Script nicht starten, da der Interpreter nicht verfügbar ist: %s"
+msgstr "Kann das Script nicht starten, da der Interpreter nicht verfügbar ist: %s"
 
 #: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Kann das Script nicht ausführen, da der Interpreter nicht ausführbar ist: %s"
+msgstr "Kann das Script nicht ausführen, da der Interpreter nicht ausführbar ist: %s"
 
 #: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
-"Das Script lieferte einen Fehler zurück:\n"
-"%s"
+msgstr "Das Script lieferte einen Fehler zurück:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
@@ -246,9 +241,7 @@ msgstr "Das Script lief länger als %s Sekunden und wurde beendet."
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
-"Das Scriptlet brach mit einem unbehandelten Fehler ab:\n"
-"%s"
+msgstr "Das Scriptlet brach mit einem unbehandelten Fehler ab:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
@@ -337,13 +330,11 @@ msgstr "Der Build-Befehl ist fehlgeschlagen."
 
 #: ../src/pakfire/base.py:656
 msgid "You have not set the distribution for which you want to build."
-msgstr ""
-"Die Distribution, für welche gebaut werden soll, wurde nicht ausgewählt."
+msgstr "Die Distribution, für welche gebaut werden soll, wurde nicht ausgewählt."
 
 #: ../src/pakfire/base.py:657
 msgid "Please do so in builder.conf or on the CLI."
-msgstr ""
-"Dies kann in der Datei builder.conf oder auf der Kommandozeile getan werden."
+msgstr "Dies kann in der Datei builder.conf oder auf der Kommandozeile getan werden."
 
 #: ../src/pakfire/base.py:658
 msgid "Distribution configuration is missing."
@@ -438,8 +429,7 @@ msgstr "Das Komprimieren der Man-pages schlug fehl."
 
 #: ../src/pakfire/builder.py:1136
 msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr ""
-"Das Extrahieren der Debug-Informationen schlug fehl. Build wird abgebrochen."
+msgstr "Das Extrahieren der Debug-Informationen schlug fehl. Build wird abgebrochen."
 
 #: ../src/pakfire/cli.py:53
 msgid "Pakfire command line interface."
@@ -487,9 +477,7 @@ msgstr "Ein oder mehrere Pakete neu installieren."
 
 #: ../src/pakfire/cli.py:179
 msgid "Give name of at least one package to reinstall."
-msgstr ""
-"Geben Sie mindestens den Namen von einem Paket an, das neu installiert "
-"werden soll."
+msgstr "Geben Sie mindestens den Namen von einem Paket an, das neu installiert werden soll."
 
 #: ../src/pakfire/cli.py:185
 msgid "Remove one or more packages from the system."
@@ -521,7 +509,7 @@ msgstr "Das gesamte System aktualisieren oder ein angegebenes Paket."
 
 #: ../src/pakfire/cli.py:213
 msgid "Sync all installed with the latest one in the distribution."
-msgstr ""
+msgstr "Synchronisiere alle installierten Pakete mit den Aktuellsten aus der Distribution."
 
 #: ../src/pakfire/cli.py:220
 msgid "Check, if there are any updates available."
@@ -553,8 +541,7 @@ msgstr "Nach einem Ausdruck suchen."
 
 #: ../src/pakfire/cli.py:255
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
-"Hole eine Paketliste die dass angegebene Feature oder die Datei enthält."
+msgstr "Hole eine Paketliste die dass angegebene Feature oder die Datei enthält."
 
 #: ../src/pakfire/cli.py:257
 msgid "File or feature to search for."
@@ -797,8 +784,7 @@ msgstr "Zeigt eine Liste aktiver Jobs."
 
 #: ../src/pakfire/cli.py:968
 msgid "Show a list of all recently finished of failed build jobs."
-msgstr ""
-"Zeigt eine List aller kürzlich fertiggestellten oder fehlgeschlagenen Jobs."
+msgstr "Zeigt eine List aller kürzlich fertiggestellten oder fehlgeschlagenen Jobs."
 
 #: ../src/pakfire/cli.py:973
 msgid "Show details about given build job."
@@ -944,7 +930,7 @@ msgstr "Job: %(name)s"
 #: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
 #: ../src/pakfire/transaction.py:423
 msgid "Arch"
-msgstr "Arch"
+msgstr "Architektur"
 
 #: ../src/pakfire/cli.py:1177 ../src/pakfire/packages/base.py:148
 msgid "Build host"
@@ -1155,12 +1141,8 @@ msgstr "Ein Fehler trat auf als Pakfire Dateien heruntergeladen hat."
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"Die Aktion kann nicht im Offline-Modus durchgeführt werden.\n"
-"Bitte verbinden Sie sich mit einem Netzwerk, entfernen --offline von der "
-"Befehlszeile und probieren Sie es erneut."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "Die Aktion kann nicht im Offline-Modus durchgeführt werden.\nBitte verbinden Sie sich mit einem Netzwerk, entfernen --offline von der Befehlszeile und probieren Sie es erneut."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
@@ -1178,9 +1160,7 @@ msgstr "Generischer XMLRPC Fehler."
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr ""
-"Dir ist es verboten diese Aktion auszuführen. Vielleicht solltest du deine "
-"Anmeldeinformationen kontrollieren."
+msgstr "Dir ist es verboten diese Aktion auszuführen. Vielleicht solltest du deine Anmeldeinformationen kontrollieren."
 
 #: ../src/pakfire/errors.py:170
 msgid "A request could not be fulfilled by the server."
@@ -1192,9 +1172,7 @@ msgstr "Die gesuchte URL konnte nicht gefunden werden."
 
 #: ../src/pakfire/errors.py:178
 msgid "An unforseable problem on the XML-RPC transport connection occured."
-msgstr ""
-"Ein unvorhersehbares Problem ist bei der  XML-RPC Transport Verbindung "
-"aufgetreten."
+msgstr "Ein unvorhersehbares Problem ist bei der  XML-RPC Transport Verbindung aufgetreten."
 
 #: ../src/pakfire/i18n.py:54
 #, python-format
@@ -1252,17 +1230,14 @@ msgstr "Host-Schlüssel:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
-"WARNUNG! Der Host-Schlüssel mit ID %s wurde konfiguriert, aber der geheime "
-"Schlüssel ist nicht verfügbar!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "WARNUNG! Der Host-Schlüssel mit ID %s wurde konfiguriert, aber der geheime Schlüssel ist nicht verfügbar!"
 
 #: ../src/pakfire/keyring.py:201
 #, python-format
 msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr ""
-"WARNUNG! Der Host-Schlüssel mit ID %s wurde konfiguriert, wurde aber nicht "
-"gefunden!"
+msgstr "WARNUNG! Der Host-Schlüssel mit ID %s wurde konfiguriert, wurde aber nicht gefunden!"
 
 #: ../src/pakfire/keyring.py:203
 msgid "No host key available or configured."
@@ -1453,26 +1428,26 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Datei konnte nicht entpackt werden: /%(src)s - %(dst)s"
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Freigegebener Platz: %s"
+msgstr "Verstrichene Zeit: %s"
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
-msgstr ""
+msgstr "Verbleibend"
 
 #: ../src/pakfire/progressbar.py:231
 msgid "Time"
-msgstr ""
+msgstr "Zeit"
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
 msgstr "Initialisiere Repositorien..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
-msgstr ""
-"Das Datenbankformat wird in dieser Version von pakfire nicht unterstützt."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
+msgstr "Das Datenbankformat wird in dieser Version von pakfire nicht unterstützt."
 
 #: ../src/pakfire/repository/database.py:229
 #, python-format
@@ -1504,15 +1479,12 @@ msgstr "%s: Lese Pakete ein..."
 #: ../src/pakfire/repository/remote.py:151
 #, python-format
 msgid "No metadata available for repository %s. Cannot download any."
-msgstr ""
-"Keine Metadaten für Repositorium %s verfügbar und können nicht geladen "
-"werden."
+msgstr "Keine Metadaten für Repositorium %s verfügbar und können nicht geladen werden."
 
 #: ../src/pakfire/repository/remote.py:176
 #, python-format
 msgid "Could not update metadata for %s from any mirror server"
-msgstr ""
-"Metadaten für %s konnten von keinem der Mirror-Server aktualisiert werden."
+msgstr "Metadaten für %s konnten von keinem der Mirror-Server aktualisiert werden."
 
 #: ../src/pakfire/repository/remote.py:185
 msgid "The downloaded metadata was less recent than the current one."
@@ -1521,8 +1493,7 @@ msgstr "Die heruntergeladenen Metadaten waren älter als die bestehenden."
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
-msgstr ""
-"Die Paketdatenbank für %s kann im Offline-Modus nicht heruntergeladen werden."
+msgstr "Die Paketdatenbank für %s kann im Offline-Modus nicht heruntergeladen werden."
 
 #: ../src/pakfire/repository/remote.py:235
 #, python-format
@@ -1619,35 +1590,30 @@ msgstr "Befehl fehlgeschlagen: %s"
 #: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr ""
-"Datei %(name)s aus %(pkg1)s hat einen Konflikt mit der Datei aus %(pkg2)s"
+msgstr "Datei %(name)s aus %(pkg1)s hat einen Konflikt mit der Datei aus %(pkg2)s"
 
 #: ../src/pakfire/transaction.py:97
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
-msgstr ""
-"Datei %(name)s aus %(pkg)s hat mehrere Konflikte mit Dateien aus %(pkgs)s"
+msgstr "Datei %(name)s aus %(pkg)s hat mehrere Konflikte mit Dateien aus %(pkgs)s"
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
-"Die Datei %(name)s verursacht einen unbekannten Fehler in der Transaktion."
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
+msgstr "Die Datei %(name)s verursacht einen unbekannten Fehler in der Transaktion."
 
 #: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Es ist nicht mehr genügend Speicherplatz auf %(name)s frei. Es werden "
-"mindestens %(size)s benötigt um die Transaktion durchzuführen."
+msgstr "Es ist nicht mehr genügend Speicherplatz auf %(name)s frei. Es werden mindestens %(size)s benötigt um die Transaktion durchzuführen."
 
 #: ../src/pakfire/transaction.py:355
 #, python-format
 msgid "Not enough space to download %s of packages."
-msgstr ""
-"Es ist nicht genügend Speicherplatz vorhanden um %s Pakete herunterzuladen."
+msgstr "Es ist nicht genügend Speicherplatz vorhanden um %s Pakete herunterzuladen."
 
 #: ../src/pakfire/transaction.py:358
 msgid "Downloading packages:"
@@ -1746,9 +1712,7 @@ msgstr "Beende laufende Prozesse..."
 #: ../src/pakfire/util.py:249
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
-"Der Prozess mit der ID %s läuft immer noch in der chroot-Umgebung. Der "
-"Prozess wird beendet..."
+msgstr "Der Prozess mit der ID %s läuft immer noch in der chroot-Umgebung. Der Prozess wird beendet..."
 
 #: ../src/pakfire/util.py:261
 msgid "Waiting for processes to terminate..."

@@ -1,24 +1,27 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# qba111 <j.ratajczak@eqba.pl>, 2013
+# fujyn <adamczak@gmx.com>, 2014
+# btelega <btelega@gmail.com>, 2014
+# Fabian <vondor666@gmail.com>, 2014
+# Jakub Ratajczak <j.ratajczak@eqba.pl>, 2013
+# Przemysław Karpeta <przemyslaw.karpeta@gmail.com>, 2014
+# Przemyslaw Zdroik <zdroyer@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-05 08:54+0000\n"
-"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Polish (http://www.transifex.com/projects/p/ipfire/language/"
-"pl/)\n"
-"Language: pl\n"
+"PO-Revision-Date: 2015-01-26 09:41+0000\n"
+"Last-Translator: Przemyslaw Zdroik <zdroyer@gmail.com>\n"
+"Language-Team: Polish (http://www.transifex.com/mstremer/ipfire/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../src/_pakfire/problem.c:159
 #, c-format
@@ -38,7 +41,7 @@ msgstr "problem z zainstalowanym pakietem %s"
 #: ../src/_pakfire/problem.c:179
 #, c-format
 msgid "conflicting requests"
-msgstr ""
+msgstr "sprzeczne żądania"
 
 #: ../src/_pakfire/problem.c:184
 #, c-format
@@ -73,17 +76,17 @@ msgstr "pakiet %s powoduje konflikt z %s pochodzacym z %s"
 #: ../src/_pakfire/problem.c:224
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "pakiet %s dezaktualizuje %s pochodzący z %s"
 
 #: ../src/_pakfire/problem.c:232
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "zainstalowany pakiet %s dezaktualizuje %s pochodzący z %s"
 
 #: ../src/_pakfire/problem.c:240
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
-msgstr ""
+msgstr "pakiet %s bezwarunkowo dezaktualizuje %s pochodzący z %s"
 
 #: ../src/_pakfire/problem.c:248
 #, c-format
@@ -93,7 +96,7 @@ msgstr "pakiet %s wymaga %s, ale żaden dostawca nie jest zainstalowany"
 #: ../src/_pakfire/problem.c:255
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
-msgstr ""
+msgstr "pakiet %s powoduje konflikt z %s pochodzacym od siebie samego"
 
 #: ../src/_pakfire/problem.c:264
 #, c-format
@@ -108,7 +111,7 @@ msgstr "nie zachowuj %s zainstalowanego"
 #: ../src/_pakfire/solution.c:89
 #, c-format
 msgid "do not install a solvable %s"
-msgstr ""
+msgstr "nie instaluj %s"
 
 #: ../src/_pakfire/solution.c:92
 #, c-format
@@ -123,7 +126,7 @@ msgstr "nie zabraniaj instalacji %s"
 #: ../src/_pakfire/solution.c:101
 #, c-format
 msgid "do not deinstall all solvables %s"
-msgstr ""
+msgstr "nie deinstaluj %s"
 
 #: ../src/_pakfire/solution.c:104
 #, c-format
@@ -206,28 +209,24 @@ msgstr "Nie można obsłużyć skryptletu nieznanego typu. Pomijanie."
 
 #: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
-msgstr ""
+msgstr "Wykonywanie skryptletu..."
 
 #: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Nie można uruchomić skryptletu ponieważ interpreter nie jest dostępny: %s"
+msgstr "Nie można uruchomić skryptletu ponieważ interpreter nie jest dostępny: %s"
 
 #: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Nie można uruchomić skryptletu ponieważ interpreter nie jest wykonywalny: %s"
+msgstr "Nie można uruchomić skryptletu ponieważ interpreter nie jest wykonywalny: %s"
 
 #: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
-"Skryptlet zwrócił błąd:\n"
-"%s"
+msgstr "Skryptlet zwrócił błąd:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
@@ -239,9 +238,7 @@ msgstr "Skryptlet działał dłużej niż %s sekund i został zabity."
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
-"Skriptlet zwrócił nieobsługiwany błąd:\n"
-"%s"
+msgstr "Skriptlet zwrócił nieobsługiwany błąd:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
@@ -287,7 +284,7 @@ msgstr "Usuwanie"
 
 #: ../src/pakfire/base.py:197
 msgid "Local install repository"
-msgstr ""
+msgstr "Lokalne repozytorium instalacji"
 
 #: ../src/pakfire/base.py:261
 #, python-format
@@ -297,7 +294,7 @@ msgstr "Nie można odnaleźć żadnego pakietu dostarczającego \"%s\"."
 #: ../src/pakfire/base.py:267
 #, python-format
 msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
-msgstr ""
+msgstr "Wiele kandydatów do reinstalacji  \"%(pattern)s\": %(pkgs)s "
 
 #: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
 #: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
@@ -382,7 +379,7 @@ msgstr "Kompilacja przerwana"
 
 #: ../src/pakfire/builder.py:824
 msgid "Build failed."
-msgstr "Błąd kompilacji."
+msgstr "Kompilacja nie powiodła się."
 
 #. End here in case of an error.
 #: ../src/pakfire/builder.py:840
@@ -429,9 +426,7 @@ msgstr "Kompresja man pages zakończona niepowodzeniem."
 
 #: ../src/pakfire/builder.py:1136
 msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr ""
-"Wyodrębnianie debuginfo nie zakończyło się powodzeniem. Przerywanie "
-"kompilacji."
+msgstr "Wyodrębnianie debuginfo nie zakończyło się powodzeniem. Przerywanie kompilacji."
 
 #: ../src/pakfire/cli.py:53
 msgid "Pakfire command line interface."
@@ -511,7 +506,7 @@ msgstr "Aktualizacja całego systemu lub wybranego pakietu"
 
 #: ../src/pakfire/cli.py:213
 msgid "Sync all installed with the latest one in the distribution."
-msgstr ""
+msgstr "Zsynchronizuj wszyskie zainstalowane z najnowszym w dystrybucji"
 
 #: ../src/pakfire/cli.py:220
 msgid "Check, if there are any updates available."
@@ -635,7 +630,7 @@ msgstr "Nie można wypakować do /."
 
 #: ../src/pakfire/cli.py:474
 msgid "You cannot run pakfire-builder in a pakfire chroot."
-msgstr ""
+msgstr "Nie możesz uruchomić pakfire-builder w pakfire chroot."
 
 #: ../src/pakfire/cli.py:477 ../src/pakfire/cli.py:819
 msgid "Pakfire builder command line interface."
@@ -682,7 +677,7 @@ msgstr "Nie wykonuj testu instalacji."
 
 #: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
 msgid "Disable network in container."
-msgstr ""
+msgstr "Wyłącz sieć w kontenerze (domenie)"
 
 #: ../src/pakfire/cli.py:569
 msgid "Go into a shell."
@@ -706,7 +701,7 @@ msgstr "Linia poleceń serwera Pakfire"
 
 #: ../src/pakfire/cli.py:726
 msgid "Send a scrach build job to the server."
-msgstr ""
+msgstr "Wyślij szkic zadania kompilacji do serwera."
 
 #: ../src/pakfire/cli.py:730
 msgid "Limit build to only these architecture(s)."
@@ -754,7 +749,7 @@ msgstr "Nie weryfikuj zależności kompilacji."
 
 #: ../src/pakfire/cli.py:853
 msgid "Only run the prepare stage."
-msgstr ""
+msgstr "Uruchom tylko przygotowawczy etap."
 
 #: ../src/pakfire/cli.py:887
 msgid "Pakfire client command line interface."
@@ -814,7 +809,7 @@ msgstr "Test połączenia do huba."
 
 #: ../src/pakfire/cli.py:994
 msgid "Error code to test."
-msgstr ""
+msgstr "Kod błędu do testu."
 
 #: ../src/pakfire/cli.py:1045 ../src/pakfire/server.py:303
 msgid "Hostname"
@@ -883,7 +878,7 @@ msgstr "Zarejestrowany"
 
 #: ../src/pakfire/cli.py:1096
 msgid "You could not be authenticated to the build service."
-msgstr ""
+msgstr "Uwierzytelnienie do serwisu kompilacji nie powiodło się,"
 
 #: ../src/pakfire/cli.py:1117
 msgid "No ongoing jobs found."
@@ -965,11 +960,11 @@ msgstr "Odpowiedź od serwera: %s"
 
 #: ../src/pakfire/cli.py:1227
 msgid "Pakfire daemon command line interface."
-msgstr ""
+msgstr "Linia poleceń demona Pakfire."
 
 #: ../src/pakfire/cli.py:1258
 msgid "Pakfire key command line interface."
-msgstr ""
+msgstr "Interfejs linii poleceń dla kluczy pakfire."
 
 #: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
 msgid "Import a key from file."
@@ -1017,7 +1012,7 @@ msgstr "Podpisz jeden lub kilka pakietów."
 
 #: ../src/pakfire/cli.py:1338
 msgid "Key that is used sign the package(s)."
-msgstr ""
+msgstr "Klucz używany do podpisania pakietu(-ów)."
 
 #: ../src/pakfire/cli.py:1340
 msgid "Package(s) to sign."
@@ -1096,20 +1091,20 @@ msgstr "Ładowane z plików: "
 
 #: ../src/pakfire/daemon.py:100
 msgid "Shutting down..."
-msgstr ""
+msgstr "Wyłączanie"
 
 #: ../src/pakfire/daemon.py:104
 msgid "Restarting keepalive process"
-msgstr ""
+msgstr "Restartowanie procesu poddtrzymującego"
 
 #: ../src/pakfire/daemon.py:166
 #, python-format
 msgid "Terminating worker process: %s"
-msgstr ""
+msgstr "Kończenie procesu roboczego: %s"
 
 #: ../src/pakfire/daemon.py:315
 msgid "Sending builder information to hub..."
-msgstr ""
+msgstr "Wysyłanie informacji buildera do huba..."
 
 #: ../src/pakfire/downloader.py:165
 msgid "Downloading source files:"
@@ -1143,16 +1138,12 @@ msgstr "Wystąpił błąd podczas próby pobrania pliku przez pakfire."
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"Żądana operacja nie może być wykonana w trybie offline.\n"
-"Proszę podłączyć system do sieci, usunąć --offline z linii poleceń i "
-"spróbować ponownie."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "Żądana operacja nie może być wykonana w trybie offline.\nProszę podłączyć system do sieci, usunąć --offline z linii poleceń i spróbować ponownie."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
-msgstr ""
+msgstr "Uruchamić pakfire-build w kontenerze pakfire?"
 
 #: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
 msgid "Transaction test was not successful"
@@ -1166,8 +1157,7 @@ msgstr "Ogólny błąd XMLRPC."
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr ""
-"Odmówiono wykonania tej czynności. Może powinieneś sprawdzić poświadczenia."
+msgstr "Odmówiono wykonania tej czynności. Może powinieneś sprawdzić poświadczenia."
 
 #: ../src/pakfire/errors.py:170
 msgid "A request could not be fulfilled by the server."
@@ -1189,7 +1179,7 @@ msgstr "%(commas)s i %(last)s"
 #: ../src/pakfire/keyring.py:76
 #, python-format
 msgid "Not in key store: %s"
-msgstr ""
+msgstr "Klucza %s nie ma w magazynie."
 
 #: ../src/pakfire/keyring.py:82
 #, python-format
@@ -1203,7 +1193,7 @@ msgstr "Dostępny klucz prywatny!"
 #: ../src/pakfire/keyring.py:90
 #, python-format
 msgid "Subkey: %s"
-msgstr ""
+msgstr "Podklucz: %s"
 
 #: ../src/pakfire/keyring.py:92
 msgid "This key has expired!"
@@ -1211,7 +1201,7 @@ msgstr "Upłynęła ważność klucza!"
 
 #: ../src/pakfire/keyring.py:95
 msgid "This is a secret key."
-msgstr ""
+msgstr "To jest sekretny klucz"
 
 #: ../src/pakfire/keyring.py:103
 msgid "This key does not expire."
@@ -1237,17 +1227,18 @@ msgstr "Klucz hosta:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale brakuje klucza szyfrującego!"
 
 #: ../src/pakfire/keyring.py:201
 #, python-format
 msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr ""
+msgstr "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale nie znaleziony!"
 
 #: ../src/pakfire/keyring.py:203
 msgid "No host key available or configured."
-msgstr ""
+msgstr "Klucz host niedostępny lun nieskonfigurowany."
 
 #: ../src/pakfire/packages/base.py:99
 msgid "Name"
@@ -1335,11 +1326,11 @@ msgstr "Konflikty"
 
 #: ../src/pakfire/packages/base.py:175
 msgid "Obsoletes"
-msgstr ""
+msgstr "Zastępuje"
 
 #: ../src/pakfire/packages/base.py:180
 msgid "Recommends"
-msgstr ""
+msgstr "zalecenia"
 
 #: ../src/pakfire/packages/base.py:185
 msgid "Suggests"
@@ -1361,7 +1352,7 @@ msgstr "Konfiguracja zapisana jako %s."
 #: ../src/pakfire/packages/base.py:575
 #, python-format
 msgid "Preserving datafile '/%s'"
-msgstr ""
+msgstr "Zabezpieczanie pliku danych '/%s'"
 
 #: ../src/pakfire/packages/file.py:82
 #, python-format
@@ -1421,7 +1412,7 @@ msgstr "Filtr '%(pattern)s' filtruje %(dep)s."
 #: ../src/pakfire/packages/packager.py:399
 #: ../src/pakfire/packages/packager.py:713
 msgid "Packaging"
-msgstr ""
+msgstr "Pakowanie"
 
 #: ../src/pakfire/packages/packager.py:741
 #, python-format
@@ -1434,24 +1425,25 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Nie można wypakować pliku: /%(src)s - %(dst)s"
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Zwolnione miejsce: %s"
+msgstr "Upłynęło Czasu: %s"
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
-msgstr ""
+msgstr "ETA"
 
 #: ../src/pakfire/progressbar.py:231
 msgid "Time"
-msgstr ""
+msgstr "czas"
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
 msgstr "Inicjalizacja repozytoriów..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
 msgstr "Format bazy danych nie jest obsługiwany przez tę wersję pakfire."
 
 #: ../src/pakfire/repository/database.py:229
@@ -1484,7 +1476,7 @@ msgstr "%s: Odczytywanie pakietów..."
 #: ../src/pakfire/repository/remote.py:151
 #, python-format
 msgid "No metadata available for repository %s. Cannot download any."
-msgstr ""
+msgstr "Brak dostępnych metadanych dla repozytorium %s. Pobranie niemożliwe."
 
 #: ../src/pakfire/repository/remote.py:176
 #, python-format
@@ -1549,7 +1541,7 @@ msgstr "Chcesz ręcznie zmienić żądanie?"
 
 #: ../src/pakfire/satsolver.py:389
 msgid "You can now try to satisfy the solver by modifying your request."
-msgstr ""
+msgstr "Możesz teraz zmodyfikować swoje żądanie by spełnić warunki stawiane przez solver.."
 
 #: ../src/pakfire/satsolver.py:394
 msgid "Which problem to you want to resolve?"
@@ -1585,7 +1577,7 @@ msgstr "Polecenie przekroczyło limit czasowy (%(timeout)d): %(command)s"
 #: ../src/pakfire/shell.py:129
 #, python-format
 msgid "Child returncode was: %s"
-msgstr ""
+msgstr "Proces potomny zwrócił: %s"
 
 #: ../src/pakfire/shell.py:132
 #, python-format
@@ -1595,8 +1587,7 @@ msgstr "Błąd polecenia: %s"
 #: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr ""
-"plik %(name)s z %(pkg1)s powoduje konflikt z plikiem z pakietu %(pkg2)s"
+msgstr "plik %(name)s z %(pkg1)s powoduje konflikt z plikiem z pakietu %(pkg2)s"
 
 #: ../src/pakfire/transaction.py:97
 #, python-format
@@ -1605,7 +1596,8 @@ msgstr "plik %(name)s z %(pkg)s powoduje konflikt z plikiem z %(pkgs)s"
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr "plik %(name)s wywołuje błąd testu transakcji z nieznanego powodu"
 
 #: ../src/pakfire/transaction.py:111
@@ -1613,9 +1605,7 @@ msgstr "plik %(name)s wywołuje błąd testu transakcji z nieznanego powodu"
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Brak wystarczającej ilości miejsca na %(name)s. Wymagane minimum %(size)s do "
-"wykonania transakcji. "
+msgstr "Brak wystarczającej ilości miejsca na %(name)s. Wymagane minimum %(size)s do wykonania transakcji. "
 
 #: ../src/pakfire/transaction.py:355
 #, python-format
@@ -1697,7 +1687,7 @@ msgstr "Znaleziono %s błąd(y) sygnatur!"
 
 #: ../src/pakfire/transaction.py:577
 msgid "Going on because we are running in permissive mode."
-msgstr ""
+msgstr "Kontynuuje ponieważ działamy w trybie przyzwalającym."
 
 #: ../src/pakfire/transaction.py:578
 msgid "This is dangerous!"
@@ -1719,7 +1709,7 @@ msgstr "Zabijanie sierot..."
 #: ../src/pakfire/util.py:249
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
+msgstr "Proces ID %s jest wciąż uruchomiony w środowisku chroot. Zamykam..."
 
 #: ../src/pakfire/util.py:261
 msgid "Waiting for processes to terminate..."

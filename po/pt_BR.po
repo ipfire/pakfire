@@ -1,11 +1,11 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# André Morro <andre@andremorro.com>, 2012
-# André Morro <andre@andremorro.com>, 2013
-# csilva <cristiano.eugenio@gmail.com>, 2013
+# André Felipe Morro <andre@andremorro.com>, 2012
+# André Felipe Morro <andre@andremorro.com>, 2013
+# Cristiano Eugenio <cristiano.eugenio@gmail.com>, 2013
 # Enrico Nicoletto <enrico.BR@gmx.co.uk>, 2013
 # Flávio Veras <flaviove@gmail.com>, 2013
 msgid ""
@@ -13,14 +13,13 @@ msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-10-24 18:59+0000\n"
-"Last-Translator: André Morro <andre@andremorro.com>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
-"ipfire/language/pt_BR/)\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2013-11-20 09:12+0000\n"
+"Last-Translator: André Felipe Morro <andre@andremorro.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/mstremer/ipfire/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../src/_pakfire/problem.c:159
@@ -186,8 +185,7 @@ msgstr "permite mudar fornecedor de  '%s' (%s) para '%s' (%s)"
 #: ../src/_pakfire/solution.c:163
 #, c-format
 msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr ""
-"permitir a mudança de fornecedor de '%s' (%s) para nenhum fornecedor (%s)"
+msgstr "permitir a mudança de fornecedor de '%s' (%s) para nenhum fornecedor (%s)"
 
 #: ../src/_pakfire/solution.c:169
 #, c-format
@@ -227,9 +225,7 @@ msgstr "Não pode rodar o scriptlet porque o interpretador não é executável: 
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
-"O scriptlet retornou um erro:\n"
-"%s"
+msgstr "O scriptlet retornou um erro:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
@@ -241,9 +237,7 @@ msgstr "O scriptlet rodou %s segundos e foi encerrado."
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
-"O Scriptlet retorno um erro não tratado:\n"
-"%s"
+msgstr "O Scriptlet retorno um erro não tratado:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
@@ -595,7 +589,7 @@ msgstr "Extrai o pacote para um diretório."
 
 #: ../src/pakfire/cli.py:313
 msgid "Give name of the file to extract."
-msgstr "Informe um nome para extrair."
+msgstr "Informe nome do arquivo para extração"
 
 #: ../src/pakfire/cli.py:315
 msgid "Target directory where to extract to."
@@ -786,9 +780,7 @@ msgstr "Exibe lista de jobs ativos."
 
 #: ../src/pakfire/cli.py:968
 msgid "Show a list of all recently finished of failed build jobs."
-msgstr ""
-"Mostra uma lista de todos os recém-terminados trabalhos construidos que "
-"falharam."
+msgstr "Mostra uma lista de todos os recém-terminados trabalhos construidos que falharam."
 
 #: ../src/pakfire/cli.py:973
 msgid "Show details about given build job."
@@ -1145,12 +1137,8 @@ msgstr "Um erro ocorreu quando pakfire tentou realizar o download de arquivos."
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"A ação solicitada não pode ser feita em modo offline.\n"
-"Por favor conecte seu sistema a rede, remova --offline da linha de comando e "
-"tente novamente."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "A ação solicitada não pode ser feita em modo offline.\nPor favor conecte seu sistema a rede, remova --offline da linha de comando e tente novamente."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
@@ -1238,10 +1226,9 @@ msgstr "Chave do host:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
-"CUIDADO! Chave de host com ID %s configurada, mas chave secreta está "
-"faltando!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "CUIDADO! Chave de host com ID %s configurada, mas chave secreta está faltando!"
 
 #: ../src/pakfire/keyring.py:201
 #, python-format
@@ -1342,7 +1329,7 @@ msgstr "Obsoleto"
 
 #: ../src/pakfire/packages/base.py:180
 msgid "Recommends"
-msgstr "Recomendação"
+msgstr "Recomenda"
 
 #: ../src/pakfire/packages/base.py:185
 msgid "Suggests"
@@ -1437,26 +1424,26 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Não foi possível extrair arquivo: /%(src)s - %(dst)s"
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Espaço liberado: %s"
+msgstr "Tempo decorrido: %s"
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
-msgstr ""
+msgstr "TEC"
 
 #: ../src/pakfire/progressbar.py:231
 msgid "Time"
-msgstr ""
+msgstr "Tempo"
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
 msgstr "Iniciando repositórios..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
-msgstr ""
-"O formato do bando de dados não é suportado por essa versão do pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
+msgstr "O formato do bando de dados não é suportado por essa versão do pakfire."
 
 #: ../src/pakfire/repository/database.py:229
 #, python-format
@@ -1488,8 +1475,7 @@ msgstr "%s: Lendo pacotes..."
 #: ../src/pakfire/repository/remote.py:151
 #, python-format
 msgid "No metadata available for repository %s. Cannot download any."
-msgstr ""
-"Nenhum metadado disponível para o repositório %s. Não posso baixar nenhum."
+msgstr "Nenhum metadado disponível para o repositório %s. Não posso baixar nenhum."
 
 #: ../src/pakfire/repository/remote.py:176
 #, python-format
@@ -1503,8 +1489,7 @@ msgstr "O metadado baixado era mais antigo que o atual."
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
-msgstr ""
-"Não é possivel baixar o banco de dados de pacote para %s em modo offline."
+msgstr "Não é possivel baixar o banco de dados de pacote para %s em modo offline."
 
 #: ../src/pakfire/repository/remote.py:235
 #, python-format
@@ -1555,8 +1540,7 @@ msgstr "Deseja alterar manualmente a solicitação?"
 
 #: ../src/pakfire/satsolver.py:389
 msgid "You can now try to satisfy the solver by modifying your request."
-msgstr ""
-"Agora você pode tentar satisfazer o solucionador modificando o seu pedido."
+msgstr "Agora você pode tentar satisfazer o solucionador modificando o seu pedido."
 
 #: ../src/pakfire/satsolver.py:394
 msgid "Which problem to you want to resolve?"
@@ -1611,18 +1595,16 @@ msgstr "arquivo %(name)s de %(pkg)s conflita com arquivo do pacote %(pkgs)s"
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
-"o arquivo %(name)s fez o teste de transação falhar por uma razão desconhecida"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
+msgstr "o arquivo %(name)s fez o teste de transação falhar por uma razão desconhecida"
 
 #: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Não há espaço livre em %(name)s. Necessário ao menos %(size)s para realizar "
-"a transação."
+msgstr "Não há espaço livre em %(name)s. Necessário ao menos %(size)s para realizar a transação."
 
 #: ../src/pakfire/transaction.py:355
 #, python-format
@@ -1704,7 +1686,7 @@ msgstr "Achado %s erros de assinatura(s)!"
 
 #: ../src/pakfire/transaction.py:577
 msgid "Going on because we are running in permissive mode."
-msgstr "Continuando poque estamos em modo permissivo."
+msgstr "Continuando porque estamos em modo permissivo."
 
 #: ../src/pakfire/transaction.py:578
 msgid "This is dangerous!"

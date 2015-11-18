@@ -1,26 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# Андрій Вальчишин <v.andrey@i.ua>, 2012
-# Андрій Вальчишин <v.andrey@i.ua>, 2012
-# Андрій Вальчишин <v.andrey@i.ua>, 2013
+# Вальчишин Андрій Олегович <v.andrey@i.ua>, 2012
+# Вальчишин Андрій Олегович <v.andrey@i.ua>, 2012
+# Вальчишин Андрій Олегович <v.andrey@i.ua>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-05 08:54+0000\n"
+"PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Ukrainian (http://www.transifex.com/projects/p/ipfire/"
-"language/uk/)\n"
-"Language: uk\n"
+"Language-Team: Ukrainian (http://www.transifex.com/mstremer/ipfire/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../src/_pakfire/problem.c:159
 #, c-format
@@ -185,8 +183,7 @@ msgstr "дозволити зміну постачальника з '%s' (%s) н
 #: ../src/_pakfire/solution.c:163
 #, c-format
 msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr ""
-"дозволити зміну постачальника з '%s' (%s) на відсутність постачальника (%s)"
+msgstr "дозволити зміну постачальника з '%s' (%s) на відсутність постачальника (%s)"
 
 #: ../src/_pakfire/solution.c:169
 #, c-format
@@ -226,9 +223,7 @@ msgstr "Не можу виконати скрипт. Інтерпретатор 
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
-"Скрипт вернув помилку:\n"
-"%s"
+msgstr "Скрипт вернув помилку:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
@@ -240,9 +235,7 @@ msgstr "Скрипт виконувався більше ніж %s секунд 
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
-"Скрипт повернутий з невідомою помилкою:\n"
-"%s"
+msgstr "Скрипт повернутий з невідомою помилкою:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
@@ -388,8 +381,7 @@ msgstr "Зборка зазнала невдачі."
 #. End here in case of an error.
 #: ../src/pakfire/builder.py:840
 msgid "The build command failed. See logfile for details."
-msgstr ""
-"Команда build зазнала невдачі. Див. лог-файл для додаткофої інформації."
+msgstr "Команда build зазнала невдачі. Див. лог-файл для додаткофої інформації."
 
 #: ../src/pakfire/builder.py:843
 msgid "Running installation test..."
@@ -491,9 +483,7 @@ msgstr "Вкажіть назву принаймні одного пакунку
 
 #: ../src/pakfire/cli.py:194
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
-"Вкажіть назву пакунку для оновлення або залиште пустим для оновлення всіх "
-"пакунків."
+msgstr "Вкажіть назву пакунку для оновлення або залиште пустим для оновлення всіх пакунків."
 
 #: ../src/pakfire/cli.py:197
 msgid "Exclude package from update."
@@ -1145,12 +1135,8 @@ msgstr "При спробі Pakfire завантажити файли виник
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"Вказана дія не може бути виконана в автономному режимі.\n"
-"Будьласка підєднайте систему до мережі, видаліть --offline з командного "
-"рядка та повторіть спробу."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "Вказана дія не може бути виконана в автономному режимі.\nБудьласка підєднайте систему до мережі, видаліть --offline з командного рядка та повторіть спробу."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
@@ -1238,7 +1224,8 @@ msgstr "Ключ хоста:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
 msgstr ""
 
 #: ../src/pakfire/keyring.py:201
@@ -1435,9 +1422,9 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Не можу видобути файл: /%(src)s - %(dst)s"
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Звільнено: %s"
+msgstr ""
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
@@ -1452,7 +1439,8 @@ msgid "Initializing repositories..."
 msgstr ""
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
 msgstr "Формат бази даних не підтримується цією версією Pakfire."
 
 #: ../src/pakfire/repository/database.py:229
@@ -1605,7 +1593,8 @@ msgstr "Файл %(name)s з %(pkg)s конфліктує з файлами в %
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr ""
 
 #: ../src/pakfire/transaction.py:111
@@ -1613,9 +1602,7 @@ msgstr ""
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Недостатньо місця на %(name)s. Необхідно як мінімум %(size)s для підготовки "
-"транзакції."
+msgstr "Недостатньо місця на %(name)s. Необхідно як мінімум %(size)s для підготовки транзакції."
 
 #: ../src/pakfire/transaction.py:355
 #, python-format

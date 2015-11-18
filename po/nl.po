@@ -1,23 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# dutchtux <dutchtux@gmail.com>, 2013
-# dutchtux <dutchtux@gmail.com>, 2013
+# Hans <dutchtux@gmail.com>, 2013
+# Hans <dutchtux@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-05 08:54+0000\n"
-"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Dutch (http://www.transifex.com/projects/p/ipfire/language/"
-"nl/)\n"
-"Language: nl\n"
+"PO-Revision-Date: 2014-07-05 12:42+0000\n"
+"Last-Translator: Hans <dutchtux@gmail.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/mstremer/ipfire/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/_pakfire/problem.c:159
@@ -88,8 +87,7 @@ msgstr "pakket %s maakt %s geleverd door %s impliciet overbodig"
 #: ../src/_pakfire/problem.c:248
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
-msgstr ""
-"pakket %s vereist %s, maar geen van de aanbieders kan worden geïnstalleerd"
+msgstr "pakket %s vereist %s, maar geen van de aanbieders kan worden geïnstalleerd"
 
 #: ../src/_pakfire/problem.c:255
 #, c-format
@@ -207,28 +205,24 @@ msgstr "Kan scriptlet niet afhandelen of onbekend type. Overgeslagen."
 
 #: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
-msgstr ""
+msgstr "Uitvoeren script..."
 
 #: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
+msgstr "Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
 
 #: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
+msgstr "Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
 
 #: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
-"De scriptlet gaf een fout:\n"
-"%s"
+msgstr "De scriptlet gaf een fout:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
@@ -240,9 +234,7 @@ msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
-"De scriptlet geeft een niet-afgehandelde fout:\n"
-"%s"
+msgstr "De scriptlet geeft een niet-afgehandelde fout:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
@@ -490,9 +482,7 @@ msgstr "Geef de naam van ten minste een pakket dat verwijderd moet worden."
 
 #: ../src/pakfire/cli.py:194
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
-"Geef de naam van het pakket welke bijgewerkt moet worden of laat leeg voor "
-"alles."
+msgstr "Geef de naam van het pakket welke bijgewerkt moet worden of laat leeg voor alles."
 
 #: ../src/pakfire/cli.py:197
 msgid "Exclude package from update."
@@ -512,7 +502,7 @@ msgstr "Werk het hele systeem bij of een specifiek pakket."
 
 #: ../src/pakfire/cli.py:213
 msgid "Sync all installed with the latest one in the distribution."
-msgstr ""
+msgstr "Synchroniseer alle geïnstalleerde software met de laatste versie van de distributie."
 
 #: ../src/pakfire/cli.py:220
 msgid "Check, if there are any updates available."
@@ -544,8 +534,7 @@ msgstr "Een patroon om naar te zoeken."
 
 #: ../src/pakfire/cli.py:255
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
-"Vraag een lijst van pakketten die een bepaalde functie of bestand bevatten."
+msgstr "Vraag een lijst van pakketten die een bepaalde functie of bestand bevatten."
 
 #: ../src/pakfire/cli.py:257
 msgid "File or feature to search for."
@@ -684,7 +673,7 @@ msgstr "Voer de installatie-test niet uit."
 
 #: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
 msgid "Disable network in container."
-msgstr ""
+msgstr "Schakel netwerk uit in container."
 
 #: ../src/pakfire/cli.py:569
 msgid "Go into a shell."
@@ -1098,20 +1087,20 @@ msgstr "Geladen vanuit bestanden:"
 
 #: ../src/pakfire/daemon.py:100
 msgid "Shutting down..."
-msgstr ""
+msgstr "Afsluiten..."
 
 #: ../src/pakfire/daemon.py:104
 msgid "Restarting keepalive process"
-msgstr ""
+msgstr "Herstarten van keepalive proces"
 
 #: ../src/pakfire/daemon.py:166
 #, python-format
 msgid "Terminating worker process: %s"
-msgstr ""
+msgstr "Afsluiten van worker-proces: %s"
 
 #: ../src/pakfire/daemon.py:315
 msgid "Sending builder information to hub..."
-msgstr ""
+msgstr "Verstuurt builderinformatie naar de hub..."
 
 #: ../src/pakfire/downloader.py:165
 msgid "Downloading source files:"
@@ -1140,18 +1129,13 @@ msgstr "Een of meer afhankelijkheden konden niet worden opgelost."
 
 #: ../src/pakfire/errors.py:61
 msgid "An error occured when pakfire tried to download files."
-msgstr ""
-"Er is een fout opgetreden toen pakfire de bestanden probeerde te downloaden."
+msgstr "Er is een fout opgetreden toen pakfire de bestanden probeerde te downloaden."
 
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
-"De gevraagde actie kan niet in offline modus worden uitgevoerd. Controleer "
-"of uw systeem met het netwerk is verbonden, verwijder --offline van de "
-"commandoregel en probeer opnieuw."
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "De gevraagde actie kan niet in offline modus worden uitgevoerd. Controleer of uw systeem met het netwerk is verbonden, verwijder --offline van de commandoregel en probeer opnieuw."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
@@ -1169,9 +1153,7 @@ msgstr "Algemene XMLRPC fout."
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr ""
-"Het is niet toegestaan om deze actie uit te voeren. Controleer uw "
-"bevoegdheden."
+msgstr "Het is niet toegestaan om deze actie uit te voeren. Controleer uw bevoegdheden."
 
 #: ../src/pakfire/errors.py:170
 msgid "A request could not be fulfilled by the server."
@@ -1183,8 +1165,7 @@ msgstr "Kan de gevraagde URL niet vinden."
 
 #: ../src/pakfire/errors.py:178
 msgid "An unforseable problem on the XML-RPC transport connection occured."
-msgstr ""
-"Er heeft zich een onvoorzien probleem voorgedaan op de XML-RPC verbinding."
+msgstr "Er heeft zich een onvoorzien probleem voorgedaan op de XML-RPC verbinding."
 
 #: ../src/pakfire/i18n.py:54
 #, python-format
@@ -1194,7 +1175,7 @@ msgstr "%(commas)s en %(last)s"
 #: ../src/pakfire/keyring.py:76
 #, python-format
 msgid "Not in key store: %s"
-msgstr ""
+msgstr "Niet in sleutelverzameling: %s"
 
 #: ../src/pakfire/keyring.py:82
 #, python-format
@@ -1242,16 +1223,14 @@ msgstr "Hostsleutel:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
-"WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar de geheime sleutel "
-"ontbreekt!"
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar de geheime sleutel ontbreekt!"
 
 #: ../src/pakfire/keyring.py:201
 #, python-format
 msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr ""
-"WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar niet gevonden!"
+msgstr "WAARSCHUWING! Hostsleutel met ID %s geconfigureerd, maar niet gevonden!"
 
 #: ../src/pakfire/keyring.py:203
 msgid "No host key available or configured."
@@ -1442,26 +1421,26 @@ msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Kan bestand: /%(src)s - %(dst)s niet uitpakken."
 
 #: ../src/pakfire/progressbar.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "Elapsed Time: %s"
-msgstr "Vrijgemaakte grootte: %s"
+msgstr "Verstreken tijd: %s"
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
-msgstr ""
+msgstr "ETA"
 
 #: ../src/pakfire/progressbar.py:231
 msgid "Time"
-msgstr ""
+msgstr "Tijd"
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
 msgstr "Initialiseren van repositories..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
-msgstr ""
-"Het formaat van de database is niet ondersteund in deze versie van pakfire."
+msgid ""
+"The format of the database is not supported by this version of pakfire."
+msgstr "Het formaat van de database is niet ondersteund in deze versie van pakfire."
 
 #: ../src/pakfire/repository/database.py:229
 #, python-format
@@ -1604,8 +1583,7 @@ msgstr "Commando mislukt: %s"
 #: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr ""
-"Bestand %(name)s van %(pkg1)s conflicteert met bestand van pakket %(pkg2)s"
+msgstr "Bestand %(name)s van %(pkg1)s conflicteert met bestand van pakket %(pkg2)s"
 
 #: ../src/pakfire/transaction.py:97
 #, python-format
@@ -1614,19 +1592,16 @@ msgstr "Bestand %(name)s van %(pkg)s conflicteert met bestanden van %(pkgs)s"
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
-"Bestand %(name)s veroorzaakte een mislukte transactietest met onbekende "
-"oorzaak"
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
+msgstr "Bestand %(name)s veroorzaakte een mislukte transactietest met onbekende oorzaak"
 
 #: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
-"Er is niet voldoende diskruimte over op %(name)s. Heb minstens %(size)s "
-"nodig om transactie uit te voeren."
+msgstr "Er is niet voldoende diskruimte over op %(name)s. Heb minstens %(size)s nodig om transactie uit te voeren."
 
 #: ../src/pakfire/transaction.py:355
 #, python-format

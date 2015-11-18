@@ -1,1709 +1,1711 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
+# Ersan YILDIRIM <ersan73@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-26 21:51+0200\n"
-"PO-Revision-Date: 2013-08-05 08:54+0000\n"
-"Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
-"Language-Team: Turkish (http://www.transifex.com/projects/p/ipfire/language/"
-"tr/)\n"
-"Language: tr\n"
+"PO-Revision-Date: 2014-01-16 17:36+0000\n"
+"Last-Translator: Ersan YILDIRIM <ersan73@gmail.com>\n"
+"Language-Team: Turkish (http://www.transifex.com/mstremer/ipfire/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../src/_pakfire/problem.c:159
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
-msgstr ""
+msgstr "%s distupgrade deposuna ait değil"
 
 #: ../src/_pakfire/problem.c:166
 #, c-format
 msgid "%s has inferior architecture"
-msgstr ""
+msgstr "%s alt mimariye sahiptir"
 
 #: ../src/_pakfire/problem.c:173
 #, c-format
 msgid "problem with installed package %s"
-msgstr ""
+msgstr "Kurulu paket %s ile sorun"
 
 #: ../src/_pakfire/problem.c:179
 #, c-format
 msgid "conflicting requests"
-msgstr ""
+msgstr "tutarsız istekler"
 
 #: ../src/_pakfire/problem.c:184
 #, c-format
 msgid "nothing provides requested %s"
-msgstr ""
+msgstr "%s tarafından sağlanan hiçbir talep yok"
 
 #: ../src/_pakfire/problem.c:190
 #, c-format
 msgid "some dependency problem"
-msgstr ""
+msgstr "bazı bağımlılık sorunları"
 
 #: ../src/_pakfire/problem.c:195
 #, c-format
 msgid "package %s is not installable"
-msgstr ""
+msgstr "%s paketi kurulabilir değil"
 
 #: ../src/_pakfire/problem.c:202
 #, c-format
 msgid "nothing provides %s needed by %s"
-msgstr ""
+msgstr "%s tarafından sağlanan hiçbir şey %s tarafından sağlanır"
 
 #: ../src/_pakfire/problem.c:209
 #, c-format
 msgid "cannot install both %s and %s"
-msgstr ""
+msgstr "Hem %s hem de %s ikisi birlikte kurulamaz "
 
 #: ../src/_pakfire/problem.c:216
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
-msgstr ""
+msgstr "%s tarafından sağlanan %s pakleti ile %s çakışmaktadır"
 
 #: ../src/_pakfire/problem.c:224
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "%s tarafından sağlanan %s pakleti %s eski"
 
 #: ../src/_pakfire/problem.c:232
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
-msgstr ""
+msgstr "%s tarafından sağlanan %s pakleti %s paketinden daha eski"
 
 #: ../src/_pakfire/problem.c:240
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
-msgstr ""
+msgstr "%s tarafından sağlanan eskimiş %s paketinin %s örtülü"
 
 #: ../src/_pakfire/problem.c:248
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
-msgstr ""
+msgstr "%s paketi %s gerektirir fakat sağlayıcılardan hiçbiri kurulu değil"
 
 #: ../src/_pakfire/problem.c:255
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
-msgstr ""
+msgstr "%s tarafından sağlanan paket %s ile çakışıyor"
 
 #: ../src/_pakfire/problem.c:264
 #, c-format
 msgid "bad rule type"
-msgstr ""
+msgstr "kötü bir kural türü"
 
 #: ../src/_pakfire/solution.c:86
 #, c-format
 msgid "do not keep %s installed"
-msgstr ""
+msgstr "Kurulu %s tutmaz"
 
 #: ../src/_pakfire/solution.c:89
 #, c-format
 msgid "do not install a solvable %s"
-msgstr ""
+msgstr "Çözülebilir %s yüklemek gerekmez"
 
 #: ../src/_pakfire/solution.c:92
 #, c-format
 msgid "do not install %s"
-msgstr ""
+msgstr "%s kurulamadı"
 
 #: ../src/_pakfire/solution.c:98
 #, c-format
 msgid "do not forbid installation of %s"
-msgstr ""
+msgstr "%s kurulması yasak değil"
 
 #: ../src/_pakfire/solution.c:101
 #, c-format
 msgid "do not deinstall all solvables %s"
-msgstr ""
+msgstr "Tüm çözülebilir %s paketleri kaldırılamadı"
 
 #: ../src/_pakfire/solution.c:104
 #, c-format
 msgid "do not deinstall %s"
-msgstr ""
+msgstr "%s kaldırılamadı"
 
 #: ../src/_pakfire/solution.c:109
 #, c-format
 msgid "do not install most recent version of %s"
-msgstr ""
+msgstr "%s için en son sürüm yüklenemedi"
 
 #: ../src/_pakfire/solution.c:114
 #, c-format
 msgid "do not lock %s"
-msgstr ""
+msgstr "%s kilitli değil"
 
 #: ../src/_pakfire/solution.c:119
 #, c-format
 msgid "do something different"
-msgstr ""
+msgstr "farklı bir şey yapın"
 
 #: ../src/_pakfire/solution.c:126
 #, c-format
 msgid "keep %s despite the inferior architecture"
-msgstr ""
+msgstr "Alt yapıya rağmen %s tut"
 
 #: ../src/_pakfire/solution.c:129
 #, c-format
 msgid "install %s despite the inferior architecture"
-msgstr ""
+msgstr "Alt yapıya rağmen %s yükle"
 
 #: ../src/_pakfire/solution.c:135
 #, c-format
 msgid "keep obsolete %s"
-msgstr ""
+msgstr "%s için eskisini tut"
 
 #: ../src/_pakfire/solution.c:138
 #, c-format
 msgid "install %s from excluded repository"
-msgstr ""
+msgstr "harici depodaki %s yükleyin"
 
 #: ../src/_pakfire/solution.c:150
 #, c-format
 msgid "allow downgrade of %s to %s"
-msgstr ""
+msgstr "%s den %s alt sürüme geçmeye izin ver"
 
 #: ../src/_pakfire/solution.c:154
 #, c-format
 msgid "allow architecture change of %s to %s"
-msgstr ""
+msgstr "Yapı değişikliğene izin ver: %s - %s"
 
 #: ../src/_pakfire/solution.c:159
 #, c-format
 msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr ""
+msgstr "'%s' (%s) den '%s' (%s) gelen değişikliğe izin ver"
 
 #: ../src/_pakfire/solution.c:163
 #, c-format
 msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr ""
+msgstr "(%s) tarafından sağlanan hiçbir sağlayıcıya '%s' (%s) değişim izni yok"
 
 #: ../src/_pakfire/solution.c:169
 #, c-format
 msgid "allow replacement of %s with %s"
-msgstr ""
+msgstr "%s ile %s değiştirilmesine izin ver"
 
 #: ../src/pakfire/actions.py:69
 #, python-format
 msgid "%s has got no signatures"
-msgstr ""
+msgstr "%s imzaları yok"
 
 #: ../src/pakfire/actions.py:75
 #, python-format
 msgid "%s has got no valid signatures"
-msgstr ""
+msgstr "%s için geçerli imzalar yok"
 
 #: ../src/pakfire/actions.py:234
 msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
+msgstr "Bilinmeyen türdeki kodlar işlenemedi. Atlanıyor."
 
 #: ../src/pakfire/actions.py:237
 msgid "Executing scriptlet..."
-msgstr ""
+msgstr "Kodlar işletiliyor..."
 
 #: ../src/pakfire/actions.py:243
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
+msgstr "Kodlar çalıştırılamıyor çünkü hiçbir yorumlayıcı yok: %s"
 
 #: ../src/pakfire/actions.py:247
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
+msgstr "Kodlar çalıştırılamıyor çünkü yorumlayıcı çalılştırılabilir değil: %s"
 
 #: ../src/pakfire/actions.py:286
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr ""
+msgstr "Kodlar bir hata oluşturdu:\n%s"
 
 #: ../src/pakfire/actions.py:289
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr ""
+msgstr "Kodlar %s saniyeden daha fazla çalıştı ve sonlandırıldı."
 
 #: ../src/pakfire/actions.py:293
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr ""
+msgstr "Komutlar işlenmeyen bir hata döndürdü:\n%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
 #: ../src/pakfire/actions.py:307
 msgid "Executing python scriptlet..."
-msgstr ""
+msgstr "Python kodları işletiliyor..."
 
 #: ../src/pakfire/actions.py:332
 #, python-format
 msgid "Exception occured: %s"
-msgstr ""
+msgstr "Özel durum oluştu: %s"
 
 #: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
 #: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
 #, python-format
 msgid "Running transaction test for %s"
-msgstr ""
+msgstr "%s için işlem testi çalışması"
 
 #: ../src/pakfire/actions.py:415
 msgid "Reinstalling"
-msgstr ""
+msgstr "Yeniden kuruluyor"
 
 #: ../src/pakfire/actions.py:417
 msgid "Updating"
-msgstr ""
+msgstr "Güncelleniyor"
 
 #: ../src/pakfire/actions.py:419
 msgid "Downgrading"
-msgstr ""
+msgstr "Derecesini düşür"
 
 #: ../src/pakfire/actions.py:421
 msgid "Installing"
-msgstr ""
+msgstr "Yükleniyor"
 
 #: ../src/pakfire/actions.py:469
 msgid "Cleanup"
-msgstr ""
+msgstr "Temizle"
 
 #: ../src/pakfire/actions.py:471
 msgid "Removing"
-msgstr ""
+msgstr "Kaldırılıyor"
 
 #: ../src/pakfire/base.py:197
 msgid "Local install repository"
-msgstr ""
+msgstr "Yerel depo yükleyin"
 
 #: ../src/pakfire/base.py:261
 #, python-format
 msgid "Could not find any installed package providing \"%s\"."
-msgstr ""
+msgstr "\"%s\" sağlayan herhangi bir yüklü paket bulunamadı."
 
 #: ../src/pakfire/base.py:267
 #, python-format
 msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
-msgstr ""
+msgstr "%(pattern)s\" için birden fazla yeniden yükleme adayı: %(pkgs)s"
 
 #: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
 #: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
 #: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:414
 msgid "Nothing to do"
-msgstr ""
+msgstr "Yapacak bir şey yok"
 
 #: ../src/pakfire/base.py:296
 #, python-format
 msgid "Could not find package %s in a remote repository."
-msgstr ""
+msgstr "Uzak depodaki %s paketi bulunamadı."
 
 #: ../src/pakfire/base.py:368
 #, python-format
 msgid "Excluding %s."
-msgstr ""
+msgstr "%s hariç."
 
 #: ../src/pakfire/base.py:434
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
-msgstr ""
+msgstr "\"%s\" paketi yüklü olarak görünmüyor."
 
 #: ../src/pakfire/base.py:598
 msgid "Everything is fine."
-msgstr ""
+msgstr "Her şey yolunda."
 
 #: ../src/pakfire/base.py:619
 msgid "Build command has failed."
-msgstr ""
+msgstr "Derleme komutu başarısız oldu."
 
 #: ../src/pakfire/base.py:656
 msgid "You have not set the distribution for which you want to build."
-msgstr ""
+msgstr "Derlemek istediğiniz dağıtım için ayarlanmamış."
 
 #: ../src/pakfire/base.py:657
 msgid "Please do so in builder.conf or on the CLI."
-msgstr ""
+msgstr "Lütfen builder.conf veya CLI dosyasındakileri yapın."
 
 #: ../src/pakfire/base.py:658
 msgid "Distribution configuration is missing."
-msgstr ""
+msgstr "Eksik dağıtım yapılandırması."
 
 #: ../src/pakfire/base.py:739
 msgid "New repository"
-msgstr ""
+msgstr "Yeni depo"
 
 #: ../src/pakfire/builder.py:80
 #, python-format
 msgid "Cannot build for %s on this host."
-msgstr ""
+msgstr "Bu ana makinede %s için derleme yapılamaz."
 
 #. Log the package information.
 #: ../src/pakfire/builder.py:148
 msgid "Package information:"
-msgstr ""
+msgstr "Paket bilgileri:"
 
 #. Install all packages.
 #: ../src/pakfire/builder.py:444
 msgid "Install packages needed for build..."
-msgstr ""
+msgstr "Derleme için gerekli paketler kuruluyor..."
 
 #: ../src/pakfire/builder.py:449 ../src/pakfire/cli.py:464
 msgid "Extracting"
-msgstr ""
+msgstr "Açılıyor"
 
 #: ../src/pakfire/builder.py:781
 msgid "You cannot run a build when no package was given."
-msgstr ""
+msgstr "Hiçbir paket olmadığında derlemeyi çalıştıramazsınız."
 
 #: ../src/pakfire/builder.py:785
 #, python-format
 msgid "Could not find makefile in build root: %s"
-msgstr ""
+msgstr "Root derleyicisi içerisindeki makefile dosyası bulunamadı: %s"
 
 #: ../src/pakfire/builder.py:815
 msgid "Build failed"
-msgstr ""
+msgstr "Derleme başarısız oldu"
 
 #: ../src/pakfire/builder.py:818
 msgid "Build interrupted"
-msgstr ""
+msgstr "Tamamlanamayan derleme"
 
 #: ../src/pakfire/builder.py:824
 msgid "Build failed."
-msgstr ""
+msgstr "Derleme başarısız oldu."
 
 #. End here in case of an error.
 #: ../src/pakfire/builder.py:840
 msgid "The build command failed. See logfile for details."
-msgstr ""
+msgstr "Derleme komutu başarısız oldu. Ayrıntılar için günlük dosyasına bakın."
 
 #: ../src/pakfire/builder.py:843
 msgid "Running installation test..."
-msgstr ""
+msgstr "Yükleme testi çalıştırılıyor..."
 
 #: ../src/pakfire/builder.py:849
 msgid "Installation test succeeded."
-msgstr ""
+msgstr "Yükleme testi başarılı."
 
 #. Create a progressbar.
 #: ../src/pakfire/builder.py:892
 msgid "Signing packages..."
-msgstr ""
+msgstr "Paketler imzalanıyor..."
 
 #: ../src/pakfire/builder.py:926
 msgid "Dumping package information:"
-msgstr ""
+msgstr "Boş paket bilgileri:"
 
 #. Package the result.
 #. Make all these little package from the build environment.
 #: ../src/pakfire/builder.py:1078
 msgid "Creating packages:"
-msgstr ""
+msgstr "Oluşturulan paketler:"
 
 #. Execute the buildscript of this stage.
 #: ../src/pakfire/builder.py:1092
 #, python-format
 msgid "Running stage %s:"
-msgstr ""
+msgstr "%s - Çalışma aşaması:"
 
 #: ../src/pakfire/builder.py:1110
 #, python-format
 msgid "Could not remove static libraries: %s"
-msgstr ""
+msgstr "Durağan kitaplıklar kaldırılamadı: %s"
 
 #: ../src/pakfire/builder.py:1116
 msgid "Compressing man pages did not complete successfully."
-msgstr ""
+msgstr "Man sayfalarının sıkıştırılması tamamlanamadı."
 
 #: ../src/pakfire/builder.py:1136
 msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr ""
+msgstr "Hata ayıklama bilgisi başarıyla tamamlanamadı. Derleme durduruluyor."
 
 #: ../src/pakfire/cli.py:53
 msgid "Pakfire command line interface."
-msgstr ""
+msgstr "Pakfire komut satırı arayüzü."
 
 #: ../src/pakfire/cli.py:60
 msgid "The path where pakfire should operate in."
-msgstr ""
+msgstr "Pakfire dosyasının içeride çalıştırma yolu."
 
 #: ../src/pakfire/cli.py:149
 msgid "Enable verbose output."
-msgstr ""
+msgstr "Ayrıntılı çıktıyı aktifleştirin."
 
 #: ../src/pakfire/cli.py:152
 msgid "Path to a configuration file to load."
-msgstr ""
+msgstr "Yüklenecek yapılandırma dosyasının yolu."
 
 #: ../src/pakfire/cli.py:155
 msgid "Disable a repository temporarily."
-msgstr ""
+msgstr "Geçici olarak depoyu devre dışı bırakın."
 
 #: ../src/pakfire/cli.py:158
 msgid "Enable a repository temporarily."
-msgstr ""
+msgstr "Geçici olarak bir depoyu aktifleştirin."
 
 #: ../src/pakfire/cli.py:162
 msgid "Run pakfire in offline mode."
-msgstr ""
+msgstr "Çevrimdışı durumda pakfire çalıştırın."
 
 #: ../src/pakfire/cli.py:167
 msgid "Install one or more packages to the system."
-msgstr ""
+msgstr "Sisteme bir veya daha fazla paket yükleyin."
 
 #: ../src/pakfire/cli.py:169
 msgid "Give name of at least one package to install."
-msgstr ""
+msgstr "Yüklemek için en az bir paket adı girin."
 
 #: ../src/pakfire/cli.py:171
 msgid "Don't install recommended packages."
-msgstr ""
+msgstr "Tavsiye edilen paketleri kurmayın."
 
 #: ../src/pakfire/cli.py:177
 msgid "Reinstall one or more packages."
-msgstr ""
+msgstr "Bir veya daha fazla paketi yeniden yükleyin."
 
 #: ../src/pakfire/cli.py:179
 msgid "Give name of at least one package to reinstall."
-msgstr ""
+msgstr "En az bir pakete ad verip yeniden yükleyin."
 
 #: ../src/pakfire/cli.py:185
 msgid "Remove one or more packages from the system."
-msgstr ""
+msgstr "Sistem için tek veya daha fazla paket çıkartın."
 
 #: ../src/pakfire/cli.py:187
 msgid "Give name of at least one package to remove."
-msgstr ""
+msgstr "Kaldırmak için en az bir paket adı seçin."
 
 #: ../src/pakfire/cli.py:194
 msgid "Give a name of a package to update or leave emtpy for all."
-msgstr ""
+msgstr "Güncelleştirmek veya tümünü boş bırakmak için bir paketin bir ad verin."
 
 #: ../src/pakfire/cli.py:197
 msgid "Exclude package from update."
-msgstr ""
+msgstr "Paketi güncelleştirmenin dışında tut."
 
 #: ../src/pakfire/cli.py:199 ../src/pakfire/cli.py:231
 msgid "Allow changing the vendor of packages."
-msgstr ""
+msgstr "Paket sağlayıcısının değiştirilmesine izin ver."
 
 #: ../src/pakfire/cli.py:201 ../src/pakfire/cli.py:233
 msgid "Disallow changing the architecture of packages."
-msgstr ""
+msgstr "Değişen paket yapısına izin verilmeyecek."
 
 #: ../src/pakfire/cli.py:206
 msgid "Update the whole system or one specific package."
-msgstr ""
+msgstr "Tüm sistemi veya belirli bir paketi güncelleyin."
 
 #: ../src/pakfire/cli.py:213
 msgid "Sync all installed with the latest one in the distribution."
-msgstr ""
+msgstr "Dağıtımında yeni yüklenmiş tüm eşitlemeler."
 
 #: ../src/pakfire/cli.py:220
 msgid "Check, if there are any updates available."
-msgstr ""
+msgstr "Mevcut herhangi bir güncelleme olup olmadığını kontrol edin."
 
 #: ../src/pakfire/cli.py:227
 msgid "Downgrade one or more packages."
-msgstr ""
+msgstr "Bir veya daha fazla paketin sürümünü düşür."
 
 #: ../src/pakfire/cli.py:229
 msgid "Give a name of a package to downgrade."
-msgstr ""
+msgstr "Ad verilen paketin sürümünü düşür."
 
 #: ../src/pakfire/cli.py:239
 msgid "Print some information about the given package(s)."
-msgstr ""
+msgstr "Verilen paket(ler) hakkında ki bazı bilgileri yazdırın."
 
 #: ../src/pakfire/cli.py:241
 msgid "Give at least the name of one package."
-msgstr ""
+msgstr "En az bir pakete ad verin."
 
 #: ../src/pakfire/cli.py:247
 msgid "Search for a given pattern."
-msgstr ""
+msgstr "Belirli bir model arayın."
 
 #: ../src/pakfire/cli.py:249
 msgid "A pattern to search for."
-msgstr ""
+msgstr "Aramak için bir model."
 
 #: ../src/pakfire/cli.py:255
 msgid "Get a list of packages that provide a given file or feature."
-msgstr ""
+msgstr "Belirli bir dosya veya özelliği sağlayan paketlerin listesini alın."
 
 #: ../src/pakfire/cli.py:257
 msgid "File or feature to search for."
-msgstr ""
+msgstr "Aramak için dosya veya özellik girin."
 
 #: ../src/pakfire/cli.py:263
 msgid "Get list of packages that belong to the given group."
-msgstr ""
+msgstr "Verilen gruba ait paketlerin listesini alın."
 
 #: ../src/pakfire/cli.py:265
 msgid "Group name to search for."
-msgstr ""
+msgstr "Aramak için grup adı girin."
 
 #: ../src/pakfire/cli.py:271
 msgid "Install all packages that belong to the given group."
-msgstr ""
+msgstr "Verilen gruba ait tüm paketleri kurun."
 
 #: ../src/pakfire/cli.py:273
 msgid "Group name."
-msgstr ""
+msgstr "Grup adı."
 
 #: ../src/pakfire/cli.py:279
 msgid "List all currently enabled repositories."
-msgstr ""
+msgstr "Şu anda bütün aktif depoları listeleyin."
 
 #: ../src/pakfire/cli.py:283
 msgid "Cleanup commands."
-msgstr ""
+msgstr "Temizleme komutları."
 
 #: ../src/pakfire/cli.py:291
 msgid "Cleanup all temporary files."
-msgstr ""
+msgstr "Tüm geçici dosyaları temizle."
 
 #: ../src/pakfire/cli.py:297
 msgid "Check the system for any errors."
-msgstr ""
+msgstr "Herhangi bir hata için sistemi kontrol edin."
 
 #: ../src/pakfire/cli.py:303
 msgid "Check the dependencies for a particular package."
-msgstr ""
+msgstr "Belirli bir paket için bağımlılıkları kontrol edin."
 
 #: ../src/pakfire/cli.py:305
 msgid "Give name of at least one package to check."
-msgstr ""
+msgstr "Kontrol etmek için en azından bir paketin adını girin."
 
 #: ../src/pakfire/cli.py:311
 msgid "Extract a package to a directory."
-msgstr ""
+msgstr "Bu dizine bir paket çıkartın."
 
 #: ../src/pakfire/cli.py:313
 msgid "Give name of the file to extract."
-msgstr ""
+msgstr "Çıkarmak için dosyanın adını verin."
 
 #: ../src/pakfire/cli.py:315
 msgid "Target directory where to extract to."
-msgstr ""
+msgstr "Çıkarılacak hedef dizini nerede."
 
 #: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:425
 msgid "Repository"
-msgstr ""
+msgstr "Depo"
 
 #: ../src/pakfire/cli.py:403
 msgid "Enabled"
-msgstr ""
+msgstr "Aktif"
 
 #: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1144
 msgid "Priority"
-msgstr ""
+msgstr "Öncelik"
 
 #: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1189
 msgid "Packages"
-msgstr ""
+msgstr "Paketler"
 
 #: ../src/pakfire/cli.py:411
 msgid "Cleaning up everything..."
-msgstr ""
+msgstr "Tüm geçici dosyalar temizleniyor..."
 
 #: ../src/pakfire/cli.py:447
 msgid "Cannot extract mixed package types"
-msgstr ""
+msgstr "Karışık paket türleri çıkarılamaz"
 
 #: ../src/pakfire/cli.py:450
 msgid "You must provide an install directory with --target=..."
-msgstr ""
+msgstr "Yükleme için dizin sağlamak gerekir --target=..."
 
 #: ../src/pakfire/cli.py:456
 msgid "Cannot extract to /."
-msgstr ""
+msgstr "/ dizinine çıkartılamaz."
 
 #: ../src/pakfire/cli.py:474
 msgid "You cannot run pakfire-builder in a pakfire chroot."
-msgstr ""
+msgstr "Pakfire chroot içerisinde pakfire-derleyiciyi çalıştıramazsınız."
 
 #: ../src/pakfire/cli.py:477 ../src/pakfire/cli.py:819
 msgid "Pakfire builder command line interface."
-msgstr ""
+msgstr "Pakfire derleyici komut satırı arayüzü."
 
 #: ../src/pakfire/cli.py:536
 msgid "Choose the distribution configuration to use for build"
-msgstr ""
+msgstr "Derleme için kullanılacak dağıtım yapılandırmasını seçin"
 
 #: ../src/pakfire/cli.py:539
 msgid "Run pakfire for the given architecture."
-msgstr ""
+msgstr "Verilen yapı için pakfire çalıştırın."
 
 #: ../src/pakfire/cli.py:544
 msgid "Update the package indexes."
-msgstr ""
+msgstr "Paket dizinlerini güncelleyin."
 
 #: ../src/pakfire/cli.py:550 ../src/pakfire/cli.py:839
 msgid "Build one or more packages."
-msgstr ""
+msgstr "Bir veya daha fazla paketi derleyin."
 
 #: ../src/pakfire/cli.py:552 ../src/pakfire/cli.py:728
 #: ../src/pakfire/cli.py:841
 msgid "Give name of at least one package to build."
-msgstr ""
+msgstr "Derlemek için en azından bir paket adını girin."
 
 #: ../src/pakfire/cli.py:556 ../src/pakfire/cli.py:588
 #: ../src/pakfire/cli.py:847
 msgid "Path were the output files should be copied to."
-msgstr ""
+msgstr "Çıktı dosyalarının kopyalanması gereken yolu."
 
 #: ../src/pakfire/cli.py:558 ../src/pakfire/cli.py:575
 #: ../src/pakfire/cli.py:849
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
-msgstr ""
+msgstr "Çalıştırma biçimi. 'Serbest' veya 'geliştirme' (varsayılan) olur."
 
 #: ../src/pakfire/cli.py:560
 msgid "Run a shell after a successful build."
-msgstr ""
+msgstr "Başarılı bir derlemeden sonra bir kabuk çalıştırın."
 
 #: ../src/pakfire/cli.py:562
 msgid "Do not perform the install test."
-msgstr ""
+msgstr "Kurulum testi yapmayınız."
 
 #: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
 msgid "Disable network in container."
-msgstr ""
+msgstr "Kapsayıcıda ki ağı devre dışı bırakın."
 
 #: ../src/pakfire/cli.py:569
 msgid "Go into a shell."
-msgstr ""
+msgstr "Bir kabuğa gidin."
 
 #: ../src/pakfire/cli.py:571
 msgid "Give name of a package."
-msgstr ""
+msgstr "Bir paket adı verin."
 
 #: ../src/pakfire/cli.py:582
 msgid "Generate a source package."
-msgstr ""
+msgstr "Bir kaynak paketi oluşturun."
 
 #: ../src/pakfire/cli.py:584
 msgid "Give name(s) of a package(s)."
-msgstr ""
+msgstr "Paketlerin adlarını verin."
 
 #: ../src/pakfire/cli.py:685
 msgid "Pakfire server command line interface."
-msgstr ""
+msgstr "Pakfire sunucusu komut satırı arayüzü."
 
 #: ../src/pakfire/cli.py:726
 msgid "Send a scrach build job to the server."
-msgstr ""
+msgstr "Sunucuya boş bir derleme işi gönderin."
 
 #: ../src/pakfire/cli.py:730
 msgid "Limit build to only these architecture(s)."
-msgstr ""
+msgstr "Sadece bu mimarilerde derlemeyi sınırlayın."
 
 #: ../src/pakfire/cli.py:736
 msgid "Send a keepalive to the server."
-msgstr ""
+msgstr "Sunucuyu canlı tutmak için bir paket gönderin."
 
 #: ../src/pakfire/cli.py:743
 msgid "Update all repositories."
-msgstr ""
+msgstr "Tüm depoları güncelleyin."
 
 #: ../src/pakfire/cli.py:749
 msgid "Repository management commands."
-msgstr ""
+msgstr "Depo yönetimi komutları."
 
 #: ../src/pakfire/cli.py:757
 msgid "Create a new repository index."
-msgstr ""
+msgstr "Yeni bir depo dizini oluşturun."
 
 #: ../src/pakfire/cli.py:759
 msgid "Path to the packages."
-msgstr ""
+msgstr "Paketlerin yolu."
 
 #: ../src/pakfire/cli.py:761
 msgid "Path to input packages."
-msgstr ""
+msgstr "Giriş paketlerinin yolu."
 
 #: ../src/pakfire/cli.py:763
 msgid "Key to sign the repository with."
-msgstr ""
+msgstr "Depo ile imzalamak için anahtar."
 
 #: ../src/pakfire/cli.py:768
 msgid "Dump some information about this machine."
-msgstr ""
+msgstr "Bu makine hakkında bazı bilgilerin dökümü."
 
 #: ../src/pakfire/cli.py:845 ../src/pakfire/cli.py:937
 msgid "Build the package for the given architecture."
-msgstr ""
+msgstr "Verilen mimari için paket derleyin."
 
 #: ../src/pakfire/cli.py:851
 msgid "Do not verify build dependencies."
-msgstr ""
+msgstr "Derleme bağımlılıkları doğrulanamıyor."
 
 #: ../src/pakfire/cli.py:853
 msgid "Only run the prepare stage."
-msgstr ""
+msgstr "Yalnızca hazırlık aşamasını çalıştırın."
 
 #: ../src/pakfire/cli.py:887
 msgid "Pakfire client command line interface."
-msgstr ""
+msgstr "Pakfire istemci komut satırı arayüzü."
 
 #: ../src/pakfire/cli.py:931
 msgid "Build a package remotely."
-msgstr ""
+msgstr "Uzaktan bir paket derleyin."
 
 #: ../src/pakfire/cli.py:933
 msgid "Give name of a package to build."
-msgstr ""
+msgstr "Derlemek için bir paket adı girin."
 
 #: ../src/pakfire/cli.py:942
 msgid "Print some information about this host."
-msgstr ""
+msgstr "Bu ana bilgisayar hakkında ki bazı bilgileri yazdırın."
 
 #: ../src/pakfire/cli.py:948
 msgid "Check the connection to the hub."
-msgstr ""
+msgstr "Hub bağlantısını kontrol edin."
 
 #: ../src/pakfire/cli.py:953
 msgid "Show information about build jobs."
-msgstr ""
+msgstr "Derleme işleriyle ilgili bilgileri göster."
 
 #: ../src/pakfire/cli.py:963
 msgid "Show a list of all active jobs."
-msgstr ""
+msgstr "Tüm aktif işlerin bir listesini göster."
 
 #: ../src/pakfire/cli.py:968
 msgid "Show a list of all recently finished of failed build jobs."
-msgstr ""
+msgstr "Bitmiş başarısız son derleme işlerini listesini göster."
 
 #: ../src/pakfire/cli.py:973
 msgid "Show details about given build job."
-msgstr ""
+msgstr "Verilen derleme işiyle ilgili ayrıntıları göster."
 
 #: ../src/pakfire/cli.py:974
 msgid "The ID of the build job."
-msgstr ""
+msgstr "Derleme işinin kimliği."
 
 #: ../src/pakfire/cli.py:979
 msgid "Show information about builds."
-msgstr ""
+msgstr "Derleme hakkında ki bilgileri göster."
 
 #: ../src/pakfire/cli.py:987
 msgid "Show details about the given build."
-msgstr ""
+msgstr "Verilen derleme ile ilgili ayrıntıları göster."
 
 #: ../src/pakfire/cli.py:988
 msgid "The ID of the build."
-msgstr ""
+msgstr "Derleme kimliği."
 
 #: ../src/pakfire/cli.py:993
 msgid "Test the connection to the hub."
-msgstr ""
+msgstr "Hub bağlantısını test edin."
 
 #: ../src/pakfire/cli.py:994
 msgid "Error code to test."
-msgstr ""
+msgstr "Test etmek için hata kodu."
 
 #: ../src/pakfire/cli.py:1045 ../src/pakfire/server.py:303
 msgid "Hostname"
-msgstr ""
+msgstr "Ana bilgisayar adı"
 
 #: ../src/pakfire/cli.py:1046
 msgid "Pakfire hub"
-msgstr ""
+msgstr "Pakfire hub"
 
 #: ../src/pakfire/cli.py:1049
 msgid "Username"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #. Hardware information
 #: ../src/pakfire/cli.py:1053 ../src/pakfire/server.py:307
 msgid "Hardware information"
-msgstr ""
+msgstr "Donanım bilgisi"
 
 #: ../src/pakfire/cli.py:1054 ../src/pakfire/server.py:308
 msgid "CPU model"
-msgstr ""
+msgstr "CPU modeli"
 
 #: ../src/pakfire/cli.py:1055 ../src/pakfire/server.py:309
 msgid "Memory"
-msgstr ""
+msgstr "Bellek"
 
 #: ../src/pakfire/cli.py:1056
 msgid "Parallelism"
-msgstr ""
+msgstr "Benzerlik"
 
 #: ../src/pakfire/cli.py:1058 ../src/pakfire/server.py:311
 msgid "Native arch"
-msgstr ""
+msgstr "Yerel yapı"
 
 #: ../src/pakfire/cli.py:1060
 msgid "Default arch"
-msgstr ""
+msgstr "Varsayılan yapı"
 
 #: ../src/pakfire/cli.py:1062 ../src/pakfire/server.py:313
 msgid "Supported arches"
-msgstr ""
+msgstr "Desteklenen yapılar"
 
 #: ../src/pakfire/cli.py:1075
 msgid "Your IP address"
-msgstr ""
+msgstr "IP adresiniz"
 
 #: ../src/pakfire/cli.py:1080
 msgid "You are authenticated to the build service:"
-msgstr ""
+msgstr "Derleme hizmetiniz doğrulanıyor:"
 
 #: ../src/pakfire/cli.py:1086
 msgid "User name"
-msgstr ""
+msgstr "Kullanıcı adı"
 
 #: ../src/pakfire/cli.py:1087
 msgid "Real name"
-msgstr ""
+msgstr "Gerçek adınız"
 
 #: ../src/pakfire/cli.py:1088
 msgid "Email address"
-msgstr ""
+msgstr "E-posta adresi"
 
 #: ../src/pakfire/cli.py:1089
 msgid "Registered"
-msgstr ""
+msgstr "Kayıtlı"
 
 #: ../src/pakfire/cli.py:1096
 msgid "You could not be authenticated to the build service."
-msgstr ""
+msgstr "Derleme hizmeti için kimliğiniz doğrulanamadı."
 
 #: ../src/pakfire/cli.py:1117
 msgid "No ongoing jobs found."
-msgstr ""
+msgstr "Hayır devam eden işler bulunamadı."
 
 #: ../src/pakfire/cli.py:1120
 msgid "Active build jobs"
-msgstr ""
+msgstr "Aktif derleme işleri"
 
 #: ../src/pakfire/cli.py:1126
 msgid "No jobs found."
-msgstr ""
+msgstr "Hiçbir iş bulunamadı."
 
 #: ../src/pakfire/cli.py:1129
 msgid "Recently processed build jobs"
-msgstr ""
+msgstr "Son zamanlarda işlenmiş derleme işleri"
 
 #: ../src/pakfire/cli.py:1136
 #, python-format
 msgid "A build with ID %s could not be found."
-msgstr ""
+msgstr "%s kimliği ile ilgili bir derleme bulunamadı."
 
 #: ../src/pakfire/cli.py:1139
 #, python-format
 msgid "Build: %(name)s"
-msgstr ""
+msgstr "Derleme:  %(name)s"
 
 #: ../src/pakfire/cli.py:1143 ../src/pakfire/cli.py:1171
 msgid "State"
-msgstr ""
+msgstr "Durum"
 
 #: ../src/pakfire/cli.py:1147
 msgid "Jobs"
-msgstr ""
+msgstr "İş"
 
 #: ../src/pakfire/cli.py:1160
 #, python-format
 msgid "A job with ID %s could not be found."
-msgstr ""
+msgstr "%s kimliği ile ilgili bir iş bulunamadı."
 
 #: ../src/pakfire/cli.py:1167
 #, python-format
 msgid "Job: %(name)s"
-msgstr ""
+msgstr "İş: %(name)s"
 
 #: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
 #: ../src/pakfire/transaction.py:423
 msgid "Arch"
-msgstr ""
+msgstr "Yapı"
 
 #: ../src/pakfire/cli.py:1177 ../src/pakfire/packages/base.py:148
 msgid "Build host"
-msgstr ""
+msgstr "Derleme sunucusu"
 
 #: ../src/pakfire/cli.py:1182
 msgid "Time created"
-msgstr ""
+msgstr "Oluşturma zamanı"
 
 #: ../src/pakfire/cli.py:1183
 msgid "Time started"
-msgstr ""
+msgstr "Başlatma zamanı"
 
 #: ../src/pakfire/cli.py:1184
 msgid "Time finished"
-msgstr ""
+msgstr "Bitirme zamanı"
 
 #: ../src/pakfire/cli.py:1185
 msgid "Duration"
-msgstr ""
+msgstr "Süre"
 
 #: ../src/pakfire/cli.py:1213
 msgid "Invalid error code given."
-msgstr ""
+msgstr "Girilen hata kodu geçersiz."
 
 #: ../src/pakfire/cli.py:1216
 #, python-format
 msgid "Reponse from the server: %s"
-msgstr ""
+msgstr "Sunucunun cevabı: %s"
 
 #: ../src/pakfire/cli.py:1227
 msgid "Pakfire daemon command line interface."
-msgstr ""
+msgstr "Pakfire artalan süreci komut satırı arayüzü."
 
 #: ../src/pakfire/cli.py:1258
 msgid "Pakfire key command line interface."
-msgstr ""
+msgstr "Pakfire anahtar komut satırı ara yüzü."
 
 #: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
 msgid "Import a key from file."
-msgstr ""
+msgstr "Dosyadan bir anahtarı alın."
 
 #: ../src/pakfire/cli.py:1296
 msgid "The real name of the owner of this key."
-msgstr ""
+msgstr "Bu anahtarın sahibinin gerçek adı."
 
 #: ../src/pakfire/cli.py:1298
 msgid "The email address of the owner of this key."
-msgstr ""
+msgstr "Bu anahtarın sahibinin e-posta adresi."
 
 #: ../src/pakfire/cli.py:1306
 msgid "Filename of that key to import."
-msgstr ""
+msgstr "Almak için bu anahtarın dosya adı."
 
 #: ../src/pakfire/cli.py:1312
 msgid "Export a key to a file."
-msgstr ""
+msgstr "Dosyaya anahtarı verin."
 
 #: ../src/pakfire/cli.py:1314
 msgid "The ID of the key to export."
-msgstr ""
+msgstr "Verilen anahtar kimliği."
 
 #: ../src/pakfire/cli.py:1316
 msgid "Write the key to this file."
-msgstr ""
+msgstr "Bu dosyaya anahtarını yazın."
 
 #: ../src/pakfire/cli.py:1322
 msgid "Delete a key from the local keyring."
-msgstr ""
+msgstr "Yerel anahtarlığınızda bir anahtarı silin."
 
 #: ../src/pakfire/cli.py:1324
 msgid "The ID of the key to delete."
-msgstr ""
+msgstr "Silmek için anahtar kimliği."
 
 #: ../src/pakfire/cli.py:1330
 msgid "List all imported keys."
-msgstr ""
+msgstr "Tüm alınan anahtarları listeleyin."
 
 #: ../src/pakfire/cli.py:1336
 msgid "Sign one or more packages."
-msgstr ""
+msgstr "Bir veya daha fazla paketi imzalayın."
 
 #: ../src/pakfire/cli.py:1338
 msgid "Key that is used sign the package(s)."
-msgstr ""
+msgstr "Paket(leri) imzalamak için kullanılan anahtar."
 
 #: ../src/pakfire/cli.py:1340
 msgid "Package(s) to sign."
-msgstr ""
+msgstr "İmzalamak için paketler."
 
 #: ../src/pakfire/cli.py:1346
 msgid "Verify one or more packages."
-msgstr ""
+msgstr "Bir veya daha fazla paketi doğrulayın."
 
 #: ../src/pakfire/cli.py:1350
 msgid "Package(s) to verify."
-msgstr ""
+msgstr "Doğrulanacak paketler."
 
 #: ../src/pakfire/cli.py:1357
 msgid "Generating the key may take a moment..."
-msgstr ""
+msgstr "Anahtarı üretme bir dakikanızı alabilir..."
 
 #: ../src/pakfire/cli.py:1411
 #, python-format
 msgid "Signing %s..."
-msgstr ""
+msgstr "%s imzalanıyor..."
 
 #: ../src/pakfire/cli.py:1431
 #, python-format
 msgid "Verifying %s..."
-msgstr ""
+msgstr "%s doğrulanıyor..."
 
 #: ../src/pakfire/cli.py:1441
 msgid "This signature is valid."
-msgstr ""
+msgstr "Bu imza geçerlidir."
 
 #: ../src/pakfire/cli.py:1444
 msgid "Unknown key"
-msgstr ""
+msgstr "Bilinmeyen anahtar"
 
 #: ../src/pakfire/cli.py:1445
 msgid "Could not check if this signature is valid."
-msgstr ""
+msgstr "Bu imzanın geçerli olup olmadığı kontrol edilemedi."
 
 #: ../src/pakfire/cli.py:1448 ../src/pakfire/keyring.py:98
 #, python-format
 msgid "Created: %s"
-msgstr ""
+msgstr "Oluşturuldu: %s"
 
 #: ../src/pakfire/cli.py:1452 ../src/pakfire/keyring.py:101
 #, python-format
 msgid "Expires: %s"
-msgstr ""
+msgstr "Bitiş: %s"
 
 #: ../src/pakfire/compress.py:85 ../src/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
-msgstr ""
+msgstr "Verilen algoritma '%s' tarafından desteklenmiyor."
 
 #: ../src/pakfire/config.py:191
 #, python-format
 msgid "Unhandled configuration update: %s = %s"
-msgstr ""
+msgstr "İşlenmeyen yapılandırma güncellemesi: %s = %s"
 
 #: ../src/pakfire/config.py:205
 msgid "Configuration:"
-msgstr ""
+msgstr "Yapılandırma:"
 
 #: ../src/pakfire/config.py:207
 #, python-format
 msgid "Section: %s"
-msgstr ""
+msgstr "Bölüm: %s"
 
 #: ../src/pakfire/config.py:212
 msgid "No settings in this section."
-msgstr ""
+msgstr "Bu bölümün hiçbiri ayarlanmadı."
 
 #: ../src/pakfire/config.py:214
 msgid "Loaded from files:"
-msgstr ""
+msgstr "Dosyalardan yüklenenler:"
 
 #: ../src/pakfire/daemon.py:100
 msgid "Shutting down..."
-msgstr ""
+msgstr "Kapanıyor..."
 
 #: ../src/pakfire/daemon.py:104
 msgid "Restarting keepalive process"
-msgstr ""
+msgstr "Canlı tutma işlemi yeniden başlatılıyor"
 
 #: ../src/pakfire/daemon.py:166
 #, python-format
 msgid "Terminating worker process: %s"
-msgstr ""
+msgstr "Alt işlemi sonlandırma: %s"
 
 #: ../src/pakfire/daemon.py:315
 msgid "Sending builder information to hub..."
-msgstr ""
+msgstr "Hub'a derleyici bilgileri gönderiliyor ..."
 
 #: ../src/pakfire/downloader.py:165
 msgid "Downloading source files:"
-msgstr ""
+msgstr "İndirilen kaynak dosyaları:"
 
 #: ../src/pakfire/downloader.py:168
 msgid "Cannot download source code in offline mode."
-msgstr ""
+msgstr "Çevrimdışı modundayken kaynak kodu indirilemez."
 
 #: ../src/pakfire/downloader.py:191
 #, python-format
 msgid "Downloaded empty file: %s"
-msgstr ""
+msgstr "İndirilen dosya boş: %s"
 
 #: ../src/pakfire/errors.py:30
 msgid "An unhandled error occured."
-msgstr ""
+msgstr "İşlenmeyen bir hata oluştu."
 
 #: ../src/pakfire/errors.py:46
 msgid "Could not compress/decompress data."
-msgstr ""
+msgstr "Verileri sıkıştırma/açma yapılamadı."
 
 #: ../src/pakfire/errors.py:58
 msgid "One or more dependencies could not been resolved."
-msgstr ""
+msgstr "Çözümlenmemiş bir veya daha fazla bağımlılık var."
 
 #: ../src/pakfire/errors.py:61
 msgid "An error occured when pakfire tried to download files."
-msgstr ""
+msgstr "Pakfire dosyalarını indirmek için çalıştığında bir hata oluştu."
 
 #: ../src/pakfire/errors.py:74
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command "
-"line and try again."
-msgstr ""
+"Please connect your system to the network, remove --offline from the command line and try again."
+msgstr "İstenen eylem çevrimdışı durumda yapılamaz.\nSisteminizi ağa bağlamak için komut satırından remove --offline komutunu tekrar deneyin."
 
 #: ../src/pakfire/errors.py:86
 msgid "Running pakfire-build in a pakfire container?"
-msgstr ""
+msgstr "Pakfire kapsayıcı içinde pakfire derleyici oluşturulsun mu?"
 
 #: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
 msgid "Transaction test was not successful"
-msgstr ""
+msgstr "İşlem testi başarılı oldu"
 
 #: ../src/pakfire/errors.py:162
 msgid "Generic XMLRPC error."
-msgstr ""
+msgstr "Genel XMLRPC hatası."
 
 #: ../src/pakfire/errors.py:166
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr ""
+msgstr "Bu eylemi gerçekleştirmeniz yasaklanmıştır. Belki kimlik bilgilerinizi kontrol etmeniz gerekir."
 
 #: ../src/pakfire/errors.py:170
 msgid "A request could not be fulfilled by the server."
-msgstr ""
+msgstr "Bu talep sunucu tarafından yerine ulaştırılamadı."
 
 #: ../src/pakfire/errors.py:174
 msgid "Could not find the requested URL."
-msgstr ""
+msgstr "İstenen URL bulamadı."
 
 #: ../src/pakfire/errors.py:178
 msgid "An unforseable problem on the XML-RPC transport connection occured."
-msgstr ""
+msgstr "XML-RPC ulaşım bağlantısı üzerinde öngörülemeyen bir sorun oluştu."
 
 #: ../src/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
-msgstr ""
+msgstr "%(commas)s ve %(last)s"
 
 #: ../src/pakfire/keyring.py:76
 #, python-format
 msgid "Not in key store: %s"
-msgstr ""
+msgstr "Anahtar depoda yok: %s"
 
 #: ../src/pakfire/keyring.py:82
 #, python-format
 msgid "Fingerprint: %s"
-msgstr ""
+msgstr "Parmak izi: %s"
 
 #: ../src/pakfire/keyring.py:86
 msgid "Private key available!"
-msgstr ""
+msgstr "Özel anahtar kullanılabilir!"
 
 #: ../src/pakfire/keyring.py:90
 #, python-format
 msgid "Subkey: %s"
-msgstr ""
+msgstr "Alt anahtar: %s"
 
 #: ../src/pakfire/keyring.py:92
 msgid "This key has expired!"
-msgstr ""
+msgstr "Bu anahtar süresi doldu!"
 
 #: ../src/pakfire/keyring.py:95
 msgid "This is a secret key."
-msgstr ""
+msgstr "Bu gizli bir anahtardır."
 
 #: ../src/pakfire/keyring.py:103
 msgid "This key does not expire."
-msgstr ""
+msgstr "Bu anahtar zaman aşımına uğramayacak."
 
 #: ../src/pakfire/keyring.py:151
 #, python-format
 msgid "Generating new key for %(realname)s <%(email)s>..."
-msgstr ""
+msgstr "%(realname)s <%(email)s> için yeni bir anahtar oluşturuluyor..."
 
 #: ../src/pakfire/keyring.py:152
 msgid "This may take a while..."
-msgstr ""
+msgstr "Bu biraz zaman alabilir..."
 
 #: ../src/pakfire/keyring.py:171
 #, python-format
 msgid "Successfully imported %s."
-msgstr ""
+msgstr "%s başarıyla alındı."
 
 #: ../src/pakfire/keyring.py:191
 msgid "Host key:"
-msgstr ""
+msgstr "Ana bilgisayar anahtarı:"
 
 #: ../src/pakfire/keyring.py:198
 #, python-format
-msgid "WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr ""
+msgid ""
+"WARNING! Host key with ID %s configured, but the secret key is missing!"
+msgstr "UYARI! %s kimliği ile ana bilgisayar anahtarı yapılandırıldı fakat gizli anahtar eksik!"
 
 #: ../src/pakfire/keyring.py:201
 #, python-format
 msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr ""
+msgstr "UYARI! %s kimliği ile ana bilgisayar anahtarı yapılandırıldı fakat bulunamadı!"
 
 #: ../src/pakfire/keyring.py:203
 msgid "No host key available or configured."
-msgstr ""
+msgstr "Ana bilgisayar anahtarı yok veya yapılandırılmamış."
 
 #: ../src/pakfire/packages/base.py:99
 msgid "Name"
-msgstr ""
+msgstr "Ad"
 
 #: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:427
 msgid "Version"
-msgstr ""
+msgstr "Sürüm"
 
 #: ../src/pakfire/packages/base.py:111
 msgid "Release"
-msgstr ""
+msgstr "Yayın"
 
 #: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:426
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: ../src/pakfire/packages/base.py:119
 msgid "Installed size"
-msgstr ""
+msgstr "Kurulu boyutu"
 
 #: ../src/pakfire/packages/base.py:125
 msgid "Repo"
-msgstr ""
+msgstr "Repo"
 
 #: ../src/pakfire/packages/base.py:128
 msgid "Summary"
-msgstr ""
+msgstr "Özet"
 
 #: ../src/pakfire/packages/base.py:129
 msgid "Groups"
-msgstr ""
+msgstr "Gruplar"
 
 #: ../src/pakfire/packages/base.py:130
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: ../src/pakfire/packages/base.py:131
 msgid "License"
-msgstr ""
+msgstr "Lisans"
 
 #: ../src/pakfire/packages/base.py:134
 msgid "Description"
-msgstr ""
+msgstr "Açıklama"
 
 #: ../src/pakfire/packages/base.py:141
 msgid "Maintainer"
-msgstr ""
+msgstr "Sorumlu"
 
 #: ../src/pakfire/packages/base.py:143
 msgid "Vendor"
-msgstr ""
+msgstr "Sağlayıcı"
 
 #: ../src/pakfire/packages/base.py:145
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: ../src/pakfire/packages/base.py:146
 msgid "Build ID"
-msgstr ""
+msgstr "Derleme kimliği"
 
 #: ../src/pakfire/packages/base.py:147
 msgid "Build date"
-msgstr ""
+msgstr "Derleme tarihi"
 
 #: ../src/pakfire/packages/base.py:150
 msgid "Signatures"
-msgstr ""
+msgstr "İmzalar"
 
 #: ../src/pakfire/packages/base.py:155
 msgid "Provides"
-msgstr ""
+msgstr "Sağlayıcı"
 
 #: ../src/pakfire/packages/base.py:160
 msgid "Pre-requires"
-msgstr ""
+msgstr "Ön-gerekli"
 
 #: ../src/pakfire/packages/base.py:165
 msgid "Requires"
-msgstr ""
+msgstr "Gerekli"
 
 #: ../src/pakfire/packages/base.py:170
 msgid "Conflicts"
-msgstr ""
+msgstr "Çakışmalar"
 
 #: ../src/pakfire/packages/base.py:175
 msgid "Obsoletes"
-msgstr ""
+msgstr "Kullanılmayan"
 
 #: ../src/pakfire/packages/base.py:180
 msgid "Recommends"
-msgstr ""
+msgstr "Tavsiye"
 
 #: ../src/pakfire/packages/base.py:185
 msgid "Suggests"
-msgstr ""
+msgstr "Öneriler"
 
 #: ../src/pakfire/packages/base.py:193
 msgid "File"
-msgstr ""
+msgstr "Dosya"
 
 #: ../src/pakfire/packages/base.py:383
 msgid "Not set"
-msgstr ""
+msgstr "Ayarlanmadı"
 
 #: ../src/pakfire/packages/base.py:570
 #, python-format
 msgid "Config file saved as %s."
-msgstr ""
+msgstr "Yapılandırma dosyası %s olarak kaydedildi."
 
 #: ../src/pakfire/packages/base.py:575
 #, python-format
 msgid "Preserving datafile '/%s'"
-msgstr ""
+msgstr "'/%s' veri dosyasını koruyarak"
 
 #: ../src/pakfire/packages/file.py:82
 #, python-format
 msgid "Filename: %s"
-msgstr ""
+msgstr "Dosya adı: %s"
 
 #: ../src/pakfire/packages/file.py:184
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
-msgstr ""
+msgstr "Arşivdeki dosyaların dosya meta verileri eksik: %s. Atlanıyor."
 
 #: ../src/pakfire/packages/file.py:240
 #, python-format
 msgid "Config file created as %s"
-msgstr ""
+msgstr "%s olarak oluşturulan yapılandırma dosyası"
 
 #: ../src/pakfire/packages/file.py:245
 #, python-format
 msgid "Don't overwrite already existing datafile '/%s'"
-msgstr ""
+msgstr "Mevcut veri dosyası '/%s' üzerinde yok"
 
 #: ../src/pakfire/packages/file.py:259
 #, python-format
 msgid "Could not remove file: /%s"
-msgstr ""
+msgstr "Dosya kaldırılamadı: /%s"
 
 #: ../src/pakfire/packages/lexer.py:756
 #, python-format
 msgid "Template does not exist: %s"
-msgstr ""
+msgstr "Şablon yok: %s"
 
 #: ../src/pakfire/packages/make.py:83
 msgid "Package name is undefined."
-msgstr ""
+msgstr "Tanımsız paket adı."
 
 #: ../src/pakfire/packages/make.py:86
 msgid "Package version is undefined."
-msgstr ""
+msgstr "Tanımsız paket sürümü."
 
 #: ../src/pakfire/packages/make.py:443
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
-msgstr ""
+msgstr "%s için otomatik bağımlılıkları aranıyor ..."
 
 #: ../src/pakfire/packages/make.py:497
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
-msgstr ""
+msgstr "Düzenli ifadeler geçersiz ve atlanmıştır: %s"
 
 #. Let the user know what has been done.
 #: ../src/pakfire/packages/make.py:513
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
-msgstr ""
+msgstr "Filtre '%(pattern)s' filtrelenmiş %(dep)s."
 
 #. Load progressbar.
 #: ../src/pakfire/packages/packager.py:399
 #: ../src/pakfire/packages/packager.py:713
 msgid "Packaging"
-msgstr ""
+msgstr "Paketleme"
 
 #: ../src/pakfire/packages/packager.py:741
 #, python-format
 msgid "Building source package %s:"
-msgstr ""
+msgstr "%s derleyici kaynak paketi:"
 
 #: ../src/pakfire/packages/tar.py:87
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
-msgstr ""
+msgstr "Dosya ayıklanamadı: /%(src)s - %(dst)s"
 
 #: ../src/pakfire/progressbar.py:206
 #, python-format
 msgid "Elapsed Time: %s"
-msgstr ""
+msgstr "Geçen Zaman: %s"
 
 #: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
 msgid "ETA"
-msgstr ""
+msgstr "ETA"
 
 #: ../src/pakfire/progressbar.py:231
 msgid "Time"
-msgstr ""
+msgstr "Zaman"
 
 #: ../src/pakfire/repository/__init__.py:93
 msgid "Initializing repositories..."
-msgstr ""
+msgstr "Depolar başlatılıyor..."
 
 #: ../src/pakfire/repository/database.py:120
-msgid "The format of the database is not supported by this version of pakfire."
-msgstr ""
+msgid ""
+"The format of the database is not supported by this version of pakfire."
+msgstr "Veritabanı biçimi pakfire'ın bu sürümü tarafından desteklenmiyor."
 
 #: ../src/pakfire/repository/database.py:229
 #, python-format
 msgid "Cannot use database with version greater than %s."
-msgstr ""
+msgstr "%s paketinden daha büyük bir sürümü ile bu veritabanı kullanamazsınız."
 
 #: ../src/pakfire/repository/database.py:231
 #, python-format
 msgid "Migrating database from format %(old)s to %(new)s."
-msgstr ""
+msgstr " %(old)s biçiminden %(new)s biçimine veritabanını güncelleştir."
 
 #. Create progress bar.
 #: ../src/pakfire/repository/local.py:123
 #, python-format
 msgid "%s: Adding packages..."
-msgstr ""
+msgstr "%s: Paketler ekleniyor..."
 
 #. Make a nice progress bar.
 #: ../src/pakfire/repository/local.py:229
 msgid "Compressing database..."
-msgstr ""
+msgstr "Veri tabanı sıkıştırılıyor..."
 
 #. Create progress bar.
 #: ../src/pakfire/repository/local.py:287
 #, python-format
 msgid "%s: Reading packages..."
-msgstr ""
+msgstr "%s: Paketler okunuyor..."
 
 #: ../src/pakfire/repository/remote.py:151
 #, python-format
 msgid "No metadata available for repository %s. Cannot download any."
-msgstr ""
+msgstr "%s için depolarda meta verileri yok. Herhangi biri indirilemiyor."
 
 #: ../src/pakfire/repository/remote.py:176
 #, python-format
 msgid "Could not update metadata for %s from any mirror server"
-msgstr ""
+msgstr "%s için yansı sunucularında meta verileri için güncelleştirme yapılamıyor"
 
 #: ../src/pakfire/repository/remote.py:185
 msgid "The downloaded metadata was less recent than the current one."
-msgstr ""
+msgstr "İndirilen meta verileri mevcut olandan daha az zamanda oldu."
 
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
 msgid "Cannot download package database for %s in offline mode."
-msgstr ""
+msgstr "Çevrimdışı modundayken %s paketi veritabanını indiremezsiniz."
 
 #: ../src/pakfire/repository/remote.py:235
 #, python-format
 msgid "%s: package database"
-msgstr ""
+msgstr "%s: paket veritabanı"
 
 #: ../src/pakfire/repository/remote.py:309
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
-msgstr ""
+msgstr "Çevrimdışı durumda bu dosyayı indiremezsiniz: %s"
 
 #: ../src/pakfire/repository/remote.py:315
 #, python-format
 msgid "Could not download %s: %s"
-msgstr ""
+msgstr "%s indirilemedi: %s"
 
 #: ../src/pakfire/repository/remote.py:340
 msgid "The checksum of the downloaded file did not match."
-msgstr ""
+msgstr "İndirilen dosyanın sağlaması uyuşmuyor."
 
 #: ../src/pakfire/repository/remote.py:341
 #, python-format
 msgid "Expected %(good)s but got %(bad)s."
-msgstr ""
+msgstr "Beklenen %(good)s fakat alınan %(bad)s."
 
 #: ../src/pakfire/repository/remote.py:342
 msgid "Trying an other mirror."
-msgstr ""
+msgstr "Diğer bir yansı çalışıyor."
 
 #. Create a progressbar.
 #: ../src/pakfire/repository/system.py:59
 msgid "Loading installed packages"
-msgstr ""
+msgstr "Kurulu paketler yükleniyor"
 
 #: ../src/pakfire/satsolver.py:329
 #, python-format
 msgid "Dependency solving finished in %.2f ms"
-msgstr ""
+msgstr "%.2f ms içinde biten bağımlılık çözme"
 
 #: ../src/pakfire/satsolver.py:344 ../src/pakfire/satsolver.py:370
 msgid "The solver returned one problem:"
-msgstr ""
+msgstr "Çözücü bir sorun döndürdü:"
 
 #. Ask the user if he or she want to modify the request. If not, just exit.
 #: ../src/pakfire/satsolver.py:386
 msgid "Do you want to manually alter the request?"
-msgstr ""
+msgstr "Talebi elle değiştirmek istiyor musunuz?"
 
 #: ../src/pakfire/satsolver.py:389
 msgid "You can now try to satisfy the solver by modifying your request."
-msgstr ""
+msgstr "Çözcü talebiniz değiştirecek şimdi tamamlamak için deneyebilirsiniz."
 
 #: ../src/pakfire/satsolver.py:394
 msgid "Which problem to you want to resolve?"
-msgstr ""
+msgstr "Hnagi sorunu çözmek istiyor sunuz?"
 
 #: ../src/pakfire/satsolver.py:396
 msgid "Press enter to try to re-solve the request."
-msgstr ""
+msgstr "Talebi çözmek için tekrar enter tuşuna basın."
 
 #: ../src/pakfire/satsolver.py:427
 #, python-format
 msgid "    Solution: %s"
-msgstr ""
+msgstr "Çözüm: %s"
 
 #: ../src/pakfire/satsolver.py:436
 msgid "    Solutions:"
-msgstr ""
+msgstr "Çözümler:"
 
 #: ../src/pakfire/server.py:279 ../src/pakfire/system.py:149
 msgid "Could not be determined"
-msgstr ""
+msgstr "Tespit edilemedi"
 
 #: ../src/pakfire/shell.py:84
 #, python-format
 msgid "Executing command: %s in %s"
-msgstr ""
+msgstr "Komut yürütülüyor: %s - %s"
 
 #: ../src/pakfire/shell.py:123
 #, python-format
 msgid "Command exceeded timeout (%(timeout)d): %(command)s"
-msgstr ""
+msgstr "Komut zaman aşımı (%(timeout)d) zamanı aşıldı: %(command)s"
 
 #: ../src/pakfire/shell.py:129
 #, python-format
 msgid "Child returncode was: %s"
-msgstr ""
+msgstr "Çocuk kodu geri döndü: %s"
 
 #: ../src/pakfire/shell.py:132
 #, python-format
 msgid "Command failed: %s"
-msgstr ""
+msgstr "Komut başarısız oldu: %s"
 
 #: ../src/pakfire/transaction.py:91
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr ""
+msgstr "%(name)s dosyasından %(pkg1)s ile %(pkg2)s dosyası çakışmaktadır "
 
 #: ../src/pakfire/transaction.py:97
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
-msgstr ""
+msgstr "%(name)s dosyasından %(pkg)s ile %(pkgs)s dosyası çakışmaktadır "
 
 #: ../src/pakfire/transaction.py:103
 #, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
+msgid ""
+"file %(name)s causes the transaction test to fail for an unknown reason"
+msgstr "dosya %(name)s işlem testi bilinmeyen bir nedenden dolayı başarısız oldu"
 
 #: ../src/pakfire/transaction.py:111
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr ""
+msgstr "%(name)s için yeterli alan yok. İşleminizi gerçekleştirmek için en az %(size)s boyuta ihtiyacınız var."
 
 #: ../src/pakfire/transaction.py:355
 #, python-format
 msgid "Not enough space to download %s of packages."
-msgstr ""
+msgstr "%s paketini indirmek için yeterli yer yok."
 
 #: ../src/pakfire/transaction.py:358
 msgid "Downloading packages:"
-msgstr ""
+msgstr "İndirilen paketler:"
 
 #: ../src/pakfire/transaction.py:424
 msgid "Package"
-msgstr ""
+msgstr "Paket"
 
 #: ../src/pakfire/transaction.py:441
 msgid "Installing:"
-msgstr ""
+msgstr "Yükleniyor:"
 
 #: ../src/pakfire/transaction.py:442
 msgid "Reinstalling:"
-msgstr ""
+msgstr "Yeniden yükle:"
 
 #: ../src/pakfire/transaction.py:443
 msgid "Updating:"
-msgstr ""
+msgstr "Güncelleniyor:"
 
 #: ../src/pakfire/transaction.py:444
 msgid "Downgrading:"
-msgstr ""
+msgstr "Derecesini düşür:"
 
 #: ../src/pakfire/transaction.py:445
 msgid "Removing:"
-msgstr ""
+msgstr "Kaldırılıyor:"
 
 #. Append the transaction summary
 #: ../src/pakfire/transaction.py:455
 msgid "Transaction Summary"
-msgstr ""
+msgstr "İşlem Özeti"
 
 #: ../src/pakfire/transaction.py:463
 msgid "package"
-msgstr ""
+msgstr "paket"
 
 #: ../src/pakfire/transaction.py:468
 #, python-format
 msgid "Total download size: %s"
-msgstr ""
+msgstr "Toplam indirme boyutu: %s"
 
 #: ../src/pakfire/transaction.py:472
 #, python-format
 msgid "Installed size: %s"
-msgstr ""
+msgstr "Yüklü boyut: %s"
 
 #: ../src/pakfire/transaction.py:474
 #, python-format
 msgid "Freed size: %s"
-msgstr ""
+msgstr "Boşaltılan boyut: %s"
 
 #: ../src/pakfire/transaction.py:485
 msgid "Is this okay?"
-msgstr ""
+msgstr "Bu tamam mı?"
 
 #: ../src/pakfire/transaction.py:491
 msgid "Running Transaction Test"
-msgstr ""
+msgstr "İşlem Testi Çalışması"
 
 #: ../src/pakfire/transaction.py:503
 msgid "Transaction Test Succeeded"
-msgstr ""
+msgstr "İşlem Testi Başarılı"
 
 #: ../src/pakfire/transaction.py:536
 msgid "Verifying signatures..."
-msgstr ""
+msgstr "İmzalar doğrulanıyor..."
 
 #: ../src/pakfire/transaction.py:572
 #, python-format
 msgid "Found %s signature error(s)!"
-msgstr ""
+msgstr "Bulunan %s imzası hatalı!"
 
 #: ../src/pakfire/transaction.py:577
 msgid "Going on because we are running in permissive mode."
-msgstr ""
+msgstr "Çıkıyorsunuz çünkü serbest modda çalışıyorsunuz."
 
 #: ../src/pakfire/transaction.py:578
 msgid "This is dangerous!"
-msgstr ""
+msgstr "Bu tehlikeli!"
 
 #: ../src/pakfire/transaction.py:618
 msgid "Running transaction"
-msgstr ""
+msgstr "Çalıştırılan işlem"
 
 #: ../src/pakfire/util.py:68
 #, python-format
 msgid "%s [y/N]"
-msgstr ""
+msgstr "%s [e/H]"
 
 #: ../src/pakfire/util.py:242
 msgid "Killing orphans..."
-msgstr ""
+msgstr "Artık satırlar yok ediliyor..."
 
 #: ../src/pakfire/util.py:249
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
+msgstr "Chroot içerisindeki %s işlem kimliği hala çalışıyor. Sonlandırılıyor..."
 
 #: ../src/pakfire/util.py:261
 msgid "Waiting for processes to terminate..."
-msgstr ""
+msgstr "İşlemler sonlandırılmak için bekleniyor..."
