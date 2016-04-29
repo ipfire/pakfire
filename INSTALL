@@ -16,14 +16,3 @@ Requirements:
 Install instructions:
 
 Run   make && make install   as the root user and you are done.
-
-
-Binary packages:
-
- Binaries are available for at least Fedora at:
-
- Open build service:
- https://build.opensuse.org/project/show?project=home%3Amstremer%3Apakfire
-
- See the announcement:
- http://planet.ipfire.org/post/pakfire-3-rpm-packages-available-for-fedora-14-15
