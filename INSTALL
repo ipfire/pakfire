@@ -15,4 +15,10 @@ Requirements:
 
 Install instructions:
 
-Run   make && make install   as the root user and you are done.
+Run
+
+  ./configure ...
+  make
+  make install
+
+as the root user and you are done.
