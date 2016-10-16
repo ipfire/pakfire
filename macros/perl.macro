@@ -7,6 +7,7 @@ perl_vendorarch = %(eval "$(%{perl} -V:installvendorarch)"; echo ${installvendor
 perl_vendorlib  = %(eval "$(%{perl} -V:installvendorlib)";  echo ${installvendorlib})
 perl_archlib    = %(eval "$(%{perl} -V:installarchlib)";    echo ${installarchlib})
 perl_privlib    = %(eval "$(%{perl} -V:installprivlib)";    echo ${installprivlib})
+perl_version    = %(eval "$(%{perl} -V:version)";           echo ${version})
 
 perl_all_paths  = {%{perl_vendorarch},%{perl_vendorlib},%{perl_archlib},%{perl_privlib}}
 
