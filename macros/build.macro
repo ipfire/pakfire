@@ -59,6 +59,18 @@ def MACRO_PYTHON_COMPILE
 	fi
 end
 
+def MACRO_FIX_AUTOTOOLS
+	if [ "%{DISTRO_ARCH}" = "aarch64" ]; then
+		for i in $(find %{DIR_SRC} -name config.guess -or -name config.sub); do
+			if ! grep -q "aarch64" ${i}; then
+				if [ -e "%{datadir}/pakfire/$(basename ${i})" ]; then
+					cp -vf %{datadir}/pakfire/$(basename ${i}) $(dirname ${i})
+				fi
+			fi
+		done
+	fi
+end
+
 MACRO_PATCHES = /usr/lib/pakfire/patch --search-path=%{DIR_PATCHES} "%{patches}"
 
 # Pre-defined build scripts.
@@ -84,6 +96,9 @@ build
 
 		# Run custom commands.
 		%{prepare_cmds}
+
+		# Fix outdated autotools on aarch64
+		%{MACRO_FIX_AUTOTOOLS}
 	end
 
 	def prepare_cmds
