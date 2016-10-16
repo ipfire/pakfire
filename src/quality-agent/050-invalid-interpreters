@@ -26,6 +26,7 @@ check() {
 			if [ "${interp}" = "env" ]; then
 				# Autofix that crap
 				sed -i ${file} \
+					-e "s,/usr/bin/env \(/usr/bin/.*\),\1," \
 					-e "s,/usr/bin/env python\(.*\),/usr/bin/python\1," \
 					-e "s,/usr/bin/env python,/usr/bin/python," \
 					-e "s,/usr/bin/env perl,/usr/bin/perl," \
