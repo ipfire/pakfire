@@ -103,12 +103,6 @@ AM_PATH_PYTHON([2.7])
 
 save_LIBS="$LIBS"
 
-# beecrypt
-LIBS=
-AC_SEARCH_LIBS([hashFunctionContextInit], [beecrypt], [], [AC_MSG_ERROR([*** beecrypt library not found])])
-BEECRYPT_LIBS="$LIBS"
-AC_SUBST(BEECRYPT_LIBS)
-
 # libdl
 LIBS=
 AC_SEARCH_LIBS([dlsym], [dl], [], [AC_MSG_ERROR([*** Dynamic linking loader library not found])])
@@ -122,22 +116,6 @@ LIBS=
 AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not found])])
 CAP_LIBS="$LIBS"
 AC_SUBST(CAP_LIBS)
-
-# libelf
-AC_CHECK_HEADERS([libelf.h gelf.h], [], [AC_MSG_ERROR([*** libelf headers not found])])
-
-LIBS=
-AC_SEARCH_LIBS([gelf_getvernaux], [elf], [], [AC_MSG_ERROR([*** libelf library not found])])
-ELF_LIBS="$LIBS"
-AC_SUBST(ELF_LIBS)
-
-# libpopt
-AC_CHECK_HEADERS([popt.h], [], [AC_MSG_ERROR([*** libpopt headers not found])])
-
-LIBS=
-AC_SEARCH_LIBS([poptGetContext], [popt], [], [AC_MSG_ERROR([*** libpopt library not found])])
-POPT_LIBS="$LIBS"
-AC_SUBST(POPT_LIBS)
 
 # libsolv
 AC_CHECK_HEADERS([solv/solvversion.h], [], [AC_MSG_ERROR([*** libsolv headers not found])])

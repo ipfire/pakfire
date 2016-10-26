@@ -193,7 +193,7 @@ find "$BUILDROOT" ! -path "${debugdir}/*.debug" -type f \
 		fi
 
 		echo "  Extracting debug info from ${f#${BUILDROOT}}"
-		id=$(@libexecdir@/debugedit -i \
+		id=$(debugedit -i \
 			-b "${SOURCEDIR}" \
 			-d /usr/src/debug \
 			-l "${SOURCEFILE}" \

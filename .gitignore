@@ -1,6 +1,5 @@
 /Makefile
 /build-aux
-/debugedit
 /libtool
 /missing
 /contrib/pakfire.nm
@@ -9,7 +8,6 @@
 /src/scripts/extract-debuginfo
 /src/systemd/*.service
 /tmp
-/tools/debugedit
 *.py[co]
 /*.tar.bz2
 /*.tar.gz

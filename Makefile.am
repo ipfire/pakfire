@@ -244,25 +244,6 @@ libpakfire_preload_la_LIBADD = \
 
 # ------------------------------------------------------------------------------
 
-libexec_PROGRAMS += \
-	debugedit
-
-debugedit_SOURCES = \
-	src/debugedit/debugedit.c \
-	src/debugedit/hashtab.c \
-	src/debugedit/hashtab.h \
-	src/debugedit/rpmiotypes.h \
-	src/debugedit/rpmsw.h \
-	src/debugedit/rpmtag.h
-
-debugedit_LDADD = \
-	$(AM_CFLAGS) \
-	$(BEECRYPT_LIBS) \
-	$(ELF_LIBS) \
-	$(POPT_LIBS)
-
-# ------------------------------------------------------------------------------
-
 scripts_SCRIPTS = \
 	src/scripts/extract-debuginfo \
 	src/scripts/quality-agent
