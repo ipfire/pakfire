@@ -58,6 +58,7 @@ PyObject* Pool_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 		pool_setdebuglevel(self->_pool, 1);
 #endif
 
+		pool_setdisttype(self->_pool, DISTTYPE_RPM);
 		pool_setarch(self->_pool, arch);
 		if (self->_pool == NULL) {
 			Py_DECREF(self);
