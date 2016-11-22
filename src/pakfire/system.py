@@ -90,7 +90,7 @@ class System(object):
 			"armv7l"    : ["armv7hl", "armv5tel",],
 			"armv7hl"   : ["armv7hl", "armv5tel",],
 
-			"aarch64"   : ["aarch64", "armv7hl", "armv5tel"],
+			"aarch64"   : ["aarch64",],
 		}
 
 		try:
