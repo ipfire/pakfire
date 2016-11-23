@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <sched.h>
 #include <sys/personality.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "constants.h"
@@ -82,4 +83,56 @@ PyObject *version_compare(PyObject *self, PyObject *args) {
 	int ret = pool_evrcmp_str(pool, evr1, evr2, EVRCMP_COMPARE);
 
 	return Py_BuildValue("i", ret);
+}
+
+static unsigned int fibonnacci(const clock_t* deadline) {
+	clock_t now = clock();
+
+	unsigned long f1 = 1;
+	unsigned long f2 = 1;
+
+	// Count iterations
+	unsigned int counter = 0;
+
+	while (now < *deadline) {
+		unsigned long next = f1 + f2;
+		f1 = f2;
+		f2 = next;
+
+		now = clock();
+		counter++;
+	}
+
+	return counter;
+}
+
+PyObject* performance_index(PyObject* self, PyObject* args) {
+	int seconds = 1;
+
+	if (!PyArg_ParseTuple(args, "|i", &seconds)) {
+		return NULL;
+	}
+
+	if (seconds == 0) {
+		PyErr_SetString(PyExc_ValueError, "Runtime must be one second or longer");
+		return NULL;
+	}
+
+	// Determine the number of online processors
+	int processors = sysconf(_SC_NPROCESSORS_ONLN);
+
+	// Determine deadline
+	clock_t deadline = clock();
+	deadline += CLOCKS_PER_SEC * seconds;
+
+	// Run Fibonnacci until deadline
+	unsigned int iterations = fibonnacci(&deadline);
+
+	// Times the result by the number of processors
+	iterations *= processors;
+
+	// Normalise to a second
+	iterations /= seconds;
+
+	return PyLong_FromUnsignedLong(iterations);
 }

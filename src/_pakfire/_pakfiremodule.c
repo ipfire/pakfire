@@ -40,6 +40,7 @@
 #include "util.h"
 
 static PyMethodDef pakfireModuleMethods[] = {
+	{"performance_index", (PyCFunction)performance_index, METH_VARARGS, NULL},
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
 	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
 	{"set_capabilities", (PyCFunction)set_capabilities, METH_VARARGS, NULL},

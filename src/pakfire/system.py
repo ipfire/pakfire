@@ -29,6 +29,8 @@ import tempfile
 import distro
 import shell
 
+from . import _pakfire
+
 from i18n import _
 
 class System(object):
@@ -151,16 +153,8 @@ class System(object):
 		return ret or _("Could not be determined")
 
 	@property
-	def cpu_bogomips(self):
-		cpuinfo = self.parse_cpuinfo()
-
-		for key in ("bogomips", "BogoMIPS"):
-			bogomips = cpuinfo.get(key, None)
-
-			if bogomips is None:
-				continue
-
-			return float(bogomips) * self.cpu_count
+        def cpu_bogomips(self):
+                return _pakfire.performance_index()
 
 	def get_loadavg(self):
 		return os.getloadavg()
