@@ -85,14 +85,14 @@ PyObject *version_compare(PyObject *self, PyObject *args) {
 	return Py_BuildValue("i", ret);
 }
 
-static unsigned int fibonnacci(const clock_t* deadline) {
+static unsigned long fibonnacci(const clock_t* deadline) {
 	clock_t now = clock();
 
 	unsigned long f1 = 1;
 	unsigned long f2 = 1;
 
 	// Count iterations
-	unsigned int counter = 0;
+	unsigned long counter = 0;
 
 	while (now < *deadline) {
 		unsigned long next = f1 + f2;
@@ -126,7 +126,7 @@ PyObject* performance_index(PyObject* self, PyObject* args) {
 	deadline += CLOCKS_PER_SEC * seconds;
 
 	// Run Fibonnacci until deadline
-	unsigned int iterations = fibonnacci(&deadline);
+	unsigned long iterations = fibonnacci(&deadline);
 
 	// Times the result by the number of processors
 	iterations *= processors;
