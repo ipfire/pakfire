@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,7 +19,7 @@
 #                                                                             #
 ###############################################################################
 
-from i18n import _
+from .i18n import _
 
 class commandTimeoutExpired(Exception):
 	pass # XXX cannot be as is

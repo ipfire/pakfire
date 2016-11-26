@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -21,9 +21,9 @@
 
 import os.path
 
-from errors import *
+from .errors import *
 
-from __version__ import PAKFIRE_VERSION
+from .__version__ import PAKFIRE_VERSION
 
 PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 
@@ -94,7 +94,7 @@ MINIMAL_ENVIRONMENT = {
 	"HOME" : "/root",
 	"LANG" : "C",
 	"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
-	"PS1"  : "\u:\w\$ ",
+	"PS1"  : "\\u:\w\$ ",
 	"TERM" : "vt100",
 }
 
@@ -120,7 +120,7 @@ for i in ORPHAN_DIRECTORIES:
 
 	ORPHAN_DIRECTORIES.append(i)
 
-ORPHAN_DIRECTORIES.sort(cmp=lambda x,y: cmp(len(x), len(y)), reverse=True)
+ORPHAN_DIRECTORIES.sort(key=lambda x: len(x), reverse=True)
 
 PACKAGE_INFO = """\
 # Pakfire %(pakfire_version)s

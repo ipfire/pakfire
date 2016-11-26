@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -27,9 +27,9 @@ import os
 import logging
 log = logging.getLogger("pakfire")
 
-from constants import *
-from i18n import _
-from system import system
+from .constants import *
+from .i18n import _
+from .system import system
 
 class Keyring(object):
 	def __init__(self, pakfire):

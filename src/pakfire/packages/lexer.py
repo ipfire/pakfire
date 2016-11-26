@@ -308,7 +308,7 @@ class Lexer(object):
 				break
 
 		if not found:
-			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+			raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 	def read_block(self, pattern_start=None, pattern_line=None, pattern_end=None,
 			raw=False):
@@ -349,10 +349,10 @@ class Lexer(object):
 				continue
 
 			if not line.startswith(LEXER_BLOCK_LINE_INDENT):
-				raise LexerError, "Line has not the right indentation: %d: %s" \
-					% (self.lineno, line)
+				raise LexerError("Line has not the right indentation: %d: %s" \
+					% (self.lineno, line))
 
-			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+			raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 		return (groups, lines)
 
@@ -366,7 +366,7 @@ class Lexer(object):
 		if not line:
 			return
 
-		raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+		raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 	DEP_DEFINITIONS = ("prerequires", "requires", "provides", "conflicts", "obsoletes", "recommends", "suggests")
 
@@ -375,7 +375,7 @@ class Lexer(object):
 
 		m = re.match(pattern, line)
 		if not m:
-			raise LexerError, "Not a definition: %s" % line
+			raise LexerError("Not a definition: %s" % line)
 
 		# Line was correctly parsed, can go on.
 		self._lineno += 1
@@ -411,7 +411,7 @@ class Lexer(object):
 
 		m = re.match(LEXER_DEFINE_BEGIN, line)
 		if not m:
-			raise Exception, "XXX not a define"
+			raise Exception("XXX not a define")
 
 		# Check content of next line.
 		found = None
@@ -435,7 +435,7 @@ class Lexer(object):
 
 		if found is None:
 			line = self.get_line(self._lineno)
-			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+			raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 		# Go in to next line.
 		self._lineno += 1
@@ -464,7 +464,7 @@ class Lexer(object):
 				value.append("")
 				continue
 
-			raise LexerError, "Unhandled line: %s" % line
+			raise LexerError("Unhandled line: %s" % line)
 
 		self._definitions[key] = "\n".join(value)
 
@@ -487,8 +487,8 @@ class Lexer(object):
 					found = True
 
 		if not found:
-			raise LexerError, "No valid begin of if statement: %d: %s" \
-					% (self.lineno, line)
+			raise LexerError("No valid begin of if statement: %d: %s" \
+					% (self.lineno, line))
 
 		self._lineno += 1
 		clause = m.groups()
@@ -519,10 +519,10 @@ class Lexer(object):
 				lines.append("")
 				continue
 
-			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+			raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 		if not block_closed:
-			raise LexerError, "Unclosed if block"
+			raise LexerError("Unclosed if block")
 
 		return (clause, lines)
 
@@ -549,7 +549,7 @@ class Lexer(object):
 		line = self.get_line(self._lineno)
 		m = re.match(LEXER_IF_END, line)
 		if not m:
-			raise LexerError, "Unclosed if clause"
+			raise LexerError("Unclosed if clause")
 
 		self._lineno += 1
 
@@ -572,7 +572,7 @@ class Lexer(object):
 				elif op == "!=":
 					val = not a == b
 				else:
-					raise LexerError, "Unknown operator: %s" % op
+					raise LexerError("Unknown operator: %s" % op)
 
 			else:
 				# Else is always true.
@@ -654,15 +654,15 @@ class TemplateLexer(DefaultLexer):
 
 		m = re.match(LEXER_SCRIPTLET_BEGIN, line)
 		if not m:
-			raise Exception, "Not a scriptlet"
+			raise Exception("Not a scriptlet")
 
 		self._lineno += 1
 
 		name = m.group(1)
 
 		# check if scriptlet was already defined.
-		if self.scriptlets.has_key(name):
-			raise Exception, "Scriptlet %s is already defined" % name
+		if name in self.scriptlets:
+			raise Exception("Scriptlet %s is already defined" % name)
 
 		lang = m.group(2) or "shell"
 		lines = [
@@ -689,7 +689,7 @@ class TemplateLexer(DefaultLexer):
 				self._lineno += 1
 				continue
 
-			raise LexerUnhandledLine, "%d: %s" % (self.lineno, line)
+			raise LexerUnhandledLine("%d: %s" % (self.lineno, line))
 
 		self.scriptlets[name] = {
 			"lang"      : lang,
@@ -745,7 +745,7 @@ class PackageLexer(TemplateLexer):
 
 		m = re.match(LEXER_PACKAGE_INHERIT, line)
 		if not m:
-			raise LexerError, "Not a template inheritance: %s" % line
+			raise LexerError("Not a template inheritance: %s" % line)
 
 		self._lineno += 1
 
@@ -847,7 +847,7 @@ class RootLexer(ExportLexer):
 
 		# Import all environment variables.
 		if environ:
-			for k, v in environ.items():
+			for k, v in list(environ.items()):
 				self._definitions[k] = v
 
 				self.exports.append(k)
@@ -919,7 +919,7 @@ class RootLexer(ExportLexer):
 
 		m = re.match(LEXER_BUILD_BEGIN, line)
 		if not m:
-			raise LexerError, "Not a build statement: %s" % line
+			raise LexerError("Not a build statement: %s" % line)
 
 		self._lineno += 1
 
@@ -953,7 +953,7 @@ class RootLexer(ExportLexer):
 
 		m = re.match(LEXER_INCLUDE, line)
 		if not m:
-			raise LexerError, "Not an include statement: %s" % line
+			raise LexerError("Not an include statement: %s" % line)
 
 		# Get the filename from the line.
 		file = m.group(1)
@@ -1012,7 +1012,7 @@ class PackagesLexer(DefaultLexer):
 
 		# Copy all templates and packages but make sure
 		# to update the parent lexer (for accessing each other).
-		for name, template in other.templates.items():
+		for name, template in list(other.templates.items()):
 			template.parent = self
 			self._templates[name] = template
 
@@ -1034,7 +1034,7 @@ class PackagesLexer(DefaultLexer):
 
 		m = re.match(LEXER_TEMPLATE_BEGIN, line)
 		if not m:
-			raise Exception, "Not a template"
+			raise Exception("Not a template")
 
 		# Line was correctly parsed, can go on.
 		self._lineno += 1
@@ -1069,7 +1069,7 @@ class PackagesLexer(DefaultLexer):
 
 		m = re.match(LEXER_PACKAGE_BEGIN, line)
 		if not m:
-			raise Exception, "Not a package: %s" %line
+			raise Exception("Not a package: %s" %line)
 
 		self._lineno += 1
 
@@ -1078,7 +1078,7 @@ class PackagesLexer(DefaultLexer):
 
 		m = re.match(LEXER_VALID_PACKAGE_NAME, name)
 		if not m:
-			raise LexerError, "Invalid package name: %s" % name
+			raise LexerError("Invalid package name: %s" % name)
 
 		lines = ["_name = %s" % name]
 
@@ -1108,14 +1108,14 @@ class PackagesLexer(DefaultLexer):
 
 			# If there is an unhandled line in a block, we raise an error.
 			if opened:
-				raise Exception, "XXX unhandled line in package block: %s" % line
+				raise Exception("XXX unhandled line in package block: %s" % line)
 
 			# If the block was never opened, we just go on.
 			else:
 				break
 
 		if opened:
-			raise LexerError, "Unclosed package block '%s'." % name
+			raise LexerError("Unclosed package block '%s'." % name)
 
 		package = PackageLexer(lines, parent=self)
 		self.packages.append(package)

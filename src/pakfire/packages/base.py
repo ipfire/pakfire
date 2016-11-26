@@ -265,7 +265,7 @@ class Package(object):
 
 	@property
 	def metadata(self):
-		raise NotImplementedError, self
+		raise NotImplementedError(self)
 
 	@property
 	def friendly_name(self):
@@ -499,7 +499,7 @@ class Package(object):
 		return []
 
 	def extract(self, path, prefix=None):
-		raise NotImplementedError, "%s" % repr(self)
+		raise NotImplementedError("%s" % repr(self))
 
 	def remove(self, message=None, prefix=None):
 		# Make two filelists. One contains all binary files that need to be
@@ -565,8 +565,8 @@ class Package(object):
 
 				try:
 					shutil.move(file, file_save)
-				except shutil.Error, e:
-					print e
+				except shutil.Error as e:
+					print(e)
 
 				if prefix:
 					file_save = os.path.relpath(file_save, prefix)

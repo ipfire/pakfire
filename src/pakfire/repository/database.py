@@ -117,7 +117,7 @@ class DatabaseLocal(Database):
 
 		# Check if we actually can open the database.
 		if not self.format in DATABASE_FORMATS_SUPPORTED:
-			raise DatabaseFormatError, _("The format of the database is not supported by this version of pakfire.")
+			raise DatabaseFormatError(_("The format of the database is not supported by this version of pakfire."))
 
 	def __len__(self):
 		count = 0
@@ -226,7 +226,7 @@ class DatabaseLocal(Database):
 
 		# Check if database version is supported.
 		if self.format > DATABASE_FORMAT:
-			raise DatabaseError, _("Cannot use database with version greater than %s.") % DATABASE_FORMAT
+			raise DatabaseError(_("Cannot use database with version greater than %s.") % DATABASE_FORMAT)
 
 		log.info(_("Migrating database from format %(old)s to %(new)s.") % \
 			{ "old" : self.format, "new" : DATABASE_FORMAT })

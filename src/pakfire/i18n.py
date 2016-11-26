@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -52,6 +52,6 @@ def list(parts):
 	if len(parts) == 0: return ""
 	if len(parts) == 1: return parts[0]
 	return _("%(commas)s and %(last)s") % {
-		"commas": u", ".join(parts[:-1]),
+		"commas": ", ".join(parts[:-1]),
 		"last": parts[len(parts) - 1],
 	}

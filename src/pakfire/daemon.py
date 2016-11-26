@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import hashlib
 import json
@@ -17,8 +17,8 @@ import pakfire.system
 import pakfire.util
 from pakfire.system import system
 
-import base
-import transport
+from . import base
+from . import transport
 
 from pakfire.constants import *
 from pakfire.i18n import _
@@ -36,7 +36,7 @@ class BuildJob(dict):
 		try:
 			return self[key]
 		except KeyError:
-			raise AttributeError, key
+			raise AttributeError(key)
 
 
 class PakfireDaemon(object):
@@ -506,7 +506,7 @@ class PakfireWorker(multiprocessing.Process):
 					f.close()
 
 					if not job.source_hash_sha512 == h.hexdigest():
-						raise DownloadError, "Hash check did not succeed."
+						raise DownloadError("Hash check did not succeed.")
 
 				# Create a new instance of a build environment.
 				build = pakfire.builder.BuildEnviron(p, tmpfile,
@@ -544,12 +544,12 @@ class PakfireWorker(multiprocessing.Process):
 
 							self.upload_file(job, file, "package")
 
-			except DependencyError, e:
+			except DependencyError as e:
 				message = "%s: %s" % (e.__class__.__name__, e)
 				self.update_state(job, "dependency_error", message)
 				raise
 
-			except DownloadError, e:
+			except DownloadError as e:
 				message = "%s: %s" % (e.__class__.__name__, e)
 				self.update_state(job, "download_error", message)
 				raise
@@ -576,7 +576,7 @@ class PakfireWorker(multiprocessing.Process):
 		except (KeyboardInterrupt, SystemExit):
 			self.update_state(job, "aborted")
 
-		except Exception, e:
+		except Exception as e:
 			# Format the exception and send it to the server.
 			message = "%s: %s" % (e.__class__.__name__, e)
 

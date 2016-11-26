@@ -36,14 +36,12 @@ import zlib
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.lzma as lzma
 import pakfire.util as util
 
 from pakfire.constants import *
 from pakfire.i18n import _
 
-import file
-import tar
+from . import tar
 
 class Packager(object):
 	payload_compression = None
@@ -148,7 +146,7 @@ class Packager(object):
 			datafile = tar.InnerTarFile.open(datafile)
 
 		while True:
-			m = datafile.next()
+			m = next(datafile)
 			if not m:
 				break
 
@@ -206,7 +204,7 @@ class Packager(object):
 			t = tar.InnerTarFile.open(datafile)
 
 		while True:
-			m = t.next()
+			m = next(t)
 			if not m:
 				break
 
@@ -481,7 +479,7 @@ class BinaryPackager(Packager):
 				try:
 					f = open(path, "b")
 				except OSError:
-					raise Exception, "Cannot open script file: %s" % lang["path"]
+					raise Exception("Cannot open script file: %s" % lang["path"])
 
 				s = open(scriptlet_file, "wb")
 
@@ -517,7 +515,7 @@ class BinaryPackager(Packager):
 				s.close()
 
 			else:
-				raise Exception, "Unknown scriptlet language: %s" % scriptlet["lang"]
+				raise Exception("Unknown scriptlet language: %s" % scriptlet["lang"])
 
 			scriptlets.append((scriptlet_name, scriptlet_file))
 
@@ -633,6 +631,9 @@ class BinaryPackager(Packager):
 			os.link(tempfile, resultfile)
 		except OSError:
 			shutil.copy2(tempfile, resultfile)
+
+		# XXX to resolve a cyclic dependency
+		from . import file
 
 		return file.BinaryPackage(self.pakfire, self.pakfire.repos.dummy, resultfile)
 

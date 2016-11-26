@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -31,25 +31,22 @@ import tempfile
 import time
 import uuid
 
-import base
-import cgroup
-import logger
-import packages
-import packages.file
-import packages.packager
-import repository
-import shell
-import util
-import _pakfire
+from . import _pakfire
+from . import cgroup
+from . import logger
+from . import packages
+from . import repository
+from . import shell
+from . import util
 
 import logging
 log = logging.getLogger("pakfire")
 
-from config import ConfigBuilder
-from system import system
-from constants import *
-from i18n import _
-from errors import BuildError, BuildRootLocked, Error
+from .config import ConfigBuilder
+from .system import system
+from .constants import *
+from .i18n import _
+from .errors import BuildError, BuildRootLocked, Error
 
 
 BUILD_LOG_HEADER = """
@@ -72,12 +69,9 @@ class BuildEnviron(object):
 	def __init__(self, pakfire, filename=None, distro_name=None, build_id=None, logfile=None, release_build=True, **kwargs):
 		self.pakfire = pakfire
 
-		# Check if the given pakfire instance is of the correct type.
-		assert isinstance(self.pakfire, base.PakfireBuilder)
-
 		# Check if this host can build the requested architecture.
 		if not system.host_supports_arch(self.arch):
-			raise BuildError, _("Cannot build for %s on this host.") % self.arch
+			raise BuildError(_("Cannot build for %s on this host.") % self.arch)
 
 		# Save the build id and generate one if no build id was provided.
 		if not build_id:
@@ -146,7 +140,7 @@ class BuildEnviron(object):
 
 			# Log the package information.
 			self.log.info(_("Package information:"))
-			for line in self.pkg.dump(long=True).splitlines():
+			for line in self.pkg.dump(int=True).splitlines():
 				self.log.info("  %s" % line)
 			self.log.info("")
 
@@ -173,15 +167,15 @@ class BuildEnviron(object):
 		# we try to fall back to just set CLONE_NEWNS.
 		try:
 			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS|_pakfire.SCHED_CLONE_NEWIPC|_pakfire.SCHED_CLONE_NEWUTS)
-		except RuntimeError, e:
+		except RuntimeError as e:
 			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS)
 
 		# Mount the directories.
 		try:
 			self._mountall()
-		except OSError, e:
+		except OSError as e:
 			if e.errno == 30: # Read-only FS
-				raise BuildError, "Buildroot is read-only: %s" % self.pakfire.path
+				raise BuildError("Buildroot is read-only: %s" % self.pakfire.path)
 
 			# Raise all other errors.
 			raise
@@ -295,13 +289,13 @@ class BuildEnviron(object):
 
 		try:
 			self._lock = open(filename, "a+")
-		except IOError, e:
+		except IOError as e:
 			return 0
 
 		try:
 			fcntl.lockf(self._lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-		except IOError, e:
-			raise BuildRootLocked, "Buildroot is locked"
+		except IOError as e:
+			raise BuildRootLocked("Buildroot is locked")
 
 		return 1
 
@@ -464,7 +458,7 @@ class BuildEnviron(object):
 			"logger" : self.log,
 		})
 
-		if not kwargs.has_key("allow_downgrade"):
+		if "allow_downgrade" not in kwargs:
 			kwargs["allow_downgrade"] = True
 
 		# Install everything.
@@ -738,7 +732,7 @@ class BuildEnviron(object):
 		# Environment variables
 		env = self.environ
 
-		if kwargs.has_key("env"):
+		if "env" in kwargs:
 			env.update(kwargs.pop("env"))
 
 		self.log.debug("Environment:")
@@ -776,11 +770,11 @@ class BuildEnviron(object):
 
 	def build(self, install_test=True, prepare=False):
 		if not self.pkg:
-			raise BuildError, _("You cannot run a build when no package was given.")
+			raise BuildError(_("You cannot run a build when no package was given."))
 
 		# Search for the package file in build_dir and raise BuildError if it is not present.
 		if not os.path.exists(self.pkg_makefile):
-			raise BuildError, _("Could not find makefile in build root: %s") % self.pkg_makefile
+			raise BuildError(_("Could not find makefile in build root: %s") % self.pkg_makefile)
 
 		# Write pakfire configuration into the chroot.
 		self.write_config()
@@ -835,7 +829,7 @@ class BuildEnviron(object):
 			return
 
 		# End here in case of an error.
-		raise BuildError, _("The build command failed. See logfile for details.")
+		raise BuildError(_("The build command failed. See logfile for details."))
 
 	def install_test(self):
 		self.log.info(_("Running installation test..."))
@@ -863,7 +857,7 @@ class BuildEnviron(object):
 		if self.pakfire.distro.personality:
 			command = "%s %s" % (self.pakfire.distro.personality, command)
 
-		for key, val in self.environ.items():
+		for key, val in list(self.environ.items()):
 			command = "%s=\"%s\" " % (key, val) + command
 
 		# Empty the environment
@@ -887,7 +881,7 @@ class BuildEnviron(object):
 		files = self.find_result_packages()
 
 		# Create a progressbar.
-		print _("Signing packages...")
+		print(_("Signing packages..."))
 		p = util.make_progress(keyfp, len(files))
 		i = 0
 
@@ -906,7 +900,7 @@ class BuildEnviron(object):
 		# Close progressbar.
 		if p:
 			p.finish()
-			print "" # Print an empty line.
+			print("") # Print an empty line.
 
 	def dump(self):
 		pkgs = []
@@ -923,7 +917,7 @@ class BuildEnviron(object):
 
 		self.log.info(_("Dumping package information:"))
 		for pkg in pkgs:
-			dump = pkg.dump(long=True)
+			dump = pkg.dump(int=True)
 
 			for line in dump.splitlines():
 				self.log.info("  %s" % line)
@@ -1104,13 +1098,13 @@ class Builder(object):
 		try:
 			self.execute("%s/remove-static-libs %s %s" % \
 				(SCRIPT_DIR, self.buildroot, " ".join(keep_libs)))
-		except ShellEnvironmentError, e:
+		except ShellEnvironmentError as e:
 			log.warning(_("Could not remove static libraries: %s") % e)
 
 	def post_compress_man_pages(self):
 		try:
 			self.execute("%s/compress-man-pages %s" % (SCRIPT_DIR, self.buildroot))
-		except ShellEnvironmentError, e:
+		except ShellEnvironmentError as e:
 			log.warning(_("Compressing man pages did not complete successfully."))
 
 	def post_extract_debuginfo(self):
@@ -1130,7 +1124,7 @@ class Builder(object):
 
 		try:
 			self.execute("%s/extract-debuginfo %s %s" % (SCRIPT_DIR, " ".join(args), self.pkg.buildroot))
-		except ShellEnvironmentError, e:
+		except ShellEnvironmentError as e:
 			log.error(_("Extracting debuginfo did not complete with success. Aborting build."))
 			raise
 

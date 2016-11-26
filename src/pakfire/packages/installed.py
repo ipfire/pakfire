@@ -24,8 +24,8 @@ import os
 import pakfire.downloader
 import pakfire.filelist
 
-from base import Package
-from file import BinaryPackage
+from .base import Package
+from .file import BinaryPackage
 
 import pakfire.util as util
 from pakfire.constants import *
@@ -41,7 +41,7 @@ class DatabasePackage(Package):
 		self._data = {}
 		self._filelist = None
 
-		for key in data.keys():
+		for key in list(data.keys()):
 			self._data[key] = data[key]
 
 	def __repr__(self):
@@ -325,7 +325,7 @@ class DatabasePackage(Package):
 
 			# Verify if the download was okay.
 			if not cache.verify(cache_filename, self.hash1):
-				raise Exception, "XXX this should never happen..."
+				raise Exception("XXX this should never happen...")
 
 		filename = os.path.join(cache.path, cache_filename)
 		return BinaryPackage(self.pakfire, self.repo, filename)

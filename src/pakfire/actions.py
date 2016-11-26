@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -22,15 +22,15 @@
 import os
 import sys
 
-import packages
-import shell
-import util
+from . import packages
+from . import shell
+from . import util
 
 import logging
 log = logging.getLogger("pakfire")
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 class Action(object):
 	def __init__(self, pakfire, pkg_solv, pkg_bin=None):
@@ -66,13 +66,13 @@ class Action(object):
 
 		# Check if there are any signatures at all.
 		if not self.pkg.signatures:
-			raise SignatureError, _("%s has got no signatures") % self.pkg.friendly_name
+			raise SignatureError(_("%s has got no signatures") % self.pkg.friendly_name)
 
 		# Run the verification process and save the result.
 		sigs = self.pkg.verify()
 
 		if not sigs:
-			raise SignatureError, _("%s has got no valid signatures") % self.pkg.friendly_name
+			raise SignatureError(_("%s has got no valid signatures") % self.pkg.friendly_name)
 
 	@property
 	def pkg(self):
@@ -95,7 +95,7 @@ class Action(object):
 
 	def _set_pkg_bin(self, pkg):
 		if pkg and not self.pkg_solv.uuid == pkg.uuid:
-			raise RuntimeError, "Not the same package: %s != %s" % (self.pkg_solv, pkg)
+			raise RuntimeError("Not the same package: %s != %s" % (self.pkg_solv, pkg))
 
 		self._pkg_bin = pkg
 
@@ -232,7 +232,7 @@ class ActionScript(Action):
 			self.run_python()
 
 		else:
-			raise ActionError, _("Could not handle scriptlet of unknown type. Skipping.")
+			raise ActionError(_("Could not handle scriptlet of unknown type. Skipping."))
 
 	def run_exec(self):
 		log.debug(_("Executing scriptlet..."))
@@ -241,12 +241,12 @@ class ActionScript(Action):
 		if self.interpreter:
 			interpreter = "%s/%s" % (self.pakfire.path, self.interpreter)
 			if not os.path.exists(interpreter):
-				raise ActionError, _("Cannot run scriptlet because no interpreter is available: %s" \
-					% self.interpreter)
+				raise ActionError(_("Cannot run scriptlet because no interpreter is available: %s" \
+					% self.interpreter))
 
 			if not os.access(interpreter, os.X_OK):
-				raise ActionError, _("Cannot run scriptlet because the interpreter is not executable: %s" \
-					% self.interpreter)
+				raise ActionError(_("Cannot run scriptlet because the interpreter is not executable: %s" \
+					% self.interpreter))
 
 		# Create a name for the temporary script file.
 		script_file_chroot = os.path.join("/", LOCAL_TMP_PATH,
@@ -283,15 +283,15 @@ class ActionScript(Action):
 		try:
 			self.execute(command)
 
-		except ShellEnvironmentError, e:
-			raise ActionError, _("The scriptlet returned an error:\n%s" % e)
+		except ShellEnvironmentError as e:
+			raise ActionError(_("The scriptlet returned an error:\n%s" % e))
 
 		except commandTimeoutExpired:
-			raise ActionError, _("The scriptlet ran more than %s seconds and was killed." \
-				% SCRIPTLET_TIMEOUT)
+			raise ActionError(_("The scriptlet ran more than %s seconds and was killed." \
+				% SCRIPTLET_TIMEOUT))
 
-		except Exception, e:
-			raise ActionError, _("The scriptlet returned with an unhandled error:\n%s" % e)
+		except Exception as e:
+			raise ActionError(_("The scriptlet returned with an unhandled error:\n%s" % e))
 
 		finally:
 			# Remove the script file.
@@ -329,8 +329,8 @@ class ActionScript(Action):
 				obj = compile(self.scriptlet, "<string>", "exec")
 				eval(obj, _globals, {})
 
-			except Exception, e:
-				print _("Exception occured: %s") % e
+			except Exception as e:
+				print(_("Exception occured: %s") % e)
 				os._exit(1)
 
 			# End the child process without cleaning up.

@@ -21,12 +21,13 @@
 
 import tarfile
 
-from base import Package
-from file import BinaryPackage, FilePackage, SourcePackage
-from installed import DatabasePackage, InstalledPackage
-from solv import SolvPackage
+from . import file
 
-from make import Makefile
+from .base import Package
+from .installed import DatabasePackage, InstalledPackage
+from .solv import SolvPackage
+
+from .make import Makefile
 
 from pakfire.constants import *
 
@@ -42,9 +43,9 @@ def open(pakfire, repo, filename):
 	# Simply check if the given file is a tarfile.
 	if tarfile.is_tarfile(filename):
 		if filename.endswith(".src.%s" % PACKAGE_EXTENSION):
-			return SourcePackage(pakfire, repo, filename)
+			return file.SourcePackage(pakfire, repo, filename)
 
-		return BinaryPackage(pakfire, repo, filename)
+		return file.BinaryPackage(pakfire, repo, filename)
 
 	elif filename.endswith(".%s" % MAKEFILE_EXTENSION):
 		return Makefile(pakfire, filename)

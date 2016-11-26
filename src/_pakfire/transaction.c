@@ -27,7 +27,7 @@
 #include "transaction.h"
 
 PyTypeObject TransactionType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Transaction",
 	tp_basicsize: sizeof(TransactionObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -62,7 +62,7 @@ PyObject* Transaction_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Transaction_dealloc(TransactionObject *self) {
 	/* XXX need to free self->_transaction */
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

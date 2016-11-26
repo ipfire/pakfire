@@ -22,13 +22,12 @@
 import os
 import shutil
 import tempfile
-import urlgrabber
 
 import logging
 log = logging.getLogger("pakfire")
 
-import base
-import metadata
+from . import base
+from . import metadata
 
 import pakfire.compress as compress
 import pakfire.downloader as downloader

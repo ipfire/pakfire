@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -26,20 +26,20 @@ import shutil
 import sys
 import tempfile
 
-import base
-import client
-import config
-import daemon
-import logger
-import packages
-import repository
-import server
-import transaction
-import util
+from . import base
+from . import client
+from . import config
+from . import daemon
+from . import logger
+from . import packages
+from . import repository
+from . import server
+from . import transaction
+from . import util
 
-from system import system
-from constants import *
-from i18n import _
+from .system import system
+from .constants import *
+from .i18n import _
 
 # Initialize a very simple logging that is removed when a Pakfire instance
 # is started.
@@ -321,7 +321,7 @@ class Cli(object):
 		try:
 			func = self.action2func[action]
 		except KeyError:
-			raise Exception, "Unhandled action: %s" % action
+			raise Exception("Unhandled action: %s" % action)
 
 		return func()
 
@@ -329,13 +329,13 @@ class Cli(object):
 		p = self.create_pakfire()
 
 		for pkg in p.info(self.args.package):
-			print pkg.dump(long=long)
+			print(pkg.dump(int=int))
 
 	def handle_search(self):
 		p = self.create_pakfire()
 
 		for pkg in p.search(self.args.pattern):
-			print pkg.dump(short=True)
+			print(pkg.dump(short=True))
 
 	def handle_update(self, **args):
 		p = self.create_pakfire()
@@ -381,13 +381,13 @@ class Cli(object):
 		p = self.create_pakfire()
 
 		for pkg in p.provides(self.args.pattern):
-			print pkg.dump(long=long)
+			print(pkg.dump(int=int))
 
 	def handle_grouplist(self):
 		p = self.create_pakfire()
 
 		for pkg in p.grouplist(self.args.group[0]):
-			print " * %s" % pkg
+			print(" * %s" % pkg)
 
 	def handle_groupinstall(self):
 		p = self.create_pakfire()
@@ -401,14 +401,14 @@ class Cli(object):
 
 		FORMAT = " %-20s %8s %12s %12s "
 		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
-		print title
-		print "=" * len(title) # spacing line
+		print(title)
+		print("=" * len(title)) # spacing line
 
 		for repo in repos:
-			print FORMAT % (repo.name, repo.enabled, repo.priority, len(repo))
+			print(FORMAT % (repo.name, repo.enabled, repo.priority, len(repo)))
 
 	def handle_clean_all(self):
-		print _("Cleaning up everything...")
+		print(_("Cleaning up everything..."))
 
 		p = self.create_pakfire()
 		p.clean_all()
@@ -444,16 +444,16 @@ class Cli(object):
 		source_packages = any([p.type == "source" for p in pkgs])
 
 		if binary_packages and source_packages:
-			raise Error, _("Cannot extract mixed package types")
+			raise Error(_("Cannot extract mixed package types"))
 
 		if binary_packages and not target_prefix:
-			raise Error, _("You must provide an install directory with --target=...")
+			raise Error(_("You must provide an install directory with --target=..."))
 
 		elif source_packages and not target_prefix:
 			target_prefix = "/usr/src/packages/"
 
 		if target_prefix == "/":
-			raise Error, _("Cannot extract to /.")
+			raise Error(_("Cannot extract to /."))
 
 		for pkg in pkgs:
 			if pkg.type == "binary":
@@ -471,7 +471,7 @@ class CliBuilder(Cli):
 		# Check if we are already running in a pakfire container. In that
 		# case, we cannot start another pakfire-builder.
 		if os.environ.get("container", None) == "pakfire-builder":
-			raise PakfireContainerError, _("You cannot run pakfire-builder in a pakfire chroot.")
+			raise PakfireContainerError(_("You cannot run pakfire-builder in a pakfire chroot."))
 
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface."),
@@ -588,7 +588,7 @@ class CliBuilder(Cli):
 			help=_("Path were the output files should be copied to."))
 
 	def handle_info(self):
-		Cli.handle_info(self, long=True)
+		Cli.handle_info(self, int=True)
 
 	def handle_build(self):
 		# Get the package descriptor from the command line options
@@ -599,7 +599,7 @@ class CliBuilder(Cli):
 			pkg = os.path.abspath(pkg)
 
 		else:
-			raise FileNotFoundError, pkg
+			raise FileNotFoundError(pkg)
 
 		# Build argument list.
 		kwargs = {
@@ -633,7 +633,7 @@ class CliBuilder(Cli):
 				pkg = os.path.abspath(pkg)
 
 			else:
-				raise FileNotFoundError, pkg
+				raise FileNotFoundError(pkg)
 
 		if self.args.mode == "release":
 			release_build = True
@@ -663,7 +663,7 @@ class CliBuilder(Cli):
 				pkgs.append(pkg)
 
 			else:
-				raise FileNotFoundError, pkg
+				raise FileNotFoundError(pkg)
 
 		# Put packages to where the user said or our
 		# current working directory.
@@ -674,7 +674,7 @@ class CliBuilder(Cli):
 			p.dist(pkg, resultdir=resultdir)
 
 	def handle_provides(self):
-		Cli.handle_provides(self, long=True)
+		Cli.handle_provides(self, int=True)
 
 
 class CliServer(Cli):
@@ -792,7 +792,7 @@ class CliServer(Cli):
 			for file in os.listdir(tmpdir):
 				file = os.path.join(tmpdir, file)
 
-				print file
+				print(file)
 
 		finally:
 			if os.path.exists(tmpdir):
@@ -810,7 +810,7 @@ class CliServer(Cli):
 	def handle_info(self):
 		info = self.server.info()
 
-		print "\n".join(info)
+		print("\n".join(info))
 
 
 class CliBuilderIntern(Cli):
@@ -860,7 +860,7 @@ class CliBuilderIntern(Cli):
 		if os.path.exists(pkg):
 			pkg = os.path.abspath(pkg)
 		else:
-			raise FileNotFoundError, pkg
+			raise FileNotFoundError(pkg)
 
 		# Create pakfire instance.
 		c = config.ConfigBuilder()
@@ -1015,7 +1015,7 @@ class CliClient(Cli):
 				pass
 
 			else:
-				raise Exception, "Unknown filetype: %s" % package
+				raise Exception("Unknown filetype: %s" % package)
 
 			# Format arches.
 			if self.args.arch:
@@ -1066,7 +1066,7 @@ class CliClient(Cli):
 		ret.append("")
 
 		for line in ret:
-			print line
+			print(line)
 
 	def handle_connection_check(self):
 		ret = []
@@ -1096,25 +1096,25 @@ class CliClient(Cli):
 			ret.append(_("You could not be authenticated to the build service."))
 
 		for line in ret:
-			print line
+			print(line)
 
 	def _print_jobs(self, jobs, heading=None):
 		if heading:
-			print "%s:" % heading
-			print
+			print("%s:" % heading)
+			print()
 
 		for job in jobs:
 			line = "  [%(type)8s] %(name)-30s: %(state)s"
 
-			print line % job
+			print(line % job)
 
-		print # Empty line at the end.
+		print() # Empty line at the end.
 
 	def handle_jobs_active(self):
 		jobs = self.client.get_active_jobs()
 
 		if not jobs:
-			print _("No ongoing jobs found.")
+			print(_("No ongoing jobs found."))
 			return
 
 		self._print_jobs(jobs, _("Active build jobs"))
@@ -1123,7 +1123,7 @@ class CliClient(Cli):
 		jobs = self.client.get_latest_jobs()
 
 		if not jobs:
-			print _("No jobs found.")
+			print(_("No jobs found."))
 			return
 
 		self._print_jobs(jobs, _("Recently processed build jobs"))
@@ -1133,10 +1133,10 @@ class CliClient(Cli):
 
 		build = self.client.get_build(build_id)
 		if not build:
-			print _("A build with ID %s could not be found.") % build_id
+			print(_("A build with ID %s could not be found.") % build_id)
 			return
 
-		print _("Build: %(name)s") % build
+		print(_("Build: %(name)s") % build)
 
 		fmt = "%-14s: %s"
 		lines = [
@@ -1149,22 +1149,22 @@ class CliClient(Cli):
 			lines.append("  * [%(uuid)s] %(name)-30s: %(state)s" % job)
 
 		for line in lines:
-			print " ", line
-		print
+			print(" ", line)
+		print()
 
 	def handle_jobs_show(self):
 		(job_id,) = self.args.job_id
 
 		job = self.client.get_job(job_id)
 		if not job:
-			print _("A job with ID %s could not be found.") % job_id
+			print(_("A job with ID %s could not be found.") % job_id)
 			return
 
 		builder = None
 		if job["builder_id"]:
 			builder = self.client.get_builder(job["builder_id"])
 
-		print _("Job: %(name)s") % job
+		print(_("Job: %(name)s") % job)
 
 		fmt = "%-14s: %s"
 		lines = [
@@ -1198,8 +1198,8 @@ class CliClient(Cli):
 				lines += ["  %s" % line for line in pkg_lines]
 
 		for line in lines:
-			print " ", line
-		print # New line.
+			print(" ", line)
+		print() # New line.
 
 	def handle_test(self):
 		error_code = self.args.error_code[0]
@@ -1210,15 +1210,15 @@ class CliClient(Cli):
 			error_code = 0
 
 		if error_code < 100 or error_code > 999:
-			raise Error, _("Invalid error code given.")
+			raise Error(_("Invalid error code given."))
 
 		res = self.client.test_code(error_code)
-		print _("Reponse from the server: %s") % res
+		print(_("Reponse from the server: %s") % res)
 
 	def watch_build(self, build_id):
-		print self.client.build_get(build_id)
+		print(self.client.build_get(build_id))
 		# XXX TODO
-		print build_id
+		print(build_id)
 
 
 class CliDaemon(Cli):
@@ -1354,8 +1354,8 @@ class CliKey(Cli):
 		realname = self.args.realname[0]
 		email    = self.args.email[0]
 
-		print _("Generating the key may take a moment...")
-		print
+		print(_("Generating the key may take a moment..."))
+		print()
 
 		# Generate the key.
 		p = self.create_pakfire()
@@ -1384,7 +1384,7 @@ class CliKey(Cli):
 	def handle_list(self):
 		p = self.create_pakfire()
 		for line in p.keyring.list_keys():
-			print line
+			print(line)
 
 	def handle_sign(self):
 		# Get the files from the command line options
@@ -1397,7 +1397,7 @@ class CliKey(Cli):
 				files.append(file)
 
 			else:
-				raise FileNotFoundError, file
+				raise FileNotFoundError(file)
 
 		key = self.args.key[0]
 
@@ -1408,7 +1408,7 @@ class CliKey(Cli):
 			# Open the package.
 			pkg = packages.open(p, None, file)
 
-			print _("Signing %s...") % pkg.friendly_name
+			print(_("Signing %s...") % pkg.friendly_name)
 			pkg.sign(key)
 
 	def handle_verify(self):
@@ -1428,7 +1428,7 @@ class CliKey(Cli):
 			# Open the package.
 			pkg = packages.open(p, None, file)
 
-			print _("Verifying %s...") % pkg.friendly_name
+			print(_("Verifying %s...") % pkg.friendly_name)
 			sigs = pkg.verify()
 
 			for sig in sigs:
@@ -1436,19 +1436,19 @@ class CliKey(Cli):
 				if key:
 					subkey = key.subkeys[0]
 
-					print "  %s %s" % (subkey.fpr[-16:], key.uids[0].uid)
+					print("  %s %s" % (subkey.fpr[-16:], key.uids[0].uid))
 					if sig.validity:
-						print "    %s" % _("This signature is valid.")
+						print("    %s" % _("This signature is valid."))
 
 				else:
-					print "  %s <%s>" % (sig.fpr, _("Unknown key"))
-					print "    %s" % _("Could not check if this signature is valid.")
+					print("  %s <%s>" % (sig.fpr, _("Unknown key")))
+					print("    %s" % _("Could not check if this signature is valid."))
 
 				created = datetime.datetime.fromtimestamp(sig.timestamp)
-				print "    %s" % _("Created: %s") % created
+				print("    %s" % _("Created: %s") % created)
 
 				if sig.exp_timestamp:
 					expires = datetime.datetime.fromtimestamp(sig.exp_timestamp)
-					print "    %s" % _("Expires: %s") % expires
+					print("    %s" % _("Expires: %s") % expires)
 
-			print # Empty line
+			print() # Empty line

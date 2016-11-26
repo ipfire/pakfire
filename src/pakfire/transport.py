@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,16 +19,13 @@
 #                                                                             #
 ###############################################################################
 
-from __future__ import division
-
 import base64
 import hashlib
 import json
 import os
 import time
-import urlgrabber
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
 import pakfire.downloader
 import pakfire.util
@@ -38,7 +35,6 @@ from pakfire.i18n import _
 
 import logging
 log = logging.getLogger("pakfire.transport")
-
 
 class PakfireHubTransportUploader(object):
 	"""
@@ -211,7 +207,7 @@ class PakfireHubTransport(object):
 		server, username, password = self.config.get_hub_credentials()
 
 		# Parse the given URL.
-		url = urlparse.urlparse(server)
+		url = urllib.parse.urlparse(server)
 		assert url.scheme in ("http", "https")
 
 		# Build new URL.
@@ -230,40 +226,40 @@ class PakfireHubTransport(object):
 		try:
 			return self.grabber.urlread(url, **kwargs)
 
-		except urlgrabber.grabber.URLGrabError, e:
+		except urlgrabber.grabber.URLGrabError as e:
 			# Timeout
 			if e.errno == 12:
-				raise TransportConnectionTimeoutError, e
+				raise TransportConnectionTimeoutError(e)
 
 			# Handle common HTTP errors
 			elif e.errno == 14:
 				# Connection errors
 				if e.code == 5:
-					raise TransportConnectionProxyError, url
+					raise TransportConnectionProxyError(url)
 				elif e.code == 6:
-					raise TransportConnectionDNSError, url
+					raise TransportConnectionDNSError(url)
 				elif e.code == 7:
-					raise TransportConnectionResetError, url
+					raise TransportConnectionResetError(url)
 				elif e.code == 23:
-					raise TransportConnectionWriteError, url
+					raise TransportConnectionWriteError(url)
 				elif e.code == 26:
-					raise TransportConnectionReadError, url
+					raise TransportConnectionReadError(url)
 
 				# SSL errors
 				elif e.code == 52:
-					raise TransportSSLCertificateExpiredError, url
+					raise TransportSSLCertificateExpiredError(url)
 
 				# HTTP error codes
 				elif e.code == 403:
-					raise TransportForbiddenError, url
+					raise TransportForbiddenError(url)
 				elif e.code == 404:
-					raise TransportNotFoundError, url
+					raise TransportNotFoundError(url)
 				elif e.code == 500:
-					raise TransportInternalServerError, url
+					raise TransportInternalServerError(url)
 				elif e.code in (502, 503):
-					raise TransportBadGatewayError, url
+					raise TransportBadGatewayError(url)
 				elif e.code == 504:
-					raise TransportConnectionTimeoutError, url
+					raise TransportConnectionTimeoutError(url)
 
 			# All other exceptions...
 			raise
@@ -279,14 +275,14 @@ class PakfireHubTransport(object):
 				return self.one_request(url, **kwargs)
 
 			# 500 - Internal Server Error, 502 + 503 Bad Gateway Error
-			except (TransportInternalServerError, TransportBadGatewayError), e:
+			except (TransportInternalServerError, TransportBadGatewayError) as e:
 				log.exception("%s" % e.__class__.__name__)
 
 				# Wait a minute before trying again.
 				time.sleep(60)
 
 			# Retry on connection problems.
-			except TransportConnectionError, e:
+			except TransportConnectionError as e:
 				log.exception("%s" % e.__class__.__name__)
 
 				# Wait for 10 seconds.
@@ -298,7 +294,7 @@ class PakfireHubTransport(object):
 		raise TransportMaxTriesExceededError
 
 	def escape_args(self, **kwargs):
-		return urllib.urlencode(kwargs)
+		return urllib.parse.urlencode(kwargs)
 
 	def get(self, url, data={}, **kwargs):
 		"""

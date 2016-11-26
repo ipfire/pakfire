@@ -19,13 +19,13 @@
 #                                                                             #
 ###############################################################################
 
+import lzma
 import os
 import tarfile
 
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.lzma as lzma
 import pakfire.util as util
 from pakfire.constants import *
 from pakfire.i18n import _
@@ -83,7 +83,7 @@ class InnerTarFile(tarfile.TarFile):
 		# Extract file the normal way...
 		try:
 			tarfile.TarFile.extract(self, member, path)
-		except OSError, e:
+		except OSError as e:
 			log.warning(_("Could not extract file: /%(src)s - %(dst)s") \
 				% { "src" : member.name, "dst" : e, })
 

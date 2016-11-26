@@ -191,89 +191,96 @@ static PyMethodDef Transaction_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-void init_pakfire(void) {
+static struct PyModuleDef moduledef = {
+	.m_base = PyModuleDef_HEAD_INIT,
+	.m_name = "_pakfire",
+	.m_size = -1,
+	.m_methods = pakfireModuleMethods,
+};
+
+PyMODINIT_FUNC PyInit__pakfire(void) {
 	/* Initialize locale */
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE_TARNAME, "/usr/share/locale");
 	textdomain(PACKAGE_TARNAME);
 
-	/* Load the python module */
-	PyObject *m, *d;
-
-	m = Py_InitModule("_pakfire", pakfireModuleMethods);
+	// Create the module
+	PyObject* module = PyModule_Create(&moduledef);
+	if (!module)
+		return NULL;
 
 	// Pool
 	PoolType.tp_methods = Pool_methods;
 	if (PyType_Ready(&PoolType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&PoolType);
-	PyModule_AddObject(m, "Pool", (PyObject *)&PoolType);
+	PyModule_AddObject(module, "Pool", (PyObject *)&PoolType);
 
 	// Problem
 	ProblemType.tp_methods = Problem_methods;
 	if (PyType_Ready(&ProblemType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&ProblemType);
-	PyModule_AddObject(m, "Problem", (PyObject *)&ProblemType);
+	PyModule_AddObject(module, "Problem", (PyObject *)&ProblemType);
 
 	// Repo
 	RepoType.tp_methods = Repo_methods;
 	if (PyType_Ready(&RepoType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&RepoType);
-	PyModule_AddObject(m, "Repo", (PyObject *)&RepoType);
+	PyModule_AddObject(module, "Repo", (PyObject *)&RepoType);
 
 	// Solvable
 	SolvableType.tp_methods = Solvable_methods;
 	if (PyType_Ready(&SolvableType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&SolvableType);
-	PyModule_AddObject(m, "Solvable", (PyObject *)&SolvableType);
+	PyModule_AddObject(module, "Solvable", (PyObject *)&SolvableType);
 
 	// Relation
 	RelationType.tp_methods = Relation_methods;
 	if (PyType_Ready(&RelationType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&RelationType);
-	PyModule_AddObject(m, "Relation", (PyObject *)&RelationType);
+	PyModule_AddObject(module, "Relation", (PyObject *)&RelationType);
 
 	// Request
 	RequestType.tp_methods = Request_methods;
 	if (PyType_Ready(&RequestType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&RequestType);
-	PyModule_AddObject(m, "Request", (PyObject *)&RequestType);
+	PyModule_AddObject(module, "Request", (PyObject *)&RequestType);
 
 	// Solution
 	SolutionType.tp_methods = Solution_methods;
 	if (PyType_Ready(&SolutionType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&SolutionType);
-	PyModule_AddObject(m, "Solution", (PyObject *)&SolutionType);
+	PyModule_AddObject(module, "Solution", (PyObject *)&SolutionType);
 
 	// Solver
 	SolverType.tp_methods = Solver_methods;
 	if (PyType_Ready(&SolverType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&SolverType);
-	PyModule_AddObject(m, "Solver", (PyObject *)&SolverType);
+	PyModule_AddObject(module, "Solver", (PyObject *)&SolverType);
 
 	// Step
 	StepType.tp_methods = Step_methods;
 	if (PyType_Ready(&StepType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&StepType);
-	PyModule_AddObject(m, "Step", (PyObject *)&StepType);
+	PyModule_AddObject(module, "Step", (PyObject *)&StepType);
 
 	// Transaction
 	TransactionType.tp_methods = Transaction_methods;
 	if (PyType_Ready(&TransactionType) < 0)
-		return;
+		return NULL;
 	Py_INCREF(&TransactionType);
-	PyModule_AddObject(m, "Transaction", (PyObject *)&TransactionType);
+	PyModule_AddObject(module, "Transaction", (PyObject *)&TransactionType);
 
 	// Add constants
-	d = PyModule_GetDict(m);
+	PyObject* d = PyModule_GetDict(module);
 
 	// Personalities
 	PyDict_SetItemString(d, "PERSONALITY_LINUX",   Py_BuildValue("i", PER_LINUX));
@@ -332,4 +339,6 @@ void init_pakfire(void) {
 	PyDict_SetItemString(d, "SOLVER_FLAG_NO_UPDATEPROVIDE", Py_BuildValue("i", SOLVER_FLAG_NO_UPDATEPROVIDE));
 	PyDict_SetItemString(d, "SOLVER_FLAG_SPLITPROVIDES", Py_BuildValue("i", SOLVER_FLAG_SPLITPROVIDES));
 	PyDict_SetItemString(d, "SOLVER_FLAG_IGNORE_RECOMMENDED", Py_BuildValue("i", SOLVER_FLAG_IGNORE_RECOMMENDED));
+
+	return module;
 }

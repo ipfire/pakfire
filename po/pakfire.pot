@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-26 21:51+0200\n"
+"POT-Creation-Date: 2016-11-26 17:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,37 +197,37 @@ msgstr ""
 msgid "%s has got no valid signatures"
 msgstr ""
 
-#: ../src/pakfire/actions.py:234
+#: ../src/pakfire/actions.py:235
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr ""
 
-#: ../src/pakfire/actions.py:237
+#: ../src/pakfire/actions.py:238
 msgid "Executing scriptlet..."
 msgstr ""
 
-#: ../src/pakfire/actions.py:243
+#: ../src/pakfire/actions.py:244
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:247
+#: ../src/pakfire/actions.py:248
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:286
+#: ../src/pakfire/actions.py:287
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:289
+#: ../src/pakfire/actions.py:290
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr ""
 
-#: ../src/pakfire/actions.py:293
+#: ../src/pakfire/actions.py:294
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
@@ -237,42 +237,42 @@ msgstr ""
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:307
+#: ../src/pakfire/actions.py:308
 msgid "Executing python scriptlet..."
 msgstr ""
 
-#: ../src/pakfire/actions.py:332
+#: ../src/pakfire/actions.py:333
 #, python-format
 msgid "Exception occured: %s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
-#: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
+#: ../src/pakfire/actions.py:406 ../src/pakfire/actions.py:453
+#: ../src/pakfire/actions.py:463 ../src/pakfire/actions.py:484
 #, python-format
 msgid "Running transaction test for %s"
 msgstr ""
 
-#: ../src/pakfire/actions.py:415
+#: ../src/pakfire/actions.py:416
 msgid "Reinstalling"
 msgstr ""
 
-#: ../src/pakfire/actions.py:417
+#: ../src/pakfire/actions.py:418
 msgid "Updating"
 msgstr ""
 
-#: ../src/pakfire/actions.py:419
+#: ../src/pakfire/actions.py:420
 msgid "Downgrading"
 msgstr ""
 
-#: ../src/pakfire/actions.py:421
+#: ../src/pakfire/actions.py:422
 msgid "Installing"
 msgstr ""
 
-#: ../src/pakfire/actions.py:469
+#: ../src/pakfire/actions.py:470
 msgid "Cleanup"
 msgstr ""
 
-#: ../src/pakfire/actions.py:471
+#: ../src/pakfire/actions.py:472
 msgid "Removing"
 msgstr ""
 
@@ -354,71 +354,71 @@ msgstr ""
 msgid "Extracting"
 msgstr ""
 
-#: ../src/pakfire/builder.py:781
+#: ../src/pakfire/builder.py:779
 msgid "You cannot run a build when no package was given."
 msgstr ""
 
-#: ../src/pakfire/builder.py:785
+#: ../src/pakfire/builder.py:783
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr ""
 
-#: ../src/pakfire/builder.py:815
+#: ../src/pakfire/builder.py:813
 msgid "Build failed"
 msgstr ""
 
-#: ../src/pakfire/builder.py:818
+#: ../src/pakfire/builder.py:816
 msgid "Build interrupted"
 msgstr ""
 
-#: ../src/pakfire/builder.py:824
+#: ../src/pakfire/builder.py:822
 msgid "Build failed."
 msgstr ""
 
 #. End here in case of an error.
-#: ../src/pakfire/builder.py:840
+#: ../src/pakfire/builder.py:838
 msgid "The build command failed. See logfile for details."
 msgstr ""
 
-#: ../src/pakfire/builder.py:843
+#: ../src/pakfire/builder.py:841
 msgid "Running installation test..."
 msgstr ""
 
-#: ../src/pakfire/builder.py:849
+#: ../src/pakfire/builder.py:847
 msgid "Installation test succeeded."
 msgstr ""
 
 #. Create a progressbar.
-#: ../src/pakfire/builder.py:892
+#: ../src/pakfire/builder.py:890
 msgid "Signing packages..."
 msgstr ""
 
-#: ../src/pakfire/builder.py:926
+#: ../src/pakfire/builder.py:924
 msgid "Dumping package information:"
 msgstr ""
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../src/pakfire/builder.py:1078
+#: ../src/pakfire/builder.py:1076
 msgid "Creating packages:"
 msgstr ""
 
 #. Execute the buildscript of this stage.
-#: ../src/pakfire/builder.py:1092
+#: ../src/pakfire/builder.py:1090
 #, python-format
 msgid "Running stage %s:"
 msgstr ""
 
-#: ../src/pakfire/builder.py:1110
+#: ../src/pakfire/builder.py:1108
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr ""
 
-#: ../src/pakfire/builder.py:1116
+#: ../src/pakfire/builder.py:1114
 msgid "Compressing man pages did not complete successfully."
 msgstr ""
 
-#: ../src/pakfire/builder.py:1136
+#: ../src/pakfire/builder.py:1134
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr ""
 
@@ -1338,12 +1338,12 @@ msgstr ""
 msgid "Not set"
 msgstr ""
 
-#: ../src/pakfire/packages/base.py:570
+#: ../src/pakfire/packages/base.py:573
 #, python-format
 msgid "Config file saved as %s."
 msgstr ""
 
-#: ../src/pakfire/packages/base.py:575
+#: ../src/pakfire/packages/base.py:578
 #, python-format
 msgid "Preserving datafile '/%s'"
 msgstr ""
@@ -1553,7 +1553,7 @@ msgstr ""
 msgid "    Solutions:"
 msgstr ""
 
-#: ../src/pakfire/server.py:279 ../src/pakfire/system.py:149
+#: ../src/pakfire/server.py:279 ../src/pakfire/system.py:153
 msgid "Could not be determined"
 msgstr ""
 

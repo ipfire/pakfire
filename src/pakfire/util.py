@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,13 +19,10 @@
 #                                                                             #
 ###############################################################################
 
-from __future__ import division
-
 import fcntl
 import hashlib
 import math
 import os
-import progressbar
 import random
 import shutil
 import signal
@@ -38,11 +35,11 @@ import time
 import logging
 log = logging.getLogger("pakfire")
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 # Import binary version of version_compare and capability functions
-from _pakfire import version_compare, get_capabilities, set_capabilities, personality
+from ._pakfire import version_compare, get_capabilities, set_capabilities, personality
 
 def cli_is_interactive():
 	"""
@@ -65,9 +62,9 @@ def ask_user(question):
 	if not cli_is_interactive():
 		return True
 
-	print _("%s [y/N]") % question,
-	ret = raw_input()
-	print # Just an empty line.
+	print(_("%s [y/N]") % question, end=' ')
+	ret = input()
+	print() # Just an empty line.
 
 	return ret in ("y", "Y", "z", "Z", "j", "J")
 
@@ -75,11 +72,15 @@ def random_string(length=20):
 	s = ""
 
 	for i in range(length):
-		s += random.choice(string.letters)
+		s += random.choice(string.ascii_letters)
 
 	return s
 
 def make_progress(message, maxval, eta=True, speed=False):
+	# XXX delay importing the progressbar module
+	# (because of a circular dependency)
+	from . import progressbar
+
 	# Return nothing if stdout is not a terminal.
 	if not sys.stdout.isatty():
 		return
@@ -117,7 +118,7 @@ def rm(path, *args, **kargs):
 		tryAgain = 0
 		try:
 			shutil.rmtree(path, *args, **kargs)
-		except OSError, e:
+		except OSError as e:
 			if e.errno == 2: # no such file or directory
 				pass
 			elif e.errno==1 or e.errno==13:
@@ -252,7 +253,7 @@ def orphans_kill(root, killsig=signal.SIGTERM):
 				pid = int(fn, 10)
 				os.kill(pid, killsig)
 				os.waitpid(pid, 0)
-		except OSError, e:
+		except OSError as e:
 			pass
 
 	# If something was killed, wait a couple of seconds to make sure all file descriptors

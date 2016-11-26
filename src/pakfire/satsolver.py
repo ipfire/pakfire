@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -25,14 +25,14 @@ import time
 import logging
 log = logging.getLogger("pakfire")
 
-import filelist
-import packages
-import transaction
-import util
-import _pakfire
+from . import _pakfire
+from . import filelist
+from . import packages
+from . import transaction
+from . import util
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 # Put some variables into our own namespace, to make them easily accessible
 # for code, that imports the satsolver module.
@@ -157,7 +157,7 @@ class Pool(_pakfire.Pool):
 		if solver.status:
 			return solver
 
-		raise DependencyError, solver.get_problem_string()
+		raise DependencyError(solver.get_problem_string())
 
 	def solve(self, request, interactive=False, logger=None, force_best=False, **kwargs):
 		# XXX implement interactive
@@ -169,7 +169,7 @@ class Pool(_pakfire.Pool):
 		solver = Solver(self, request, logger=logger)
 
 		# Apply configuration to solver.
-		for key, val in kwargs.items():
+		for key, val in list(kwargs.items()):
 			solver.set(key, val)
 
 		# Do the solving.
@@ -201,7 +201,7 @@ class Request(_pakfire.Request):
 			self.install_name(what)
 			return
 
-		raise Exception, "Unknown type"
+		raise Exception("Unknown type")
 
 	def remove(self, what):
 		if isinstance(what, Solvable):
@@ -216,7 +216,7 @@ class Request(_pakfire.Request):
 			self.remove_name(what)
 			return
 
-		raise Exception, "Unknown type"
+		raise Exception("Unknown type")
 
 	def update(self, what):
 		if isinstance(what, Solvable):
@@ -231,7 +231,7 @@ class Request(_pakfire.Request):
 			self.update_name(what)
 			return
 
-		raise Exception, "Unknown type"
+		raise Exception("Unknown type")
 
 	def lock(self, what):
 		if isinstance(what, Solvable):
@@ -246,7 +246,7 @@ class Request(_pakfire.Request):
 			self.lock_name(what)
 			return
 
-		raise Exception, "Unknown type"
+		raise Exception("Unknown type")
 
 	def noobsoletes(self, what):
 		if isinstance(what, Solvable):
@@ -261,7 +261,7 @@ class Request(_pakfire.Request):
 			self.noobsoletes_name(what)
 			return
 
-		raise Exception, "Unknown type"
+		raise Exception("Unknown type")
 
 
 class Solver(object):
@@ -305,14 +305,14 @@ class Solver(object):
 		try:
 			flag = self.option2flag[option]
 		except KeyError:
-			raise Exception, "Unknown configuration setting: %s" % option
+			raise Exception("Unknown configuration setting: %s" % option)
 		self.solver.set_flag(flag, value)
 
 	def get(self, option):
 		try:
 			flag = self.option2flag[option]
 		except KeyError:
-			raise Exception, "Unknown configuration setting: %s" % option
+			raise Exception("Unknown configuration setting: %s" % option)
 		return self.solver.get_flag(flag)
 
 	def solve(self, force_best=False):
@@ -328,7 +328,7 @@ class Solver(object):
 		if self.status:
 			self.logger.info(_("Dependency solving finished in %.2f ms") % (self.time * 1000))
 		else:
-			raise DependencyError, self.get_problem_string()
+			raise DependencyError(self.get_problem_string())
 
 	@property
 	def problems(self):
@@ -386,17 +386,17 @@ class Solver(object):
 		if not util.ask_user(_("Do you want to manually alter the request?")):
 			return False
 
-		print _("You can now try to satisfy the solver by modifying your request.")
+		print(_("You can now try to satisfy the solver by modifying your request."))
 
 		altered = False
 		while True:
 			if len(problems) > 1:
-				print _("Which problem to you want to resolve?")
+				print(_("Which problem to you want to resolve?"))
 				if altered:
-					print _("Press enter to try to re-solve the request.")
-				print "[1-%s]:" % len(problems),
+					print(_("Press enter to try to re-solve the request."))
+				print("[1-%s]:" % len(problems), end=' ')
 
-				answer = raw_input()
+				answer = input()
 
 				# If the user did not enter anything, we abort immediately.
 				if not answer:
@@ -424,22 +424,22 @@ class Solver(object):
 
 			if len(solutions) == 1:
 				solution = solutions[0]
-				print _("    Solution: %s") % solution
-				print
+				print(_("    Solution: %s") % solution)
+				print()
 
 				if util.ask_user("Do you accept the solution above?"):
 					altered = True
-					print "XXX do something"
+					print("XXX do something")
 
 				continue
 			else:
-				print _("    Solutions:")
+				print(_("    Solutions:"))
 				i = 0
 				for solution in solutions:
 					i += 1
-					print "      #%d: %s" % (i, solution)
+					print("      #%d: %s" % (i, solution))
 
-				print
+				print()
 
 		if not altered:
 			return False

@@ -29,7 +29,7 @@
 #include "solver.h"
 
 PyTypeObject ProblemType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Problem",
 	tp_basicsize: sizeof(ProblemObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -64,7 +64,7 @@ PyObject* Problem_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Problem_dealloc(ProblemObject *self) {
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

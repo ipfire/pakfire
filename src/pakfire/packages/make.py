@@ -27,23 +27,20 @@ import tarfile
 import tempfile
 import uuid
 
-from urlgrabber.grabber import URLGrabber, URLGrabError
-from urlgrabber.progress import TextMeter
-
-import lexer
-import packager
+from . import lexer
+from . import packager
 
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.downloader as downloader
-import pakfire.util as util
+from ..constants import *
+from ..i18n import _
 
-from base import Package
+from .. import downloader
+from .. import system
+from .. import util
 
-from pakfire.constants import *
-from pakfire.i18n import _
-from pakfire.system import system
+from .base import Package
 
 class MakefileBase(Package):
 	def __init__(self, pakfire, filename=None, lines=None):
@@ -52,7 +49,7 @@ class MakefileBase(Package):
 		# Update environment.
 		environ = self.pakfire.distro.environ
 		environ.update({
-			"PARALLELISMFLAGS" : "-j%d" % system.parallelism,
+			"PARALLELISMFLAGS" : "-j%d" % system.system.parallelism,
 		})
 
 		if filename:

@@ -20,14 +20,13 @@
 ###############################################################################
 
 import os
-import urlgrabber
 
 import logging
 log = logging.getLogger("pakfire")
 
-import base
-import cache
-import metadata
+from . import base
+from . import cache
+from . import metadata
 
 import pakfire.compress as compress
 import pakfire.downloader as downloader
@@ -94,7 +93,7 @@ class RepositoryRemote(base.RepositoryFactory):
 			"http://" : 75,
 		}
 
-		for url, prio in url2priority.items():
+		for url, prio in list(url2priority.items()):
 			if self.baseurl.startswith(url):
 				priority = prio
 				break
@@ -148,8 +147,8 @@ class RepositoryRemote(base.RepositoryFactory):
 		exists = self.cache.exists(cache_filename)
 
 		if not exists and offline:
-			raise OfflineModeError, _("No metadata available for repository %s. Cannot download any.") \
-				% self.name
+			raise OfflineModeError(_("No metadata available for repository %s. Cannot download any.") \
+				% self.name)
 
 		elif exists and offline:
 			# Repository metadata exists. We cannot update anything because of the offline mode.
@@ -171,9 +170,9 @@ class RepositoryRemote(base.RepositoryFactory):
 		while True:
 			try:
 				data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
-			except urlgrabber.grabber.URLGrabError, e:
+			except urlgrabber.grabber.URLGrabError as e:
 				if e.errno == 256:
-					raise DownloadError, _("Could not update metadata for %s from any mirror server") % self.name
+					raise DownloadError(_("Could not update metadata for %s from any mirror server") % self.name)
 
 				grabber.increment_mirror(grabber)
 				continue
@@ -221,7 +220,7 @@ class RepositoryRemote(base.RepositoryFactory):
 
 		# Raise an exception when we are running in offline mode but an update is required.
 		if force and offline:
-			raise OfflineModeError, _("Cannot download package database for %s in offline mode.") % self.name
+			raise OfflineModeError(_("Cannot download package database for %s in offline mode.") % self.name)
 
 		elif not force:
 			return
@@ -306,13 +305,13 @@ class RepositoryRemote(base.RepositoryFactory):
 
 			# If we are in offline mode, we cannot download any files.
 			if self.pakfire.offline and not self.baseurl.startswith("file://"):
-				raise OfflineModeError, _("Cannot download this file in offline mode: %s") \
-					% filename
+				raise OfflineModeError(_("Cannot download this file in offline mode: %s") \
+					% filename)
 
 			try:
 				i = grabber.urlopen(filename)
-			except urlgrabber.grabber.URLGrabError, e:
-				raise DownloadError, _("Could not download %s: %s") % (filename, e)
+			except urlgrabber.grabber.URLGrabError as e:
+				raise DownloadError(_("Could not download %s: %s") % (filename, e))
 
 			# Open input and output files and download the file.
 			o = self.cache.open(cache_filename, "w")

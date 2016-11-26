@@ -24,7 +24,7 @@
 #define REL_NONE 0
 
 PyTypeObject RelationType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Relation",
 	tp_basicsize: sizeof(RelationObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -64,7 +64,7 @@ PyObject* Relation_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Relation_dealloc(RelationObject *self) {
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

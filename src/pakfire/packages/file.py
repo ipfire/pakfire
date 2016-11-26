@@ -20,6 +20,7 @@
 ###############################################################################
 
 import hashlib
+import lzma
 import os
 import re
 import shutil
@@ -29,17 +30,16 @@ import tempfile
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.filelist
-import pakfire.lzma as lzma
-import pakfire.util as util
-import pakfire.compress as compress
-from pakfire.constants import *
-from pakfire.i18n import _
+from ..constants import *
+from ..i18n import _
 
-import base
-import lexer
-import make
-import tar
+from .. import compress
+from .. import filelist
+
+from . import base
+from . import lexer
+from . import make
+from . import tar
 
 class FilePackage(base.Package):
 	"""
@@ -79,7 +79,7 @@ class FilePackage(base.Package):
 			pass
 
 		else:
-			raise PackageFormatUnsupportedError, _("Filename: %s") % self.filename
+			raise PackageFormatUnsupportedError(_("Filename: %s") % self.filename)
 
 	def check(self):
 		"""
@@ -87,7 +87,7 @@ class FilePackage(base.Package):
 			can be opened.
 		"""
 		if not tarfile.is_tarfile(self.filename):
-			raise FileError, "Given file is not of correct format: %s" % self.filename
+			raise FileError("Given file is not of correct format: %s" % self.filename)
 
 		assert self.format in PACKAGE_FORMATS_SUPPORTED, self.format
 
@@ -134,8 +134,8 @@ class FilePackage(base.Package):
 			payload_archive = tar.InnerTarFile.open(fileobj=payload)
 
 		else:
-			raise Exception, "Unhandled payload compression type: %s" % \
-				self.payload_compression
+			raise Exception("Unhandled payload compression type: %s" % \
+				self.payload_compression)
 
 		return payload_archive
 
@@ -152,6 +152,8 @@ class FilePackage(base.Package):
 		pb = None
 		if message:
 			message = "%-10s : %s" % (message, self.friendly_name)
+
+			from . import util
 			pb = util.make_progress(message, len(self.filelist), eta=False)
 
 		# Collect messages with errors and warnings, that are passed to
@@ -169,7 +171,7 @@ class FilePackage(base.Package):
 
 		i = 0
 		while True:
-			member = payload_archive.next()
+			member = next(payload_archive)
 			if not member:
 				break
 
@@ -286,7 +288,7 @@ class FilePackage(base.Package):
 
 		# Search for filename.
 		while True:
-			member = payload_archive.next()
+			member = next(payload_archive)
 			if not member:
 				break
 
@@ -655,7 +657,7 @@ class FilePackage(base.Package):
 		a.close()
 
 		sigs = []
-		for signature in self.signatures.values():
+		for signature in list(self.signatures.values()):
 			sigs += self.pakfire.keyring.verify(signature, chksums)
 
 		# Open the archive to access all files we will need.
@@ -670,7 +672,7 @@ class FilePackage(base.Package):
 		f.close()
 		a.close()
 
-		for filename, chksum in chksums.items():
+		for filename, chksum in list(chksums.items()):
 			ret = self.check_chksum(filename, chksum)
 
 			if ret:
@@ -679,7 +681,7 @@ class FilePackage(base.Package):
 			else:
 				log.debug("Checksum of %s does not match." % filename)
 
-			raise Exception, "Checksum does not match: %s" % filename
+			raise Exception("Checksum does not match: %s" % filename)
 
 		return sigs
 
@@ -705,6 +707,7 @@ class FilePackage(base.Package):
 		"""
 			Calculate the hash1 of this package.
 		"""
+		from . import util
 		return util.calc_hash1(self.filename)
 
 	@property

@@ -28,7 +28,7 @@
 #include "solution.h"
 
 PyTypeObject SolutionType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Solution",
 	tp_basicsize: sizeof(SolutionObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -59,7 +59,7 @@ PyObject *Solution_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Solution_dealloc(SolutionObject *self) {
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

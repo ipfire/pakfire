@@ -24,8 +24,7 @@ import os
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.packages as packages
-import pakfire.satsolver as satsolver
+from .. import packages
 
 class Index(object):
 	"""
@@ -66,6 +65,7 @@ class Index(object):
 	def add_package(self, pkg):
 		log.debug("Adding package to index %s: %s" % (self, pkg))
 
+		from .. import satsolver
 		solvable = satsolver.Solvable(self.solver_repo, pkg.name,
 			pkg.friendly_version, pkg.arch)
 

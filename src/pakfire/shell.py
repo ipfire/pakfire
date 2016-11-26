@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -25,11 +25,11 @@ import select
 import subprocess
 import time
 
-from _pakfire import PERSONALITY_LINUX, PERSONALITY_LINUX32
+from ._pakfire import PERSONALITY_LINUX, PERSONALITY_LINUX32
 
 from pakfire.i18n import _
 import pakfire.util as util
-from errors import *
+from .errors import *
 
 class ShellExecuteEnvironment(object):
 	def __init__(self, command, cwd=None, chroot_path=None, personality=None, shell=False, timeout=0, env=None,
@@ -120,7 +120,7 @@ class ShellExecuteEnvironment(object):
 				os.killpg(child.pid, 9)
 
 		if not nice_exit:
-			raise commandTimeoutExpired, (_("Command exceeded timeout (%(timeout)d): %(command)s") % (self.timeout, self.command))
+			raise commandTimeoutExpired(_("Command exceeded timeout (%(timeout)d): %(command)s") % (self.timeout, self.command))
 
 		# Save exitcode.
 		self.exitcode = child.returncode
@@ -129,7 +129,7 @@ class ShellExecuteEnvironment(object):
 			self.logger.debug(_("Child returncode was: %s") % self.exitcode)
 
 		if self.exitcode and self.log_errors:
-			raise ShellEnvironmentError, (_("Command failed: %s") % self.command, self.exitcode)
+			raise ShellEnvironmentError(_("Command failed: %s") % self.command, self.exitcode)
 
 		return self.exitcode
 

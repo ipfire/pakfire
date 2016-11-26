@@ -22,8 +22,8 @@
 import os
 import re
 
-import base
-import file
+from . import base
+from . import file
 
 class SolvPackage(base.Package):
 	def __init__(self, pakfire, solvable, repo=None):

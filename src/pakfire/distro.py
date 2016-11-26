@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -25,7 +25,7 @@ import re
 import logging
 log = logging.getLogger("pakfire")
 
-import system
+from . import system
 
 class Distribution(object):
 	def __init__(self,  data=None):
@@ -100,7 +100,7 @@ class Distribution(object):
 			return
 
 		# Exceptional handling for arch.
-		if config.has_key("arch"):
+		if "arch" in config:
 			self.arch = config["arch"]
 			del config["arch"]
 
@@ -223,7 +223,7 @@ class Distribution(object):
 	def info(self):
 		info = {}
 
-		for k, v in self.environ.items():
+		for k, v in list(self.environ.items()):
 			info[k.lower()] = v
 
 		return info

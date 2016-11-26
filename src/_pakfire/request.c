@@ -26,7 +26,7 @@
 #include <solv/solver.h>
 
 PyTypeObject RequestType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Request",
 	tp_basicsize: sizeof(RequestObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -58,7 +58,7 @@ PyObject* Request_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Request_dealloc(RequestObject *self) {
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

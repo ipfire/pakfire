@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import shutil
@@ -102,7 +102,7 @@ class CGroup(object):
 		# Remove the file tree.
 		try:
 			os.rmdir(self.path)
-		except OSError, e:
+		except OSError as e:
 			# Ignore "Device or resource busy".
 			if e.errno == 16:
 				return
@@ -270,7 +270,7 @@ class CGroup(object):
 
 				try:
 					os.kill(proc, sig)
-				except OSError, e:
+				except OSError as e:
 					# Skip "No such process" error
 					if e.errno == 3:
 						pass

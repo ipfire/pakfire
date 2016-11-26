@@ -24,14 +24,14 @@ import re
 import logging
 log = logging.getLogger("pakfire")
 
-import pakfire.packages as packages
+from .. import packages
 
-from pakfire.i18n import _
+from .base import RepositoryDummy
+from .local import RepositoryDir, RepositoryBuild
+from .remote import RepositoryRemote
+from .system import RepositorySystem
 
-from base import RepositoryDummy
-from local import RepositoryDir, RepositoryBuild
-from remote import RepositoryRemote
-from system import RepositorySystem
+from ..i18n import _
 
 class Repositories(object):
 	"""
@@ -47,7 +47,8 @@ class Repositories(object):
 		self.__repos = {}
 
 		# Create a dummy repository
-		self.dummy = RepositoryDummy(self.pakfire)
+		from . import base
+		self.dummy = base.RepositoryDummy(self.pakfire)
 
 		# Create the local repository.
 		self.local = RepositorySystem(self.pakfire)
@@ -63,7 +64,7 @@ class Repositories(object):
 			self._parse(repo_name, repo_args)
 
 	def __iter__(self):
-		repositories = self.__repos.values()
+		repositories = list(self.__repos.values())
 		repositories.sort()
 
 		return iter(repositories)
@@ -131,7 +132,7 @@ class Repositories(object):
 			"arch" : self.distro.arch,
 		}
 
-		for k, v in _args.items():
+		for k, v in list(_args.items()):
 			# Skip all non-strings.
 			if not type(v) == type("a"):
 				continue
@@ -154,8 +155,8 @@ class Repositories(object):
 		self.add_repo(repo)
 
 	def add_repo(self, repo):
-		if self.__repos.has_key(repo.name):
-			raise Exception, "Repository with that name does already exist: %s" % repo.name
+		if repo.name in self.__repos:
+			raise Exception("Repository with that name does already exist: %s" % repo.name)
 
 		self.__repos[repo.name] = repo
 

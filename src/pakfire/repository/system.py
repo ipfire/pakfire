@@ -21,8 +21,8 @@
 
 import os
 
-import base
-import database
+from . import base
+from . import database
 
 import pakfire.packages as packages
 import pakfire.util as util

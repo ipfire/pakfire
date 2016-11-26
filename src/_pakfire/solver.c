@@ -26,7 +26,7 @@
 #include <solv/solverdebug.h>
 
 PyTypeObject SolverType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Solver",
 	tp_basicsize: sizeof(SolverObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -64,7 +64,7 @@ PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Solver_dealloc(SolverObject *self) {
 	solver_free(self->_solver);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

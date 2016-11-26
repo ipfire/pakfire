@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,7 +19,7 @@
 #                                                                             #
 ###############################################################################
 
-from __future__ import division
+
 
 import datetime
 import fcntl
@@ -30,9 +30,9 @@ import sys
 import termios
 import time
 
-import util
+from . import util
 
-from i18n import _
+from .i18n import _
 
 DEFAULT_VALUE_MAX = 100
 DEFAULT_TERM_WIDTH = 80

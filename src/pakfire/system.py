@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,19 +19,16 @@
 #                                                                             #
 ###############################################################################
 
-from __future__ import division
-
 import multiprocessing
 import os
 import socket
 import tempfile
 
-import distro
-import shell
+from . import shell
 
 from . import _pakfire
 
-from i18n import _
+from .i18n import _
 
 class System(object):
 	"""
@@ -51,6 +48,7 @@ class System(object):
 	@property
 	def distro(self):
 		if not hasattr(self, "_distro"):
+			from . import distro
 			self._distro = distro.Distribution()
 
 		return self._distro
@@ -153,8 +151,8 @@ class System(object):
 		return ret or _("Could not be determined")
 
 	@property
-        def cpu_bogomips(self):
-                return _pakfire.performance_index()
+	def cpu_bogomips(self):
+		return _pakfire.performance_index()
 
 	def get_loadavg(self):
 		return os.getloadavg()
@@ -417,7 +415,7 @@ class Mountpoint(object):
 
 		try:
 			handle, path = tempfile.mkstemp(prefix="ro-test-", dir=self.fullpath)
-		except OSError, e:
+		except OSError as e:
 			# Read-only file system.
 			if e.errno == 30:
 				return True
@@ -442,15 +440,15 @@ class Mountpoint(object):
 				shell=False,
 			)
 			shellenv.execute()
-		except ShellEnvironmentError, e:
+		except ShellEnvironmentError as e:
 			raise OSError
 
 
 if __name__ == "__main__":
-	print "Hostname", system.hostname
-	print "Arch", system.arch
-	print "Supported arches", system.supported_arches
+	print("Hostname", system.hostname)
+	print("Arch", system.arch)
+	print("Supported arches", system.supported_arches)
 
-	print "CPU Model", system.cpu_model
-	print "CPU count", system.cpu_count
-	print "Memory", system.memory
+	print("CPU Model", system.cpu_model)
+	print("CPU count", system.cpu_count)
+	print("Memory", system.memory)

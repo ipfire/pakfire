@@ -99,7 +99,7 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
 AC_SUBST([OUR_LDFLAGS], $with_ldflags)
 
 # Python
-AM_PATH_PYTHON([2.7])
+AM_PATH_PYTHON([3.4])
 
 save_LIBS="$LIBS"
 

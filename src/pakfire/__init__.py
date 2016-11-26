@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,8 +19,11 @@
 #                                                                             #
 ###############################################################################
 
-from base import Pakfire, PakfireBuilder, PakfireServer
+from . import base
 
-from constants import PAKFIRE_VERSION
-
+from .constants import PAKFIRE_VERSION
 __version__ = PAKFIRE_VERSION
+
+Pakfire        = base.Pakfire
+PakfireBuilder = base.PakfireBuilder
+PakfireServer  = base.PakfireServer

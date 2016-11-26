@@ -110,7 +110,6 @@ pakfire_PYTHON = \
 	src/pakfire/i18n.py \
 	src/pakfire/keyring.py \
 	src/pakfire/logger.py \
-	src/pakfire/lzma.py \
 	src/pakfire/progressbar.py \
 	src/pakfire/satsolver.py \
 	src/pakfire/server.py \
@@ -151,29 +150,6 @@ pakfire_repository_PYTHON = \
 	src/pakfire/repository/system.py
 
 pakfire_repositorydir = $(pythondir)/pakfire/repository
-
-# ------------------------------------------------------------------------------
-
-pkgpyexec_LTLIBRARIES += \
-	_lzma.la
-
-_lzma_la_SOURCES = \
-	src/_lzma/_lzmamodule.c
-
-_lzma_la_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(PYTHON_DEVEL_CFLAGS) \
-	$(LZMA_CFLAGS)
-
-_lzma_la_LDFLAGS = \
-	$(AM_LDFLAGS) \
-	-shared \
-	-module \
-	-avoid-version
-
-_lzma_la_LIBADD = \
-	$(PYTHON_DEVEL_LIBS) \
-	$(LZMA_LIBS)
 
 # ------------------------------------------------------------------------------
 

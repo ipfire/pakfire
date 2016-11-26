@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -23,25 +23,25 @@ import os
 import random
 import string
 
-import actions
-import builder
-import config
-import distro
-import filelist
-import keyring
-import logger
-import packages
-import repository
-import satsolver
-import transaction
-import util
+from . import actions
+from . import builder
+from . import config
+from . import distro
+from . import filelist
+from . import keyring
+from . import logger
+from . import packages
+from . import repository
+from . import satsolver
+from . import transaction
+from . import util
 
 import logging
 log = logging.getLogger("pakfire")
 
-from config import Config
-from constants import *
-from i18n import _
+from .config import Config
+from .constants import *
+from .i18n import _
 
 class Pakfire(object):
 	mode = None
@@ -67,7 +67,7 @@ class Pakfire(object):
 			self.config = self._load_config(configs)
 
 		# Update configuration with additional arguments.
-		for section, settings in kwargs.items():
+		for section, settings in list(kwargs.items()):
 			self.config.update(section, settings)
 
 		# Dump the configuration.
@@ -125,7 +125,7 @@ class Pakfire(object):
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:
-			raise Exception, "You must run pakfire as the root user."
+			raise Exception("You must run pakfire as the root user.")
 
 	def check_host_arch(self, arch):
 		"""
@@ -137,15 +137,15 @@ class Pakfire(object):
 			return True
 
 		if not system.host_supports_arch(arch):
-			raise BuildError, "Cannot build for the target architecture: %s" % arch
+			raise BuildError("Cannot build for the target architecture: %s" % arch)
 
-		raise BuildError, arch
+		raise BuildError(arch)
 
 	def check_is_ipfire(self):
 		ret = os.path.exists("/etc/ipfire-release")
 
 		if not ret:
-			raise NotAnIPFireSystemError, "You can run pakfire only on an IPFire system"
+			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
 	@property
 	def builder(self):
@@ -519,7 +519,7 @@ class Pakfire(object):
 
 			# Check, if a package with the name is already in the resultset
 			# and always replace older ones by more recent ones.
-			if pkgs.has_key(pkg.name):
+			if pkg.name in pkgs:
 				if pkgs[pkg.name] < pkg:
 					pkgs[pkg.name] = pkg
 			else:
@@ -616,7 +616,7 @@ class Pakfire(object):
 			b.build(stages=stages)
 
 		except Error:
-			raise BuildError, _("Build command has failed.")
+			raise BuildError(_("Build command has failed."))
 
 		else:
 			# If the build was successful, cleanup all temporary files.
@@ -655,7 +655,7 @@ class PakfireBuilder(Pakfire):
 		if not c.has_distro_conf():
 			log.error(_("You have not set the distribution for which you want to build."))
 			log.error(_("Please do so in builder.conf or on the CLI."))
-			raise ConfigError, _("Distribution configuration is missing.")
+			raise ConfigError(_("Distribution configuration is missing."))
 
 		return c
 

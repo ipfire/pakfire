@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,20 +19,19 @@
 #                                                                             #
 ###############################################################################
 
+import configparser
 import io
 import os
 import socket
 
-from ConfigParser import ConfigParser
-
 import logging
 log = logging.getLogger("pakfire")
 
-import logger
-from system import system
+from . import logger
+from .system import system
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 class _Config(object):
 	files = []
@@ -77,7 +76,7 @@ class _Config(object):
 	def get_repos(self):
 		repos = []
 
-		for name, settings in self._config.items():
+		for name, settings in list(self._config.items()):
 			if not name.startswith("repo:"):
 				continue
 
@@ -118,20 +117,14 @@ class _Config(object):
 
 			# Parse the file.
 			with open(file) as f:
-				self.parse(f.read())
+				self.parse(f)
 
 			# Save the filename to the list of read files.
 			self._files.append(file)
 
-	def parse(self, s):
-		if not s:
-			return
-
-		s = str(s)
-		buf = io.BytesIO(s)
-
-		config = ConfigParser()
-		config.readfp(buf)
+	def parse(self, f):
+		config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+		config.readfp(f)
 
 		# Read all data from the configuration file in the _config dict.
 		for section in config.sections():
@@ -203,10 +196,10 @@ class _Config(object):
 			(Only in debugging mode.)
 		"""
 		log.debug(_("Configuration:"))
-		for section, settings in self._config.items():
+		for section, settings in list(self._config.items()):
 			log.debug("  " + _("Section: %s") % section)
 
-			for k, v in settings.items():
+			for k, v in list(settings.items()):
 				log.debug("    %-20s: %s" % (k, v))
 			else:
 				log.debug("    " + _("No settings in this section."))
@@ -216,7 +209,7 @@ class _Config(object):
 			log.debug("    %s" % f)
 
 	def has_distro_conf(self):
-		return self._config.has_key("distro")
+		return "distro" in self._config
 
 	def get_distro_conf(self):
 		return self.get_section("distro")

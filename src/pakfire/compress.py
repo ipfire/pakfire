@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,10 +19,10 @@
 #                                                                             #
 ###############################################################################
 
-import pakfire.lzma as lzma
+import lzma
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 ALGO_DEFAULT = "xz"
 
@@ -63,7 +63,7 @@ def guess_algo(name=None, fileobj=None):
 
 	# Iterate over all algoriths and their magic values
 	# and check for a match.
-	for algo, magic in MAGICS.items():
+	for algo, magic in list(MAGICS.items()):
 		fileobj.seek(0)
 
 		start_sequence = fileobj.read(len(magic))
@@ -82,7 +82,7 @@ def guess_algo(name=None, fileobj=None):
 def decompressobj(name=None, fileobj=None, algo=ALGO_DEFAULT):
 	f_cls = FILES.get(algo, None)
 	if not f_cls:
-		raise CompressionError, _("Given algorithm '%s' is not supported.")
+		raise CompressionError(_("Given algorithm '%s' is not supported."))
 
 	f = f_cls(name, fileobj=fileobj, mode="r")
 
@@ -92,7 +92,7 @@ def decompressobj(name=None, fileobj=None, algo=ALGO_DEFAULT):
 def compressobj(name=None, fileobj=None, algo=ALGO_DEFAULT):
 	f_cls = FILES.get(algo, None)
 	if not f_cls:
-		raise CompressionError, _("Given algorithm '%s' is not supported.")
+		raise CompressionError(_("Given algorithm '%s' is not supported."))
 
 	f = f_cls(name, fileobj=fileobj, mode="w")
 

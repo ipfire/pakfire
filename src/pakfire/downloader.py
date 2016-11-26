@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -21,89 +21,30 @@
 
 import json
 import os
-import pycurl
 import random
+import urllib
 
 import logging
 log = logging.getLogger("pakfire")
 
-from config import _Config
-
-import urlgrabber.grabber
-from urlgrabber.grabber import URLGrabber, URLGrabError
-from urlgrabber.mirror import MirrorGroup
-from urlgrabber.progress import TextMeter
+from . import progressbar
 
 from pakfire.constants import *
 from pakfire.i18n import _
 
-class PakfireGrabber(URLGrabber):
-	"""
-		Class to make some modifications on the urlgrabber configuration.
-	"""
-	def __init__(self, pakfire, *args, **kwargs):
-		kwargs.update({
-			"quote" : 0,
-			"user_agent" : "pakfire/%s" % PAKFIRE_VERSION,
+class PakfireDownloader(object):
+	def __init__(self):
+		pass
 
-			"ssl_verify_host" : False,
-			"ssl_verify_peer" : False,
-		})
+	@property
+	def user_agent(self):
+		return "pakfire/%s" % PAKFIRE_VERSION
 
-		if isinstance(pakfire, _Config):
-			config = pakfire
-		else:
-			config = pakfire.config
-		self.config = config
+	def set_proxy(self, *args, **kwargs):
+		pass
 
-		# Set throttle setting.
-		bandwidth_throttle = config.get("downloader", "bandwidth_throttle")
-		if bandwidth_throttle:
-			try:
-				bandwidth_throttle = int(bandwidth_throttle)
-			except ValueError:
-				log.error("Configuration value for bandwidth_throttle is invalid.")
-				bandwidth_throttle = 0
-
-			kwargs.update({ "throttle" : bandwidth_throttle })
-
-		# Configure HTTP proxy.
-		http_proxy = config.get("downloader", "http_proxy")
-		if http_proxy:
-			kwargs.update({ "proxies" : { "http" : http_proxy, "https" : http_proxy }})
-
-		URLGrabber.__init__(self, *args, **kwargs)
-
-	def check_offline_mode(self):
-		offline = self.config.get("downloader", "offline")
-		if not offline:
-			return
-
-		raise OfflineModeError
-
-	def urlread(self, filename, *args, **kwargs):
-		self.check_offline_mode()
-
-		# This is for older versions of urlgrabber which are packaged in Debian
-		# and Ubuntu and cannot handle filenames as a normal Python string but need
-		# a unicode string.
-		return URLGrabber.urlread(self, filename.encode("utf-8"), *args, **kwargs)
-
-	def urlopen(self, filename, *args, **kwargs):
-		self.check_offline_mode()
-
-		# This is for older versions of urlgrabber which are packaged in Debian
-		# and Ubuntu and cannot handle filenames as a normal Python string but need
-		# a unicode string.
-		return URLGrabber.urlopen(self, filename.encode("utf-8"), *args, **kwargs)
-
-	def urlgrab(self, url, *args, **kwargs):
-		self.check_offline_mode()
-
-		# This is for older versions of urlgrabber which are packaged in Debian
-		# and Ubuntu and cannot handle filenames as a normal Python string but need
-		# a unicode string.
-		return URLGrabber.urlgrab(self, url.encode("utf-8"), *args, **kwargs)
+	def use_mirrors(self, mirrors):
+		pass
 
 
 class PackageDownloader(PakfireGrabber):
@@ -165,7 +106,7 @@ class SourceDownloader(object):
 			log.info(_("Downloading source files:"))
 
 			if self.pakfire.offline:
-				raise OfflineModeError, _("Cannot download source code in offline mode.")
+				raise OfflineModeError(_("Cannot download source code in offline mode."))
 
 			# Create source download directory.
 			if not os.path.exists(SOURCE_CACHE_DIR):
@@ -174,22 +115,22 @@ class SourceDownloader(object):
 			for filename in download_files:
 				try:
 					self.grabber.urlgrab(os.path.basename(filename), filename=filename)
-				except URLGrabError, e:
+				except URLGrabError as e:
 					# Remove partly downloaded file.
 					try:
 						os.unlink(filename)
 					except OSError:
 						pass
 
-					raise DownloadError, "%s %s" % (os.path.basename(filename), e)
+					raise DownloadError("%s %s" % (os.path.basename(filename), e))
 
 				# Check if the downloaded file was empty.
 				if os.path.getsize(filename) == 0:
 					# Remove the file and raise an error.
 					os.unlink(filename)
 
-					raise DownloadError, _("Downloaded empty file: %s") \
-						% os.path.basename(filename)
+					raise DownloadError(_("Downloaded empty file: %s") \
+						% os.path.basename(filename))
 
 			log.info("")
 
@@ -266,7 +207,7 @@ class MirrorList(object):
 
 			try:
 				mirrordata = g.urlread(self.mirrorlist, limit=MIRRORLIST_MAXSIZE)
-			except URLGrabError, e:
+			except URLGrabError as e:
 				log.warning("Could not update the mirrorlist for repo '%s': %s" % (self.repo.name, e))
 				return
 

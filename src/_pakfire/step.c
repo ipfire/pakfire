@@ -23,7 +23,7 @@
 #include "transaction.h"
 
 PyTypeObject StepType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Step",
 	tp_basicsize: sizeof(StepObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -57,7 +57,7 @@ PyObject* Step_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 PyObject *Step_dealloc(StepObject *self) {
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

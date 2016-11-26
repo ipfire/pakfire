@@ -30,7 +30,7 @@
 #include "solvable.h"
 
 PyTypeObject PoolType = {
-	PyObject_HEAD_INIT(NULL)
+	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name: "_pakfire.Pool",
 	tp_basicsize: sizeof(PoolObject),
 	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
@@ -71,7 +71,7 @@ PyObject* Pool_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 PyObject *Pool_dealloc(PoolObject *self) {
 	pool_free(self->_pool);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 
 	Py_RETURN_NONE;
 }

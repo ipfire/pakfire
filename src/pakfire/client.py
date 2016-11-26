@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -19,7 +19,7 @@
 #                                                                             #
 ###############################################################################
 
-import transport
+from . import transport
 
 from pakfire.constants import *
 from pakfire.i18n import _

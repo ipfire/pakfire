@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -26,7 +26,7 @@ import socket
 import subprocess
 import tempfile
 import time
-import xmlrpclib
+import xmlrpc.client
 
 import logging
 log = logging.getLogger("pakfire")
@@ -140,7 +140,7 @@ class Source(object):
 		pakfire.api.dist(pkgs, resultdirs=[tmpdir,], **pakfire_args)
 
 		# Create a kind of dummy repository to link the packages against it.
-		if pakfire_args.has_key("build_id"):
+		if "build_id" in pakfire_args:
 			del pakfire_args["build_id"]
 		pakfire_args["mode"] = "server"
 
@@ -161,7 +161,7 @@ class Source(object):
 		return self.update_files(_files)
 
 
-class XMLRPCTransport(xmlrpclib.Transport):
+class XMLRPCTransport(xmlrpc.client.Transport):
 	user_agent = "pakfire/%s" % PAKFIRE_VERSION
 
 	def single_request(self, *args, **kwargs):
@@ -172,9 +172,9 @@ class XMLRPCTransport(xmlrpclib.Transport):
 
 		while tries:
 			try:
-				ret = xmlrpclib.Transport.single_request(self, *args, **kwargs)
+				ret = xmlrpc.client.Transport.single_request(self, *args, **kwargs)
 
-			except socket.error, e:
+			except socket.error as e:
 				# These kinds of errors are not fatal, but they can happen on
 				# a bad internet connection or whatever.
 				#   32 Broken pipe
@@ -183,12 +183,12 @@ class XMLRPCTransport(xmlrpclib.Transport):
 				if not e.errno in (32, 110, 111,):
 					raise
 
-			except xmlrpclib.ProtocolError, e:
+			except xmlrpc.client.ProtocolError as e:
 				# Log all XMLRPC protocol errors.
 				log.error("XMLRPC protocol error:")
 				log.error("  URL: %s" % e.url)
 				log.error("  HTTP headers:")
-				for header in e.headers.items():
+				for header in list(e.headers.items()):
 					log.error("    %s: %s" % header)
 				log.error("  Error code: %s" % e.errcode)
 				log.error("  Error message: %s" % e.errmsg)
@@ -207,21 +207,21 @@ class XMLRPCTransport(xmlrpclib.Transport):
 		else:
 			log.error("Maximum number of tries was reached. Giving up.")
 			# XXX need better exception here.
-			raise Exception, "Could not fulfill request."
+			raise Exception("Could not fulfill request.")
 
 		return ret
 
 
-class ServerProxy(xmlrpclib.ServerProxy):
+class ServerProxy(xmlrpc.client.ServerProxy):
 	def __init__(self, server, *args, **kwargs):
 
 		# Some default settings.
-		if not kwargs.has_key("transport"):
+		if "transport" not in kwargs:
 			kwargs["transport"] = XMLRPCTransport()
 
 		kwargs["allow_none"] = True
 
-		xmlrpclib.ServerProxy.__init__(self, server, *args, **kwargs)
+		xmlrpc.client.ServerProxy.__init__(self, server, *args, **kwargs)
 
 
 class Server(object):
@@ -353,7 +353,7 @@ class Server(object):
 				log.info("Uploading chunk %s/%s of %s." % (chunk, chunks,
 					os.path.basename(filename)))
 
-				data = xmlrpclib.Binary(data)
+				data = xmlrpc.client.Binary(data)
 				self.conn.upload_chunk(upload_id, data)
 
 		# Tell the server, that we finished the upload.
@@ -362,7 +362,7 @@ class Server(object):
 		# If the server sends false, something happened with the upload that
 		# could not be recovered.
 		if not ret:
-			raise Exception, "Upload failed."
+			raise Exception("Upload failed.")
 
 	def update_build_status(self, build_id, status, message=""):
 		ret = self.conn.update_build_state(build_id, status, message)
@@ -370,7 +370,7 @@ class Server(object):
 		# If the server returns False, then it did not acknowledge our status
 		# update and the build has to be aborted.
 		if not ret:
-			raise BuildAbortedException, "The build was aborted by the master server."
+			raise BuildAbortedException("The build was aborted by the master server.")
 
 	def build_job(self, type=None):
 		build = self.conn.build_job() # XXX type=None
@@ -390,7 +390,7 @@ class Server(object):
 		try:
 			func = job_types[build_type]
 		except KeyError:
-			raise Exception, "Build type not supported: %s" % type
+			raise Exception("Build type not supported: %s" % type)
 
 		# Call the function that processes the build and try to catch general
 		# exceptions and report them to the server.
@@ -402,7 +402,7 @@ class Server(object):
 			# This has already been reported by func.
 			raise
 
-		except Exception, e:
+		except Exception as e:
 			# Format the exception and send it to the server.
 			message = "%s: %s" % (e.__class__.__name__, e)
 
@@ -432,9 +432,9 @@ class Server(object):
 
 			# Check if the download checksum matches.
 			if pakfire.util.calc_hash1(tmpfile) == hash1:
-				print "Checksum matches: %s" % hash1
+				print("Checksum matches: %s" % hash1)
 			else:
-				raise DownloadError, "Download was corrupted"
+				raise DownloadError("Download was corrupted")
 
 			# Update the build status on the server.
 			self.update_build_status(build_id, "running")
@@ -454,7 +454,7 @@ class Server(object):
 
 					self.upload_file(file, build_id)
 
-		except DependencyError, e:
+		except DependencyError as e:
 			message = "%s: %s" % (e.__class__.__name__, e)
 			self.update_build_status(build_id, "dependency_error", message)
 			raise

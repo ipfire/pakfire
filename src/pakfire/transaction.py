@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
@@ -20,25 +20,24 @@
 ###############################################################################
 
 import os
-import progressbar
 import sys
 import time
 
-import i18n
-import packages
-import satsolver
-import system
-import util
-import _pakfire
+from . import _pakfire
+from . import i18n
+from . import packages
+from . import progressbar
+from . import system
+from . import util
 
 import logging
 log = logging.getLogger("pakfire")
 
-from constants import *
-from i18n import _
+from .constants import *
+from .i18n import _
 
 # Import all actions directly.
-from actions import *
+from .actions import *
 
 class TransactionCheck(object):
 	def __init__(self, pakfire, transaction):
@@ -58,7 +57,7 @@ class TransactionCheck(object):
 	def error_files(self):
 		ret = []
 
-		for name, count in self.filelist.items():
+		for name, count in list(self.filelist.items()):
 			if count > 1:
 				ret.append(name)
 
@@ -254,7 +253,7 @@ class Transaction(object):
 		self._steps = []
 		self.installsizechange = 0
 
-	def __nonzero__(self):
+	def __bool__(self):
 		if self.steps:
 			return True
 
@@ -352,8 +351,8 @@ class Transaction(object):
 		path_stat = os.statvfs(path)
 
 		if self.download_size >= path_stat.f_bavail * path_stat.f_bsize:
-			raise DownloadError, _("Not enough space to download %s of packages.") \
-				% util.format_size(self.download_size)
+			raise DownloadError(_("Not enough space to download %s of packages.") \
+				% util.format_size(self.download_size))
 
 		logger.info(_("Downloading packages:"))
 		time_start = time.time()
@@ -496,7 +495,7 @@ class Transaction(object):
 		for action in actions:
 			try:
 				action.check(check)
-			except ActionError, e:
+			except ActionError as e:
 				raise
 
 		if check.successful:
@@ -507,7 +506,7 @@ class Transaction(object):
 		# and raise TransactionCheckError.
 		check.print_errors(logger=logger)
 
-		raise TransactionCheckError, _("Transaction test was not successful")
+		raise TransactionCheckError(_("Transaction test was not successful"))
 
 	def verify_signatures(self, mode=None, logger=None):
 		"""
@@ -554,7 +553,7 @@ class Transaction(object):
 				try:
 					step.pkg.verify()
 
-				except SignatureError, e:
+				except SignatureError as e:
 					errors.append("%s" % e)
 		finally:
 			if p: p.finish()
@@ -566,7 +565,7 @@ class Transaction(object):
 
 		# Raise a SignatureError in strict mode.
 		if mode == "strict":
-			raise SignatureError, "\n".join(errors)
+			raise SignatureError("\n".join(errors))
 
 		elif mode == "permissive":
 			logger.warning(_("Found %s signature error(s)!") % len(errors))
@@ -621,7 +620,7 @@ class Transaction(object):
 			try:
 				action.run()
 
-			except ActionError, e:
+			except ActionError as e:
 				logger.error("Action finished with an error: %s - %s" % (action, e))
 			#except Exception, e:
 			#	logger.error(_("An unforeseen error occoured: %s") % e)

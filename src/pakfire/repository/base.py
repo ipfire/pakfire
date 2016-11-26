@@ -22,10 +22,10 @@
 import logging
 log = logging.getLogger("pakfire")
 
-import index
+from .. import satsolver
 
-import pakfire.packages as packages
-import pakfire.satsolver as satsolver
+from . import index
+from . import packages
 
 class RepositoryFactory(object):
 	def __init__(self, pakfire, name, description):
@@ -133,7 +133,7 @@ class RepositoryFactory(object):
 		dumps = []
 		# Dump all package information of the packages in this repository.
 		for pkg in self:
-			dump = pkg.dump(long=long, filelist=filelist)
+			dump = pkg.dump(int=int, filelist=filelist)
 			dumps.append(dump)
 
 		return "\n\n".join(dumps)
