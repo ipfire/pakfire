@@ -19,17 +19,13 @@
 #                                                                             #
 ###############################################################################
 
-import fcntl
 import hashlib
-import math
 import os
 import random
 import shutil
 import signal
 import string
-import struct
 import sys
-import termios
 import time
 
 import logging
@@ -79,7 +75,7 @@ def random_string(length=20):
 def make_progress(message, maxval, eta=True, speed=False):
 	# XXX delay importing the progressbar module
 	# (because of a circular dependency)
-	from . import progressbar
+	from .ui import progressbar
 
 	# Return nothing if stdout is not a terminal.
 	if not sys.stdout.isatty():
@@ -129,55 +125,6 @@ def rm(path, *args, **kargs):
 				os.system("chattr -R -i %s" % path)
 			else:
 				raise
-
-def ioctl_GWINSZ(fd):
-	try:
-		return struct.unpack("hh", fcntl.ioctl(fd, termios.TIOCGWINSZ, "1234"))
-	except:
-		pass
-
-def terminal_size():
-	cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
-
-	if not cr:
-		try:
-			fd = os.open(os.ctermid(), os.O_RDONLY)
-			cr = ioctl_GWINSZ(fd)
-			os.close(fd)
-		except:
-			pass
-
-	if not cr:
-		try:
-			cr = (os.environ['LINES'], os.environ['COLUMNS'])
-		except:
-			cr = (25, 80)
-
-	return int(cr[1]), int(cr[0])
-
-def format_size(s):
-	sign = 1
-
-	# If s is negative, we save the sign and run the calculation with the
-	# absolute value of s.
-	if s < 0:
-		sign = -1
-		s = -1 * s
-
-	units = (" ", "k", "M", "G", "T")
-	unit = 0
-
-	while s >= 1024 and unit < len(units):
-		s /= 1024
-		unit += 1
-
-	return "%d%s" % (round(s) * sign, units[unit])
-
-def format_time(s):
-	return "%02d:%02d" % (s // 60, s % 60)
-
-def format_speed(s):
-	return "%sB/s" % format_size(s)
 
 def calc_hash1(filename=None, data=None):
 	h = hashlib.new("sha1")

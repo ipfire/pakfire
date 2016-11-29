@@ -19,6 +19,33 @@
 #                                                                             #
 ###############################################################################
 
-# XXX kept for compatibility
+import sys
 
-from .ui.progressbar import *
+from . import progressbar
+
+def make_progress(message, maxval, eta=True, speed=False):
+	# Return nothing if stdout is not a terminal.
+	if not sys.stdout.isatty():
+		return
+
+	if not maxval:
+		maxval = 1
+
+	pb = progressbar.ProgressBar(maxval)
+	pb.add("%-50s" % message)
+
+	bar = progressbar.WidgetBar()
+	pb.add(bar)
+
+	if speed:
+		percentage = progressbar.WidgetPercentage()
+		pb.add(percentage)
+
+		filetransfer = progressbar.WidgetFileTransferSpeed()
+		pb.add(filetransfer)
+
+	if eta:
+		eta = progressbar.WidgetETA()
+		pb.add(eta)
+
+	return pb.start()

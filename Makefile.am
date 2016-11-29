@@ -153,6 +153,15 @@ pakfire_repositorydir = $(pythondir)/pakfire/repository
 
 # ------------------------------------------------------------------------------
 
+pakfire_ui_PYTHON = \
+	src/pakfire/ui/__init__.py \
+	src/pakfire/ui/helpers.py \
+	src/pakfire/ui/progressbar.py
+
+pakfire_uidir = $(pythondir)/pakfire/ui
+
+# ------------------------------------------------------------------------------
+
 pkgpyexec_LTLIBRARIES += \
 	_pakfire.la
 

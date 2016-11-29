@@ -2,7 +2,7 @@
 ###############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2013 Pakfire development team                                 #
+# Copyright (C) 2016 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -19,6 +19,47 @@
 #                                                                             #
 ###############################################################################
 
-# XXX kept for compatibility
+import fcntl
+import struct
+import termios
 
-from .ui.progressbar import *
+def ioctl_GWINSZ(fd):
+	try:
+		return struct.unpack("hh", fcntl.ioctl(fd, termios.TIOCGWINSZ, "1234"))
+	except:
+		pass
+
+def terminal_size():
+	cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
+
+	if not cr:
+		try:
+			fd = os.open(os.ctermid(), os.O_RDONLY)
+			cr = ioctl_GWINSZ(fd)
+			os.close(fd)
+		except:
+			pass
+
+	if not cr:
+		try:
+			cr = (os.environ["LINES"], os.environ["COLUMNS"])
+		except:
+			cr = (25, 80)
+
+	return int(cr[1]), int(cr[0])
+
+def format_size(s):
+	units = (" ", "k", "M", "G", "T")
+	unit = 0
+
+	while abs(s) >= 1024 and unit < len(units):
+		s /= 1024
+		unit += 1
+
+	return "%d%s" % (round(s), units[unit])
+
+def format_time(s):
+	return "%02d:%02d" % (s // 60, s % 60)
+
+def format_speed(s):
+	return "%sB/s" % format_size(s)
