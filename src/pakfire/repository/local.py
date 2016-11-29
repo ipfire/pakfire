@@ -30,7 +30,6 @@ from . import base
 from . import metadata
 
 import pakfire.compress as compress
-import pakfire.downloader as downloader
 import pakfire.packages as packages
 import pakfire.util as util
 

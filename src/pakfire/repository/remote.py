@@ -29,7 +29,6 @@ from . import cache
 from . import metadata
 
 import pakfire.compress as compress
-import pakfire.downloader as downloader
 
 from pakfire.constants import *
 from pakfire.i18n import _

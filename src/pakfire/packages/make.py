@@ -36,7 +36,7 @@ log = logging.getLogger("pakfire")
 from ..constants import *
 from ..i18n import _
 
-from .. import downloader
+#from .. import downloader
 from .. import system
 from .. import util
 

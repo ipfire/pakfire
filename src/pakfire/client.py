@@ -45,39 +45,3 @@ class PakfireClient(object):
 
 	def package_get(self, *args, **kwargs):
 		return self.transport.package_get(*args, **kwargs)
-
-# XXX OLD CODE
-
-class PakfireUserClient(PakfireClient):
-	type = "user"
-
-	def check_auth(self):
-		"""
-			Check if the user was successfully authenticated.
-		"""
-		return self.conn.check_auth()
-
-	def get_user_profile(self):
-		"""
-			Get information about the user profile.
-		"""
-		return self.conn.get_user_profile()
-
-	def get_builds(self, type=None, limit=10, offset=0):
-		return self.conn.get_builds(type=type, limit=limit, offset=offset)
-
-	def get_build(self, build_id):
-		return self.conn.get_build(build_id)
-
-	def get_builder(self, builder_id):
-		return self.conn.get_builder(builder_id)
-
-	def get_job(self, job_id):
-		return self.conn.get_job(job_id)
-
-	def get_latest_jobs(self):
-		return self.conn.get_latest_jobs()
-
-	def get_active_jobs(self):
-		return self.conn.get_active_jobs()
-

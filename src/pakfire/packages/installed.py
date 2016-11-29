@@ -21,7 +21,6 @@
 
 import os
 
-import pakfire.downloader
 import pakfire.filelist
 
 from .base import Package
