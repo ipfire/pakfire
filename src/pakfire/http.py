@@ -19,6 +19,7 @@
 #                                                                             #
 ###############################################################################
 
+import base64
 import logging
 import ssl
 import urllib.parse
@@ -59,7 +60,7 @@ class Client(object):
 		# Disable any certificate validation
 		self.ssl_context.verify_mode = ssl.CERT_NONE
 
-	def _make_request(self, url, method="GET", data=None):
+	def _make_request(self, url, method="GET", data=None, auth=None):
 		# Add the baseurl
 		if self.baseurl:
 			url = urllib.parse.urljoin(self.baseurl, url)
@@ -68,6 +69,11 @@ class Client(object):
 
 		# Add our user agent
 		req.add_header("User-Agent", "pakfire/%s" % PAKFIRE_VERSION)
+
+		# Add authentication headers
+		if auth:
+			auth_header = self._make_auth_header(auth)
+			req.add_header("Authorization", auth_header)
 
 		# Configure proxies
 		for protocol, host in self.proxies.items():
@@ -194,6 +200,26 @@ class Client(object):
 			return int(s)
 		except TypeError:
 			pass
+
+	@staticmethod
+	def _make_auth_header(auth):
+		"""
+			Returns a HTTP Basic Authentication header
+		"""
+		try:
+			username, password = auth
+		except ValueError:
+			raise ValueError("auth takes a tuple with username and password")
+
+		authstring = "%s:%s" % (username, password)
+
+		# Encode into bytes
+		authstring = authstring.encode("ascii")
+
+		# Encode into base64
+		authstring = base64.b64encode(authstring)
+
+		return "Basic %s" % authstring.decode("ascii")
 
 	def _make_progressbar(self, message=None):
 		p = progressbar.ProgressBar()
