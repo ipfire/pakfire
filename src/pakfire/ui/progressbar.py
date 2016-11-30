@@ -178,6 +178,17 @@ class ProgressBar(object):
 
 		return 0
 
+	# Implement using progressbar as context
+
+	def __enter__(self):
+		# Start the progressbar
+		self.start()
+
+		return self
+
+	def __exit__(self, type, value, traceback):
+		self.finish()
+
 
 def format_updatable(widget, pbar):
 	if hasattr(widget, "update"):

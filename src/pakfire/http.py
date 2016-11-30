@@ -182,7 +182,7 @@ class Client(object):
 
 		raise MaxTriesExceededError
 
-	def retrieve(self, url, filename, show_progress=True, message=None, **kwargs):
+	def retrieve(self, url, filename, message=None, **kwargs):
 		p = None
 
 		if message is None:
@@ -190,31 +190,24 @@ class Client(object):
 
 		buffer_size = 100 * 1024 # 100k
 
-		# Make a progressbar
-		if show_progress:
-			p = self._make_progressbar(message)
-
 		# Prepare HTTP request
 		r = self._make_request(url, **kwargs)
 
 		# Send the request
-		with self._send_request(r) as f:
-			# Try setting progress bar to correct maximum value
-			# XXX this might need a function in ProgressBar
-			l = self._get_content_length(f)
-			if p:
+		with self._make_progressbar(message) as p:
+			with self._send_request(r) as f:
+				# Try setting progress bar to correct maximum value
+				# XXX this might need a function in ProgressBar
+				l = self._get_content_length(f)
 				p.value_max = l
 
-			buf = f.read(buffer_size)
-			while buf:
-				l = len(buf)
-				if p:
+				while True:
+					buf = f.read(buffer_size)
+					if not buf:
+						break
+
+					l = len(buf)
 					p.update_increment(l)
-
-				buf = f.read(buffer_size)
-
-		if p:
-			p.finish()
 
 	def _get_content_length(self, response):
 		s = response.getheader("Content-Length")
@@ -244,8 +237,8 @@ class Client(object):
 
 		return "Basic %s" % authstring.decode("ascii")
 
-	def _make_progressbar(self, message=None):
-		p = progressbar.ProgressBar()
+	def _make_progressbar(self, message=None, **kwargs):
+		p = progressbar.ProgressBar(**kwargs)
 
 		# Show message (e.g. filename)
 		if message:
@@ -277,7 +270,7 @@ class Client(object):
 		w = progressbar.WidgetETA()
 		p.add(w)
 
-		return p.start()
+		return p
 
 
 class HTTPError(errors.Error):
