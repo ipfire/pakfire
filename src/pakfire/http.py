@@ -227,7 +227,7 @@ class Client(object):
 						break
 
 					l = len(buf)
-					p.update_increment(l)
+					p.increment(l)
 
 	def _get_content_length(self, response):
 		s = response.getheader("Content-Length")

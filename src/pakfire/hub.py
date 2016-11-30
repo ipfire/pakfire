@@ -218,7 +218,7 @@ class FileUploader(object):
 							chunk_size = CHUNK_SIZE
 
 						# Update progressbar
-						p.update_increment(len(chunk))
+						p.increment(len(chunk))
 
 			# Catch any unhandled exception here, tell the hub to delete the
 			# file and raise the original exception

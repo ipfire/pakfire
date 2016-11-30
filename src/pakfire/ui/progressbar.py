@@ -98,7 +98,7 @@ class ProgressBar(object):
 		self.fd.write(self._format_line())
 		self.fd.write("\r")
 
-	def update_increment(self, value):
+	def increment(self, value):
 		return self.update(self.value_cur + value)
 
 	def _need_update(self):
