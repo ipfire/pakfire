@@ -67,7 +67,21 @@ class Client(object):
 		if self.baseurl:
 			url = urllib.parse.urljoin(self.baseurl, url)
 
-		req = urllib.request.Request(url)
+		# Encode data
+		if data:
+			data = urllib.parse.urlencode(data)
+
+			# Add data arguments to the URL when using GET
+			if method == "GET":
+				url += "?%s" % data
+				data = None
+
+			# Convert data into Bytes for POST
+			elif method == "POST":
+				data = bytes(data, "ascii")
+
+		# Create a request
+		req = urllib.request.Request(url, data=data)
 
 		# Add our user agent
 		req.add_header("User-Agent", "pakfire/%s" % PAKFIRE_VERSION)
@@ -80,6 +94,11 @@ class Client(object):
 		# Configure proxies
 		for protocol, host in self.proxies.items():
 			req.set_proxy(host, protocol)
+
+		# When we send data in a post request, we must set the
+		# Content-Length header
+		if data and method == "POST":
+			req.add_header("Content-Length", len(data))
 
 		# Check if method is correct
 		assert method == req.get_method()
