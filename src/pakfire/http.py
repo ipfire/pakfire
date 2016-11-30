@@ -183,8 +183,8 @@ class Client(object):
 			try:
 				return self._one_request(url, **kwargs)
 
-			# 500 - Internal Server Error, 502 + 503 Bad Gateway Error
-			except (InternalServerError, BadGatewayError) as e:
+			# Bad Gateway Error
+			except BadGatewayError as e:
 				log.exception("%s" % e.__class__.__name__)
 
 				# Wait a minute before trying again.
