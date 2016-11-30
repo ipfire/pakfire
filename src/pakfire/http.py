@@ -38,7 +38,7 @@ class Client(object):
 		repository data, packages and communicate with the Pakfire Hub.
 	"""
 	def __init__(self, baseurl=None):
-		self.baseurl = None
+		self.baseurl = baseurl
 
 		# Stores any proxy configuration
 		self.proxies = {}
