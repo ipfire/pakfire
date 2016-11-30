@@ -108,6 +108,7 @@ pakfire_PYTHON = \
 	src/pakfire/errors.py \
 	src/pakfire/filelist.py \
 	src/pakfire/http.py \
+	src/pakfire/hub.py \
 	src/pakfire/i18n.py \
 	src/pakfire/keyring.py \
 	src/pakfire/logger.py \
