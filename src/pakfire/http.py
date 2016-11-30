@@ -20,6 +20,7 @@
 ###############################################################################
 
 import base64
+import json
 import logging
 import ssl
 import urllib.parse
@@ -117,12 +118,34 @@ class Client(object):
 
 		return res
 
-	def _one_request(self, url, **kwargs):
+	def _one_request(self, url, decode=None, **kwargs):
 		r = self._make_request(url, **kwargs)
 
 		# Send request and return the entire response at once
 		with self._send_request(r) as f:
-			return f.read()
+			content = f.read()
+
+			# Decode content
+			if decode:
+				content = self._decode_content(decode, content)
+
+			return content
+
+	def _decode_content(self, type, content):
+		assert type in ("json")
+
+		# Decode from bytes to string
+		content = content.decode("ascii")
+
+		# Parse JSON
+		try:
+			if type == "json":
+				content = json.loads(content)
+
+		except ValueError as e:
+			raise DecodeError() from e
+
+		return content
 
 	def get(self, url, **kwargs):
 		"""
@@ -314,5 +337,13 @@ class SSLError(ConnectionError):
 class MaxTriedExceededError(errors.Error):
 	"""
 		Raised when the maximum number of tries has been exceeded
+	"""
+	pass
+
+
+class DecodeError(errors.Error):
+	"""
+		Raised when received content could not be decoded
+		(e.g. JSON)
 	"""
 	pass
