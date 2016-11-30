@@ -157,6 +157,8 @@ pakfire_repositorydir = $(pythondir)/pakfire/repository
 
 pakfire_ui_PYTHON = \
 	src/pakfire/ui/__init__.py \
+	src/pakfire/ui/base.py \
+	src/pakfire/ui/cli.py \
 	src/pakfire/ui/helpers.py \
 	src/pakfire/ui/progressbar.py
 
