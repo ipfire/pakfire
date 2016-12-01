@@ -871,11 +871,9 @@ class CliBuilderIntern(Cli):
 
 
 class CliClient(Cli):
-	pakfire = base.PakfireClient
-
 	def __init__(self):
 		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire client command line interface."),
+			description = _("Pakfire client command line interface"),
 		)
 
 		self.parse_common_arguments(offline_switch=True)
@@ -904,11 +902,8 @@ class CliClient(Cli):
 			"test"        : self.handle_test,
 		}
 
-		# Read configuration.
-		self.config = config.ConfigClient()
-
 		# Create connection to pakfire hub.
-		self.client = client.PakfireClient(self.config)
+		self.client = client.Client()
 
 	@property
 	def pakfire_args(self):
@@ -919,13 +914,13 @@ class CliClient(Cli):
 	def parse_command_build(self):
 		# Parse "build" command.
 		sub_build = self.sub_commands.add_parser("build",
-			help=_("Build a package remotely."))
-		sub_build.add_argument("package", nargs=1,
-			help=_("Give name of a package to build."))
-		sub_build.add_argument("action", action="store_const", const="build")
+			help=_("Build a package remote"))
+		sub_build.add_argument("packages", nargs="+",
+			help=_("Package(s) to build"))
+		sub_build.set_defaults(func=self.handle_build)
 
 		sub_build.add_argument("-a", "--arch",
-			help=_("Build the package for the given architecture."))
+			help=_("Build the package(s) for the given architecture only"))
 
 	def parse_command_info(self):
 		# Implement the "info" command.
@@ -985,47 +980,48 @@ class CliClient(Cli):
 		sub_test.add_argument("error_code", nargs=1, help=_("Error code to test."))
 		sub_test.add_argument("action", action="store_const", const="test")
 
-	def handle_build(self):
-		(package,) = self.args.package
-
-		# XXX just for now, we do only upload source pfm files.
-		assert os.path.exists(package)
-
+	def handle_build(self, ns):
 		# Create a temporary directory.
 		temp_dir = tempfile.mkdtemp()
 
+		# Format arches.
+		if ns.arch:
+			arches = self.args.arch.split(",")
+		else:
+			arches = None
+
 		try:
-			if package.endswith(".%s" % MAKEFILE_EXTENSION):
-				pakfire_args = {}
+			# Package all packages first and save the actual filenames
+			packages = []
 
-				# Create a source package from the makefile.
-				p = self.pakfire(**self.pakfire_args)
-				package = p.dist(package, temp_dir)
+			for package in ns.packages:
+				if package.endswith(".%s" % MAKEFILE_EXTENSION):
+					# Create a source package from the makefile.
+					p = self.pakfire()
+					package = p.dist(package, temp_dir)
+					packages.append(package)
 
-			elif package.endswith(".%s" % PACKAGE_EXTENSION):
-				pass
+				elif package.endswith(".%s" % PACKAGE_EXTENSION):
+					packages.append(package)
 
-			else:
-				raise Exception("Unknown filetype: %s" % package)
+				else:
+					raise Exception("Unknown filetype: %s" % package)
 
-			# Format arches.
-			if self.args.arch:
-				arches = self.args.arch.split(",")
-			else:
-				arches = None
+			assert packages
 
-			# Create a new build on the server.
-			build_id = self.client.build_create(package, build_type="scratch",
-				arches=arches)
+			# Upload the packages to the build service
+			for package in packages:
+				build = self.client.create_build(package, type="scratch", arches=arches)
+
+				# Show information about the uploaded build
+				summary = build.dump()
+				for line in summary.splitlines():
+					print("  %s" % line)
 
 		finally:
 			# Cleanup the temporary directory and all files.
 			if os.path.exists(temp_dir):
 				shutil.rmtree(temp_dir, ignore_errors=True)
-
-		# Monitor the build.
-		if build_id:
-			self.watch_build(build_id)
 
 	def handle_info(self):
 		ret = []
