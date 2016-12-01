@@ -21,17 +21,65 @@
 
 import configparser
 import io
+import logging
 import os
 import socket
 
-import logging
-log = logging.getLogger("pakfire")
+log = logging.getLogger("pakfire.config")
+log.propagate = 1
 
-from . import logger
 from .system import system
 
 from .constants import *
 from .i18n import _
+
+class Config(object):
+	def __init__(self, *files):
+		self._config = configparser.ConfigParser(
+			interpolation=configparser.ExtendedInterpolation()
+		)
+
+		# Read any passed configuration files
+		for f in files:
+			self.read(f)
+
+	def read(self, path):
+		"""
+			Reads configuration from the given file
+		"""
+		if not path.startswith("/"):
+			path = os.path.join(CONFIG_DIR, path)
+
+		log.debug("Reading configuration from %s" % path)
+
+		with open(path) as f:
+			self._config.readfp(f)
+
+	def get(self, section, option, default=None):
+		return self._config.get(section, option, fallback=default)
+
+	def get_bool(self, section, option, default=None):
+		return self._config.getboolean(section, option, fallback=default)
+
+	def dump(self):
+		"""
+			Dump the configuration that was read
+
+			(Only in debugging mode)
+		"""
+		log.debug(_("Configuration:"))
+
+		for section in self._config.sections():
+			log.debug("  " + _("Section: %s") % section)
+
+			for option in self._config[section]:
+				value = self.get(section, option)
+
+				log.debug("    %-20s: %s" % (option, value))
+
+
+# Read initial configuration
+config = Config("general.conf")
 
 class _Config(object):
 	files = []
@@ -138,10 +186,6 @@ class _Config(object):
 			except KeyError:
 				self._config[section] = items
 
-		# Update the logger, because the logging configuration may
-		# have been altered.
-		logger.setup_logging(self)
-
 	def set(self, section, key, value):
 		try:
 			self._config[section][key] = value
@@ -213,10 +257,6 @@ class _Config(object):
 
 	def get_distro_conf(self):
 		return self.get_section("distro")
-
-
-class Config(_Config):
-	files = ["general.conf", "distro.conf"]
 
 
 class ConfigBuilder(_Config):

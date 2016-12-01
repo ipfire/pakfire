@@ -24,10 +24,16 @@ import time
 import logging
 import logging.handlers
 
-def setup_logging(debug=False):
+from .config import config
+
+def setup_logging(debug=None):
 	"""
 		This function initialized the logger that is enabled immediately
 	"""
+	# If debug is None, we read it from the configuration
+	if debug is None:
+		debug = config.get_bool("log", "debug", False)
+
 	l = logging.getLogger("pakfire")
 	l.propagate = 0
 
