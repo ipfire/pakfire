@@ -29,6 +29,7 @@ import urllib.request
 
 from .ui import progressbar
 
+from .config import config
 from .constants import *
 from . import errors
 
@@ -49,13 +50,24 @@ class Client(object):
 		# Create an SSL context to HTTPS connections
 		self.ssl_context = ssl.create_default_context()
 
+		# Configure upstream proxies
+		proxy = config.get("downloader", "proxy")
+		if proxy:
+			for protocol in ("http", "https", "ftp"):
+				self.set_proxy(protocol, proxy)
+
+		# Should we verify SSL certificates?
+		verify = config.get_bool("downloader", "verify", True)
+		if not verify:
+			self.disable_certificate_verification()
+
 	def set_proxy(self, protocol, host):
 		"""
 			Sets a proxy that will be used to send this request
 		"""
 		self.proxies[protocol] = host
 
-	def disable_certificate_validation(self):
+	def disable_certificate_verification(self):
 		# Disable checking hostname
 		self.ssl_context.check_hostname = False
 
