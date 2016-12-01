@@ -19,6 +19,10 @@
 #                                                                             #
 ###############################################################################
 
+# Initialize logging as soon as the module is loaded
+from . import logger
+log = logger.setup_logging()
+
 from . import base
 
 from .constants import PAKFIRE_VERSION
@@ -27,3 +31,6 @@ __version__ = PAKFIRE_VERSION
 Pakfire        = base.Pakfire
 PakfireBuilder = base.PakfireBuilder
 PakfireServer  = base.PakfireServer
+
+# Log when loaded
+log.debug("Pakfire %s initialised" % PAKFIRE_VERSION)

@@ -24,54 +24,32 @@ import time
 import logging
 import logging.handlers
 
-log = logging.getLogger("pakfire")
-
-def setup_logging(config=None):
+def setup_logging(debug=False):
 	"""
-		This function initialized the logger that is enabled immediately.
+		This function initialized the logger that is enabled immediately
 	"""
 	l = logging.getLogger("pakfire")
 	l.propagate = 0
 
-	# Remove all previous defined handlers.
-	for handler in l.handlers:
-		l.removeHandler(handler)
-	l.handlers = []
-
 	# Set level of logger always to DEBUG.
 	l.setLevel(logging.DEBUG)
 
-	# Add output to console (but never dump debugging stuff there).
-	handler = logging.StreamHandler()
-	handler.setLevel(logging.INFO)
+	# Remove all previous defined handlers.
+	l.handlers = []
+
+	# Log to syslog
+	handler = logging.handlers.SysLogHandler("/dev/log")
 	l.addHandler(handler)
 
-	# The configuration file always logs all messages.
-	if config:
-		file = config.get("logger", "file", None)
-		if not file:
-			return
+	# Formatter
+	f = logging.Formatter("%(name)s: %(message)s")
+	handler.setFormatter(f)
 
-		level = logging.INFO
-		if config.get("logger", "level") == "debug":
-			level = logging.DEBUG
+	# Configure debugging
+	if not debug:
+		handler.setLevel(logging.INFO)
 
-		mode = config.get("logger", "mode", "normal")
-		if mode == "rotate":
-			threshold = config.get("logger", "rotation_threshold", 0)
-			try:
-				threshold = int(threshold)
-			except ValueError:
-				threshold = 0
-
-			handler = logging.handlers.RotatingFileHandler(file,
-				maxBytes=threshold, backupCount=9)
-		else:
-			handler = logging.FileHandler(file)
-
-		handler.setLevel(level)
-		l.addHandler(handler)
-
+	return l
 
 class BuildFormatter(logging.Formatter):
 	def __init__(self):
