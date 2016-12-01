@@ -26,7 +26,7 @@ from . import helpers
 
 class CliUI(base.UI):
 	def write(self, data):
-		print data,
+		print(data)
 
 	def is_interactive(self):
 		"""
@@ -38,4 +38,4 @@ class CliUI(base.UI):
 		"""
 			Simply print out the given message.
 		"""
-		self.write("%s\n" % msg)
+		self.write(msg)
