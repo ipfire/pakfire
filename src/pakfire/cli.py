@@ -311,14 +311,10 @@ class Cli(object):
 		sub_extract.add_argument("action", action="store_const", const="extract")
 
 	def run(self):
-		action = self.args.action
+		args = self.parser.parse_args()
+		assert args.func, "Argument function not defined"
 
-		try:
-			func = self.action2func[action]
-		except KeyError:
-			raise Exception("Unhandled action: %s" % action)
-
-		return func()
+		return args.func(args)
 
 	def handle_info(self, long=False):
 		p = self.create_pakfire()
