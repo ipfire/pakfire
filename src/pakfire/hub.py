@@ -37,7 +37,6 @@ class Hub(object):
 	def __init__(self, huburl, username, password):
 		self.username = username
 		self.password = password
-		print(huburl)
 
 		# Initialise the HTTP client
 		self.http = http.Client(baseurl=huburl)
