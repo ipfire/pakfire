@@ -12,12 +12,12 @@ import time
 import pakfire.base
 import pakfire.builder
 import pakfire.config
-import pakfire.downloader
 import pakfire.system
 import pakfire.util
 from pakfire.system import system
 
 from . import base
+from . import http
 from . import transport
 
 from pakfire.constants import *
@@ -490,8 +490,8 @@ class PakfireWorker(multiprocessing.Process):
 				p = pakfire.base.PakfireBuilder(config=config, arch=job.arch)
 
 				# Download the source package.
-				grabber = pakfire.downloader.PackageDownloader(p)
-				grabber.urlgrab(job.source_url, filename=tmpfile)
+				client = http.Client()
+				client.retrieve(job.source_url, tmpfile)
 
 				# Check if the download checksum matches (if provided).
 				if job.source_hash_sha512:
