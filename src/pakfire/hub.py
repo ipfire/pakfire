@@ -90,7 +90,7 @@ class Hub(object):
 
 		build_id = self._request("/builds/create", data=data)
 
-		return build_id
+		return build_id.decode("ascii")
 
 	# Job actions
 
