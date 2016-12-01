@@ -893,7 +893,6 @@ class CliClient(Cli):
 
 		self.action2func = {
 			"build"       : self.handle_build,
-			"conn-check"  : self.handle_connection_check,
 			"info"        : self.handle_info,
 			"jobs_show"   : self.handle_jobs_show,
 			"jobs_active" : self.handle_jobs_active,
@@ -930,9 +929,9 @@ class CliClient(Cli):
 
 	def parse_command_connection_check(self):
 		# Implement the "conn-check" command.
-		sub_conn_check = self.sub_commands.add_parser("conn-check",
-			help=_("Check the connection to the hub."))
-		sub_conn_check.add_argument("action", action="store_const", const="conn-check")
+		sub_conn_check = self.sub_commands.add_parser("check-connection",
+			help=_("Check the connection to the hub"))
+		sub_conn_check.set_defaults(func=self.handle_check_connection)
 
 	def parse_command_jobs(self):
 		sub_jobs = self.sub_commands.add_parser("jobs",
@@ -1055,35 +1054,11 @@ class CliClient(Cli):
 		for line in ret:
 			print(line)
 
-	def handle_connection_check(self):
-		ret = []
+	def handle_check_connection(self, ns):
+		success = self.client.check_connection()
 
-		address = self.client.get_my_address()
-		ret.append("  %-20s: %s" % (_("Your IP address"), address))
-		ret.append("")
-
-		authenticated = self.client.check_auth()
-		if authenticated:
-			ret.append("  %s" % _("You are authenticated to the build service:"))
-
-			user = self.client.get_user_profile()
-			assert user, "Could not fetch user infomation"
-
-			keys = [
-				("name",       _("User name")),
-				("realname",   _("Real name")),
-				("email",      _("Email address")),
-				("registered", _("Registered")),
-			]
-
-			for key, desc in keys:
-				ret.append("    %-18s: %s" % (desc, user.get(key)))
-
-		else:
-			ret.append(_("You could not be authenticated to the build service."))
-
-		for line in ret:
-			print(line)
+		if success:
+			print("%s: %s" % (_("Connection OK"), success))
 
 	def _print_jobs(self, jobs, heading=None):
 		if heading:

@@ -58,7 +58,9 @@ class Hub(object):
 		"""
 			Tests the connection
 		"""
-		return self._request("/noop")
+		s = self._request("/noop")
+
+		return s.decode("ascii")
 
 	def test_error(self, code):
 		assert code >= 100 and code <= 999

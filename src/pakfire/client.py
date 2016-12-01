@@ -53,6 +53,12 @@ class Client(object):
 		# Create connection to the hub.
 		return hub.Hub(huburl, username, password)
 
+	def check_connection(self):
+		"""
+			Tests the connection to the hub
+		"""
+		return self.hub.test()
+
 	def create_build(self, filename, **kwargs):
 		build_id = self.hub.create_build(filename, **kwargs)
 
