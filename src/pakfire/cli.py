@@ -30,7 +30,6 @@ from . import base
 from . import client
 from . import config
 from . import daemon
-from . import logger
 from . import packages
 from . import repository
 from . import server
@@ -40,10 +39,6 @@ from . import util
 from .system import system
 from .constants import *
 from .i18n import _
-
-# Initialize a very simple logging that is removed when a Pakfire instance
-# is started.
-logger.setup_logging()
 
 class Cli(object):
 	pakfire = base.Pakfire
@@ -1236,10 +1231,6 @@ class CliDaemon(Cli):
 		"""
 			Runs the pakfire daemon with provided settings.
 		"""
-		# Read the configuration file for the daemon.
-		self.config = config.ConfigDaemon()
-		logger.setup_logging(self.config)
-
 		# Create daemon instance.
 		d = daemon.PakfireDaemon(self.config)
 		try:
