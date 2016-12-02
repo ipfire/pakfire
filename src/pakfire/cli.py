@@ -982,25 +982,27 @@ class CliClient(Cli):
 
 
 class CliDaemon(Cli):
-	def __init__(self):
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire daemon command line interface."),
+	def parse_cli(self):
+		parser = argparse.ArgumentParser(
+			description = _("Pakfire daemon command line interface"),
 		)
-		self._add_common_arguments(self.parser, offline_switch=True)
+		self._add_common_arguments(parser, offline_switch=False)
 
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
+		# There is only one default action
+		parser.set_defaults(func=self.handle_run)
 
-	def run(self):
+		return parser.parse_args()
+
+	def handle_run(self, ns):
 		"""
-			Runs the pakfire daemon with provided settings.
+			Runs the pakfire daemon
 		"""
-		# Create daemon instance.
-		d = daemon.PakfireDaemon(self.config)
+		d = daemon.PakfireDaemon()
+
 		try:
 			d.run()
 
-		# We cannot just kill the daemon, it needs a smooth shutdown.
+		# We cannot just kill the daemon, it needs a smooth shutdown
 		except (SystemExit, KeyboardInterrupt):
 			d.shutdown()
 

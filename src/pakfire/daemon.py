@@ -11,14 +11,14 @@ import time
 
 import pakfire.base
 import pakfire.builder
-import pakfire.config
-import pakfire.system
 import pakfire.util
-from pakfire.system import system
+
+from .system import system
 
 from . import base
+from . import config
 from . import http
-from . import transport
+from . import hub
 
 from pakfire.constants import *
 from pakfire.i18n import _
@@ -40,14 +40,17 @@ class BuildJob(dict):
 
 
 class PakfireDaemon(object):
-	def __init__(self, config):
-		self.config = config
+	def __init__(self, config_file="daemon.conf"):
+		self.config = config.Config(config_file)
+
+		# Connect to the Pakfire Hub
+		self.hub = self.connect_to_hub()
 
 		# Indicates if this daemon is in running mode.
 		self.__running = True
 
 		# Create daemon that sends keep-alive messages.
-		self.keepalive = PakfireDaemonKeepalive(self.config)
+		self.keepalive = PakfireDaemonKeepalive(self.hub)
 
 		# List of worker processes.
 		self.__workers = [self.keepalive]
@@ -58,6 +61,19 @@ class PakfireDaemon(object):
 
 		# Number of running workers.
 		self.max_running = system.cpu_count * 2
+
+	def connect_to_hub(self):
+		huburl = self.config.get("daemon", "server", PAKFIRE_HUB)
+
+		# Host Credentials
+		hostname = self.config.get("daemon", "hostname", system.hostname)
+		password = self.config.get("daemon", "secret")
+
+		if not (hostname and password):
+			raise RuntimeError("Host credentials are not set")
+
+		# Create connection to the hub
+		return hub.Hub(huburl, hostname, password)
 
 	def run(self, heartbeat=30):
 		"""
@@ -117,7 +133,7 @@ class PakfireDaemon(object):
 			pass
 
 		# Create a new process and start it.
-		self.keepalive = PakfireDaemonKeepalive(self.config)
+		self.keepalive = PakfireDaemonKeepalive(self.hub)
 		self.keepalive.start()
 
 		# Add the process to the process list.
@@ -153,7 +169,7 @@ class PakfireDaemon(object):
 		"""
 			Spawns a new worker process.
 		"""
-		worker = PakfireWorker(config=self.config, *args, **kwargs)
+		worker = PakfireWorker(self.hub, *args, **kwargs)
 		worker.start()
 
 		log.debug("Spawned new worker process: %s" % worker)
@@ -252,18 +268,13 @@ class PakfireDaemon(object):
 
 
 class PakfireDaemonKeepalive(multiprocessing.Process):
-	def __init__(self, config):
+	def __init__(self, hub):
 		multiprocessing.Process.__init__(self)
-
-		# Save config.
-		self.config = config
+		self.hub = hub
 
 	def run(self, heartbeat=30):
 		# Register signal handlers.
 		self.register_signal_handlers()
-
-		# Create connection to the hub.
-		self.transport = transport.PakfireHubTransport(self.config)
 
 		# Send our profile to the hub.
 		self.send_builder_info()
@@ -327,13 +338,12 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 
 			# Pakfire + OS
 			"pakfire_version" : PAKFIRE_VERSION,
-			"host_key"        : self.config.get("signatures", "host_key", None),
 			"os_name"         : system.distro.pretty_name,
 
 			# Supported arches
 			"supported_arches" : ",".join(system.supported_arches),
 		}
-		self.transport.post("/builders/info", data=data)
+		self.hub._request("/builders/info", method="POST", data=data)
 
 	def send_keepalive(self):
 		log.debug("Sending keepalive message to hub...")
@@ -355,7 +365,8 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 			# Disk space
 			"space_free" : self.free_space,
 		}
-		self.transport.post("/builders/keepalive", data=data)
+
+		self.hub._request("/builders/keepalive", method="POST", data=data)
 
 	@property
 	def free_space(self):
@@ -365,11 +376,9 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 
 
 class PakfireWorker(multiprocessing.Process):
-	def __init__(self, config, waiting=None):
+	def __init__(self, hub, waiting=None):
 		multiprocessing.Process.__init__(self)
-
-		# Save config.
-		self.config = config
+		self.hub = hub
 
 		# Waiting event. Clear if this worker is running a build.
 		self.waiting = multiprocessing.Event()
@@ -381,9 +390,6 @@ class PakfireWorker(multiprocessing.Process):
 	def run(self):
 		# Register signal handlers.
 		self.register_signal_handlers()
-
-		# Create connection to the hub.
-		self.transport = transport.PakfireHubTransport(self.config)
 
 		while self.__running:
 			# Check if the build root is file.
@@ -457,8 +463,9 @@ class PakfireWorker(multiprocessing.Process):
 
 	def get_new_build_job(self, timeout=600):
 		log.debug("Requesting new job...")
+
 		try:
-			job = self.transport.get_json("/builders/jobs/queue",
+			job = self.hub._request("/builders/jobs/queue", method="GET", decode="json",
 				data={ "timeout" : timeout, }, timeout=timeout)
 
 			if job:
@@ -594,23 +601,23 @@ class PakfireWorker(multiprocessing.Process):
 			"message" : message or "",
 		}
 
-		self.transport.post("/builders/jobs/%s/state/%s" % (job.id, state),
-			data=data)
+		self.hub._request("/builders/jobs/%s/state/%s" % (job.id, state),
+			method="POST", data=data)
 
 	def upload_file(self, job, filename, type):
 		assert os.path.exists(filename)
 		assert type in ("package", "log")
 
 		# First upload the file data and save the upload_id.
-		upload_id = self.transport.upload_file(filename)
+		upload_id = self.hub.upload_file(filename)
 
 		data = {
 			"type" : type,
 		}
 
 		# Add the file to the build.
-		self.transport.post("/builders/jobs/%s/addfile/%s" % (job.id, upload_id),
-			data=data)
+		self.hub._request("/builders/jobs/%s/addfile/%s" % (job.id, upload_id),
+			method="POST", data=data)
 
 	def upload_buildroot(self, job, installed_packages):
 		pkgs = []
@@ -619,4 +626,4 @@ class PakfireWorker(multiprocessing.Process):
 
 		data = { "buildroot" : json.dumps(pkgs) }
 
-		self.transport.post("/builders/jobs/%s/buildroot" % job.id, data=data)
+		self.hub._request("/builders/jobs/%s/buildroot" % job.id, method="POST", data=data)
