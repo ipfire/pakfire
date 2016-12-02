@@ -117,7 +117,7 @@ class Client(object):
 
 		return req
 
-	def _send_request(self, req):
+	def _send_request(self, req, timeout=None):
 		log.debug("HTTP Request to %s" % req.host)
 		log.debug("    URL: %s" % req.full_url)
 		log.debug("    Headers:")
@@ -125,7 +125,7 @@ class Client(object):
 			log.debug("        %s: %s" % (k, v))
 
 		try:
-			res = urllib.request.urlopen(req, context=self.ssl_context)
+			res = urllib.request.urlopen(req, context=self.ssl_context, timeout=timeout)
 
 		# Catch any HTTP errors
 		except urllib.error.HTTPError as e:
@@ -150,11 +150,11 @@ class Client(object):
 
 		return res
 
-	def _one_request(self, url, decode=None, **kwargs):
+	def _one_request(self, url, decode=None, timeout=None, **kwargs):
 		r = self._make_request(url, **kwargs)
 
 		# Send request and return the entire response at once
-		with self._send_request(r) as f:
+		with self._send_request(r, timeout=timeout) as f:
 			content = f.read()
 
 			# Decode content
