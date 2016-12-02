@@ -118,7 +118,6 @@ pakfire_PYTHON = \
 	src/pakfire/shell.py \
 	src/pakfire/system.py \
 	src/pakfire/transaction.py \
-	src/pakfire/transport.py \
 	src/pakfire/util.py
 
 pakfiredir = $(pythondir)/pakfire
