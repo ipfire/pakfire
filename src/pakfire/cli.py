@@ -977,6 +977,9 @@ class CliClient(Cli):
 
 			time.sleep(60)
 
+			# Update data before the next loop is shown
+			o.refresh()
+
 
 class CliDaemon(Cli):
 	def __init__(self):
