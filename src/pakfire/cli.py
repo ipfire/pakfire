@@ -25,6 +25,7 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 
 from . import base
 from . import client
@@ -893,6 +894,11 @@ class CliClient(Cli):
 			help=_("Check the connection to the hub"))
 		check_connection.set_defaults(func=self.handle_check_connection)
 
+		# watch-build
+		watch_build = subparsers.add_parser("watch-build", help=_("Watch the status of a build"))
+		watch_build.add_argument("id", nargs=1, help=_("Build ID"))
+		watch_build.set_defaults(func=self.handle_watch_build)
+
 		return parser.parse_args()
 
 	def handle_build(self, ns):
@@ -943,6 +949,20 @@ class CliClient(Cli):
 
 		if success:
 			print("%s: %s" % (_("Connection OK"), success))
+
+	def handle_watch_build(self, ns):
+		build = self.client.get_build(ns.id[0])
+
+		while True:
+			s = build.dump()
+			print(s)
+
+			# Break the loop if the build is not active any more
+			# (since we don't expect any changes)
+			if not build.is_active():
+				break
+
+			time.sleep(60)
 
 
 class CliDaemon(Cli):
