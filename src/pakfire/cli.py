@@ -47,8 +47,7 @@ class Cli(object):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire command line interface."),
 		)
-
-		self.parse_common_arguments()
+		self._add_common_arguments(self.parser)
 
 		self.parser.add_argument("--root", metavar="PATH",
 			default="/",
@@ -136,24 +135,24 @@ class Cli(object):
 
 		return p
 
-	def parse_common_arguments(self, offline_switch=True):
-		self.parser.add_argument("--version", action="version",
+	def _add_common_arguments(self, parser, offline_switch=True):
+		parser.add_argument("--version", action="version",
 			version="%(prog)s " + PAKFIRE_VERSION)
 
-		self.parser.add_argument("-v", "--verbose", action="store_true",
+		parser.add_argument("-v", "--verbose", action="store_true",
 			help=_("Enable verbose output."))
 
-		self.parser.add_argument("-c", "--config", nargs="?",
+		parser.add_argument("-c", "--config", nargs="?",
 			help=_("Path to a configuration file to load."))
 
-		self.parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
+		parser.add_argument("--disable-repo", nargs="*", metavar="REPO",
 			help=_("Disable a repository temporarily."), default=[])
 
-		self.parser.add_argument("--enable-repo", nargs="*", metavar="REPO",
+		parser.add_argument("--enable-repo", nargs="*", metavar="REPO",
 			help=_("Enable a repository temporarily."), default=[])
 
 		if offline_switch:
-			self.parser.add_argument("--offline", action="store_true",
+			parser.add_argument("--offline", action="store_true",
 				help=_("Run pakfire in offline mode."))
 
 	def parse_command_install(self):
@@ -311,7 +310,7 @@ class Cli(object):
 		sub_extract.add_argument("action", action="store_const", const="extract")
 
 	def run(self):
-		args = self.parser.parse_args()
+		args = self.parse_cli()
 		assert args.func, "Argument function not defined"
 
 		return args.func(args)
@@ -467,8 +466,7 @@ class CliBuilder(Cli):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface."),
 		)
-
-		self.parse_common_arguments()
+		self._add_common_arguments(self.parser)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
@@ -520,7 +518,7 @@ class CliBuilder(Cli):
 
 		return ret
 
-	def parse_common_arguments(self, *args, **kwargs):
+	def _add_common_arguments(self, *args, **kwargs):
 		Cli.parse_common_arguments(self, *args, **kwargs)
 
 		self.parser.add_argument("--distro", nargs="?",
@@ -675,8 +673,7 @@ class CliServer(Cli):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire server command line interface."),
 		)
-
-		self.parse_common_arguments()
+		self._add_common_arguments(self.parser)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
@@ -809,8 +806,7 @@ class CliBuilderIntern(Cli):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface."),
 		)
-
-		self.parse_common_arguments()
+		self._add_common_arguments(self.parser)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
@@ -872,37 +868,32 @@ class CliBuilderIntern(Cli):
 
 class CliClient(Cli):
 	def __init__(self):
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire client command line interface"),
-		)
-
-		self.parse_common_arguments(offline_switch=True)
-
-		# Add sub-commands.
-		self.sub_commands = self.parser.add_subparsers()
-
-		self.parse_command_build()
-		self.parse_command_connection_check()
-
 		# Create connection to pakfire hub
 		self.client = client.Client()
 
-	def parse_command_build(self):
-		# Parse "build" command.
-		sub_build = self.sub_commands.add_parser("build",
-			help=_("Build a package remote"))
-		sub_build.add_argument("packages", nargs="+",
-			help=_("Package(s) to build"))
-		sub_build.set_defaults(func=self.handle_build)
+	def parse_cli(self):
+		parser = argparse.ArgumentParser(
+			description = _("Pakfire client command line interface"),
+		)
+		subparsers = parser.add_subparsers(help=_("sub-command help"))
 
-		sub_build.add_argument("-a", "--arch",
+		# Add common arguments
+		self._add_common_arguments(parser, offline_switch=False)
+
+		# build
+		build = subparsers.add_parser("build", help=_("Build a package remote"))
+		build.add_argument("packages", nargs="+", help=_("Package(s) to build"))
+		build.set_defaults(func=self.handle_build)
+
+		build.add_argument("-a", "--arch",
 			help=_("Build the package(s) for the given architecture only"))
 
-	def parse_command_connection_check(self):
-		# Implement the "conn-check" command.
-		sub_conn_check = self.sub_commands.add_parser("check-connection",
+		# check-connection
+		check_connection = subparsers.add_parser("check-connection",
 			help=_("Check the connection to the hub"))
-		sub_conn_check.set_defaults(func=self.handle_check_connection)
+		check_connection.set_defaults(func=self.handle_check_connection)
+
+		return parser.parse_args()
 
 	def handle_build(self, ns):
 		# Create a temporary directory.
@@ -959,8 +950,7 @@ class CliDaemon(Cli):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire daemon command line interface."),
 		)
-
-		self.parse_common_arguments(offline_switch=True)
+		self._add_common_arguments(self.parser, offline_switch=True)
 
 		# Finally parse all arguments from the command line and save them.
 		self.args = self.parser.parse_args()
@@ -986,8 +976,7 @@ class CliKey(Cli):
 		self.parser = argparse.ArgumentParser(
 			description = _("Pakfire key command line interface."),
 		)
-
-		self.parse_common_arguments(offline_switch=True)
+		self._add_common_arguments(self.parser, offline_switch=True)
 
 		# Add sub-commands.
 		self.sub_commands = self.parser.add_subparsers()
