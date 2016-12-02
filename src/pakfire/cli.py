@@ -883,32 +883,9 @@ class CliClient(Cli):
 
 		self.parse_command_build()
 		self.parse_command_connection_check()
-		self.parse_command_info()
-		self.parse_command_jobs()
-		self.parse_command_builds()
-		self.parse_command_test()
 
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
-
-		self.action2func = {
-			"build"       : self.handle_build,
-			"info"        : self.handle_info,
-			"jobs_show"   : self.handle_jobs_show,
-			"jobs_active" : self.handle_jobs_active,
-			"jobs_latest" : self.handle_jobs_latest,
-			"builds_show" : self.handle_builds_show,
-			"test"        : self.handle_test,
-		}
-
-		# Create connection to pakfire hub.
+		# Create connection to pakfire hub
 		self.client = client.Client()
-
-	@property
-	def pakfire_args(self):
-		return {
-			"config" : self.config,
-		}
 
 	def parse_command_build(self):
 		# Parse "build" command.
@@ -921,63 +898,11 @@ class CliClient(Cli):
 		sub_build.add_argument("-a", "--arch",
 			help=_("Build the package(s) for the given architecture only"))
 
-	def parse_command_info(self):
-		# Implement the "info" command.
-		sub_info = self.sub_commands.add_parser("info",
-			help=_("Print some information about this host."))
-		sub_info.add_argument("action", action="store_const", const="info")
-
 	def parse_command_connection_check(self):
 		# Implement the "conn-check" command.
 		sub_conn_check = self.sub_commands.add_parser("check-connection",
 			help=_("Check the connection to the hub"))
 		sub_conn_check.set_defaults(func=self.handle_check_connection)
-
-	def parse_command_jobs(self):
-		sub_jobs = self.sub_commands.add_parser("jobs",
-			help=_("Show information about build jobs."))
-
-		sub_jobs_commands = sub_jobs.add_subparsers()
-
-		self.parse_command_jobs_active(sub_jobs_commands)
-		self.parse_command_jobs_latest(sub_jobs_commands)
-		self.parse_command_jobs_show(sub_jobs_commands)
-
-	def parse_command_jobs_active(self, sub_commands):
-		sub_active = sub_commands.add_parser("active",
-			help=_("Show a list of all active jobs."))
-		sub_active.add_argument("action", action="store_const", const="jobs_active")
-
-	def parse_command_jobs_latest(self, sub_commands):
-		sub_latest = sub_commands.add_parser("latest",
-			help=_("Show a list of all recently finished of failed build jobs."))
-		sub_latest.add_argument("action", action="store_const", const="jobs_latest")
-
-	def parse_command_jobs_show(self, sub_commands):
-		sub_show = sub_commands.add_parser("show",
-			help=_("Show details about given build job."))
-		sub_show.add_argument("job_id", nargs=1, help=_("The ID of the build job."))
-		sub_show.add_argument("action", action="store_const", const="jobs_show")
-
-	def parse_command_builds(self):
-		sub_builds = self.sub_commands.add_parser("builds",
-			help=_("Show information about builds."))
-
-		sub_builds_commands = sub_builds.add_subparsers()
-
-		self.parse_command_builds_show(sub_builds_commands)
-
-	def parse_command_builds_show(self, sub_commands):
-		sub_show = sub_commands.add_parser("show",
-			help=_("Show details about the given build."))
-		sub_show.add_argument("build_id", nargs=1, help=_("The ID of the build."))
-		sub_show.add_argument("action", action="store_const", const="builds_show")
-
-	def parse_command_test(self):
-		sub_test = self.sub_commands.add_parser("test",
-			help=_("Test the connection to the hub."))
-		sub_test.add_argument("error_code", nargs=1, help=_("Error code to test."))
-		sub_test.add_argument("action", action="store_const", const="test")
 
 	def handle_build(self, ns):
 		# Create a temporary directory.
@@ -1022,165 +947,11 @@ class CliClient(Cli):
 			if os.path.exists(temp_dir):
 				shutil.rmtree(temp_dir, ignore_errors=True)
 
-	def handle_info(self):
-		ret = []
-
-		ret.append("")
-		ret.append("  PAKFIRE %s" % PAKFIRE_VERSION)
-		ret.append("")
-		ret.append("  %-20s: %s" % (_("Hostname"), system.hostname))
-		ret.append("  %-20s: %s" % (_("Pakfire hub"), self.config.get("client", "server")))
-		if self.config.get("client", "username") and self.config.get("client", "password"):
-			ret.append("  %-20s: %s" % \
-				(_("Username"), self.config.get("client", "username")))
-		ret.append("")
-
-		# Hardware information
-		ret.append("  %s:" % _("Hardware information"))
-		ret.append("      %-16s: %s" % (_("CPU model"), system.cpu_model))
-		ret.append("      %-16s: %s" % (_("Memory"),    util.format_size(system.memory)))
-		ret.append("      %-16s: %s" % (_("Parallelism"), system.parallelism))
-		ret.append("")
-		ret.append("      %-16s: %s" % (_("Native arch"), system.native_arch))
-		if not system.arch == system.native_arch:
-			ret.append("      %-16s: %s" % (_("Default arch"), system.arch))
-
-		header = _("Supported arches")
-		for arch in system.supported_arches:
-			ret.append("      %-16s: %s" % (header, arch))
-			header = ""
-		ret.append("")
-
-		for line in ret:
-			print(line)
-
 	def handle_check_connection(self, ns):
 		success = self.client.check_connection()
 
 		if success:
 			print("%s: %s" % (_("Connection OK"), success))
-
-	def _print_jobs(self, jobs, heading=None):
-		if heading:
-			print("%s:" % heading)
-			print()
-
-		for job in jobs:
-			line = "  [%(type)8s] %(name)-30s: %(state)s"
-
-			print(line % job)
-
-		print() # Empty line at the end.
-
-	def handle_jobs_active(self):
-		jobs = self.client.get_active_jobs()
-
-		if not jobs:
-			print(_("No ongoing jobs found."))
-			return
-
-		self._print_jobs(jobs, _("Active build jobs"))
-
-	def handle_jobs_latest(self):
-		jobs = self.client.get_latest_jobs()
-
-		if not jobs:
-			print(_("No jobs found."))
-			return
-
-		self._print_jobs(jobs, _("Recently processed build jobs"))
-
-	def handle_builds_show(self):
-		(build_id,) = self.args.build_id
-
-		build = self.client.get_build(build_id)
-		if not build:
-			print(_("A build with ID %s could not be found.") % build_id)
-			return
-
-		print(_("Build: %(name)s") % build)
-
-		fmt = "%-14s: %s"
-		lines = [
-			fmt % (_("State"), build["state"]),
-			fmt % (_("Priority"), build["priority"]),
-		]
-
-		lines.append("%s:" % _("Jobs"))
-		for job in build["jobs"]:
-			lines.append("  * [%(uuid)s] %(name)-30s: %(state)s" % job)
-
-		for line in lines:
-			print(" ", line)
-		print()
-
-	def handle_jobs_show(self):
-		(job_id,) = self.args.job_id
-
-		job = self.client.get_job(job_id)
-		if not job:
-			print(_("A job with ID %s could not be found.") % job_id)
-			return
-
-		builder = None
-		if job["builder_id"]:
-			builder = self.client.get_builder(job["builder_id"])
-
-		print(_("Job: %(name)s") % job)
-
-		fmt = "%-14s: %s"
-		lines = [
-			fmt % (_("State"), job["state"]),
-			fmt % (_("Arch"), job["arch"]),
-		]
-
-		if builder:
-			lines += [
-				fmt % (_("Build host"), builder["name"]),
-				"",
-			]
-
-		lines += [
-			fmt % (_("Time created"), job["time_created"]),
-			fmt % (_("Time started"), job["time_started"]),
-			fmt % (_("Time finished"), job["time_finished"]),
-			fmt % (_("Duration"), job["duration"]),
-		]
-
-		if job["packages"]:
-			lines += ["", "%s:" % _("Packages")]
-
-			for pkg in job["packages"]:
-				pkg_lines = [
-					"* %(friendly_name)s" % pkg,
-					"  %(uuid)s" % pkg,
-					"",
-				]
-
-				lines += ["  %s" % line for line in pkg_lines]
-
-		for line in lines:
-			print(" ", line)
-		print() # New line.
-
-	def handle_test(self):
-		error_code = self.args.error_code[0]
-
-		try:
-			error_code = int(error_code)
-		except ValueError:
-			error_code = 0
-
-		if error_code < 100 or error_code > 999:
-			raise Error(_("Invalid error code given."))
-
-		res = self.client.test_code(error_code)
-		print(_("Reponse from the server: %s") % res)
-
-	def watch_build(self, build_id):
-		print(self.client.build_get(build_id))
-		# XXX TODO
-		print(build_id)
 
 
 class CliDaemon(Cli):
