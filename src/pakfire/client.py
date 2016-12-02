@@ -59,6 +59,8 @@ class Client(object):
 		"""
 		return self.hub.test()
 
+	# Builds
+
 	def create_build(self, filename, **kwargs):
 		build_id = self.hub.create_build(filename, **kwargs)
 
@@ -66,6 +68,11 @@ class Client(object):
 
 	def get_build(self, build_id):
 		return Build(self, build_id)
+
+	# Jobs
+
+	def get_job(self, job_id):
+		return Job(self, job_id)
 
 
 class _ClientObject(object):
@@ -204,6 +211,20 @@ class Job(_ClientObject):
 		return self.arch < other.arch
 
 	@property
+	def name(self):
+		"""
+			The name of this job
+		"""
+		return self.data.get("name")
+
+	@property
+	def type(self):
+		"""
+			The type of this build
+		"""
+		return self.data.get("type")
+
+	@property
 	def arch(self):
 		"""
 			The architecture of this job
@@ -252,5 +273,24 @@ class Job(_ClientObject):
 
 		elif self.is_finished():
 			s.append(_("in %s") % format_time(self.duration))
+
+		return " ".join(s)
+
+	def dump(self):
+		s = []
+
+		# Name
+		s.append(self.name)
+
+		# Append tag for test buils
+		if self.type == "test":
+			s.append("[T]")
+
+		# UUID
+		s.append("(%s)" % self.id)
+
+		# Show the builder for active jobs
+		if self.is_active() and self.builder:
+			s.append(_("Builder: %s") % self.builder)
 
 		return " ".join(s)

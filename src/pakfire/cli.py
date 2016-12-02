@@ -899,6 +899,11 @@ class CliClient(Cli):
 		watch_build.add_argument("id", nargs=1, help=_("Build ID"))
 		watch_build.set_defaults(func=self.handle_watch_build)
 
+		# watch-job
+		watch_job = subparsers.add_parser("watch-job", help=_("Watch the status of a job"))
+		watch_job.add_argument("id", nargs=1, help=_("Job ID"))
+		watch_job.set_defaults(func=self.handle_watch_job)
+
 		return parser.parse_args()
 
 	def handle_build(self, ns):
@@ -953,13 +958,21 @@ class CliClient(Cli):
 	def handle_watch_build(self, ns):
 		build = self.client.get_build(ns.id[0])
 
+		return self._watch_something(build)
+
+	def handle_watch_job(self, ns):
+		job = self.client.get_job(ns.id[0])
+
+		return self._watch_something(job)
+
+	def _watch_something(self, o):
 		while True:
-			s = build.dump()
+			s = o.dump()
 			print(s)
 
-			# Break the loop if the build is not active any more
+			# Break the loop if the build/job is not active any more
 			# (since we don't expect any changes)
-			if not build.is_active():
+			if not o.is_active():
 				break
 
 			time.sleep(60)
