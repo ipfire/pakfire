@@ -58,9 +58,7 @@ class Hub(object):
 		"""
 			Tests the connection
 		"""
-		s = self._request("/noop")
-
-		return s.decode("ascii")
+		return self._request("/noop", decode="ascii")
 
 	def test_error(self, code):
 		assert code >= 100 and code <= 999
@@ -90,9 +88,7 @@ class Hub(object):
 			"upload_id"  : upload_id,
 		}
 
-		build_id = self._request("/builds/create", data=data)
-
-		return build_id.decode("ascii")
+		return self._request("/builds/create", data=data, decode="ascii")
 
 	# Job actions
 
@@ -159,9 +155,7 @@ class FileUploader(object):
 			"hash"     : self._make_checksum("sha1", self.path),
 		}
 
-		response = self.hub._request("/uploads/create", method="GET", data=data)
-
-		return response.decode("ascii")
+		return self.hub._request("/uploads/create", method="GET", decode="ascii", data=data)
 
 	def _send_chunk(self, upload_id, chunk):
 		"""

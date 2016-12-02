@@ -164,13 +164,13 @@ class Client(object):
 			return content
 
 	def _decode_content(self, type, content):
-		assert type in ("json")
+		assert type in ("ascii", "json")
 
 		# Decode from bytes to string
 		content = content.decode("ascii")
 
-		# Parse JSON
 		try:
+			# Parse JSON
 			if type == "json":
 				content = json.loads(content)
 
