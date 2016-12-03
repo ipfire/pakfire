@@ -38,17 +38,13 @@ from . import util
 import logging
 log = logging.getLogger("pakfire")
 
-from .config import Config
 from .constants import *
 from .i18n import _
 
 class Pakfire(object):
 	mode = None
 
-	def __init__(self, path="/", config=None, configs=None, arch=None, **kwargs):
-		# Indicates if this instance has already been initialized.
-		self.initialized = False
-
+	def __init__(self, path="/", arch=None):
 		# Check if we are operating as the root user.
 		self.check_root_user()
 
@@ -59,18 +55,8 @@ class Pakfire(object):
 		if not self.mode and self.path == "/":
 			self.check_is_ipfire()
 
-		# Get the configuration.
-		if config:
-			self.config = config
-		else:
-			self.config = self._load_config(configs)
-
-		# Update configuration with additional arguments.
-		for section, settings in list(kwargs.items()):
-			self.config.update(section, settings)
-
-		# Dump the configuration.
-		self.config.dump()
+		# Load configuration
+		self.config = config.Config("general.conf")
 
 		# Initialize the keyring.
 		self.keyring = keyring.Keyring(self)
@@ -84,31 +70,22 @@ class Pakfire(object):
 		self.pool = satsolver.Pool(self.distro.arch)
 		self.repos = repository.Repositories(self)
 
-	def initialize(self):
+	def __enter__(self):
 		"""
-			Initialize pakfire instance.
+			Called to initialize this Pakfire instance when
+			the context is entered.
 		"""
-		if self.initialized:
-			return
+		# Dump the configuration when we enter the context
+		self.config.dump()
 
-		# Initialize repositories.
+		# Initialize repositories
 		self.repos.initialize()
 
-		self.initialized = True
+		return self
 
-	def _load_config(self, files=None):
-		"""
-			This method loads all needed configuration files.
-		"""
-		if files is None:
-			files = []
-
-		return config.Config(*files)
-
-	def destroy(self):
+	def __exit__(self, type, value, traceback):
+		# Close repositories
 		self.repos.shutdown()
-
-		self.initialized = False
 
 	@property
 	def supported_arches(self):
@@ -151,9 +128,6 @@ class Pakfire(object):
 		return self.mode == "builder"
 
 	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		if not logger:
 			logger = logging.getLogger("pakfire")
 
@@ -236,9 +210,6 @@ class Pakfire(object):
 			If strict is True, only a package with excatly the same UUID
 			will replace the currently installed one.
 		"""
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
@@ -347,9 +318,6 @@ class Pakfire(object):
 			check indicates, if the method should return after calculation
 			of the transaction.
 		"""
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
@@ -409,9 +377,6 @@ class Pakfire(object):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		# Create a new request.
 		request = self.pool.create_request()
 
@@ -455,9 +420,6 @@ class Pakfire(object):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
 
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		# Create a new request.
 		request = self.pool.create_request(remove=pkgs)
 
@@ -481,9 +443,6 @@ class Pakfire(object):
 		t.run()
 
 	def info(self, patterns):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		pkgs = []
 
 		# For all patterns we run a single search which returns us a bunch
@@ -502,14 +461,11 @@ class Pakfire(object):
 					if pkg in pkgs:
 						continue
 
-					pkgs.append(pkg)
+				pkgs.append(pkg)
 
 		return sorted(pkgs)
 
 	def search(self, pattern):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		# Do the search.
 		pkgs = {}
 		for solv in self.pool.search(pattern, satsolver.SEARCH_STRING|satsolver.SEARCH_FILES):
@@ -530,15 +486,9 @@ class Pakfire(object):
 		self.install("@%s" % group, **kwargs)
 
 	def grouplist(self, group):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		return self.pool.grouplist(group)
 
 	def provides(self, patterns):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		pkgs = []
 		for pattern in patterns:
 			for pkg in self.pool.whatprovides(self, pattern):
@@ -553,21 +503,12 @@ class Pakfire(object):
 		return pkgs
 
 	def resolvdep(self, pkg):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		return self.pool.resolvdep(self, pkg)
 
 	def repo_list(self):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		return [r for r in self.repos]
 
 	def clean_all(self):
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		log.debug("Cleaning up everything...")
 
 		# Clean up repository caches.
@@ -577,9 +518,6 @@ class Pakfire(object):
 		"""
 			Try to fix any errors in the system.
 		"""
-		# Initialize this pakfire instance.
-		self.initialize()
-
 		# Detect any errors in the dependency tree.
 		# For that we create an empty request and solver and try to solve
 		# something.

@@ -157,8 +157,6 @@ class BuildEnviron(object):
 		pass
 
 	def start(self):
-		assert not self.pakfire.initialized, "Pakfire has already been initialized"
-
 		# Unshare namepsace.
 		# If this fails because the kernel has no support for CLONE_NEWIPC or CLONE_NEWUTS,
 		# we try to fall back to just set CLONE_NEWNS.
@@ -179,9 +177,6 @@ class BuildEnviron(object):
 
 		# Lock the build environment.
 		self.lock()
-
-		# Initialize pakfire instance.
-		self.pakfire.initialize()
 
 		# Optionally enable private networking.
 		if self.settings.get("private_network", None):
