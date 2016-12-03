@@ -275,25 +275,6 @@ class ConfigBuilder(_Config):
 		return True
 
 
-class ConfigClient(_Config):
-	files = ["general.conf", "client.conf"]
-
-	default_settings = {
-		"client" : {
-			# The default server is the official Pakfire
-			# server.
-			"server"   : PAKFIRE_HUB,
-		},
-	}
-
-	def get_hub_credentials(self):
-		hub_url  = self.get("client", "server")
-		username = self.get("client", "username")
-		password = self.get("client", "password")
-
-		return hub_url, username, password
-
-
 class ConfigDaemon(_Config):
 	files = ["general.conf", "daemon.conf"]
 
