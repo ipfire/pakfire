@@ -304,7 +304,7 @@ class Cli(object):
 		print(_("Cleaning up everything..."))
 
 		with self.pakfire(ns) as p:
-			p.clean_all()
+			p.clean()
 
 	def handle_check(self, ns):
 		with self.pakfire(ns) as p:
@@ -394,7 +394,7 @@ class CliBuilder(Cli):
 
 		# clean
 		clean = subparsers.add_parser("clean", help=_("Cleanup all temporary files"))
-		clean.set_defaults(func=self.handle_clean_all)
+		clean.set_defaults(func=self.handle_clean)
 
 		# dist
 		dist = subparsers.add_parser("dist", help=_("Generate a source package"))
