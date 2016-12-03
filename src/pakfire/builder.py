@@ -63,9 +63,6 @@ BUILD_LOG_HEADER = """
 """
 
 class BuildEnviron(object):
-	# The version of the kernel this machine is running.
-	kernel_version = os.uname()[2]
-
 	def __init__(self, pakfire, filename=None, distro_name=None, build_id=None, logfile=None, release_build=True, **kwargs):
 		self.pakfire = pakfire
 
