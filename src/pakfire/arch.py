@@ -25,21 +25,21 @@ log = logging.getLogger("pakfire.arch")
 log.propagate = 1
 
 class Arch(object):
-	def __init__(self, arch):
-		self.arch = arch
+	def __init__(self, name):
+		self.name = name
 
 	def __eq__(self, other):
-		return self.arch == other.arch
+		return self.name == other.name
 
 	@property
 	def platform(self):
 		"""
 			Returns the "class" this architecture belongs to.
 		"""
-		if self.arch.startswith("arm") or self.arch == "aarch64":
+		if self.name.startswith("arm") or self.name == "aarch64":
 			return "arm"
 
-		if self.arch in ("i686", "x86_64"):
+		if self.name in ("i686", "x86_64"):
 			return "x86"
 
 		return "unknown"
@@ -52,9 +52,9 @@ class Arch(object):
 		vendor = vendor.lower()
 		assert vendor
 
-		s = "%s-%s-linux-gnu" % (self.arch, vendor)
+		s = "%s-%s-linux-gnu" % (self.name, vendor)
 
-		if self.arch.startswith("arm"):
+		if self.name.startswith("arm"):
 			s += "eabi"
 
 		return s
@@ -88,7 +88,7 @@ class Arch(object):
 		}
 
 		try:
-			return x[self.arch]
+			return x[self.name]
 		except KeyError:
 			return []
 
@@ -115,7 +115,7 @@ class Arch(object):
 		}
 
 		try:
-			personality = arch2personality[self.arch]
+			personality = arch2personality[self.name]
 		except KeyError:
 			personality = None
 
