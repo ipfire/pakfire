@@ -28,8 +28,6 @@ import socket
 log = logging.getLogger("pakfire.config")
 log.propagate = 1
 
-from .system import system
-
 from .constants import *
 from .i18n import _
 
