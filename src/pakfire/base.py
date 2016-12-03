@@ -29,7 +29,6 @@ from . import config
 from . import distro
 from . import filelist
 from . import keyring
-from . import logger
 from . import packages
 from . import repository
 from . import satsolver
@@ -105,10 +104,6 @@ class Pakfire(object):
 			files = []
 
 		return config.Config(*files)
-
-	def __del__(self):
-		# Reset logging.
-		logger.setup_logging()
 
 	def destroy(self):
 		self.repos.shutdown()
