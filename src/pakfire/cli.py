@@ -221,16 +221,16 @@ class Cli(object):
 		return args.func(args)
 
 	def handle_info(self, ns):
-		p = self.create_pakfire(ns)
+		with self.pakfire(ns) as p:
+			for pkg in p.info(ns.package):
+				s = pkg.dump(long=ns.verbose)
+				print(s)
 
-		for pkg in p.info(ns.package):
-			print(pkg.dump(long=ns.verbose))
-
-	def handle_search(self):
-		p = self.create_pakfire()
-
-		for pkg in p.search(self.args.pattern):
-			print(pkg.dump(short=True))
+	def handle_search(self, ns):
+		with self.pakfire(ns) as p:
+			for pkg in p.search(ns.pattern):
+				s = pkg.dump(short=True)
+				print(s)
 
 	def handle_update(self, **args):
 		p = self.create_pakfire()
@@ -245,118 +245,112 @@ class Cli(object):
 
 		p.update(packages, **args)
 
-	def handle_distro_sync(self):
-		self.handle_update(sync=True)
+	def handle_distro_sync(self, ns):
+		self.handle_update(ns, sync=True)
 
-	def handle_check_update(self):
-		self.handle_update(check=True)
+	def handle_check_update(self, ns):
+		self.handle_update(ns, check=True)
 
-	def handle_downgrade(self, **args):
-		p = self.create_pakfire()
-		p.downgrade(
-			self.args.package,
-			allow_vendorchange=self.args.allow_vendorchange,
-			allow_archchange=not self.args.disallow_archchange,
-			**args
-		)
+	def handle_downgrade(self, ns, **args):
+		with self.pakfire(ns) as p:
+			p.downgrade(
+				self.args.package,
+				allow_vendorchange=self.args.allow_vendorchange,
+				allow_archchange=not self.args.disallow_archchange,
+				**args
+			)
 
-	def handle_install(self):
-		p = self.create_pakfire()
-		p.install(self.args.package, ignore_recommended=self.args.without_recommends)
+	def handle_install(self, ns):
+		with self.pakfire(ns) as p:
+			p.install(ns.package, ignore_recommended=ns.without_recommends)
 
-	def handle_reinstall(self):
-		p = self.create_pakfire()
-		p.reinstall(self.args.package)
+	def handle_reinstall(self, ns):
+		with self.pakfire(ns) as p:
+			p.reinstall(ns.package)
 
-	def handle_remove(self):
-		p = self.create_pakfire()
-		p.remove(self.args.package)
+	def handle_remove(self, ns):
+		with self.pakfire(ns) as p:
+			p.remove(ns.package)
 
-	def handle_provides(self, long=False):
-		p = self.create_pakfire()
+	def handle_provides(self, ns, long=False):
+		with self.pakfire(ns) as p:
+			for pkg in p.provides(ns.pattern):
+				s = pkg.dump(long=long)
+				print(s)
 
-		for pkg in p.provides(self.args.pattern):
-			print(pkg.dump(int=int))
+	def handle_grouplist(self, ns):
+		with self.pakfire(ns) as p:
+			for pkg in p.grouplist(ns.group[0]):
+				print(" * %s" % pkg)
 
-	def handle_grouplist(self):
-		p = self.create_pakfire()
+	def handle_groupinstall(self, ns):
+		with self.pakfire(ns) as p:
+			p.groupinstall(ns.group[0])
 
-		for pkg in p.grouplist(self.args.group[0]):
-			print(" * %s" % pkg)
+	def handle_repolist(self, ns):
+		with self.pakfire(ns) as p:
+			# Get a list of all repositories.
+			repos = p.repo_list()
 
-	def handle_groupinstall(self):
-		p = self.create_pakfire()
-		p.groupinstall(self.args.group[0])
+			FORMAT = " %-20s %8s %12s %12s "
+			title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
+			print(title)
+			print("=" * len(title)) # spacing line
 
-	def handle_repolist(self):
-		p = self.create_pakfire()
+			for repo in repos:
+				print(FORMAT % (repo.name, repo.enabled, repo.priority, len(repo)))
 
-		# Get a list of all repositories.
-		repos = p.repo_list()
-
-		FORMAT = " %-20s %8s %12s %12s "
-		title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
-		print(title)
-		print("=" * len(title)) # spacing line
-
-		for repo in repos:
-			print(FORMAT % (repo.name, repo.enabled, repo.priority, len(repo)))
-
-	def handle_clean_all(self):
+	def handle_clean(self, ns):
 		print(_("Cleaning up everything..."))
 
-		p = self.create_pakfire()
-		p.clean_all()
+		with self.pakfire(ns) as p:
+			p.clean_all()
 
-	def handle_check(self):
-		p = self.create_pakfire()
-		p.check()
+	def handle_check(self, ns):
+		with self.pakfire(ns) as p:
+			p.check()
 
-	def handle_resolvdep(self):
-		p = self.create_pakfire()
+	def handle_resolvdep(self, ns):
+		with self.pakfire(ns) as p:
+			solver = p.resolvdep(ns.package[0])
+			assert solver.status
 
-		(pkg,) = self.args.package
+			t = transaction.Transaction.from_solver(p, solver)
+			t.dump()
 
-		solver = p.resolvdep(pkg)
-		assert solver.status
+	def handle_extract(self, ns):
+		with self.pakfire(ns) as p:
+			# Open all packages.
+			pkgs = []
+			for pkg in ns.package:
+				pkg = packages.open(self, None, pkg)
+				pkgs.append(pkg)
 
-		t = transaction.Transaction.from_solver(p, solver)
-		t.dump()
+			target_prefix = ns.target
 
-	def handle_extract(self):
-		p = self.create_pakfire()
+			# Search for binary packages.
+			binary_packages = any([p.type == "binary" for p in pkgs])
+			source_packages = any([p.type == "source" for p in pkgs])
 
-		# Open all packages.
-		pkgs = []
-		for pkg in self.args.package:
-			pkg = packages.open(self, None, pkg)
-			pkgs.append(pkg)
+			if binary_packages and source_packages:
+				raise Error(_("Cannot extract mixed package types"))
 
-		target_prefix = self.args.target
+			if binary_packages and not target_prefix:
+				raise Error(_("You must provide an install directory with --target=..."))
 
-		# Search for binary packages.
-		binary_packages = any([p.type == "binary" for p in pkgs])
-		source_packages = any([p.type == "source" for p in pkgs])
+			elif source_packages and not target_prefix:
+				target_prefix = "/usr/src/packages/"
 
-		if binary_packages and source_packages:
-			raise Error(_("Cannot extract mixed package types"))
+			if target_prefix == "/":
+				raise Error(_("Cannot extract to /."))
 
-		if binary_packages and not target_prefix:
-			raise Error(_("You must provide an install directory with --target=..."))
+			for pkg in pkgs:
+				if pkg.type == "binary":
+					target_dir = target_prefix
+				elif pkg.type == "source":
+					target_dir = os.path.join(target_prefix, pkg.friendly_name)
 
-		elif source_packages and not target_prefix:
-			target_prefix = "/usr/src/packages/"
-
-		if target_prefix == "/":
-			raise Error(_("Cannot extract to /."))
-
-		for pkg in pkgs:
-			if pkg.type == "binary":
-				target_dir = target_prefix
-			elif pkg.type == "source":
-				target_dir = os.path.join(target_prefix, pkg.friendly_name)
-
-			pkg.extract(message=_("Extracting"), prefix=target_dir)
+				pkg.extract(message=_("Extracting"), prefix=target_dir)
 
 
 class CliBuilder(Cli):
@@ -471,25 +465,6 @@ class CliBuilder(Cli):
 		update.set_defaults(func=self.handle_update)
 
 		return parser.parse_args()
-
-	@property
-	def pakfire_args(self):
-		ret = {
-			"arch" : self.args.arch,
-		}
-
-		if hasattr(self.args, "offline") and self.args.offline:
-			ret["downloader"] = {
-				"offline" : self.args.offline,
-			}
-
-		if hasattr(self.args, "distro"):
-			ret["distro_name"] = self.args.distro
-
-		return ret
-
-	def handle_info(self, ns):
-		Cli.handle_info(self, ns)
 
 	def handle_build(self):
 		# Get the package descriptor from the command line options
