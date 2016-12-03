@@ -53,7 +53,7 @@ class Config(object):
 		log.debug("Reading configuration from %s" % path)
 
 		with open(path) as f:
-			self._config.readfp(f)
+			self._config.read_file(f)
 
 	def parse(self, s):
 		"""
