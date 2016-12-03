@@ -61,7 +61,15 @@ class Config(object):
 		"""
 		self._config.read_string(s)
 
-	def get(self, section, option, default=None):
+	def get(self, section, option=None, default=None):
+		if option is None:
+			try:
+				section = self._config.items(section)
+			except configparser.NoSectionError:
+				return default
+
+			return dict(section)
+
 		return self._config.get(section, option, fallback=default)
 
 	def get_bool(self, section, option, default=None):

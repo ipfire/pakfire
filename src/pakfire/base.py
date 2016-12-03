@@ -78,7 +78,7 @@ class Pakfire(object):
 
 		# Get more information about the distribution we are running
 		# or building
-		self.distro = distro.Distribution(self.config.get_distro_conf())
+		self.distro = distro.Distribution(self.config.get("distro"))
 		if arch:
 			self.distro.arch = arch
 
