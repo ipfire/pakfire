@@ -76,11 +76,6 @@ class Cli(object):
 		clean = subparsers.add_parser("clean", help=_("Cleanup all temporary files"))
 		clean.set_defaults(func=self.handle_clean)
 
-		# distro-sync
-		distro_sync = subparsers.add_parser("distro-sync",
-			help=_("Sync all installed with the latest one in the distribution"))
-		distro_sync.set_defaults(func=self.handle_distro_sync)
-
 		# downgrade
 		downgrade = subparsers.add_parser("downgrade", help=_("Downgrade one or more packages"))
 		downgrade.add_argument("package", nargs="*",
@@ -166,6 +161,11 @@ class Cli(object):
 		search.add_argument("pattern", help=_("A pattern to search for"))
 		search.set_defaults(func=self.handle_search)
 
+		# sync
+		sync = subparsers.add_parser("sync",
+			help=_("Sync all installed with the latest one in the distribution"))
+		sync.set_defaults(func=self.handle_sync)
+
 		# update
 		update = subparsers.add_parser("update",
 			help=_("Update the whole system or one specific package"))
@@ -245,7 +245,7 @@ class Cli(object):
 
 		p.update(packages, **args)
 
-	def handle_distro_sync(self, ns):
+	def handle_sync(self, ns):
 		self.handle_update(ns, sync=True)
 
 	def handle_check_update(self, ns):
