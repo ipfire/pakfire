@@ -38,6 +38,8 @@ from . import util
 import logging
 log = logging.getLogger("pakfire")
 
+from .system import system
+
 from .constants import *
 from .i18n import _
 
@@ -45,29 +47,30 @@ class Pakfire(object):
 	mode = None
 
 	def __init__(self, path="/", arch=None):
-		# Check if we are operating as the root user.
-		self.check_root_user()
-
-		# The path where we are operating in.
+		# The path where we are operating in
 		self.path = path
 
-		# check if we are actually running on an ipfire system.
+		# Default to system architecture
+		self.arch = arch or system.arch
+
+		# Check if we are operating as the root user
+		self.check_root_user()
+
+		# check if we are actually running on an ipfire system
 		if not self.mode and self.path == "/":
 			self.check_is_ipfire()
 
 		# Load configuration
 		self.config = config.Config("general.conf")
 
-		# Initialize the keyring.
+		# Initialize the keyring
 		self.keyring = keyring.Keyring(self)
 
 		# Get more information about the distribution we are running
 		# or building
 		self.distro = distro.Distribution(self.config.get("distro"))
-		if arch:
-			self.distro.arch = arch
 
-		self.pool = satsolver.Pool(self.distro.arch)
+		self.pool = satsolver.Pool(self.arch.name)
 		self.repos = repository.Repositories(self)
 
 	def __enter__(self):
@@ -86,10 +89,6 @@ class Pakfire(object):
 	def __exit__(self, type, value, traceback):
 		# Close repositories
 		self.repos.shutdown()
-
-	@property
-	def supported_arches(self):
-		return system.supported_arches
 
 	@property
 	def offline(self):
