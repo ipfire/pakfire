@@ -55,6 +55,12 @@ class Config(object):
 		with open(path) as f:
 			self._config.readfp(f)
 
+	def parse(self, s):
+		"""
+			Takes configuration as a string and parses it
+		"""
+		self._config.read_string(s)
+
 	def get(self, section, option, default=None):
 		return self._config.get(section, option, fallback=default)
 
