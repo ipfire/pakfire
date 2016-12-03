@@ -102,20 +102,6 @@ class Pakfire(object):
 		if not os.getuid() == 0 or not os.getgid() == 0:
 			raise Exception("You must run pakfire as the root user.")
 
-	def check_host_arch(self, arch):
-		"""
-			Check if we can build for arch.
-		"""
-		# If no arch was given on the command line we build for our
-		# own arch which should always work.
-		if not arch:
-			return True
-
-		if not system.host_supports_arch(arch):
-			raise BuildError("Cannot build for the target architecture: %s" % arch)
-
-		raise BuildError(arch)
-
 	def check_is_ipfire(self):
 		ret = os.path.exists("/etc/ipfire-release")
 
