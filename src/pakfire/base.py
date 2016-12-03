@@ -46,12 +46,15 @@ from .i18n import _
 class Pakfire(object):
 	mode = None
 
-	def __init__(self, path="/", arch=None):
+	def __init__(self, path="/", arch=None, distro=None):
 		# The path where we are operating in
 		self.path = path
 
 		# Default to system architecture
 		self.arch = arch or system.arch
+
+		# Default to system distribution
+		self.distro = distro or system.distro
 
 		# Check if we are operating as the root user
 		self.check_root_user()
@@ -65,10 +68,6 @@ class Pakfire(object):
 
 		# Initialize the keyring
 		self.keyring = keyring.Keyring(self)
-
-		# Get more information about the distribution we are running
-		# or building
-		self.distro = distro.Distribution(self.config.get("distro"))
 
 		self.pool = satsolver.Pool(self.arch.name)
 		self.repos = repository.Repositories(self)

@@ -25,6 +25,7 @@ import socket
 import tempfile
 
 from . import arch
+from . import distro
 from . import shell
 
 from . import _pakfire
@@ -37,7 +38,11 @@ class System(object):
 		the system this software is running on.
 	"""
 	def __init__(self):
+		# Load the system's native architecture
 		self.arch = arch.Arch(self.native_arch)
+
+		# Load the system's distribution
+		self.distro = distro.Distribution()
 
 	@property
 	def hostname(self):
@@ -48,14 +53,6 @@ class System(object):
 			hn = "%s.localdomain" % hn
 
 		return hn
-
-	@property
-	def distro(self):
-		if not hasattr(self, "_distro"):
-			from . import distro
-			self._distro = distro.Distribution()
-
-		return self._distro
 
 	@property
 	def native_arch(self):
