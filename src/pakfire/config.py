@@ -279,26 +279,3 @@ class ConfigBuilder(_Config):
 
 		self.read(filename)
 		return True
-
-
-class ConfigDaemon(_Config):
-	files = ["general.conf", "daemon.conf"]
-
-	default_settings = {
-		"daemon" : {
-			# The default server is the official Pakfire
-			# server.
-			"server"   : PAKFIRE_HUB,
-
-			# The default hostname is the host name of this
-			# machine.
-			"hostname" : system.hostname,
-		},
-	}
-
-	def get_hub_credentials(self):
-		hub_url  = self.get("daemon", "server")
-		hostname = self.get("daemon", "hostname")
-		password = self.get("daemon", "secret")
-
-		return hub_url, hostname, password

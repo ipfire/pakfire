@@ -488,7 +488,7 @@ class PakfireWorker(multiprocessing.Process):
 			logfile = os.path.join(tmpdir, "build.log")
 
 			# Create pakfire configuration instance.
-			config = pakfire.config.ConfigDaemon()
+			config = pakfire.config.Config()
 			config.parse(job.config)
 
 			# Create pakfire instance.

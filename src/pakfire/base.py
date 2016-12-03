@@ -101,7 +101,10 @@ class Pakfire(object):
 		"""
 			This method loads all needed configuration files.
 		"""
-		return config.Config(files=files)
+		if files is None:
+			files = []
+
+		return config.Config(*files)
 
 	def __del__(self):
 		# Reset logging.
