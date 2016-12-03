@@ -723,10 +723,6 @@ class PakfireBuilder(Pakfire):
 			b.stop()
 
 
-class PakfireClient(Pakfire):
-	mode = "client"
-
-
 class PakfireServer(Pakfire):
 	mode = "server"
 
