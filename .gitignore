@@ -22,7 +22,7 @@
 *.mo
 *.o
 *.stamp
-*.swp
+*.sw[op]
 *.trs
 *~
 .deps
