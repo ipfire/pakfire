@@ -42,93 +42,144 @@ from .constants import *
 from .i18n import _
 
 class Cli(object):
-	pakfire = base.Pakfire
-
 	def __init__(self):
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire command line interface."),
+		pass
+
+	def parse_cli(self):
+		parser = argparse.ArgumentParser(
+			description = _("Pakfire command line interface"),
 		)
-		self._add_common_arguments(self.parser)
+		subparsers = parser.add_subparsers()
 
-		self.parser.add_argument("--root", metavar="PATH",
-			default="/",
-			help=_("The path where pakfire should operate in."))
+		# Add common arguments
+		self._add_common_arguments(parser)
 
-		# Add sub-commands.
-		self.sub_commands = self.parser.add_subparsers()
+		parser.add_argument("--root", metavar="PATH", default="/",
+			help=_("The path where pakfire should operate in"))
 
-		self.parse_command_install()
-		self.parse_command_reinstall()
-		self.parse_command_remove()
-		self.parse_command_info()
-		self.parse_command_search()
-		self.parse_command_check_update()
-		self.parse_command_distro_sync()
-		self.parse_command_update()
-		self.parse_command_downgrade()
-		self.parse_command_provides()
-		self.parse_command_grouplist()
-		self.parse_command_groupinstall()
-		self.parse_command_repolist()
-		self.parse_command_clean()
-		self.parse_command_check()
-		self.parse_command_resolvdep()
-		self.parse_command_extract()
+		# check
+		check = subparsers.add_parser("check", help=_("Check the system for any errors"))
+		check.set_defaults(func=self.handle_check)
 
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
+		# check-update
+		check_update = subparsers.add_parser("check-update",
+			help=_("Check, if there are any updates available"))
+		check_update.set_defaults(func=self.handle_check_update)
+		check_update.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update"))
+		check_update.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages"))
+		check_update.add_argument("--disallow-archchange", action="store_true",
+			help=_("Disallow changing the architecture of packages"))
 
-		self.action2func = {
-			"install"      : self.handle_install,
-			"reinstall"    : self.handle_reinstall,
-			"remove"       : self.handle_remove,
-			"check_update" : self.handle_check_update,
-			"distro_sync"  : self.handle_distro_sync,
-			"update"       : self.handle_update,
-			"downgrade"    : self.handle_downgrade,
-			"info"         : self.handle_info,
-			"search"       : self.handle_search,
-			"provides"     : self.handle_provides,
-			"grouplist"    : self.handle_grouplist,
-			"groupinstall" : self.handle_groupinstall,
-			"repolist"     : self.handle_repolist,
-			"clean_all"    : self.handle_clean_all,
-			"check"        : self.handle_check,
-			"resolvdep"    : self.handle_resolvdep,
-			"extract"      : self.handle_extract,
-		}
+		# clean
+		clean = subparsers.add_parser("clean", help=_("Cleanup all temporary files"))
+		clean.set_defaults(func=self.handle_clean)
 
-	@property
-	def pakfire_args(self):
-		ret = {}
+		# distro-sync
+		distro_sync = subparsers.add_parser("distro-sync",
+			help=_("Sync all installed with the latest one in the distribution"))
+		distro_sync.set_defaults(func=self.handle_distro_sync)
 
-		if hasattr(self.args, "root"):
-			ret["path"] = self.args.root
+		# downgrade
+		downgrade = subparsers.add_parser("downgrade", help=_("Downgrade one or more packages"))
+		downgrade.add_argument("package", nargs="*",
+			help=_("Give a name of a package to downgrade"))
+		downgrade.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages"))
+		downgrade.add_argument("--disallow-archchange", action="store_true",
+			help=_("Disallow changing the architecture of packages"))
+		downgrade.set_defaults(func=self.handle_downgrade)
 
-		if hasattr(self.args, "offline") and self.args.offline:
-			ret["downloader"] = {
-				"offline" : self.args.offline,
-			}
+		# groupinstall
+		groupinstall = subparsers.add_parser("groupinstall",
+			help=_("Install all packages that belong to the given group"))
+		groupinstall.add_argument("group", nargs=1, help=_("Group name"))
+		groupinstall.set_defaults(func=self.handle_groupinstall)
 
-		if hasattr(self.args, "config"):
-			ret["configs"] = self.args.config
-		else:
-			ret["configs"] = None
+		# grouplist
+		grouplist = subparsers.add_parser("grouplist",
+			help=_("Get list of packages that belong to the given group"))
+		grouplist.add_argument("group", nargs=1,
+			help=_("Group name to search for"))
+		grouplist.set_defaults(func=self.handle_grouplist)
 
-		return ret
+		# extract
+		extract = subparsers.add_parser("extract",
+			help=_("Extract a package to a directory"))
+		extract.add_argument("package", nargs="+",
+			help=_("Give name of the file to extract"))
+		extract.add_argument("--target", nargs="?",
+			help=_("Target directory where to extract to"))
+		extract.set_defaults(func=self.handle_extract)
 
-	def create_pakfire(self, ns):
-		p = base.Pakfire()
+		# info
+		info = subparsers.add_parser("info",
+			help=_("Print some information about the given package(s)"))
+		info.add_argument("package", nargs="+",
+			help=_("Give at least the name of one package"))
+		info.set_defaults(func=self.handle_info)
 
-		# Disable repositories.
-		for repo in ns.disable_repo:
-			p.repos.disable_repo(repo)
+		# install
+		install = subparsers.add_parser("install",
+			help=_("Install one or more packages to the system"))
+		install.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to install"))
+		install.add_argument("--without-recommends", action="store_true",
+			help=_("Don't install recommended packages"))
+		install.set_defaults(func=self.handle_install)
 
-		# Enable repositories.
-		for repo in ns.enable_repo:
-			p.repos.enable_repo(repo)
+		# provides
+		provides = subparsers.add_parser("provides",
+			help=_("Get a list of packages that provide a given file or feature"))
+		provides.add_argument("pattern", nargs="+", help=_("File or feature to search for"))
+		provides.set_defaults(func=self.handle_provides)
 
-		return p
+		# reinstall
+		reinstall = subparsers.add_parser("reinstall",
+			help=_("Reinstall one or more packages"))
+		reinstall.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to reinstall"))
+		reinstall.set_defaults(func=self.handle_reinstall)
+
+		# remove
+		remove = subparsers.add_parser("remove",
+			help=_("Remove one or more packages from the system"))
+		remove.add_argument("package", nargs="+",
+			help=_("Give name of at least one package to remove"))
+		remove.set_defaults(func=self.handle_remove)
+
+		# repolist
+		repolist = subparsers.add_parser("repolist",
+			help=_("List all currently enabled repositories"))
+		repolist.set_defaults(func=self.handle_repolist)
+
+		# resolvdep
+		resolvdep = subparsers.add_parser("resolvdep",
+			help=_("Check the dependencies for a particular package"))
+		resolvdep.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to check"))
+		resolvdep.set_defaults(func=self.handle_resolvdep)
+
+		# search
+		search = subparsers.add_parser("search", help=_("Search for a given pattern"))
+		search.add_argument("pattern", help=_("A pattern to search for"))
+		search.set_defaults(func=self.handle_search)
+
+		# update
+		update = subparsers.add_parser("update",
+			help=_("Update the whole system or one specific package"))
+		update.add_argument("package", nargs="*",
+			help=_("Give a name of a package to update or leave emtpy for all"))
+		update.add_argument("--exclude", "-x", nargs="+",
+			help=_("Exclude package from update."))
+		update.add_argument("--allow-vendorchange", action="store_true",
+			help=_("Allow changing the vendor of packages."))
+		update.add_argument("--disallow-archchange", action="store_true",
+			help=_("Disallow changing the architecture of packages."))
+		update.set_defaults(func=self.handle_update)
+
+		return parser.parse_args()
 
 	def _add_common_arguments(self, parser, offline_switch=True):
 		parser.add_argument("--version", action="version",
@@ -150,159 +201,18 @@ class Cli(object):
 			parser.add_argument("--offline", action="store_true",
 				help=_("Run pakfire in offline mode."))
 
-	def parse_command_install(self):
-		# Implement the "install" command.
-		sub_install = self.sub_commands.add_parser("install",
-			help=_("Install one or more packages to the system."))
-		sub_install.add_argument("package", nargs="+",
-			help=_("Give name of at least one package to install."))
-		sub_install.add_argument("--without-recommends", action="store_true",
-			help=_("Don't install recommended packages."))
-		sub_install.add_argument("action", action="store_const", const="install")
+	def pakfire(self, ns):
+		p = base.Pakfire()
 
-	def parse_command_reinstall(self):
-		# Implement the "reinstall" command.
-		sub_install = self.sub_commands.add_parser("reinstall",
-			help=_("Reinstall one or more packages."))
-		sub_install.add_argument("package", nargs="+",
-			help=_("Give name of at least one package to reinstall."))
-		sub_install.add_argument("action", action="store_const", const="reinstall")
+		# Disable repositories.
+		for repo in ns.disable_repo:
+			p.repos.disable_repo(repo)
 
-	def parse_command_remove(self):
-		# Implement the "remove" command.
-		sub_remove = self.sub_commands.add_parser("remove",
-			help=_("Remove one or more packages from the system."))
-		sub_remove.add_argument("package", nargs="+",
-			help=_("Give name of at least one package to remove."))
-		sub_remove.add_argument("action", action="store_const", const="remove")
+		# Enable repositories.
+		for repo in ns.enable_repo:
+			p.repos.enable_repo(repo)
 
-	@staticmethod
-	def _parse_command_update(parser, package=True):
-		if package:
-			parser.add_argument("package", nargs="*",
-				help=_("Give a name of a package to update or leave emtpy for all."))
-
-		parser.add_argument("--exclude", "-x", nargs="+",
-			help=_("Exclude package from update."))
-		parser.add_argument("--allow-vendorchange", action="store_true",
-			help=_("Allow changing the vendor of packages."))
-		parser.add_argument("--disallow-archchange", action="store_true",
-			help=_("Disallow changing the architecture of packages."))
-
-	def parse_command_update(self):
-		# Implement the "update" command.
-		sub_update = self.sub_commands.add_parser("update",
-			help=_("Update the whole system or one specific package."))
-		sub_update.add_argument("action", action="store_const", const="update")
-		self._parse_command_update(sub_update)
-
-	def parse_command_distro_sync(self):
-		# Implement the "distro-sync" command.
-		sub_distro_sync = self.sub_commands.add_parser("distro-sync",
-			help=_("Sync all installed with the latest one in the distribution."))
-		sub_distro_sync.add_argument("action", action="store_const", const="distro_sync")
-		self._parse_command_update(sub_distro_sync, package=False)
-
-	def parse_command_check_update(self):
-		# Implement the "check-update" command.
-		sub_check_update = self.sub_commands.add_parser("check-update",
-			help=_("Check, if there are any updates available."))
-		sub_check_update.add_argument("action", action="store_const", const="check_update")
-		self._parse_command_update(sub_check_update)
-
-	def parse_command_downgrade(self):
-		# Implement the "downgrade" command.
-		sub_downgrade = self.sub_commands.add_parser("downgrade",
-			help=_("Downgrade one or more packages."))
-		sub_downgrade.add_argument("package", nargs="*",
-			help=_("Give a name of a package to downgrade."))
-		sub_downgrade.add_argument("--allow-vendorchange", action="store_true",
-			help=_("Allow changing the vendor of packages."))
-		sub_downgrade.add_argument("--disallow-archchange", action="store_true",
-			help=_("Disallow changing the architecture of packages."))
-		sub_downgrade.add_argument("action", action="store_const", const="downgrade")
-
-	def parse_command_info(self):
-		# Implement the "info" command.
-		sub_info = self.sub_commands.add_parser("info",
-			help=_("Print some information about the given package(s)."))
-		sub_info.add_argument("package", nargs="+",
-			help=_("Give at least the name of one package."))
-		sub_info.add_argument("action", action="store_const", const="info")
-
-	def parse_command_search(self):
-		# Implement the "search" command.
-		sub_search = self.sub_commands.add_parser("search",
-			help=_("Search for a given pattern."))
-		sub_search.add_argument("pattern",
-			help=_("A pattern to search for."))
-		sub_search.add_argument("action", action="store_const", const="search")
-
-	def parse_command_provides(self):
-		# Implement the "provides" command
-		sub_provides = self.sub_commands.add_parser("provides",
-			help=_("Get a list of packages that provide a given file or feature."))
-		sub_provides.add_argument("pattern", nargs="+",
-			help=_("File or feature to search for."))
-		sub_provides.add_argument("action", action="store_const", const="provides")
-
-	def parse_command_grouplist(self):
-		# Implement the "grouplist" command
-		sub_grouplist = self.sub_commands.add_parser("grouplist",
-			help=_("Get list of packages that belong to the given group."))
-		sub_grouplist.add_argument("group", nargs=1,
-			help=_("Group name to search for."))
-		sub_grouplist.add_argument("action", action="store_const", const="grouplist")
-
-	def parse_command_groupinstall(self):
-		# Implement the "grouplist" command
-		sub_groupinstall = self.sub_commands.add_parser("groupinstall",
-			help=_("Install all packages that belong to the given group."))
-		sub_groupinstall.add_argument("group", nargs=1,
-			help=_("Group name."))
-		sub_groupinstall.add_argument("action", action="store_const", const="groupinstall")
-
-	def parse_command_repolist(self):
-		# Implement the "repolist" command
-		sub_repolist = self.sub_commands.add_parser("repolist",
-			help=_("List all currently enabled repositories."))
-		sub_repolist.add_argument("action", action="store_const", const="repolist")
-
-	def parse_command_clean(self):
-		sub_clean = self.sub_commands.add_parser("clean", help=_("Cleanup commands."))
-
-		sub_clean_commands = sub_clean.add_subparsers()
-
-		self.parse_command_clean_all(sub_clean_commands)
-
-	def parse_command_clean_all(self, sub_commands):
-		sub_create = sub_commands.add_parser("all",
-			help=_("Cleanup all temporary files."))
-		sub_create.add_argument("action", action="store_const", const="clean_all")
-
-	def parse_command_check(self):
-		# Implement the "check" command
-		sub_check = self.sub_commands.add_parser("check",
-			help=_("Check the system for any errors."))
-		sub_check.add_argument("action", action="store_const", const="check")
-
-	def parse_command_resolvdep(self):
-		# Implement the "resolvdep" command.
-		sub_resolvdep = self.sub_commands.add_parser("resolvdep",
-			help=_("Check the dependencies for a particular package."))
-		sub_resolvdep.add_argument("package", nargs=1,
-			help=_("Give name of at least one package to check."))
-		sub_resolvdep.add_argument("action", action="store_const", const="resolvdep")
-
-	def parse_command_extract(self):
-		# Implement the "extract" command.
-		sub_extract = self.sub_commands.add_parser("extract",
-			help=_("Extract a package to a directory."))
-		sub_extract.add_argument("package", nargs="+",
-			help=_("Give name of the file to extract."))
-		sub_extract.add_argument("--target", nargs="?",
-			help=_("Target directory where to extract to."))
-		sub_extract.add_argument("action", action="store_const", const="extract")
+		return p
 
 	def run(self):
 		args = self.parse_cli()
