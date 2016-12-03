@@ -117,21 +117,15 @@ class Cli(object):
 
 		return ret
 
-	def create_pakfire(self, cls=None, **kwargs):
-		if cls is None:
-			cls = self.pakfire
-
-		args = self.pakfire_args
-		args.update(kwargs)
-
-		p = cls(**args)
+	def create_pakfire(self, ns):
+		p = base.Pakfire()
 
 		# Disable repositories.
-		for repo in self.args.disable_repo:
+		for repo in ns.disable_repo:
 			p.repos.disable_repo(repo)
 
 		# Enable repositories.
-		for repo in self.args.enable_repo:
+		for repo in ns.enable_repo:
 			p.repos.enable_repo(repo)
 
 		return p
@@ -316,11 +310,11 @@ class Cli(object):
 
 		return args.func(args)
 
-	def handle_info(self, long=False):
-		p = self.create_pakfire()
+	def handle_info(self, ns):
+		p = self.create_pakfire(ns)
 
-		for pkg in p.info(self.args.package):
-			print(pkg.dump(int=int))
+		for pkg in p.info(ns.package):
+			print(pkg.dump(long=ns.verbose))
 
 	def handle_search(self):
 		p = self.create_pakfire()
@@ -456,52 +450,117 @@ class Cli(object):
 
 
 class CliBuilder(Cli):
-	pakfire = base.PakfireBuilder
-
 	def __init__(self):
 		# Check if we are already running in a pakfire container. In that
 		# case, we cannot start another pakfire-builder.
 		if os.environ.get("container", None) == "pakfire-builder":
-			raise PakfireContainerError(_("You cannot run pakfire-builder in a pakfire chroot."))
+			raise PakfireContainerError(_("You cannot run pakfire-builder in a pakfire chroot"))
 
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire builder command line interface."),
+	def parse_cli(self):
+		parser = argparse.ArgumentParser(
+			description = _("Pakfire builder command line interface"),
 		)
-		self._add_common_arguments(self.parser)
+		subparsers = parser.add_subparsers()
 
-		# Add sub-commands.
-		self.sub_commands = self.parser.add_subparsers()
+		# Add common arguments
+		self._add_common_arguments(parser)
 
-		self.parse_command_build()
-		self.parse_command_dist()
-		self.parse_command_info()
-		self.parse_command_search()
-		self.parse_command_shell()
-		self.parse_command_update()
-		self.parse_command_provides()
-		self.parse_command_grouplist()
-		self.parse_command_repolist()
-		self.parse_command_clean()
-		self.parse_command_resolvdep()
-		self.parse_command_extract()
+		# Add additional arguments
+		parser.add_argument("--arch", "-a", nargs="?",
+			help=_("Run pakfire for the given architecture"))
+		parser.add_argument("--distro", nargs="?",
+			help=_("Choose the distribution configuration to use for build"))
 
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
+		# build
+		build = subparsers.add_parser("build", help=_("Build one or more packages"))
+		build.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to build"))
+		build.set_defaults(func=self.handle_build)
 
-		self.action2func = {
-			"build"       : self.handle_build,
-			"dist"        : self.handle_dist,
-			"update"      : self.handle_update,
-			"info"        : self.handle_info,
-			"search"      : self.handle_search,
-			"shell"       : self.handle_shell,
-			"provides"    : self.handle_provides,
-			"grouplist"   : self.handle_grouplist,
-			"repolist"    : self.handle_repolist,
-			"clean_all"   : self.handle_clean_all,
-			"resolvdep"   : self.handle_resolvdep,
-			"extract"     : self.handle_extract,
-		}
+		build.add_argument("--resultdir", nargs="?",
+			help=_("Path were the output files should be copied to"))
+		build.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)"))
+		build.add_argument("--after-shell", action="store_true",
+			help=_("Run a shell after a successful build"))
+		build.add_argument("--skip-install-test", action="store_true",
+			help=_("Do not perform the install test"))
+		build.add_argument("--private-network", action="store_true",
+			help=_("Disable network in container"))
+
+		# clean
+		clean = subparsers.add_parser("clean", help=_("Cleanup all temporary files"))
+		clean.set_defaults(func=self.handle_clean_all)
+
+		# dist
+		dist = subparsers.add_parser("dist", help=_("Generate a source package"))
+		dist.add_argument("package", nargs="+", help=_("Give name(s) of a package(s)"))
+		dist.set_defaults(func=self.handle_dist)
+
+		dist.add_argument("--resultdir", nargs="?",
+			help=_("Path were the output files should be copied to"))
+
+		# extract
+		extract = subparsers.add_parser("extract", help=_("Extract a package to a directory"))
+		extract.add_argument("package", nargs="+",
+			help=_("Give name of the file to extract"))
+		extract.add_argument("--target", nargs="?",
+			help=_("Target directory where to extract to"))
+		extract.set_defaults(func=self.handle_extract)
+
+		# info
+		info = subparsers.add_parser("info",
+			help=_("Print some information about the given package(s)"))
+		info.add_argument("package", nargs="+",
+			help=_("Give at least the name of one package."))
+		info.set_defaults(func=self.handle_info, verbose=True)
+
+		# grouplist
+		grouplist = subparsers.add_parser("grouplist",
+			help=_("Get list of packages that belong to the given group"))
+		grouplist.add_argument("group", nargs=1,
+			help=_("Group name to search for"))
+		grouplist.set_defaults(func=self.handle_grouplist)
+
+		# provides
+		provides = subparsers.add_parser("provides",
+			help=_("Get a list of packages that provide a given file or feature"))
+		provides.add_argument("pattern", nargs="+",
+			help=_("File or feature to search for"))
+		provides.set_defaults(func=self.handle_provides)
+
+		# repolist
+		repolist = subparsers.add_parser("repolist",
+			help=_("List all currently enabled repositories"))
+		repolist.set_defaults(func=self.handle_repolist)
+
+		# resolvdep
+		resolvdep = subparsers.add_parser("resolvdep",
+			help=_("Check the dependencies for a particular package"))
+		resolvdep.add_argument("package", nargs=1,
+			help=_("Give name of at least one package to check"))
+		resolvdep.set_defaults(func=self.handle_resolvdep)
+
+		# search
+		search = subparsers.add_parser("search", help=_("Search for a given pattern"))
+		search.add_argument("pattern", help=_("A pattern to search for"))
+		search.set_defaults(func=self.handle_search)
+
+		# shell
+		shell = subparsers.add_parser("shell", help=_("Go into a build shell"))
+		shell.add_argument("package", nargs="?", help=_("Give name of a package"))
+		shell.set_defaults(func=self.handle_shell)
+
+		shell.add_argument("-m", "--mode", nargs="?", default="development",
+			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
+		shell.add_argument("--private-network", action="store_true",
+			help=_("Disable network in container"))
+
+		# update
+		update = subparsers.add_parser("update", help=_("Update the package indexes"))
+		update.set_defaults(func=self.handle_update)
+
+		return parser.parse_args()
 
 	@property
 	def pakfire_args(self):
@@ -519,66 +578,8 @@ class CliBuilder(Cli):
 
 		return ret
 
-	def _add_common_arguments(self, *args, **kwargs):
-		Cli.parse_common_arguments(self, *args, **kwargs)
-
-		self.parser.add_argument("--distro", nargs="?",
-			help=_("Choose the distribution configuration to use for build"))
-
-		self.parser.add_argument("--arch", "-a", nargs="?",
-			help=_("Run pakfire for the given architecture."))
-
-	def parse_command_update(self):
-		# Implement the "update" command.
-		sub_update = self.sub_commands.add_parser("update",
-			help=_("Update the package indexes."))
-		sub_update.add_argument("action", action="store_const", const="update")
-
-	def parse_command_build(self):
-		# Implement the "build" command.
-		sub_build = self.sub_commands.add_parser("build",
-			help=_("Build one or more packages."))
-		sub_build.add_argument("package", nargs=1,
-			help=_("Give name of at least one package to build."))
-		sub_build.add_argument("action", action="store_const", const="build")
-
-		sub_build.add_argument("--resultdir", nargs="?",
-			help=_("Path were the output files should be copied to."))
-		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
-			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
-		sub_build.add_argument("--after-shell", action="store_true",
-			help=_("Run a shell after a successful build."))
-		sub_build.add_argument("--no-install-test", action="store_true",
-			help=_("Do not perform the install test."))
-		sub_build.add_argument("--private-network", action="store_true",
-			help=_("Disable network in container."))
-
-	def parse_command_shell(self):
-		# Implement the "shell" command.
-		sub_shell = self.sub_commands.add_parser("shell",
-			help=_("Go into a shell."))
-		sub_shell.add_argument("package", nargs="?",
-			help=_("Give name of a package."))
-		sub_shell.add_argument("action", action="store_const", const="shell")
-
-		sub_shell.add_argument("-m", "--mode", nargs="?", default="development",
-			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
-		sub_shell.add_argument("--private-network", action="store_true",
-			help=_("Disable network in container."))
-
-	def parse_command_dist(self):
-		# Implement the "dist" command.
-		sub_dist = self.sub_commands.add_parser("dist",
-			help=_("Generate a source package."))
-		sub_dist.add_argument("package", nargs="+",
-			help=_("Give name(s) of a package(s)."))
-		sub_dist.add_argument("action", action="store_const", const="dist")
-
-		sub_dist.add_argument("--resultdir", nargs="?",
-			help=_("Path were the output files should be copied to."))
-
-	def handle_info(self):
-		Cli.handle_info(self, int=True)
+	def handle_info(self, ns):
+		Cli.handle_info(self, ns)
 
 	def handle_build(self):
 		# Get the package descriptor from the command line options
