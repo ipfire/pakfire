@@ -91,6 +91,19 @@ class Config(object):
 
 				log.debug("    %-20s: %s" % (option, value))
 
+	def get_repos(self):
+		repos = []
+		for section in self._config.sections():
+			if not section.startswith("repo:"):
+				continue
+
+			name = section[5:]
+
+			repo = self._config.items(section)
+			repos.append((name, dict(repo)))
+
+		return repos
+
 
 # Read initial configuration
 config = Config("general.conf")
