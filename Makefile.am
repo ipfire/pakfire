@@ -94,6 +94,7 @@ pakfire_PYTHON = \
 	src/pakfire/__init__.py \
 	src/pakfire/__version__.py \
 	src/pakfire/actions.py \
+	src/pakfire/arch.py \
 	src/pakfire/base.py \
 	src/pakfire/builder.py \
 	src/pakfire/cgroup.py \

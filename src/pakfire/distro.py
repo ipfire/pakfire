@@ -19,13 +19,12 @@
 #                                                                             #
 ###############################################################################
 
+import logging
 import os
 import re
 
-import logging
-log = logging.getLogger("pakfire")
-
-from . import system
+log = logging.getLogger("pakfire.distro")
+log.propagate = 1
 
 class Distribution(object):
 	def __init__(self,  data=None):
@@ -76,9 +75,7 @@ class Distribution(object):
 	def dump(self):
 		log.debug("Distribution configuration:")
 
-		attrs = ("name", "release", "sname", "dist", "vendor", "contact",
-			"arch", "machine", "buildtarget", "source_dl",)
-
+		attrs = ("name", "release", "sname", "dist", "vendor", "contact", "source_dl")
 		for attr in attrs:
 			log.debug(" %s : %s" % (attr, getattr(self, attr)))
 
@@ -142,56 +139,9 @@ class Distribution(object):
 	def contact(self):
 		return self._data.get("contact", "N/A")
 
-	def get_arch(self):
-		arch = self._data.get("arch", None) or system.system.arch
-
-		# We can not set up a build environment for noarch.
-		if arch == "noarch":
-			arch = system.system.arch
-
-		return arch
-	
-	def set_arch(self, arch):
-		# XXX check if we are allowed to set this arch
-		if not arch:
-			return
-
-		self._data["arch"] = arch
-
-	arch = property(get_arch, set_arch)
-
-	@property
-	def platform(self):
-		"""
-			Returns the "class" this architecture belongs to.
-		"""
-		if self.arch.startswith("arm") or self.arch == "aarch64":
-			return "arm"
-
-		if self.arch in ("i686", "x86_64"):
-			return "x86"
-
-		return "unknown"
-
 	@property
 	def dist(self):
 		return self.sname[:2] + self.release
-
-	@property
-	def machine(self):
-		vendor = self.vendor.split()[0]
-
-		s = "%s-%s-linux-gnu" % (self.arch, vendor.lower())
-
-		if self.arch.startswith("arm"):
-			s += "eabi"
-
-		return s
-
-	@property
-	def buildtarget(self):
-		# Cut off last segment of machine.
-		return self.machine.replace("-gnu", "")
 
 	@property
 	def source_dl(self):
@@ -208,10 +158,6 @@ class Distribution(object):
 			"DISTRO_SNAME"        : self.sname,
 			"DISTRO_RELEASE"      : self.release,
 			"DISTRO_DISTTAG"      : self.dist,
-			"DISTRO_ARCH"         : self.arch,
-			"DISTRO_MACHINE"      : self.machine,
-			"DISTRO_PLATFORM"     : self.platform,
-			"DISTRO_BUILDTARGET"  : self.buildtarget,
 			"DISTRO_VENDOR"       : self.vendor,
 			"DISTRO_CONTACT"      : self.contact,
 			"DISTRO_SLOGAN"       : self.slogan,
@@ -227,29 +173,3 @@ class Distribution(object):
 			info[k.lower()] = v
 
 		return info
-
-	@property
-	def personality(self):
-		"""
-			Return the personality of the target system.
-
-			If host and target system are of the same architecture, we return
-			None to skip the setting of the personality in the build chroot.
-		"""
-
-		if self.arch == system.system.native_arch:
-			return None
-
-		arch2personality = {
-			"x86_64" : "linux64",
-			"i686"   : "linux32",
-			"i586"   : "linux32",
-			"i486"   : "linux32",
-		}
-
-		try:
-			personality = arch2personality[self.arch]
-		except KeyError:
-			personality = None
-
-		return personality

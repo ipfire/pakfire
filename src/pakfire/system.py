@@ -24,6 +24,7 @@ import os
 import socket
 import tempfile
 
+from . import arch
 from . import shell
 
 from . import _pakfire
@@ -35,6 +36,9 @@ class System(object):
 		Class that grants access to several information about
 		the system this software is running on.
 	"""
+	def __init__(self):
+		self.arch = arch.Arch(self.native_arch)
+
 	@property
 	def hostname(self):
 		hn = socket.gethostname()
@@ -62,47 +66,17 @@ class System(object):
 		return os.uname()[4]
 
 	@property
-	def arch(self):
-		"""
-			Return the architecture of the host we are running on.
-		"""
-		if self.supported_arches and not self.native_arch in self.supported_arches:
-			return self.supported_arches[0]
-
-		return self.native_arch
-
-	@property
 	def supported_arches(self):
 		"""
 			Check what architectures can be built on this host.
 		"""
-		host_can_build = {
-			# Host arch : Can build these arches.
-
-			# x86
-			"x86_64"    : ["x86_64", "i686",],
-			"i686"      : ["i686",],
-
-			# ARM
-			"armv5tel"  : ["armv5tel",],
-			"armv5tejl" : ["armv5tel",],
-			"armv6l"    : ["armv5tel",],
-			"armv7l"    : ["armv7hl", "armv5tel",],
-			"armv7hl"   : ["armv7hl", "armv5tel",],
-
-			"aarch64"   : ["aarch64",],
-		}
-
-		try:
-			return host_can_build[self.native_arch]
-		except KeyError:
-			return []
+		return self.arch.compatible_arches
 
 	def host_supports_arch(self, arch):
 		"""
 			Check if this host can build for the target architecture "arch".
 		"""
-		return arch in self.supported_arches
+		return self.arch.is_compatible_with(arch)
 
 	@property
 	def cpu_count(self):
