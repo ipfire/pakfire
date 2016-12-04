@@ -227,19 +227,23 @@ class Client(object):
 
 		# Send the request
 		with self._make_progressbar(message) as p:
-			with self._send_request(r) as f:
-				# Try setting progress bar to correct maximum value
-				# XXX this might need a function in ProgressBar
-				l = self._get_content_length(f)
-				p.value_max = l
+			with open(filename, "wb") as f:
+				with self._send_request(r) as res:
+					# Try setting progress bar to correct maximum value
+					# XXX this might need a function in ProgressBar
+					l = self._get_content_length(res)
+					p.value_max = l
 
-				while True:
-					buf = f.read(buffer_size)
-					if not buf:
-						break
+					while True:
+						buf = res.read(buffer_size)
+						if not buf:
+							break
 
-					l = len(buf)
-					p.increment(l)
+						# Write downloaded data to file
+						f.write(buf)
+
+						l = len(buf)
+						p.increment(l)
 
 	def _get_content_length(self, response):
 		s = response.getheader("Content-Length")
