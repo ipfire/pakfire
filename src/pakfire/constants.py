@@ -98,7 +98,6 @@ MINIMAL_ENVIRONMENT = {
 	"TERM" : "vt100",
 }
 
-SOURCE_DOWNLOAD_URL = "http://source.ipfire.org/source-3.x/"
 SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
 
 TIME_10M = 10
