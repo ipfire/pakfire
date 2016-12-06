@@ -36,7 +36,7 @@ log = logging.getLogger("pakfire")
 from ..constants import *
 from ..i18n import _
 
-#from .. import downloader
+from .. import http
 from .. import system
 from .. import util
 
@@ -240,11 +240,32 @@ class Makefile(MakefileBase):
 			Download all external sources and return a list with the local
 			copies.
 		"""
-		# Download source files.
-		grabber = downloader.SourceDownloader(self.pakfire,
-			mirrors=self.source_dl)
+		downloader = http.Client()
+		files = []
 
-		return grabber.download(self.sources)
+		# Add the download mirrors to try
+		for source_dl in self.source_dl:
+			downloader.add_mirror(source_dl)
+
+		for source in self.sources:
+			file = os.path.join(SOURCE_CACHE_DIR, source)
+
+			# If the file already exists in the cache dir, there
+			# is no need to download it
+			if os.path.exists(file) and os.path.getsize(file) > 0:
+				log.debug("File exists in cache already: %s" % file)
+
+				files.append(file)
+				continue
+
+			# Download the file
+			downloader.retrieve(source, file)
+			files.append(file)
+
+			assert os.path.exists(file)
+
+		# Return the path to the files
+		return files
 
 	def dist(self, resultdir):
 		"""
