@@ -31,6 +31,7 @@ from .ui import progressbar
 
 from .config import config
 from .constants import *
+from .i18n import _
 from . import errors
 
 log = logging.getLogger("pakfire.http")
@@ -43,6 +44,16 @@ class Client(object):
 	"""
 	def __init__(self, baseurl=None):
 		self.baseurl = baseurl
+
+		# Save all mirrors
+		self.mirrors = []
+
+		# Save a working copy of the mirror list which is modified
+		# when there is a problem with one of the mirrors
+		self._mirrors = []
+
+		# Pointer to the current mirror
+		self._mirror = None
 
 		# Stores any proxy configuration
 		self.proxies = {}
@@ -74,10 +85,58 @@ class Client(object):
 		# Disable any certificate validation
 		self.ssl_context.verify_mode = ssl.CERT_NONE
 
-	def _make_request(self, url, method="GET", data=None, auth=None):
-		# Add the baseurl
-		if self.baseurl:
-			url = urllib.parse.urljoin(self.baseurl, url)
+	def add_mirror(self, mirror, priority=None):
+		"""
+			Adds a mirror to the mirror list
+		"""
+		if priority is None:
+			priority = 10
+
+		# Create a Mirror object
+		m = Mirror(mirror, priority)
+
+		# Append it to the mirror list
+		self.mirrors.append(m)
+
+		# Add it to the copy of the list that we use to
+		# remove unusable mirrors and sort it to put the
+		# new mirror to the right position
+		self._mirrors.append(m)
+		self._mirrors.sort()
+
+		# (Re-)select the best/first mirror
+		self._next_mirror()
+
+	@property
+	def mirror(self):
+		"""
+			Returns the current mirror that should be used
+		"""
+		return self._mirror
+
+	def _next_mirror(self):
+		"""
+			Called when the current mirror is for any reason
+			unusable and the next in line should be used.
+		"""
+		# Use the first mirror from the list until the list is empty
+		try:
+			self._mirror = self._mirrors.pop(0)
+
+			log.debug(_("Selected mirror: %s") % self._mirror)
+
+		# Raise a download error if no mirror is left
+		except IndexError as e:
+			raise DownloadError(_("No more mirrors to try")) from e
+
+	def _make_request(self, url, method="GET", data=None, auth=None, baseurl=None, mirror=None):
+		# If a mirror is given, we use it as baseurl
+		if mirror:
+			baseurl = self.mirror.url
+
+		# Add the baseurl to the URL
+		if baseurl or self.baseurl:
+			url = urllib.parse.urljoin(baseurl or self.baseurl, url)
 
 		# Encode data
 		if data:
@@ -129,6 +188,8 @@ class Client(object):
 
 		# Catch any HTTP errors
 		except urllib.error.HTTPError as e:
+			log.debug("HTTP Response: %s" % e.code)
+
 			if e.code == 403:
 				raise ForbiddenError()
 			elif e.code == 404:
@@ -193,7 +254,7 @@ class Client(object):
 				tries -= 1
 
 			try:
-				return self._one_request(url, **kwargs)
+				return self._request(url, **kwargs)
 
 			# Bad Gateway Error
 			except BadGatewayError as e:
@@ -221,29 +282,52 @@ class Client(object):
 			message = os.path.basename(url)
 
 		buffer_size = 100 * 1024 # 100k
+		skipped_mirrors = []
 
-		# Prepare HTTP request
-		r = self._make_request(url, **kwargs)
+		try:
+			while True:
+				with self._make_progressbar(message) as p:
+					with open(filename, "wb") as f:
+						# Prepare HTTP request
+						r = self._make_request(url, mirror=self.mirror, **kwargs)
 
-		# Send the request
-		with self._make_progressbar(message) as p:
-			with open(filename, "wb") as f:
-				with self._send_request(r) as res:
-					# Try setting progress bar to correct maximum value
-					# XXX this might need a function in ProgressBar
-					l = self._get_content_length(res)
-					p.value_max = l
+						try:
+							with self._send_request(r) as res:
+								# Try setting progress bar to correct maximum value
+								# XXX this might need a function in ProgressBar
+								l = self._get_content_length(res)
+								p.value_max = l
 
-					while True:
-						buf = res.read(buffer_size)
-						if not buf:
-							break
+								while True:
+									buf = res.read(buffer_size)
+									if not buf:
+										break
 
-						# Write downloaded data to file
-						f.write(buf)
+									# Write downloaded data to file
+									f.write(buf)
 
-						l = len(buf)
-						p.increment(l)
+									l = len(buf)
+									p.increment(l)
+
+								# If the download succeeded, we will
+								# break the loop
+								break
+
+						except HTTPError as e:
+							# If we have mirrors, we will try using the next one
+							if self.mirrors:
+								skipped_mirrors.append(self.mirror)
+								self._next_mirror()
+								continue
+
+							# Otherwise raise this error
+							raise e
+
+		finally:
+			# Re-add any skipped mirrors again so that the next
+			# request will be tried on all mirrors, too.
+			# The current mirror is being kept.
+			self._mirrors += skipped_mirrors
 
 	def _get_content_length(self, response):
 		s = response.getheader("Content-Length")
@@ -309,7 +393,38 @@ class Client(object):
 		return p
 
 
-class HTTPError(errors.Error):
+class Mirror(object):
+	def __init__(self, url, priority=10):
+		# URLs must end with a slash for joining
+		if not url.endswith("/"):
+			url = "%s/" % url
+
+		self.url = url
+		self.priority = priority
+
+	def __repr__(self):
+		return "<%s %s>" % (self.__class__.__name__, self.url)
+
+	def __str__(self):
+		return self.url
+
+	def __eq__(self, other):
+		return self.url == other.url
+
+	def __lt__(self, other):
+		return self.priority < other.priority
+
+
+
+class DownloadError(errors.Error):
+	"""
+		Raised when a download was not successful
+		(for any reason)
+	"""
+	pass
+
+
+class HTTPError(DownloadError):
 	pass
 
 
