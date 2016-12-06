@@ -277,12 +277,10 @@ class Client(object):
 
 	def retrieve(self, url, filename, message=None, **kwargs):
 		p = None
+		skipped_mirrors = []
 
 		if message is None:
 			message = os.path.basename(url)
-
-		buffer_size = 100 * 1024 # 100k
-		skipped_mirrors = []
 
 		try:
 			while True:
@@ -299,7 +297,7 @@ class Client(object):
 								p.value_max = l
 
 								while True:
-									buf = res.read(buffer_size)
+									buf = res.read(BUFFER_SIZE)
 									if not buf:
 										break
 
