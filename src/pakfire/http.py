@@ -20,6 +20,7 @@
 ###############################################################################
 
 import base64
+import fcntl
 import json
 import logging
 import ssl
@@ -286,6 +287,12 @@ class Client(object):
 			while True:
 				with self._make_progressbar(message) as p:
 					with open(filename, "wb") as f:
+						# Exclusively lock the file for download
+						try:
+							fcntl.flock(f, fcntl.LOCK_EX)
+						except OSError as e:
+							raise DownloadError(_("Could not lock target file")) from e
+
 						# Prepare HTTP request
 						r = self._make_request(url, mirror=self.mirror, **kwargs)
 
