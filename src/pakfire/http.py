@@ -105,9 +105,6 @@ class Client(object):
 		self._mirrors.append(m)
 		self._mirrors.sort()
 
-		# (Re-)select the best/first mirror
-		self._next_mirror()
-
 	@property
 	def mirror(self):
 		"""
@@ -282,6 +279,10 @@ class Client(object):
 
 		if message is None:
 			message = os.path.basename(url)
+
+		# Initialize mirrors if not done, yet
+		if self.mirrors and not self.mirror:
+			self._next_mirror()
 
 		try:
 			while True:
