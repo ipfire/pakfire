@@ -23,6 +23,8 @@ import os
 
 import pakfire.filelist
 
+from .. import http
+
 from .base import Package
 from .file import BinaryPackage
 
@@ -300,27 +302,11 @@ class DatabasePackage(Package):
 				cache.remove(cache_filename)
 
 		if download:
-			# Make sure filename is of type string (and not unicode)
-			filename = str(self.filename)
+			downloader = http.Client()
+			for mirror in self.repo.mirrors.all:
+				downloader.add_mirror(mirror.url)
 
-			# Get a package grabber and add mirror download capabilities to it.
-			grabber = pakfire.downloader.PackageDownloader(
-				text=text + os.path.basename(filename),
-			)
-			grabber = self.repo.mirrors.group(grabber)
-
-			i = grabber.urlopen(filename)
-
-			# Open input and output files and download the file.
-			o = cache.open(cache_filename, "w")
-
-			buf = i.read(BUFFER_SIZE)
-			while buf:
-				o.write(buf)
-				buf = i.read(BUFFER_SIZE)
-
-			i.close()
-			o.close()
+			downloader.retrieve(filename, filename=cache_filename)
 
 			# Verify if the download was okay.
 			if not cache.verify(cache_filename, self.hash1):
