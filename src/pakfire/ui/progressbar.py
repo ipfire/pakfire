@@ -40,6 +40,7 @@ class ProgressBar(object):
 
 		self.time_start = None
 		self.finished = False
+		self.error = None
 
 		# Use the error console as default output.
 		self.fd = sys.stderr
@@ -69,11 +70,14 @@ class ProgressBar(object):
 
 		return self
 
-	def finish(self):
+	def finish(self, error=None):
 		if self.finished:
 			return
 
 		self.finished = True
+
+		# Save an exception we could print
+		self.error = error
 
 		# Complete the progress bar.
 		self.update(self.value_max)
@@ -187,7 +191,7 @@ class ProgressBar(object):
 		return self
 
 	def __exit__(self, type, value, traceback):
-		self.finish()
+		self.finish(error=value)
 
 
 def format_updatable(widget, pbar):
@@ -202,6 +206,15 @@ class Widget(object):
 
 	def update(self, pbar):
 		pass
+
+
+class WidgetError(Widget):
+	def update(self, pbar):
+		if pbar.finished and pbar.error:
+			return _("Error: %s") % pbar.error
+
+		return ""
+
 
 class WidgetFill(Widget):
 	expandable = True
