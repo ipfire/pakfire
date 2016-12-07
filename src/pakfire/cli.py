@@ -528,11 +528,11 @@ class CliBuilder(Cli):
 
 		p.shell(pkg, **kwargs)
 
-	def handle_dist(self):
+	def handle_dist(self, ns):
 		# Get the packages from the command line options
 		pkgs = []
 
-		for pkg in self.args.package:
+		for pkg in ns.package:
 			# Check, if we got a regular file
 			if os.path.exists(pkg):
 				pkg = os.path.abspath(pkg)
@@ -543,9 +543,9 @@ class CliBuilder(Cli):
 
 		# Put packages to where the user said or our
 		# current working directory.
-		resultdir = self.args.resultdir or os.getcwd()
+		resultdir = ns.resultdir or os.getcwd()
 
-		p = self.create_pakfire()
+		p = self.pakfire(ns)
 		for pkg in pkgs:
 			p.dist(pkg, resultdir=resultdir)
 
