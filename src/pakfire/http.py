@@ -297,12 +297,6 @@ class Client(object):
 						raise DownloadError(_("Could not lock target file")) from e
 
 					while True:
-						# Reset the progressbar in case the download restarts
-						p.reset()
-
-						# Truncate the target file and drop any downloaded content
-						f.truncate()
-
 						# Prepare HTTP request
 						r = self._make_request(url, mirror=self.mirror, **kwargs)
 
@@ -329,6 +323,16 @@ class Client(object):
 								break
 
 						except DownloadError as e:
+							# Reset the progressbar in case the download restarts
+							p.reset()
+
+							# Truncate the target file and drop any downloaded content
+							# ignore any errors in case downloading to a non-file
+							try:
+								f.truncate()
+							except OSError:
+								pass
+
 							# If we have mirrors, we will try using the next one
 							if self.mirrors:
 								skipped_mirrors.append(self.mirror)
