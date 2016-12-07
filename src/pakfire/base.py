@@ -426,23 +426,6 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
-	def search(self, pattern):
-		# Do the search.
-		pkgs = {}
-		for solv in self.pool.search(pattern, satsolver.SEARCH_STRING|satsolver.SEARCH_FILES):
-			pkg = packages.SolvPackage(self, solv)
-
-			# Check, if a package with the name is already in the resultset
-			# and always replace older ones by more recent ones.
-			if pkg.name in pkgs:
-				if pkgs[pkg.name] < pkg:
-					pkgs[pkg.name] = pkg
-			else:
-				pkgs[pkg.name] = pkg
-
-		# Return a list of the packages, alphabetically sorted.
-		return sorted(pkgs.values())
-
 	def groupinstall(self, group, **kwargs):
 		self.install("@%s" % group, **kwargs)
 
@@ -558,6 +541,23 @@ class PakfireContext(object):
 					pkgs.append(pkg)
 
 		return sorted(pkgs)
+
+	def search(self, pattern):
+		# Do the search.
+		pkgs = {}
+		for solv in self.pakfire.pool.search(pattern, satsolver.SEARCH_STRING|satsolver.SEARCH_FILES):
+			pkg = packages.SolvPackage(self.pakfire, solv)
+
+			# Check, if a package with the name is already in the resultset
+			# and always replace older ones by more recent ones.
+			if pkg.name in pkgs:
+				if pkgs[pkg.name] < pkg:
+					pkgs[pkg.name] = pkg
+			else:
+				pkgs[pkg.name] = pkg
+
+		# Return a list of the packages, alphabetically sorted.
+		return sorted(pkgs.values())
 
 
 class PakfireBuilder(Pakfire):
