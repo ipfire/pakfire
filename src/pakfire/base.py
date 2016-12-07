@@ -105,83 +105,6 @@ class Pakfire(object):
 
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
-
-	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
-		if not logger:
-			logger = logging.getLogger("pakfire")
-
-		# Pointer to temporary repository.
-		repo = None
-
-		# Sort out what we got...
-		download_packages = []
-		local_packages = []
-		relations = []
-
-		for req in requires:
-			if isinstance(req, packages.Package):
-				relations.append(req)
-				continue
-
-			# This looks like a file.
-			elif req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req) and os.path.isfile(req):
-				local_packages.append(req)
-				continue
-
-			# Remote files.
-			elif req.startswith("http://") or req.startswith("https://") or req.startswith("ftp://"):
-				download_packages.append(req)
-				continue
-
-			# We treat the rest as relations. The solver will return any errors.
-			relations.append(req)
-
-		# Redefine requires, which will be the list that will be passed to the
-		# solver.
-		requires = relations
-
-		try:
-			# If we have got files to install, we need to create a temporary repository
-			# called 'localinstall'.
-			# XXX FIX TMP PATH
-			if local_packages or download_packages:
-				repo = repository.RepositoryDir(self, "localinstall", _("Local install repository"),
-					os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
-
-				# Register the repository.
-				self.repos.add_repo(repo)
-
-				# Download packages.
-				for download_package in download_packages:
-					repo.download_package(download_package)
-
-				# Add all packages to the repository index.
-				repo.add_packages(local_packages)
-
-				# Add all packages to the requires.
-				requires += repo
-
-			# Do the solving.
-			request = self.pool.create_request(install=requires)
-			solver  = self.pool.solve(request, logger=logger, interactive=interactive, **kwargs)
-
-			# Create the transaction.
-			t = transaction.Transaction.from_solver(self, solver)
-			t.dump(logger=logger)
-
-			# Ask if the user acknowledges the transaction.
-			if interactive and not t.cli_yesno():
-				return
-
-			# Run the transaction.
-			t.run(logger=logger, signatures_mode=signatures_mode)
-
-		finally:
-			if repo:
-				# Remove the temporary repository we have created earlier.
-				repo.remove()
-				self.repos.rem_repo(repo)
-
 	def reinstall(self, pkgs, strict=False, logger=None):
 		"""
 			Reinstall one or more packages.
@@ -542,6 +465,84 @@ class PakfireContext(object):
 
 		# Return a list of the packages, alphabetically sorted.
 		return sorted(pkgs.values())
+
+	# Transactions
+
+	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
+		if not logger:
+			logger = logging.getLogger("pakfire")
+
+		# Pointer to temporary repository.
+		repo = None
+
+		# Sort out what we got...
+		download_packages = []
+		local_packages = []
+		relations = []
+
+		for req in requires:
+			if isinstance(req, packages.Package):
+				relations.append(req)
+				continue
+
+			# This looks like a file.
+			elif req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req) and os.path.isfile(req):
+				local_packages.append(req)
+				continue
+
+			# Remote files.
+			elif req.startswith("http://") or req.startswith("https://") or req.startswith("ftp://"):
+				download_packages.append(req)
+				continue
+
+			# We treat the rest as relations. The solver will return any errors.
+			relations.append(req)
+
+		# Redefine requires, which will be the list that will be passed to the
+		# solver.
+		requires = relations
+
+		try:
+			# If we have got files to install, we need to create a temporary repository
+			# called 'localinstall'.
+			# XXX FIX TMP PATH
+			if local_packages or download_packages:
+				repo = repository.RepositoryDir(self.pakfire, "localinstall", _("Local install repository"),
+					os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
+
+				# Register the repository.
+				self.pakfire.repos.add_repo(repo)
+
+				# Download packages.
+				for download_package in download_packages:
+					repo.download_package(download_package)
+
+				# Add all packages to the repository index.
+				repo.add_packages(local_packages)
+
+				# Add all packages to the requires.
+				requires += repo
+
+			# Do the solving.
+			request = self.pakfire.pool.create_request(install=requires)
+			solver  = self.pakfire.pool.solve(request, logger=logger, interactive=interactive, **kwargs)
+
+			# Create the transaction.
+			t = transaction.Transaction.from_solver(self.pakfire, solver)
+			t.dump(logger=logger)
+
+			# Ask if the user acknowledges the transaction.
+			if interactive and not t.cli_yesno():
+				return
+
+			# Run the transaction.
+			t.run(logger=logger, signatures_mode=signatures_mode)
+
+		finally:
+			if repo:
+				# Remove the temporary repository we have created earlier.
+				repo.remove()
+				self.pakfire.repos.rem_repo(repo)
 
 
 class PakfireBuilder(Pakfire):
