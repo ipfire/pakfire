@@ -106,32 +106,6 @@ class Pakfire(object):
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
-	def remove(self, pkgs, logger=None):
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# Create a new request.
-		request = self.pool.create_request(remove=pkgs)
-
-		# Solve the request.
-		solver = self.pool.solve(request, allow_uninstall=True)
-		assert solver.status is True
-
-		# Create the transaction.
-		t = transaction.Transaction.from_solver(self, solver)
-		t.dump()
-
-		if not t:
-			log.info(_("Nothing to do"))
-			return
-
-		# Ask the user if okay.
-		if not t.cli_yesno():
-			return
-
-		# Process the transaction.
-		t.run()
-
 	def resolvdep(self, pkg):
 		return self.pool.resolvdep(self, pkg)
 
@@ -543,6 +517,32 @@ class PakfireContext(object):
 		if not t.cli_yesno():
 			return
 
+		t.run()
+
+	def remove(self, pkgs, logger=None):
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
+		# Create a new request.
+		request = self.pakfire.pool.create_request(remove=pkgs)
+
+		# Solve the request.
+		solver = self.pakfire.pool.solve(request, allow_uninstall=True)
+		assert solver.status is True
+
+		# Create the transaction.
+		t = transaction.Transaction.from_solver(self.pakfire, solver)
+		t.dump()
+
+		if not t:
+			log.info(_("Nothing to do"))
+			return
+
+		# Ask the user if okay.
+		if not t.cli_yesno():
+			return
+
+		# Process the transaction.
 		t.run()
 
 
