@@ -273,9 +273,12 @@ class Client(object):
 
 		raise MaxTriesExceededError
 
-	def retrieve(self, url, filename, message=None, **kwargs):
+	def retrieve(self, url, filename=None, message=None, **kwargs):
 		p = None
 		skipped_mirrors = []
+
+		if filename is None:
+			filename = os.path.basename(url)
 
 		if message is None:
 			message = os.path.basename(url)
