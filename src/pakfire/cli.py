@@ -267,15 +267,12 @@ class Cli(object):
 
 	def handle_repolist(self, ns):
 		with self.pakfire(ns) as p:
-			# Get a list of all repositories.
-			repos = p.repo_list()
-
 			FORMAT = " %-20s %8s %12s %12s "
 			title = FORMAT % (_("Repository"), _("Enabled"), _("Priority"), _("Packages"))
 			print(title)
 			print("=" * len(title)) # spacing line
 
-			for repo in repos:
+			for repo in p.repos:
 				print(FORMAT % (repo.name, repo.enabled, repo.priority, len(repo)))
 
 	def handle_clean(self, ns):

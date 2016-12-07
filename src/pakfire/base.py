@@ -429,9 +429,6 @@ class Pakfire(object):
 	def resolvdep(self, pkg):
 		return self.pool.resolvdep(self, pkg)
 
-	def repo_list(self):
-		return [r for r in self.repos]
-
 	def clean(self):
 		log.debug("Cleaning up everything...")
 
