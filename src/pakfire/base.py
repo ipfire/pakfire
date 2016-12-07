@@ -105,115 +105,6 @@ class Pakfire(object):
 
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
-	def reinstall(self, pkgs, strict=False, logger=None):
-		"""
-			Reinstall one or more packages.
-
-			If strict is True, only a package with excatly the same UUID
-			will replace the currently installed one.
-		"""
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# XXX it is possible to install packages without fulfulling
-		# all dependencies.
-
-		reinstall_pkgs = []
-		for pattern in pkgs:
-			_pkgs = []
-			for pkg in self.repos.whatprovides(pattern):
-				# Do not reinstall non-installed packages.
-				if not pkg.is_installed():
-					continue
-
-				_pkgs.append(pkg)
-
-			if not _pkgs:
-				logger.warning(_("Could not find any installed package providing \"%s\".") \
-					% pattern)
-			elif len(_pkgs) == 1:
-				reinstall_pkgs.append(_pkgs[0])
-				#t.add("reinstall", _pkgs[0])
-			else:
-				logger.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
-					% { "pattern" : pattern, "pkgs" : ", ".join(p.friendly_name for p in sorted(_pkgs)) })
-
-		if not reinstall_pkgs:
-			logger.info(_("Nothing to do"))
-			return
-
-		# Packages we want to replace.
-		# Contains a tuple with the old and the new package.
-		pkgs = []
-
-		# Find the package that is installed in a remote repository to
-		# download it again and re-install it. We need that.
-		for pkg in reinstall_pkgs:
-			# Collect all candidates in here.
-			_pkgs = []
-
-			provides = "%s=%s" % (pkg.name, pkg.friendly_version)
-			for _pkg in self.repos.whatprovides(provides):
-				if _pkg.is_installed():
-					continue
-
-				if strict:
-					if pkg.uuid == _pkg.uuid:
-						_pkgs.append(_pkg)
-				else:
-					_pkgs.append(_pkg)
-
-			if not _pkgs:
-				logger.warning(_("Could not find package %s in a remote repository.") % \
-					pkg.friendly_name)
-			else:
-				# Sort packages to reflect repository priorities, etc...
-				# and take the best (first) one.
-				_pkgs.sort()
-
-				# Re-install best package and cleanup the old one.
-				pkgs.append((pkg, _pkgs[0]))
-
-		# Eventually, create a request.
-		request = None
-
-		_pkgs = []
-		for old, new in pkgs:
-			if old.uuid == new.uuid:
-				_pkgs.append((old, new))
-			else:
-				if request is None:
-					# Create a new request.
-					request = self.pool.create_request()
-
-				# Install the new package, the old will
-				# be cleaned up automatically.
-				request.install(new.solvable)
-
-		if request:
-			solver = self.pool.solve(request)
-			t = transaction.Transaction.from_solver(self, solver)
-		else:
-			# Create new transaction.
-			t = transaction.Transaction(self)
-
-		for old, new in _pkgs:
-			# Install the new package and remove the old one.
-			t.add(actions.ActionReinstall.type, new)
-			t.add(actions.ActionCleanup.type, old)
-
-		t.sort()
-
-		if not t:
-			logger.info(_("Nothing to do"))
-			return
-
-		t.dump(logger=logger)
-
-		if not t.cli_yesno():
-			return
-
-		t.run(logger=logger)
 
 	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, sync=False, **kwargs):
 		"""
@@ -543,6 +434,116 @@ class PakfireContext(object):
 				# Remove the temporary repository we have created earlier.
 				repo.remove()
 				self.pakfire.repos.rem_repo(repo)
+
+	def reinstall(self, pkgs, strict=False, logger=None):
+		"""
+			Reinstall one or more packages.
+
+			If strict is True, only a package with excatly the same UUID
+			will replace the currently installed one.
+		"""
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
+		# XXX it is possible to install packages without fulfulling
+		# all dependencies.
+
+		reinstall_pkgs = []
+		for pattern in pkgs:
+			_pkgs = []
+			for pkg in self.pakfire.repos.whatprovides(pattern):
+				# Do not reinstall non-installed packages.
+				if not pkg.is_installed():
+					continue
+
+				_pkgs.append(pkg)
+
+			if not _pkgs:
+				logger.warning(_("Could not find any installed package providing \"%s\".") \
+					% pattern)
+			elif len(_pkgs) == 1:
+				reinstall_pkgs.append(_pkgs[0])
+				#t.add("reinstall", _pkgs[0])
+			else:
+				logger.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
+					% { "pattern" : pattern, "pkgs" : ", ".join(p.friendly_name for p in sorted(_pkgs)) })
+
+		if not reinstall_pkgs:
+			logger.info(_("Nothing to do"))
+			return
+
+		# Packages we want to replace.
+		# Contains a tuple with the old and the new package.
+		pkgs = []
+
+		# Find the package that is installed in a remote repository to
+		# download it again and re-install it. We need that.
+		for pkg in reinstall_pkgs:
+			# Collect all candidates in here.
+			_pkgs = []
+
+			provides = "%s=%s" % (pkg.name, pkg.friendly_version)
+			for _pkg in self.pakfire.repos.whatprovides(provides):
+				if _pkg.is_installed():
+					continue
+
+				if strict:
+					if pkg.uuid == _pkg.uuid:
+						_pkgs.append(_pkg)
+				else:
+					_pkgs.append(_pkg)
+
+			if not _pkgs:
+				logger.warning(_("Could not find package %s in a remote repository.") % \
+					pkg.friendly_name)
+			else:
+				# Sort packages to reflect repository priorities, etc...
+				# and take the best (first) one.
+				_pkgs.sort()
+
+				# Re-install best package and cleanup the old one.
+				pkgs.append((pkg, _pkgs[0]))
+
+		# Eventually, create a request.
+		request = None
+
+		_pkgs = []
+		for old, new in pkgs:
+			if old.uuid == new.uuid:
+				_pkgs.append((old, new))
+			else:
+				if request is None:
+					# Create a new request.
+					request = self.pakfire.pool.create_request()
+
+				# Install the new package, the old will
+				# be cleaned up automatically.
+				request.install(new.solvable)
+
+		if request:
+			solver = self.pakfire.pool.solve(request)
+			t = transaction.Transaction.from_solver(self.pakfire, solver)
+		else:
+			# Create new transaction.
+			t = transaction.Transaction(self.pakfire)
+
+		for old, new in _pkgs:
+			# Install the new package and remove the old one.
+			t.add(actions.ActionReinstall.type, new)
+			t.add(actions.ActionCleanup.type, old)
+
+		t.sort()
+
+		if not t:
+			logger.info(_("Nothing to do"))
+			return
+
+		t.dump(logger=logger)
+
+		if not t.cli_yesno():
+			return
+
+		t.run(logger=logger)
 
 
 class PakfireBuilder(Pakfire):
