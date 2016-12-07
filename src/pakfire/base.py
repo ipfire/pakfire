@@ -458,37 +458,6 @@ class Pakfire(object):
 		# Clean up repository caches.
 		self.repos.clean()
 
-	def check(self, allow_downgrade=True, allow_uninstall=True):
-		"""
-			Try to fix any errors in the system.
-		"""
-		# Detect any errors in the dependency tree.
-		# For that we create an empty request and solver and try to solve
-		# something.
-		request = self.pool.create_request()
-		request.verify()
-
-		solver = self.pool.solve(
-			request,
-			allow_downgrade=allow_downgrade,
-			allow_uninstall=allow_uninstall,
-		)
-
-		if solver.status is False:
-			log.info(_("Everything is fine."))
-			return
-
-		# Create the transaction.
-		t = transaction.Transaction.from_solver(self, solver)
-		t.dump()
-
-		# Ask the user if okay.
-		if not t.cli_yesno():
-			return
-
-		# Process the transaction.
-		t.run()
-
 	def build(self, makefile, resultdir, stages=None, **kwargs):
 		b = builder.Builder(self, makefile, resultdir, **kwargs)
 
@@ -518,6 +487,37 @@ class PakfireContext(object):
 	"""
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
+
+	def check(self, allow_downgrade=True, allow_uninstall=True):
+		"""
+			Try to fix any errors in the system.
+		"""
+		# Detect any errors in the dependency tree.
+		# For that we create an empty request and solver and try to solve
+		# something.
+		request = self.pakfire.pool.create_request()
+		request.verify()
+
+		solver = self.pakfire.pool.solve(
+			request,
+			allow_downgrade=allow_downgrade,
+			allow_uninstall=allow_uninstall,
+		)
+
+		if solver.status is False:
+			log.info(_("Everything is fine."))
+			return
+
+		# Create the transaction.
+		t = transaction.Transaction.from_solver(self.pakfire, solver)
+		t.dump()
+
+		# Ask the user if okay.
+		if not t.cli_yesno():
+			return
+
+		# Process the transaction.
+		t.run()
 
 	def info(self, patterns):
 		pkgs = []
