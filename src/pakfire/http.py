@@ -322,7 +322,7 @@ class Client(object):
 								# break the loop
 								break
 
-						except HTTPError as e:
+						except DownloadError as e:
 							# If we have mirrors, we will try using the next one
 							if self.mirrors:
 								skipped_mirrors.append(self.mirror)
