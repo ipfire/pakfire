@@ -49,14 +49,19 @@ def terminal_size():
 	return int(cr[1]), int(cr[0])
 
 def format_size(s):
-	units = (" ", "k", "M", "G", "T")
+	units = (
+		"%4.0f ",
+		"%4.0fk",
+		"%4.1fM",
+		"%4.1fG",
+	)
 	unit = 0
 
 	while abs(s) >= 1024 and unit < len(units):
 		s /= 1024
 		unit += 1
 
-	return "%d%s" % (round(s), units[unit])
+	return units[unit] % s
 
 def format_time(s):
 	return "%02d:%02d" % (s // 60, s % 60)
