@@ -83,7 +83,7 @@ class Pakfire(object):
 		# Initialize repositories
 		self.repos.initialize()
 
-		return self
+		return PakfireContext(self)
 
 	def __exit__(self, type, value, traceback):
 		# Close repositories
@@ -426,29 +426,6 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
-	def info(self, patterns):
-		pkgs = []
-
-		# For all patterns we run a single search which returns us a bunch
-		# of solvables which are transformed into Package objects.
-		for pattern in patterns:
-			if os.path.exists(pattern) and not os.path.isdir(pattern):
-				pkg = packages.open(self, self.repos.dummy, pattern)
-				if pkg:
-					pkgs.append(pkg)
-
-			else:
-				solvs = self.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
-
-				for solv in solvs:
-					pkg = packages.SolvPackage(self, solv)
-					if pkg in pkgs:
-						continue
-
-				pkgs.append(pkg)
-
-		return sorted(pkgs)
-
 	def search(self, pattern):
 		# Do the search.
 		pkgs = {}
@@ -546,6 +523,41 @@ class Pakfire(object):
 		pkg = packages.Makefile(self, pkg)
 
 		return pkg.dist(resultdir=resultdir)
+
+
+class PakfireContext(object):
+	"""
+		This context has functions that require
+		pakfire to be initialized.
+
+		That means that repository data has to be downloaded
+		and imported to be searchable, etc.
+	"""
+	def __init__(self, pakfire):
+		self.pakfire = pakfire
+
+	def info(self, patterns):
+		pkgs = []
+
+		# For all patterns we run a single search which returns us a bunch
+		# of solvables which are transformed into Package objects.
+		for pattern in patterns:
+			if os.path.exists(pattern) and not os.path.isdir(pattern):
+				pkg = packages.open(self.pakfire, self.pakfire.repos.dummy, pattern)
+				if pkg:
+					pkgs.append(pkg)
+
+			else:
+				solvs = self.pakfire.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
+
+				for solv in solvs:
+					pkg = packages.SolvPackage(self.pakfire, solv)
+					if pkg in pkgs:
+						continue
+
+					pkgs.append(pkg)
+
+		return sorted(pkgs)
 
 
 class PakfireBuilder(Pakfire):
