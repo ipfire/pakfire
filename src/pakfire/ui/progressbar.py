@@ -57,6 +57,12 @@ class ProgressBar(object):
 	def add(self, widget):
 		self.widgets.append(widget)
 
+	def reset(self):
+		"""
+			Resets the progress bar to start
+		"""
+		self.start()
+
 	def start(self):
 		self.num_intervals = max(self.term_width, 100)
 		self.next_update = 0

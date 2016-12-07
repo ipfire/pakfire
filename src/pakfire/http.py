@@ -289,6 +289,9 @@ class Client(object):
 
 		try:
 			with self._make_progressbar(message) as p:
+				# Reset the progressbar in case the download restarts
+				p.reset()
+
 				while True:
 					with open(filename, "wb") as f:
 						# Exclusively lock the file for download
