@@ -106,11 +106,6 @@ class Pakfire(object):
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
-	@property
-	def builder(self):
-		# XXX just backwards compatibility
-		return self.mode == "builder"
-
 	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
 		if not logger:
 			logger = logging.getLogger("pakfire")
