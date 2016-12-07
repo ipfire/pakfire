@@ -373,6 +373,9 @@ class Client(object):
 		if message:
 			p.add(message)
 
+		w = progressbar.WidgetError()
+		p.add(w)
+
 		# Show percentage
 		w = progressbar.WidgetPercentage(clear_when_finished=True)
 		p.add(w)
