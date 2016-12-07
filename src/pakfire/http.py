@@ -289,16 +289,19 @@ class Client(object):
 
 		try:
 			with self._make_progressbar(message) as p:
-				# Reset the progressbar in case the download restarts
-				p.reset()
+				with open(filename, "wb") as f:
+					# Exclusively lock the file for download
+					try:
+						fcntl.flock(f, fcntl.LOCK_EX)
+					except OSError as e:
+						raise DownloadError(_("Could not lock target file")) from e
 
-				while True:
-					with open(filename, "wb") as f:
-						# Exclusively lock the file for download
-						try:
-							fcntl.flock(f, fcntl.LOCK_EX)
-						except OSError as e:
-							raise DownloadError(_("Could not lock target file")) from e
+					while True:
+						# Reset the progressbar in case the download restarts
+						p.reset()
+
+						# Truncate the target file and drop any downloaded content
+						f.truncate()
 
 						# Prepare HTTP request
 						r = self._make_request(url, mirror=self.mirror, **kwargs)
