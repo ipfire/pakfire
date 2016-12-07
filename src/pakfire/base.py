@@ -106,64 +106,6 @@ class Pakfire(object):
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
-	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, sync=False, **kwargs):
-		"""
-			check indicates, if the method should return after calculation
-			of the transaction.
-		"""
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# If there are given any packets on the command line, we will
-		# only update them. Otherwise, we update the whole system.
-		updateall = True
-		if pkgs:
-			updateall = False
-
-		request = self.pool.create_request(update=pkgs, updateall=updateall)
-
-		# Exclude packages that should not be updated.
-		for exclude in excludes or []:
-			logger.info(_("Excluding %s.") % exclude)
-
-			exclude = self.pool.create_relation(exclude)
-			request.lock(exclude)
-
-		# Update or downgrade to the latest version of all packages
-		# in the enabled repositories.
-		if sync:
-			kwargs.update({
-				"allow_downgrade" : True,
-				"allow_uninstall" : True,
-			})
-
-		solver = self.pool.solve(request, logger=logger, **kwargs)
-
-		if not solver.status:
-			logger.info(_("Nothing to do"))
-
-			# If we are running in check mode, we return a non-zero value to
-			# indicate, that there are no updates.
-			if check:
-				return 1
-			else:
-				return
-
-		# Create the transaction.
-		t = transaction.Transaction.from_solver(self, solver)
-		t.dump(logger=logger)
-
-		# Just exit here, because we won't do the transaction in this mode.
-		if check:
-			return
-
-		# Ask the user if the transaction is okay.
-		if interactive and not t.cli_yesno():
-			return
-
-		# Run the transaction.
-		t.run(logger=logger)
-
 	def downgrade(self, pkgs, logger=None, **kwargs):
 		assert pkgs
 
@@ -543,6 +485,64 @@ class PakfireContext(object):
 		if not t.cli_yesno():
 			return
 
+		t.run(logger=logger)
+
+	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, sync=False, **kwargs):
+		"""
+			check indicates, if the method should return after calculation
+			of the transaction.
+		"""
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
+		# If there are given any packets on the command line, we will
+		# only update them. Otherwise, we update the whole system.
+		updateall = True
+		if pkgs:
+			updateall = False
+
+		request = self.pakfire.pool.create_request(update=pkgs, updateall=updateall)
+
+		# Exclude packages that should not be updated.
+		for exclude in excludes or []:
+			logger.info(_("Excluding %s.") % exclude)
+
+			exclude = self.pakfire.pool.create_relation(exclude)
+			request.lock(exclude)
+
+		# Update or downgrade to the latest version of all packages
+		# in the enabled repositories.
+		if sync:
+			kwargs.update({
+				"allow_downgrade" : True,
+				"allow_uninstall" : True,
+			})
+
+		solver = self.pakfire.pool.solve(request, logger=logger, **kwargs)
+
+		if not solver.status:
+			logger.info(_("Nothing to do"))
+
+			# If we are running in check mode, we return a non-zero value to
+			# indicate, that there are no updates.
+			if check:
+				return 1
+			else:
+				return
+
+		# Create the transaction.
+		t = transaction.Transaction.from_solver(self.pakfire, solver)
+		t.dump(logger=logger)
+
+		# Just exit here, because we won't do the transaction in this mode.
+		if check:
+			return
+
+		# Ask the user if the transaction is okay.
+		if interactive and not t.cli_yesno():
+			return
+
+		# Run the transaction.
 		t.run(logger=logger)
 
 
