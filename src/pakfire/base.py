@@ -426,9 +426,6 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
-	def grouplist(self, group):
-		return self.pool.grouplist(group)
-
 	def provides(self, patterns):
 		pkgs = []
 		for pattern in patterns:

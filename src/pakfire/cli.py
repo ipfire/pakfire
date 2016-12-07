@@ -86,13 +86,6 @@ class Cli(object):
 			help=_("Disallow changing the architecture of packages"))
 		downgrade.set_defaults(func=self.handle_downgrade)
 
-		# grouplist
-		grouplist = subparsers.add_parser("grouplist",
-			help=_("Get list of packages that belong to the given group"))
-		grouplist.add_argument("group", nargs=1,
-			help=_("Group name to search for"))
-		grouplist.set_defaults(func=self.handle_grouplist)
-
 		# extract
 		extract = subparsers.add_parser("extract",
 			help=_("Extract a package to a directory"))
@@ -272,11 +265,6 @@ class Cli(object):
 				s = pkg.dump(long=long)
 				print(s)
 
-	def handle_grouplist(self, ns):
-		with self.pakfire(ns) as p:
-			for pkg in p.grouplist(ns.group[0]):
-				print(" * %s" % pkg)
-
 	def handle_repolist(self, ns):
 		with self.pakfire(ns) as p:
 			# Get a list of all repositories.
@@ -408,13 +396,6 @@ class CliBuilder(Cli):
 		info.add_argument("package", nargs="+",
 			help=_("Give at least the name of one package."))
 		info.set_defaults(func=self.handle_info, verbose=True)
-
-		# grouplist
-		grouplist = subparsers.add_parser("grouplist",
-			help=_("Get list of packages that belong to the given group"))
-		grouplist.add_argument("group", nargs=1,
-			help=_("Group name to search for"))
-		grouplist.set_defaults(func=self.handle_grouplist)
 
 		# provides
 		provides = subparsers.add_parser("provides",
