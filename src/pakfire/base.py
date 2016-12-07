@@ -426,9 +426,6 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
-	def groupinstall(self, group, **kwargs):
-		self.install("@%s" % group, **kwargs)
-
 	def grouplist(self, group):
 		return self.pool.grouplist(group)
 

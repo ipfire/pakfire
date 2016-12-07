@@ -86,12 +86,6 @@ class Cli(object):
 			help=_("Disallow changing the architecture of packages"))
 		downgrade.set_defaults(func=self.handle_downgrade)
 
-		# groupinstall
-		groupinstall = subparsers.add_parser("groupinstall",
-			help=_("Install all packages that belong to the given group"))
-		groupinstall.add_argument("group", nargs=1, help=_("Group name"))
-		groupinstall.set_defaults(func=self.handle_groupinstall)
-
 		# grouplist
 		grouplist = subparsers.add_parser("grouplist",
 			help=_("Get list of packages that belong to the given group"))
@@ -282,10 +276,6 @@ class Cli(object):
 		with self.pakfire(ns) as p:
 			for pkg in p.grouplist(ns.group[0]):
 				print(" * %s" % pkg)
-
-	def handle_groupinstall(self, ns):
-		with self.pakfire(ns) as p:
-			p.groupinstall(ns.group[0])
 
 	def handle_repolist(self, ns):
 		with self.pakfire(ns) as p:
