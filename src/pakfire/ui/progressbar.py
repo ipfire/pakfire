@@ -61,7 +61,8 @@ class ProgressBar(object):
 		"""
 			Resets the progress bar to start
 		"""
-		self.start()
+		if self.value_cur:
+			self.start()
 
 	def start(self):
 		self.num_intervals = max(self.term_width, 100)
