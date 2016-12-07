@@ -288,8 +288,8 @@ class Client(object):
 			self._next_mirror()
 
 		try:
-			while True:
-				with self._make_progressbar(message) as p:
+			with self._make_progressbar(message) as p:
+				while True:
 					with open(filename, "wb") as f:
 						# Exclusively lock the file for download
 						try:
