@@ -106,51 +106,6 @@ class Pakfire(object):
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
-	def downgrade(self, pkgs, logger=None, **kwargs):
-		assert pkgs
-
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# Create a new request.
-		request = self.pool.create_request()
-
-		# Fill request.
-		for pattern in pkgs:
-			best = None
-			for pkg in self.repos.whatprovides(pattern):
-				# Only consider installed packages.
-				if not pkg.is_installed():
-					continue
-
-				if best and pkg > best:
-					best = pkg
-				elif best is None:
-					best = pkg
-
-			if best is None:
-				logger.warning(_("\"%s\" package does not seem to be installed.") % pattern)
-			else:
-				rel = self.pool.create_relation("%s < %s" % (best.name, best.friendly_version))
-				request.install(rel)
-
-		# Solve the request.
-		solver = self.pool.solve(request, allow_downgrade=True, **kwargs)
-		assert solver.status is True
-
-		# Create the transaction.
-		t = transaction.Transaction.from_solver(self, solver)
-		t.dump(logger=logger)
-
-		if not t:
-			logger.info(_("Nothing to do"))
-			return
-
-		if not t.cli_yesno():
-			return
-
-		t.run()
-
 	def remove(self, pkgs, logger=None):
 		if logger is None:
 			logger = logging.getLogger("pakfire")
@@ -544,6 +499,51 @@ class PakfireContext(object):
 
 		# Run the transaction.
 		t.run(logger=logger)
+
+	def downgrade(self, pkgs, logger=None, **kwargs):
+		assert pkgs
+
+		if logger is None:
+			logger = logging.getLogger("pakfire")
+
+		# Create a new request.
+		request = self.pakfire.pool.create_request()
+
+		# Fill request.
+		for pattern in pkgs:
+			best = None
+			for pkg in self.pakfire.repos.whatprovides(pattern):
+				# Only consider installed packages.
+				if not pkg.is_installed():
+					continue
+
+				if best and pkg > best:
+					best = pkg
+				elif best is None:
+					best = pkg
+
+			if best is None:
+				logger.warning(_("\"%s\" package does not seem to be installed.") % pattern)
+			else:
+				rel = self.pakfire.pool.create_relation("%s < %s" % (best.name, best.friendly_version))
+				request.install(rel)
+
+		# Solve the request.
+		solver = self.pakfire.pool.solve(request, allow_downgrade=True, **kwargs)
+		assert solver.status is True
+
+		# Create the transaction.
+		t = transaction.Transaction.from_solver(self.pakfire, solver)
+		t.dump(logger=logger)
+
+		if not t:
+			logger.info(_("Nothing to do"))
+			return
+
+		if not t.cli_yesno():
+			return
+
+		t.run()
 
 
 class PakfireBuilder(Pakfire):
