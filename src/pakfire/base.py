@@ -426,20 +426,6 @@ class Pakfire(object):
 		# Process the transaction.
 		t.run()
 
-	def provides(self, patterns):
-		pkgs = []
-		for pattern in patterns:
-			for pkg in self.pool.whatprovides(self, pattern):
-				if pkg in pkgs:
-					continue
-
-				pkgs.append(pkg)
-
-		# Sort output.
-		pkgs.sort()
-
-		return pkgs
-
 	def resolvdep(self, pkg):
 		return self.pool.resolvdep(self, pkg)
 
@@ -533,6 +519,18 @@ class PakfireContext(object):
 						continue
 
 					pkgs.append(pkg)
+
+		return sorted(pkgs)
+
+	def provides(self, patterns):
+		pkgs = []
+
+		for pattern in patterns:
+			for pkg in self.pakfire.pool.whatprovides(self, pattern):
+				if pkg in pkgs:
+					continue
+
+				pkgs.append(pkg)
 
 		return sorted(pkgs)
 
