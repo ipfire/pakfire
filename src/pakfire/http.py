@@ -20,10 +20,11 @@
 ###############################################################################
 
 import base64
-import fcntl
 import json
 import logging
+import shutil
 import ssl
+import tempfile
 import time
 import urllib.parse
 import urllib.request
@@ -37,6 +38,9 @@ from . import errors
 
 log = logging.getLogger("pakfire.http")
 log.propagate = 1
+
+# Maximum size of temporary files that is being kept in memory
+TMP_MAX_SIZE = 10485760 # 10M
 
 class Client(object):
 	"""
@@ -287,15 +291,14 @@ class Client(object):
 		if self.mirrors and not self.mirror:
 			self._next_mirror()
 
+		# Create a temporary file where the downloaded data is stored
+		# This is a spooled file which will be kept in memory and only
+		# be written to disk when max_size is exceeded.
+		f = tempfile.SpooledTemporaryFile(max_size=TMP_MAX_SIZE)
+
 		try:
 			with self._make_progressbar(message) as p:
-				with open(filename, "wb") as f:
-					# Exclusively lock the file for download
-					try:
-						fcntl.flock(f, fcntl.LOCK_EX)
-					except OSError as e:
-						raise DownloadError(_("Could not lock target file")) from e
-
+				with f:
 					while True:
 						# Prepare HTTP request
 						r = self._make_request(url, mirror=self.mirror, **kwargs)
@@ -341,6 +344,10 @@ class Client(object):
 
 							# Otherwise raise this error
 							raise e
+
+						# Downloaded succeeded, writing data to filesystem
+						with open(filename, "wb") as output:
+							shutil.copyobj(f, output)
 
 		finally:
 			# Re-add any skipped mirrors again so that the next
