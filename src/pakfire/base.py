@@ -145,6 +145,14 @@ class PakfireContext(object):
 	def __init__(self, pakfire):
 		self.pakfire = pakfire
 
+	@property
+	def repos(self):
+		"""
+			Shortcut to access any configured
+			repositories for this Pakfire instance
+		"""
+		return self.pakfire.repos
+
 	def check(self, allow_downgrade=True, allow_uninstall=True):
 		"""
 			Try to fix any errors in the system.
