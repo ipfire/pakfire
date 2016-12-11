@@ -131,6 +131,25 @@ class Client(object):
 		except IndexError as e:
 			raise DownloadError(_("No more mirrors to try")) from e
 
+	def skip_current_mirror(self):
+		"""
+			Called from a user of this class when a download
+			was not acceptable (e.g. invalid checksum or too old
+			metadata).
+
+			It will drop the current mirror.
+
+			If no mirrors are left, or no mirrors are available,
+			it will raise DownloadError.
+		"""
+		if not self.mirrors:
+			raise DownloadError(_("No more mirrors to try"))
+
+		log.warning(_("Skipping mirror %s") % self.mirror)
+
+		self.mirrors.remove(self.mirror)
+		self._next_mirror()
+
 	def _make_request(self, url, method="GET", data=None, auth=None, baseurl=None, mirror=None):
 		# If a mirror is given, we use it as baseurl
 		if mirror:
