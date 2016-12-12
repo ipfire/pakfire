@@ -72,6 +72,21 @@ class Pakfire(object):
 		self.pool = satsolver.Pool(self.arch.name)
 		self.repos = repository.Repositories(self)
 
+		# Load default repository configuration
+		repos_dir = self.make_path(CONFIG_REPOS_DIR)
+		if repos_dir:
+			self.repos.load_configuration(repos_dir)
+
+	def make_path(self, path):
+		"""
+			Returns path relative to the (base)path
+			of this Pakfire instance.
+		"""
+		while path.startswith("/"):
+			path = path[1:]
+
+		return os.path.join(self.path, path)
+
 	def __enter__(self):
 		"""
 			Called to initialize this Pakfire instance when

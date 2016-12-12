@@ -51,9 +51,8 @@ class RepositoryFactory(object):
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
 
-	def __cmp__(self, other):
-		return cmp(self.priority * -1, other.priority * -1) or \
-			cmp(self.name, other.name)
+	def __lt__(self, other):
+		return self.priority < other.priority
 
 	def __len__(self):
 		return self.solver_repo.size()

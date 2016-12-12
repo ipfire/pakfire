@@ -45,11 +45,11 @@ class Metadata(object):
 		elif metadata:
 			self.parse(metadata)
 
-	def __cmp__(self, other):
+	def __lt__(self, other):
 		"""
 			Compare two sets of metadata by their revision.
 		"""
-		return cmp(self.revision, other.revision)
+		return self.revision < other.revision
 
 	def parse(self, metadata):
 		try:

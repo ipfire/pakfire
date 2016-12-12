@@ -19,11 +19,14 @@
 #                                                                             #
 ###############################################################################
 
+import glob
+import os
 import re
 
 import logging
 log = logging.getLogger("pakfire")
 
+from .. import config
 from .. import packages
 
 from .base import RepositoryDummy
@@ -58,10 +61,6 @@ class Repositories(object):
 		if self.pakfire.mode == "builder":
 			self.local_build = RepositoryBuild(self.pakfire)
 			self.add_repo(self.local_build)
-
-		# Fetch all repository from the configuration files.
-		for repo_name, repo_args in self.config.get_repos():
-			self._parse(repo_name, repo_args)
 
 	def __iter__(self):
 		repositories = list(self.__repos.values())
@@ -106,16 +105,29 @@ class Repositories(object):
 			repo.close()
 
 	@property
-	def config(self):
-		return self.pakfire.config
-
-	@property
 	def distro(self):
 		return self.pakfire.distro
 
 	@property
 	def pool(self):
 		return self.pakfire.pool
+
+	def load_configuration(self, *paths):
+		c = config.Config()
+
+		for path in paths:
+			# Read directories
+			if os.path.isdir(path):
+				for file in glob.glob("%s/*.repo" % path):
+					c.read(file)
+
+			# Read files
+			else:
+				c.read(path)
+
+		# Add all repositories that have been found
+		for name, settings in c.get_repos():
+			self._parse(name, settings)
 
 	def _parse(self, name, args):
 		_args = {
@@ -129,7 +141,7 @@ class Repositories(object):
 		# Handle variable expansion.
 		replaces = {
 			"name" : name,
-			"arch" : self.distro.arch,
+			"arch" : self.pakfire.arch.name,
 		}
 
 		for k, v in list(_args.items()):
