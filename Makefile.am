@@ -30,6 +30,10 @@ AUTOMAKE_OPTIONS = color-tests
 
 SUBDIRS = . po
 
+LIBPAKFIRE_CURRENT=0
+LIBPAKFIRE_REVISION=0
+LIBPAKFIRE_AGE=0
+
 libexecdir = $(libdir)/pakfire
 pythondir  = $(pyexecdir)
 
@@ -54,6 +58,7 @@ AM_LDFLAGS = $(OUR_LDFLAGS)
 lib_LTLIBRARIES =
 libexec_PROGRAMS =
 pkgpyexec_LTLIBRARIES =
+pkginclude_HEADERS =
 
 DISTCHECK_CONFIGURE_FLAGS = \
         --with-systemdsystemunitdir=$$dc_install_base/$(systemdsystemunitdir)
@@ -213,6 +218,76 @@ _pakfire_la_LIBADD = \
 	$(PYTHON_DEVEL_LIBS) \
 	$(CAP_LIBS) \
 	$(SOLV_LIBS)
+
+# ------------------------------------------------------------------------------
+
+lib_LTLIBRARIES += \
+	libpakfire.la
+
+libpakfire_la_SOURCES = \
+	src/libpakfire/archive.c \
+	src/libpakfire/cache.c \
+	src/libpakfire/errno.c \
+	src/libpakfire/file.c \
+	src/libpakfire/filter.c \
+	src/libpakfire/package.c \
+	src/libpakfire/packagelist.c \
+	src/libpakfire/pool.c \
+	src/libpakfire/relation.c \
+	src/libpakfire/relationlist.c \
+	src/libpakfire/repo.c \
+	src/libpakfire/repocache.c \
+	src/libpakfire/request.c \
+	src/libpakfire/selector.c \
+	src/libpakfire/solver.c \
+	src/libpakfire/step.c \
+	src/libpakfire/transaction.c \
+	src/libpakfire/util.c
+
+pkginclude_HEADERS += \
+	src/libpakfire/include/pakfire/archive.h \
+	src/libpakfire/include/pakfire/cache.h \
+	src/libpakfire/include/pakfire/constants.h \
+	src/libpakfire/include/pakfire/errno.h \
+	src/libpakfire/include/pakfire/file.h \
+	src/libpakfire/include/pakfire/filter.h \
+	src/libpakfire/include/pakfire/i18n.h \
+	src/libpakfire/include/pakfire/package.h \
+	src/libpakfire/include/pakfire/packagecache.h \
+	src/libpakfire/include/pakfire/packagelist.h \
+	src/libpakfire/include/pakfire/pool.h \
+	src/libpakfire/include/pakfire/relation.h \
+	src/libpakfire/include/pakfire/relationlist.h \
+	src/libpakfire/include/pakfire/repo.h \
+	src/libpakfire/include/pakfire/repocache.h \
+	src/libpakfire/include/pakfire/request.h \
+	src/libpakfire/include/pakfire/selector.h \
+	src/libpakfire/include/pakfire/solver.h \
+	src/libpakfire/include/pakfire/step.h \
+	src/libpakfire/include/pakfire/transaction.h \
+	src/libpakfire/include/pakfire/types.h \
+	src/libpakfire/include/pakfire/util.h
+
+libpakfire_la_CFLAGS = \
+	$(AM_CFLAGS)
+
+libpakfire_la_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/src/libpakfire/include \
+	-include $(top_builddir)/config.h \
+	-DPAKFIRE_PRIVATE
+
+libpakfire_la_LDFLAGS = \
+	$(AM_LDFLAGS) \
+	-version-info $(LIBPAKFIRE_CURRENT):$(LIBPAKFIRE_REVISION):$(LIBPAKFIRE_AGE) \
+	-Wl,--version-script=$(top_srcdir)/src/libpakfire/libpakfire.sym
+
+libpakfire_la_LIBADD = \
+	$(ARCHIVE_LIBS) \
+	$(SOLV_LIBS)
+
+EXTRA_DIST += \
+	src/libpakfire/libpakfire.sym
 
 # ------------------------------------------------------------------------------
 

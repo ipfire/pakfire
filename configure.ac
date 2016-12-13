@@ -101,6 +101,24 @@ AC_SUBST([OUR_LDFLAGS], $with_ldflags)
 # Python
 AM_PATH_PYTHON([3.4])
 
+AC_C_CONST
+AC_CHECK_LIB([m], [round])
+
+AC_CHECK_HEADERS([ \
+	assert.h \
+	math.h \
+	stdlib.h \
+	string.h \
+	sys/stat.h \
+	unistd.h
+])
+
+AC_CHECK_FUNCS([ \
+	assert \
+	strcmp \
+	strdup
+])
+
 save_LIBS="$LIBS"
 
 # libdl
@@ -126,6 +144,7 @@ SOLV_LIBS="$LIBS"
 AC_SUBST(SOLV_LIBS)
 LIBS="$save_LIBS"
 
+PKG_CHECK_MODULES([ARCHIVE], [libarchive])
 PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}])
 PKG_CHECK_MODULES([LZMA], [liblzma])
 

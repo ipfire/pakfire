@@ -1,3 +1,5 @@
+src/libpakfire/package.c
+
 src/_pakfire/problem.c
 src/_pakfire/solution.c
 
@@ -5,11 +7,13 @@ src/pakfire/actions.py
 src/pakfire/base.py
 src/pakfire/builder.py
 src/pakfire/cli.py
+src/pakfire/client.py
 src/pakfire/compress.py
 src/pakfire/config.py
 src/pakfire/daemon.py
 src/pakfire/downloader.py
 src/pakfire/errors.py
+src/pakfire/http.py
 src/pakfire/i18n.py
 src/pakfire/keyring.py
 src/pakfire/packages/base.py
@@ -29,4 +33,5 @@ src/pakfire/server.py
 src/pakfire/shell.py
 src/pakfire/system.py
 src/pakfire/transaction.py
+src/pakfire/ui/progressbar.py
 src/pakfire/util.py

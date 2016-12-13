@@ -1,0 +1,258 @@
+/*#############################################################################
+#                                                                             #
+# Pakfire - The IPFire package management system                              #
+# Copyright (C) 2013 Pakfire development team                                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+#############################################################################*/
+
+LIBPAKFIRE_0 {
+global:
+	# archive
+	pakfire_archive_create;
+	pakfire_archive_extract;
+	pakfire_archive_free;
+	pakfire_archive_get_filelist;
+	pakfire_archive_get_format;
+	pakfire_archive_get_path;
+	pakfire_archive_open;
+	pakfire_archive_read;
+
+	# file
+	pakfire_file_append;
+	pakfire_file_cmp;
+	pakfire_file_count;
+	pakfire_file_create;
+	pakfire_file_free;
+	pakfire_file_free_all;
+	pakfire_file_get_first;
+	pakfire_file_get_group;
+	pakfire_file_get_last;
+	pakfire_file_get_mode;
+	pakfire_file_get_name;
+	pakfire_file_get_next;
+	pakfire_file_get_prev;
+	pakfire_file_get_time;
+	pakfire_file_get_user;
+	pakfire_file_is_file;
+	pakfire_file_is_link;
+	pakfire_file_is_symlink;
+	pakfire_file_is_char;
+	pakfire_file_is_block;
+	pakfire_file_is_dir;
+	pakfire_file_set_group;
+	pakfire_file_set_mode;
+	pakfire_file_set_name;
+	pakfire_file_set_time;
+	pakfire_file_set_user;
+	pakfire_file_sprintf;
+	pakfire_file_sort;
+	pakfire_file_swap;
+
+	# package
+	pakfire_package_add_conflicts;
+	pakfire_package_add_obsoletes;
+	pakfire_package_add_provides;
+	pakfire_package_add_recommends;
+	pakfire_package_add_requires;
+	pakfire_package_add_suggests;
+	pakfire_package_cmp;
+	pakfire_package_create;
+	pakfire_package_create2;
+	pakfire_package_dump;
+	pakfire_package_filelist_append;
+	pakfire_package_filelist_remove;
+	pakfire_package_free;
+	pakfire_package_get_arch;
+	pakfire_package_get_buildhost;
+	pakfire_package_get_buildtime;
+	pakfire_package_get_cache_path;
+	pakfire_package_get_cache_full_path;
+	pakfire_package_get_checksum;
+	pakfire_package_get_conflicts;
+	pakfire_package_get_description;
+	pakfire_package_get_downloadsize;
+	pakfire_package_get_epoch;
+	pakfire_package_get_evr;
+	pakfire_package_get_filelist;
+	pakfire_package_get_filename;
+	pakfire_package_get_groups;
+	pakfire_package_get_license;
+	pakfire_package_get_location;
+	pakfire_package_get_installsize;
+	pakfire_package_get_installtime;
+	pakfire_package_get_maintainer;
+	pakfire_package_get_name;
+	pakfire_package_get_nevra;
+	pakfire_package_get_obsoletes;
+	pakfire_package_get_provides;
+	pakfire_package_get_recommends;
+	pakfire_package_get_release;
+	pakfire_package_get_repo;
+	pakfire_package_get_requires;
+	pakfire_package_get_size;
+	pakfire_package_get_suggests;
+	pakfire_package_get_summary;
+	pakfire_package_get_url;
+	pakfire_package_get_uuid;
+	pakfire_package_get_vendor;
+	pakfire_package_get_version;
+	pakfire_package_id;
+	pakfire_package_is_installed;
+	pakfire_package_set_arch;
+	pakfire_package_set_buildhost;
+	pakfire_package_set_buildtime;
+	pakfire_package_set_checksum;
+	pakfire_package_set_conflicts;
+	pakfire_package_set_description;
+	pakfire_package_set_downloadsize;
+	pakfire_package_set_evr;
+	pakfire_package_set_filename;
+	pakfire_package_set_groups;
+	pakfire_package_set_installsize;
+	pakfire_package_set_license;
+	pakfire_package_set_maintainer;
+	pakfire_package_set_name;
+	pakfire_package_set_obsoletes;
+	pakfire_package_set_provides;
+	pakfire_package_set_recommends;
+	pakfire_package_set_repo;
+	pakfire_package_set_requires;
+	pakfire_package_set_suggests;
+	pakfire_package_set_summary;
+	pakfire_package_set_url;
+	pakfire_package_set_uuid;
+	pakfire_package_set_vendor;
+
+	# packagelist
+	pakfire_packagelist_count;
+	pakfire_packagelist_create;
+	pakfire_packagelist_free;
+	pakfire_packagelist_get;
+	pakfire_packagelist_has;
+	pakfire_packagelist_push;
+	pakfire_packagelist_push_if_not_exists;
+
+	# pool
+	pakfire_pool_count;
+	pakfire_pool_create;
+	pakfire_pool_free;
+	pakfire_pool_get_cache_path;
+	pakfire_pool_get_installed_repo;
+	pakfire_pool_get_installonly;
+	pakfire_pool_search;
+	pakfire_pool_set_cache_path;
+	pakfire_pool_set_installed_repo;
+	pakfire_pool_set_installonly;
+	pakfire_pool_version_compare;
+	pakfire_pool_whatprovides;
+
+	# repo
+	pakfire_repo_cmp;
+	pakfire_repo_count;
+	pakfire_repo_create;
+	pakfire_repo_free;
+	pakfire_repo_get_cache;
+	pakfire_repo_get_name;
+	pakfire_repo_get_enabled;
+	pakfire_repo_get_priority;
+	pakfire_repo_identical;
+	pakfire_repo_internalize;
+	pakfire_repo_is_installed_repo;
+	pakfire_repo_pool;
+	pakfire_repo_read_solv;
+	pakfire_repo_read_solv_fp;
+	pakfire_repo_set_enabled;
+	pakfire_repo_set_name;
+	pakfire_repo_set_priority;
+	pakfire_repo_write_solv;
+	pakfire_repo_write_solv_fp;
+
+	# repocache
+	pakfire_repocache_age;
+	pakfire_repocache_create;
+	pakfire_repocache_free;
+	pakfire_repocache_get_cache_path;
+	pakfire_repocache_get_full_path;
+	pakfire_repocache_has_file;
+	pakfire_repocache_open;
+
+	# relation
+	pakfire_relation_create;
+	pakfire_relation_create_from_id;
+	pakfire_relation_free;
+	pakfire_relation_id;
+	pakfire_relation_providers;
+	pakfire_relation_str;
+
+	# relationlist
+	pakfire_relationlist_add;
+	pakfire_relationlist_count;
+	pakfire_relationlist_create;
+	pakfire_relationlist_free;
+	pakfire_relationlist_get_clone;
+
+	# request
+	pakfire_request_create;
+	pakfire_request_distupgrade;
+	pakfire_request_free;
+	pakfire_request_erase;
+	pakfire_request_erase_relation;
+	pakfire_request_erase_selector;
+	pakfire_request_get_transaction;
+	pakfire_request_install;
+	pakfire_request_install_relation;
+	pakfire_request_install_selector;
+	pakfire_request_lock;
+	pakfire_request_lock_relation;
+	pakfire_request_lock_selector;
+	pakfire_request_pool;
+	pakfire_request_solve;
+	pakfire_request_upgrade;
+	pakfire_request_upgrade_all;
+	pakfire_request_upgrade_relation;
+	pakfire_request_upgrade_selector;
+	pakfire_request_verify;
+
+	# selector
+	pakfire_selector_create;
+	pakfire_selector_free;
+	pakfire_selector_providers;
+	pakfire_selector_set;
+
+	# step
+	pakfire_step_create;
+	pakfire_step_free;
+	pakfire_step_get_downloadsize;
+	pakfire_step_get_installsizechange;
+	pakfire_step_get_package;
+	pakfire_step_get_type;
+	pakfire_step_get_type_string;
+	pakfire_step_needs_download;
+
+	# transaction
+	pakfire_transaction_create;
+	pakfire_transaction_free;
+	pakfire_transaction_get_packages;
+	pakfire_transaction_get_step;
+	pakfire_transaction_installsizechange;
+
+	# util
+	pakfire_free;
+	pakfire_get_errno;
+
+local:
+	*;
+};
