@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_TRANSACTION_H
-#define PAKFIRE_TRANSACTION_H
+#ifndef PYTHON_PAKFIRE_TRANSACTION_H
+#define PYTHON_PAKFIRE_TRANSACTION_H
 
 #include <Python.h>
 
@@ -39,4 +39,4 @@ extern PyObject *Transaction_get_installsizechange(TransactionObject *self);
 
 extern PyTypeObject TransactionType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_TRANSACTION_H */

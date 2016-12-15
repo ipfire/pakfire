@@ -18,12 +18,12 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_CAPS_H
-#define PAKFIRE_CAPS_H
+#ifndef PYTHON_PAKFIRE_CAPS_H
+#define PYTHON_PAKFIRE_CAPS_H
 
 #include <Python.h>
 
 extern PyObject *get_capabilities(PyObject *self, PyObject *args);
 extern PyObject *set_capabilities(PyObject *self, PyObject *args);
 
-#endif
+#endif /* PYTHON_PAKFIRE_CAPS_H */

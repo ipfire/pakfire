@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_REQUEST_H
-#define PAKFIRE_REQUEST_H
+#ifndef PYTHON_PAKFIRE_REQUEST_H
+#define PYTHON_PAKFIRE_REQUEST_H
 
 #include <Python.h>
 
@@ -65,4 +65,4 @@ extern PyObject *Request_verify(RequestObject *self, PyObject *args);
 
 extern PyTypeObject RequestType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_REQUEST_H */

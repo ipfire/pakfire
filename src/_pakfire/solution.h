@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_SOLUTION_H
-#define PAKFIRE_SOLUTION_H
+#ifndef PYTHON_PAKFIRE_SOLUTION_H
+#define PYTHON_PAKFIRE_SOLUTION_H
 
 #include <Python.h>
 
@@ -40,4 +40,4 @@ extern PyObject *Solution_string(SolutionObject *self);
 
 extern PyTypeObject SolutionType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_SOLUTION_H */

@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_SOLVABLE_H
-#define PAKFIRE_SOLVABLE_H
+#ifndef PYTHON_PAKFIRE_SOLVABLE_H
+#define PYTHON_PAKFIRE_SOLVABLE_H
 
 #include <Python.h>
 
@@ -107,4 +107,4 @@ extern PyObject *Solvable_get_suggests(SolvableObject *self);
 
 extern PyTypeObject SolvableType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_SOLVABLE_H */

@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef _PAKFIRE_CONSTANTS_H
-#define _PAKFIRE_CONSTANTS_H
+#ifndef PYTHON_PAKFIRE_CONSTANTS_H
+#define PYTHON_PAKFIRE_CONSTANTS_H
 
 #define STRING_SIZE	2048
 
@@ -30,4 +30,4 @@
 #include <libintl.h>
 #define _(x) gettext(x)
 
-#endif
+#endif /* PYTHON_PAKFIRE_CONSTANTS_H */

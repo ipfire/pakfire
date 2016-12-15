@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_SOLVER_H
-#define PAKFIRE_SOLVER_H
+#ifndef PYTHON_PAKFIRE_SOLVER_H
+#define PYTHON_PAKFIRE_SOLVER_H
 
 #include <Python.h>
 
@@ -55,4 +55,4 @@ extern PyObject *Solver_get_problems(SolverObject *self, PyObject *args);
 
 extern PyTypeObject SolverType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_SOLVER_H */

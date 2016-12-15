@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_RELATION_H
-#define PAKFIRE_RELATION_H
+#ifndef PYTHON_PAKFIRE_RELATION_H
+#define PYTHON_PAKFIRE_RELATION_H
 
 #include <Python.h>
 
@@ -39,4 +39,4 @@ extern PyObject *Relation_string(RelationObject *self);
 
 extern PyTypeObject RelationType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_RELATION_H */

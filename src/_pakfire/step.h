@@ -18,8 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_STEP_H
-#define PAKFIRE_STEP_H
+#ifndef PYTHON_PAKFIRE_STEP_H
+#define PYTHON_PAKFIRE_STEP_H
 
 #include <Python.h>
 
@@ -40,4 +40,4 @@ extern PyObject *Step_get_solvable(StepObject *self, PyObject *args);
 
 extern PyTypeObject StepType;
 
-#endif
+#endif /* PYTHON_PAKFIRE_STEP_H */
