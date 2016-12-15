@@ -26,7 +26,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <pakfire/package.h>
+#include <pakfire/packagelist.h>
+#include <pakfire/types.h>
+
 #include "constants.h"
+#include "package.h"
 #include "util.h"
 
 PyObject *_personality(PyObject *self, PyObject *args) {
@@ -135,4 +140,19 @@ PyObject* performance_index(PyObject* self, PyObject* args) {
 	iterations /= seconds;
 
 	return PyLong_FromUnsignedLong(iterations);
+}
+
+PyObject* PyList_FromPackageList(PoolObject* pool, PakfirePackageList packagelist) {
+	PyObject* list = PyList_New(0);
+
+	int count = pakfire_packagelist_count(packagelist);
+	for (int i = 0; i < count; i++) {
+		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
+
+		PyObject* item = new_package(pool, pakfire_package_id(package));
+		PyList_Append(list, item);
+		Py_DECREF(item);
+	}
+
+	return list;
 }

@@ -40,6 +40,15 @@ PyTypeObject RepoType = {
 	tp_doc: "Sat Repo objects",
 };
 
+PyObject* new_repo(PoolObject* pool, const char* name) {
+	PyObject* args = Py_BuildValue("Os", (PyObject *)pool, name);
+	PyObject* repo = PyObject_CallObject((PyObject *)&RepoType, args);
+
+	Py_DECREF(args);
+
+	return repo;
+}
+
 PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 	RepoObject *self;
 

@@ -50,15 +50,6 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-static PyMethodDef Pool_methods[] = {
-	{"prepare", (PyCFunction)Pool_prepare, METH_NOARGS, NULL},
-	{"size", (PyCFunction)Pool_size, METH_NOARGS, NULL},
-	{"set_installed", (PyCFunction)Pool_set_installed, METH_VARARGS, NULL},
-	{"providers", (PyCFunction)Pool_providers, METH_VARARGS, NULL},
-	{"search", (PyCFunction)Pool_search, METH_VARARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
 static PyMethodDef Problem_methods[] = {
 	{"get_rule", (PyCFunction)Problem_get_rule, METH_NOARGS, NULL},
 	{"get_source", (PyCFunction)Problem_get_source, METH_NOARGS, NULL},
@@ -210,7 +201,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 		return NULL;
 
 	// Pool
-	PoolType.tp_methods = Pool_methods;
 	if (PyType_Ready(&PoolType) < 0)
 		return NULL;
 	Py_INCREF(&PoolType);

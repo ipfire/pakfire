@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2011 Pakfire development team                                 #
+# Copyright (C) 2016 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -18,39 +18,13 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PYTHON_PAKFIRE_REPO_H
-#define PYTHON_PAKFIRE_REPO_H
+#ifndef PYTHON_PAKFIRE_PACKAGE_H
+#define PYTHON_PAKFIRE_PACKAGE_H
 
 #include <Python.h>
 
-#include <pakfire/types.h>
-#include <solv/repo.h>
-
 #include "pool.h"
 
-// Sat Repo object
-typedef struct {
-	PyObject_HEAD
-	PakfireRepo repo;
-	Repo *_repo;
-} RepoObject;
+PyObject* new_package(PoolObject* pool, Id id);
 
-PyObject* new_repo(PoolObject* pool, const char* name);
-
-extern PyObject *Repo_dealloc(RepoObject *self);
-extern PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-extern PyObject *Repo_name(RepoObject *self);
-extern PyObject *Repo_size(RepoObject *self);
-extern PyObject *Repo_get_enabled(RepoObject *self);
-extern PyObject *Repo_set_enabled(RepoObject *self, PyObject *args);
-extern PyObject *Repo_get_priority(RepoObject *self);
-extern PyObject *Repo_set_priority(RepoObject *self, PyObject *args);
-extern PyObject *Repo_write(RepoObject *self, PyObject *args);
-extern PyObject *Repo_read(RepoObject *self, PyObject *args);
-extern PyObject *Repo_internalize(RepoObject *self);
-extern PyObject *Repo_clear(RepoObject *self);
-extern PyObject *Repo_get_all(RepoObject *self);
-
-extern PyTypeObject RepoType;
-
-#endif /* PYTHON_PAKFIRE_REPO_H */
+#endif /* PYTHON_PAKFIRE_PACKAGE_H */

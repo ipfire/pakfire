@@ -55,6 +55,9 @@ AM_CPPFLAGS = \
 AM_CFLAGS = $(OUR_CFLAGS)
 AM_LDFLAGS = $(OUR_LDFLAGS)
 
+PAKFIRE_CFLAGS = -I$(top_srcdir)/src/libpakfire/include
+PAKFIRE_LIBS   = libpakfire.la
+
 lib_LTLIBRARIES =
 libexec_PROGRAMS =
 pkgpyexec_LTLIBRARIES =
@@ -179,6 +182,8 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/capabilities.c \
 	src/_pakfire/capabilities.h \
 	src/_pakfire/constants.h \
+	src/_pakfire/package.c \
+	src/_pakfire/package.h \
 	src/_pakfire/pool.c \
 	src/_pakfire/pool.h \
 	src/_pakfire/problem.c \
@@ -205,6 +210,7 @@ _pakfire_la_SOURCES = \
 _pakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(PYTHON_DEVEL_CFLAGS) \
+	$(PAKFIRE_CFLAGS) \
 	$(CAP_CFLAGS) \
 	$(SOLV_CFLAGS)
 
@@ -216,6 +222,7 @@ _pakfire_la_LDFLAGS = \
 
 _pakfire_la_LIBADD = \
 	$(PYTHON_DEVEL_LIBS) \
+	$(PAKFIRE_LIBS) \
 	$(CAP_LIBS) \
 	$(SOLV_LIBS)
 

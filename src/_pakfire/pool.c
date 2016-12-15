@@ -23,222 +23,246 @@
 #include <solv/poolarch.h>
 #include <solv/solver.h>
 
+#include <pakfire/errno.h>
+#include <pakfire/pool.h>
+#include <pakfire/repo.h>
+
 #include "constants.h"
 #include "pool.h"
 #include "relation.h"
 #include "repo.h"
 #include "solvable.h"
+#include "util.h"
 
-PyTypeObject PoolType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Pool",
-	tp_basicsize: sizeof(PoolObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Pool_new,
-	tp_dealloc: (destructor) Pool_dealloc,
-	tp_doc: "Sat Pool objects",
-};
-
-// Pool
-PyObject* Pool_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	PoolObject *self;
-	const char *arch;
-
-	if (!PyArg_ParseTuple(args, "s", &arch)) {
-		/* XXX raise exception */
-		return NULL;
-	}
-
-	self = (PoolObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		self->_pool = pool_create();
-
-#ifdef DEBUG
-		// Enable debug messages when DEBUG is defined.
-		pool_setdebuglevel(self->_pool, 1);
-#endif
-
-		pool_setdisttype(self->_pool, DISTTYPE_RPM);
-		pool_setarch(self->_pool, arch);
-		if (self->_pool == NULL) {
-			Py_DECREF(self);
-			return NULL;
-		}
+static PyObject* Pool_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	PoolObject* self = (PoolObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->pool = NULL;
 	}
 
 	return (PyObject *)self;
 }
 
-PyObject *Pool_dealloc(PoolObject *self) {
-	pool_free(self->_pool);
+static void Pool_dealloc(PoolObject* self) {
+	if (self->pool)
+		pakfire_pool_free(self->pool);
+
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Pool_add_repo(PoolObject *self, PyObject *args) {
-	const char *name;
-	if (!PyArg_ParseTuple(args, "s", &name)) {
-		/* XXX raise exception */
+static int Pool_init(PoolObject* self, PyObject* args, PyObject* kwds) {
+	const char* arch;
+
+	if (!PyArg_ParseTuple(args, "s", &arch))
+		return -1;
+
+	self->pool = pakfire_pool_create(arch);
+	if (self->pool == NULL) {
+		switch(pakfire_get_errno()) {
+			default:
+				assert(0);
+		}
+		return -1;
 	}
 
-	RepoObject *repo;
+	return 0;
+}
 
-	repo = PyObject_New(RepoObject, &RepoType);
-	if (repo == NULL)
+static PyObject* Pool_version_compare(PoolObject* self, PyObject* args) {
+	const char* evr1 = NULL;
+	const char* evr2 = NULL;
+
+	if (!PyArg_ParseTuple(args, "ss", &evr1, &evr2))
 		return NULL;
 
-	return (PyObject *)repo;
+	int cmp = pakfire_pool_version_compare(self->pool, evr1, evr2);
+	return PyLong_FromLong(cmp);
 }
 
-PyObject *Pool_prepare(PoolObject *self) {
-	_Pool_prepare(self->_pool);
-
-	Py_RETURN_NONE;
+static Py_ssize_t Pool_len(PoolObject* self) {
+	return pakfire_pool_count(self->pool);
 }
 
-void _Pool_prepare(Pool *pool) {
-	pool_addfileprovides(pool);
-	pool_createwhatprovides(pool);
+static PyObject* Pool_get_installed_repo(PoolObject* self) {
+	PakfireRepo repo = pakfire_pool_get_installed_repo(self->pool);
+	if (!repo)
+		Py_RETURN_NONE;
 
-	Repo *r;
-	int idx;
-	FOR_REPOS(idx, r) {
-		repo_internalize(r);
+	PyObject* obj = new_repo(self, pakfire_repo_get_name(repo));
+	Py_XINCREF(obj);
+
+	return obj;
+}
+
+static int Pool_set_installed_repo(PoolObject* self, PyObject* value) {
+#if 0
+	if (PyObject_Not(value)) {
+		pakfire_pool_set_installed_repo(self->pool, NULL);
+		return 0;
 	}
-}
+#endif
 
-PyObject *Pool_size(PoolObject *self) {
-	Pool *pool = self->_pool;
-
-	return Py_BuildValue("i", pool->nsolvables);
-}
-
-PyObject *_Pool_search(Pool *pool, Repo *repo, const char *match, int option, const char *keyname) {
-	// Prepare the pool, so we can search in it.
-	_Pool_prepare(pool);
-
-	Dataiterator d;
-	dataiterator_init(&d, pool, repo, 0,
-		keyname && pool ? pool_str2id(pool, keyname, 0) : 0, match, option);
-
-	PyObject *list = PyList_New(0);
-
-	SolvableObject *solvable;
-	while (dataiterator_step(&d)) {
-		solvable = PyObject_New(SolvableObject, &SolvableType);
-		solvable->_pool = pool;
-		solvable->_id = d.solvid;
-
-		PyList_Append(list, (PyObject *)solvable);
+	if (!PyObject_TypeCheck(value, &RepoType)) {
+		PyErr_SetString(PyExc_ValueError, "Argument must be a _pakfire.Repo object");
+		return -1;
 	}
 
-	dataiterator_free(&d);
+	RepoObject* repo = (RepoObject *)value;
+	pakfire_pool_set_installed_repo(self->pool, repo->repo);
+
+	return 0;
+}
+
+static PyObject* Pool_get_installonly(PoolObject* self) {
+	const char** installonly = pakfire_pool_get_installonly(self->pool);
+
+	PyObject* list = PyList_New(0);
+	const char* name;
+
+	while ((name = *installonly++) != NULL) {
+		PyObject* item = PyUnicode_FromString(name);
+		PyList_Append(list, item);
+
+		Py_DECREF(item);
+	}
+
+	Py_INCREF(list);
 	return list;
 }
 
-PyObject *Pool_search(PoolObject *self, PyObject *args) {
-	const char *match = NULL;
-	int option = SEARCH_SUBSTRING;
-	const char *keyname = NULL;
+static int Pool_set_installonly(PoolObject* self, PyObject* value) {
+	if (!PySequence_Check(value)) {
+		PyErr_SetString(PyExc_AttributeError, "Expected a sequence.");
+		return -1;
+	}
 
-	if (!PyArg_ParseTuple(args, "s|is", &match, &option, &keyname)) {
-		/* XXX raise exception */
+	const int length = PySequence_Length(value);
+	const char* installonly[length + 1];
+
+	for (int i = 0; i < length; i++) {
+		PyObject* item = PySequence_GetItem(value, i);
+
+		installonly[i] = PyUnicode_AsUTF8(item);
+		Py_DECREF(item);
+	}
+	installonly[length] = NULL;
+
+	pakfire_pool_set_installonly(self->pool, installonly);
+
+	return 0;
+}
+
+static PyObject* Pool_get_cache_path(PoolObject* self) {
+	const char* path = pakfire_pool_get_cache_path(self->pool);
+	if (!path)
+		Py_RETURN_NONE;
+
+	return PyUnicode_FromString(path);
+}
+
+static int Pool_set_cache_path(PoolObject* self, PyObject* value) {
+	const char* path = PyUnicode_AsUTF8(value);
+	assert(path);
+
+	pakfire_pool_set_cache_path(self->pool, path);
+	return 0;
+}
+
+static PyObject* Pool_whatprovides(PoolObject* self, PyObject* args, PyObject* kwds) {
+	char* kwlist[] = {"provides", "glob", "icase", "name_only", NULL};
+
+	const char* provides;
+	int glob = 0;
+	int icase = 0;
+	int name_only = 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iii", kwlist, &provides, &glob, &icase, &name_only))
 		return NULL;
-	}
 
-	return _Pool_search(self->_pool, NULL, match, option, keyname);
+	int flags = 0;
+	if (glob)
+		flags |= PAKFIRE_GLOB;
+	if (icase)
+		flags |= PAKFIRE_ICASE;
+	if (name_only)
+		flags |= PAKFIRE_NAME_ONLY;
+
+	PakfirePackageList list = pakfire_pool_whatprovides(self->pool, provides, flags);
+
+	return PyList_FromPackageList(self, list);
 }
 
-PyObject *Pool_set_installed(PoolObject *self, PyObject *args) {
-	RepoObject *repo;
+static PyObject* Pool_search(PoolObject* self, PyObject* args) {
+	const char* what;
 
-	if (!PyArg_ParseTuple(args, "O", &repo)) {
-		/* XXX raise exception */
-	}
-
-	pool_set_installed(self->_pool, repo->_repo);
-
-	Py_RETURN_NONE;
-}
-
-PyObject *Pool_providers(PoolObject *self, PyObject *args) {
-	char *name = NULL;
-	Queue job;
-	Solvable *solvable;
-	Pool *pool = self->_pool;
-	Id p, pp;
-	int i;
-
-	if (!PyArg_ParseTuple(args, "s", &name)) {
+	if (!PyArg_ParseTuple(args, "s", &what))
 		return NULL;
-	}
 
-	_Pool_prepare(pool);
-	queue_init(&job);
-
-	Id id = pool_str2id(pool, name, 0);
-
-	if (id) {
-		FOR_PROVIDES(p, pp, id) {
-			solvable = pool->solvables + p;
-
-			if (solvable->name == id)
-				queue_push2(&job, SOLVER_SOLVABLE, p);
-		}
-	}
-
-	for (p = 1; p < pool->nsolvables; p++) {
-		solvable = pool->solvables + p;
-		if (!solvable->repo || !pool_installable(pool, solvable))
-			continue;
-
-		id = solvable->name;
-		if (fnmatch(name, pool_id2str(pool, id), 0) == 0) {
-			for (i = 0; i < job.count; i += 2) {
-				if (job.elements[i] == SOLVER_SOLVABLE && job.elements[i + 1] == id)
-					break;
-			}
-
-			if (i == job.count)
-				queue_push2(&job, SOLVER_SOLVABLE, p);
-		}
-	}
-
-	for (id = 1; id < pool->ss.nstrings; id++) {
-		if (!pool->whatprovides[id])
-			continue;
-
-		if (fnmatch(name, pool_id2str(pool, id), 0) == 0) {
-			Id *provides = pool->whatprovidesdata + pool->whatprovides[id];
-
-			while (*provides) {
-				for (i = 0; i < job.count; i += 2) {
-					if (job.elements[i] == SOLVER_SOLVABLE && job.elements[i + 1] == *provides)
-						break;
-				}
-
-				if (i == job.count)
-					queue_push2(&job, SOLVER_SOLVABLE, *provides);
-
-				provides++;
-			}
-		}
-	}
-
-	SolvableObject *s;
-	PyObject *list = PyList_New(0);
-
-	for (i = 0; i < job.count; i += 2) {
-		switch (job.elements[i]) {
-			case SOLVER_SOLVABLE:
-				s = PyObject_New(SolvableObject, &SolvableType);
-				s->_pool = pool;
-				s->_id = job.elements[i + 1];
-
-				PyList_Append(list, (PyObject *)s);
-		}
-	}
-
-	return list;
+	PakfirePackageList list = pakfire_pool_search(self->pool, what, 0);
+	return PyList_FromPackageList(self, list);
 }
+
+static struct PyMethodDef Pool_methods[] = {
+	{
+		"search",
+		(PyCFunction)Pool_search,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"version_compare",
+		(PyCFunction)Pool_version_compare,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"whatprovides",
+		(PyCFunction)Pool_whatprovides,
+		METH_VARARGS|METH_KEYWORDS,
+		NULL
+	},
+	{ NULL }
+};
+
+static struct PyGetSetDef Pool_getsetters[] = {
+	{
+		"cache_path",
+		(getter)Pool_get_cache_path,
+		(setter)Pool_set_cache_path,
+		NULL,
+		NULL
+	},
+	{
+		"installed_repo",
+		(getter)Pool_get_installed_repo,
+		(setter)Pool_set_installed_repo,
+		NULL,
+		NULL
+	},
+	{
+		"installonly",
+		(getter)Pool_get_installonly,
+		(setter)Pool_set_installonly,
+		NULL,
+		NULL
+	},
+	{ NULL }
+};
+
+static PySequenceMethods Pool_sequence = {
+	sq_length:          (lenfunc)Pool_len,
+};
+
+PyTypeObject PoolType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.Pool",
+	tp_basicsize:       sizeof(PoolObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Pool_new,
+	tp_dealloc:         (destructor)Pool_dealloc,
+	tp_init:            (initproc)Pool_init,
+	tp_doc:             "Pool object",
+	tp_methods:         Pool_methods,
+	tp_getset:          Pool_getsetters,
+	tp_as_sequence:     &Pool_sequence,
+};

@@ -202,8 +202,10 @@ PyObject *Solver_solve(SolverObject *self, PyObject *args) {
 		return NULL;
 	}
 
+#if 0 
 	// Make sure, the pool is prepared.
 	_Pool_prepare(self->_solver->pool);
+#endif
 
 	/* Force best solution. */
 	if (force_best) {
