@@ -179,6 +179,8 @@ pkgpyexec_LTLIBRARIES += \
 
 _pakfire_la_SOURCES = \
 	src/_pakfire/_pakfiremodule.c \
+	src/_pakfire/archive.c \
+	src/_pakfire/archive.h \
 	src/_pakfire/capabilities.c \
 	src/_pakfire/capabilities.h \
 	src/_pakfire/constants.h \

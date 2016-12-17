@@ -25,6 +25,7 @@
 #include <sched.h>
 #include <sys/personality.h>
 
+#include "archive.h"
 #include "capabilities.h"
 #include "constants.h"
 #include "pool.h"
@@ -199,6 +200,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyObject* module = PyModule_Create(&moduledef);
 	if (!module)
 		return NULL;
+
+	// Archive
+	if (PyType_Ready(&ArchiveType) < 0)
+		return;
+
+	Py_INCREF(&ArchiveType);
+	PyModule_AddObject(module, "Archive", (PyObject *)&ArchiveType);
 
 	// Pool
 	if (PyType_Ready(&PoolType) < 0)
