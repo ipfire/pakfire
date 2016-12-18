@@ -28,6 +28,7 @@
 #include "archive.h"
 #include "capabilities.h"
 #include "constants.h"
+#include "package.h"
 #include "pool.h"
 #include "problem.h"
 #include "relation.h"
@@ -79,10 +80,6 @@ static PyMethodDef Request_methods[] = {
 	{"updateall", (PyCFunction)Request_updateall, METH_NOARGS, NULL},
 	{"distupgrade", (PyCFunction)Request_distupgrade, METH_NOARGS, NULL},
 	{"verify", (PyCFunction)Request_verify, METH_NOARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Relation_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -193,6 +190,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	Py_INCREF(&ArchiveType);
 	PyModule_AddObject(module, "Archive", (PyObject *)&ArchiveType);
 
+	// Package
+	if (PyType_Ready(&PackageType) < 0)
+		return NULL;
+
+	Py_INCREF(&PackageType);
+	PyModule_AddObject(module, "Package", (PyObject *)&PackageType);
+
 	// Pool
 	if (PyType_Ready(&PoolType) < 0)
 		return NULL;
@@ -221,9 +225,9 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyModule_AddObject(module, "Solvable", (PyObject *)&SolvableType);
 
 	// Relation
-	RelationType.tp_methods = Relation_methods;
 	if (PyType_Ready(&RelationType) < 0)
 		return NULL;
+
 	Py_INCREF(&RelationType);
 	PyModule_AddObject(module, "Relation", (PyObject *)&RelationType);
 

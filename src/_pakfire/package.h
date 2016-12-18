@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2016 Pakfire development team                                 #
+# Copyright (C) 2011 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -23,7 +23,18 @@
 
 #include <Python.h>
 
+#include <pakfire/package.h>
+#include <solv/pooltypes.h>
+
 #include "pool.h"
+
+typedef struct {
+	PyObject_HEAD
+	PoolObject* pool;
+	PakfirePackage package;
+} PackageObject;
+
+extern PyTypeObject PackageType;
 
 PyObject* new_package(PoolObject* pool, Id id);
 

@@ -18,57 +18,134 @@
 #                                                                             #
 #############################################################################*/
 
-#include "pool.h"
+#include <Python.h>
+
+#include <pakfire/package.h>
+#include <pakfire/packagelist.h>
+#include <pakfire/relation.h>
+#include <pakfire/util.h>
+#include <solv/pooltypes.h>
+
+#include "package.h"
 #include "relation.h"
 
-#define REL_NONE 0
-
-PyTypeObject RelationType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Relation",
-	tp_basicsize: sizeof(RelationObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Relation_new,
-	tp_dealloc: (destructor) Relation_dealloc,
-	tp_doc: "Sat Relation objects",
-	tp_str: (reprfunc)Relation_string,
-};
-
-PyObject* Relation_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	RelationObject *self;
-	PoolObject *pool;
-	const char *name;
-	const char *evr = NULL;
-	int flags = 0;
-
-	if (!PyArg_ParseTuple(args, "Os|si", &pool, &name, &evr, &flags)) {
-		/* XXX raise exception */
+static RelationObject* Relation_new_core(PyTypeObject* type, PoolObject* pool) {
+	RelationObject* self = (RelationObject *)type->tp_alloc(type, 0);
+	if (!self)
 		return NULL;
+
+	if (pool) {
+		self->pool = pool;
+		Py_INCREF(self->pool);
 	}
 
-	Id _name = pool_str2id(pool->_pool, name, 1);
+	self->relation = NULL;
 
-	self = (RelationObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		if (flags == REL_NONE) {
-			self->_id = _name;
-		} else {
-			Id _evr = pool_str2id(pool->_pool, evr, 1);
-			self->_id = pool_rel2id(pool->_pool, _name, _evr, flags, 1);
-		}
+	return self;
+}
 
-		self->_pool = pool->_pool;
-	}
+PyObject* new_relation(PoolObject* pool, Id id) {
+	RelationObject* relation = Relation_new_core(&RelationType, pool);
+	relation->relation = pakfire_relation_create_from_id(pool->pool, id);
+
+	return (PyObject *)relation;
+}
+
+static PyObject* Relation_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	RelationObject* self = Relation_new_core(type, NULL);
 
 	return (PyObject *)self;
 }
 
-PyObject *Relation_dealloc(RelationObject *self) {
+static void Relation_dealloc(RelationObject* self) {
+	if (self->relation)
+		pakfire_relation_free(self->relation);
+
+	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Relation_string(RelationObject *self) {
-	return Py_BuildValue("s", pool_dep2str(self->_pool, self->_id));
+static int Relation_init(RelationObject* self, PyObject* args, PyObject* kwds) {
+	PyObject* pool;
+	const char* name;
+	const char* evr = NULL;
+	int cmp_type = 0;
+
+	if (!PyArg_ParseTuple(args, "O!s|is", &PoolType, &pool, &name, &cmp_type, &evr))
+		return -1;
+
+	self->pool = (PoolObject *)pool;
+	Py_INCREF(self->pool);
+
+	self->relation = pakfire_relation_create(self->pool->pool, name, cmp_type, evr);
+	if (!self->relation) {
+		PyErr_Format(PyExc_ValueError, "No such relation: %s", name);
+		return -1;
+	}
+
+	return 0;
 }
+
+static long Relation_hash(RelationObject* self) {
+	return pakfire_relation_id(self->relation);
+}
+
+static PyObject* Relation_repr(RelationObject* self) {
+	char* relation = pakfire_relation_str(self->relation);
+
+	PyObject* repr = PyUnicode_FromFormat("<_pakfire.Relation %s>", relation);
+	pakfire_free(relation);
+
+	return repr;
+}
+
+static PyObject* Relation_str(RelationObject* self) {
+	char* relation = pakfire_relation_str(self->relation);
+
+	PyObject* str = PyUnicode_FromString(relation);
+	pakfire_free(relation);
+
+	return str;
+}
+
+static PyObject* Relation_get_providers(RelationObject* self) {
+	PakfirePackageList packagelist = pakfire_relation_providers(self->relation);
+
+	PyObject* list = PyList_New(0);
+	PakfirePackage package;
+	int i;
+
+	FOR_PACKAGELIST(package, packagelist, i) {
+		PyObject* obj = new_package(self->pool, pakfire_package_id(package));
+		PyList_Append(list, obj);
+	}
+	pakfire_packagelist_free(packagelist);
+
+	return list;
+}
+
+static struct PyGetSetDef Relation_getsetters[] = {
+	{
+		"providers",
+		(getter)Relation_get_providers,
+		NULL,
+		NULL,
+		NULL
+	},
+	{ NULL },
+};
+
+PyTypeObject RelationType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.Relation",
+	tp_basicsize:       sizeof(RelationObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Relation_new,
+	tp_dealloc:         (destructor)Relation_dealloc,
+	tp_init:            (initproc)Relation_init,
+	tp_doc:             "Relation object",
+	tp_hash:            (hashfunc)Relation_hash,
+	tp_repr:            (reprfunc)Relation_repr,
+	tp_str:             (reprfunc)Relation_str,
+	tp_getset:          Relation_getsetters,
+};
