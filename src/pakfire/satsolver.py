@@ -40,7 +40,6 @@ SEARCH_STRING = _pakfire.SEARCH_STRING
 SEARCH_FILES  = _pakfire.SEARCH_FILES
 SEARCH_GLOB   = _pakfire.SEARCH_GLOB
 
-Repo     = _pakfire.Repo
 Solvable = _pakfire.Solvable
 Relation = _pakfire.Relation
 

@@ -19,26 +19,15 @@
 #############################################################################*/
 
 #include <Python.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <solv/repo.h>
-#include <solv/repo_solv.h>
-#include <solv/repo_write.h>
 
-#include "constants.h"
-#include "pool.h"
+#include <pakfire/errno.h>
+#include <pakfire/package.h>
+#include <pakfire/repo.h>
+#include <pakfire/repocache.h>
+#include <pakfire/util.h>
+
+#include "package.h"
 #include "repo.h"
-#include "solvable.h"
-
-PyTypeObject RepoType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Repo",
-	tp_basicsize: sizeof(RepoObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Repo_new,
-	tp_dealloc: (destructor) Repo_dealloc,
-	tp_doc: "Sat Repo objects",
-};
 
 PyObject* new_repo(PoolObject* pool, const char* name) {
 	PyObject* args = Py_BuildValue("Os", (PyObject *)pool, name);
@@ -49,165 +38,346 @@ PyObject* new_repo(PoolObject* pool, const char* name) {
 	return repo;
 }
 
-PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	RepoObject *self;
-
-	PoolObject *pool;
-	const char *name;
-
-	if (!PyArg_ParseTuple(args, "Os", &pool, &name)) {
-		return NULL;
-	}
-
-	assert(pool);
-	assert(name);
-
-	self = (RepoObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		self->_repo = repo_create(pool->_pool, name);
-		if (self->_repo == NULL) {
-			Py_DECREF(self);
-			return NULL;
-		}
+static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	RepoObject* self = (RepoObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->pool = NULL;
+		self->repo = NULL;
 	}
 
 	return (PyObject *)self;
 }
 
-PyObject *Repo_dealloc(RepoObject *self) {
+static void Repo_dealloc(RepoObject* self) {
+	if (self->repo)
+		pakfire_repo_free(self->repo);
+
+	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Repo_name(RepoObject *self) {
-	Repo *repo = self->_repo;
+static int Repo_init(RepoObject* self, PyObject* args, PyObject* kwds) {
+	PyObject* pool;
+	const char* name;
 
-	return Py_BuildValue("s", repo->name);
+	if (!PyArg_ParseTuple(args, "O!s", &PoolType, &pool, &name))
+		return -1;
+
+	self->pool = (PoolObject *)pool;
+	Py_INCREF(self->pool);
+
+	self->repo = pakfire_repo_create(self->pool->pool, name);
+
+	return 0;
 }
 
-PyObject *Repo_size(RepoObject *self) {
-	Repo *repo = self->_repo;
-
-	return Py_BuildValue("i", repo->nsolvables);
+static long Repo_hash(RepoObject* self) {
+	return (long)self->repo;
 }
 
-PyObject *Repo_get_enabled(RepoObject *self) {
-	if (self->_repo->disabled == 0) {
-		Py_RETURN_TRUE;
+static PyObject* Repo_richcompare(RepoObject* self, RepoObject* other, int op) {
+	int r;
+
+	switch (op) {
+		case Py_EQ:
+			if (pakfire_repo_identical(self->repo, other->repo) == 0)
+				Py_RETURN_TRUE;
+
+			Py_RETURN_FALSE;
+			break;
+
+		case Py_LT:
+			r = pakfire_repo_cmp(self->repo, other->repo);
+			if (r < 0)
+				Py_RETURN_TRUE;
+
+			Py_RETURN_FALSE;
+			break;
+
+		default:
+			break;
 	}
+
+	Py_RETURN_NOTIMPLEMENTED;
+}
+
+static Py_ssize_t Repo_len(RepoObject* self) {
+	return pakfire_repo_count(self->repo);
+}
+
+static PyObject* Repo_get_name(RepoObject* self) {
+	const char* name = pakfire_repo_get_name(self->repo);
+
+	return PyUnicode_FromString(name);
+}
+
+static int Repo_set_name(RepoObject* self, PyObject* value) {
+	const char* name = PyUnicode_AsUTF8(value);
+
+	pakfire_repo_set_name(self->repo, name);
+	return 0;
+}
+
+static PyObject* Repo_get_enabled(RepoObject* self) {
+	if (pakfire_repo_get_enabled(self->repo))
+		Py_RETURN_TRUE;
 
 	Py_RETURN_FALSE;
 }
 
-PyObject *Repo_set_enabled(RepoObject *self, PyObject *args) {
-	bool enabled;
+static int Repo_set_enabled(RepoObject* self, PyObject* value) {
+	if (PyObject_IsTrue(value))
+		pakfire_repo_set_enabled(self->repo, 1);
+	else
+		pakfire_repo_set_enabled(self->repo, 0);
 
-	if (!PyArg_ParseTuple(args, "b", &enabled)) {
+	return 0;
+}
+
+static PyObject* Repo_get_priority(RepoObject* self) {
+	int priority = pakfire_repo_get_priority(self->repo);
+
+	return PyLong_FromLong(priority);
+}
+
+static int Repo_set_priority(RepoObject* self, PyObject* value) {
+	long priority = PyLong_AsLong(value);
+
+	if (priority > INT_MAX || priority < INT_MIN)
+		return -1;
+
+	pakfire_repo_set_priority(self->repo, priority);
+	return 0;
+}
+
+static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &filename))
+		return NULL;
+
+	int ret = pakfire_repo_read_solv(self->repo, filename, 0);
+
+	switch (ret) {
+		case 0:
+			Py_RETURN_NONE;
+			break;
+
+		case PAKFIRE_E_IO:
+			PyErr_Format(PyExc_IOError, "Could not read file %s", filename);
+			break;
+
+		default:
+			PyErr_Format(PyExc_RuntimeError, "pakfire_repo_read() failed: %d", ret);
+			break;
+	}
+
+	return NULL;
+}
+
+static PyObject* Repo_write_solv(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &filename))
+		return NULL;
+
+	int ret = pakfire_repo_write_solv(self->repo, filename, 0);
+
+	switch (ret) {
+		case 0:
+			Py_RETURN_NONE;
+			break;
+
+		case PAKFIRE_E_IO:
+			PyErr_Format(PyExc_IOError, "Could not open file %s", filename);
+			break;
+
+		default:
+			PyErr_Format(PyExc_RuntimeError, "pakfire_repo_write() failed: %d", ret);
+			break;
+	}
+
+	return NULL;
+}
+
+static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
+	const char* name;
+	const char* evr;
+	const char* arch;
+
+	if (!PyArg_ParseTuple(args, "sss", &name, &evr, &arch))
+		return NULL;
+
+	PakfirePool pool = pakfire_repo_pool(self->repo);
+	PakfirePackage pkg = pakfire_package_create2(pool, self->repo, name, evr, arch);
+
+	return new_package(self->pool, pakfire_package_id(pkg));
+}
+
+static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &filename))
+		return NULL;
+
+	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
+	if (!cache)
+		Py_RETURN_NONE;
+
+	int age = pakfire_repocache_age(cache, filename);
+
+	if (age < 0)
+		Py_RETURN_NONE;
+
+	PyObject* ret = PyLong_FromLong(age);
+	return ret;
+}
+
+static PyObject* Repo_cache_exists(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &filename))
+		return NULL;
+
+	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
+	if (!cache)
+		Py_RETURN_NONE;
+
+	int ret = pakfire_repocache_has_file(cache, filename);
+
+	if (ret)
+		Py_RETURN_TRUE;
+
+	Py_RETURN_FALSE;
+}
+
+static PyObject* Repo_cache_open(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
+	char* mode = NULL;
+
+	if (!PyArg_ParseTuple(args, "ss", &filename, &mode))
+		return NULL;
+
+	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
+	if (!cache)
+		Py_RETURN_NONE;
+
+	FILE* fp = pakfire_repocache_open(cache, filename, mode);
+
+	if (!fp) {
+		PyErr_Format(PyExc_IOError, "Could not open file %s", filename);
 		return NULL;
 	}
 
-	if (enabled == true) {
-		self->_repo->disabled = 0;
-	} else {
-		self->_repo->disabled = 1;
-	}
-
-	Py_RETURN_NONE;
+	// XXX might cause some problems with internal buffering
+	return PyFile_FromFd(fileno(fp), NULL, mode, 1, NULL, NULL, NULL, 1);
 }
 
-PyObject *Repo_get_priority(RepoObject *self) {
-	return Py_BuildValue("i", self->_repo->priority);
-}
+static PyObject* Repo_cache_path(RepoObject* self, PyObject* args) {
+	const char* filename = NULL;
 
-PyObject *Repo_set_priority(RepoObject *self, PyObject *args) {
-	int priority;
-
-	if (!PyArg_ParseTuple(args, "i", &priority)) {
-		/* XXX raise exception */
+	if (!PyArg_ParseTuple(args, "s", &filename))
 		return NULL;
-	}
 
-	self->_repo->priority = priority;
+	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
+	if (!cache)
+		Py_RETURN_NONE;
 
-	Py_RETURN_NONE;
+	char* cache_path = pakfire_repocache_get_full_path(cache, filename);
+
+	PyObject* obj = PyUnicode_FromString(cache_path);
+	pakfire_free(cache_path);
+
+	return obj;
 }
 
-PyObject *Repo_write(RepoObject *self, PyObject *args) {
-	const char *filename;
-	char exception[STRING_SIZE];
+static struct PyMethodDef Repo_methods[] = {
+	{
+		"cache_age",
+		(PyCFunction)Repo_cache_age,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"cache_exists",
+		(PyCFunction)Repo_cache_exists,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"cache_open",
+		(PyCFunction)Repo_cache_open,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"cache_path",
+		(PyCFunction)Repo_cache_path,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"read_solv",
+		(PyCFunction)Repo_read_solv,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"write_solv",
+		(PyCFunction)Repo_write_solv,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"_add_package",
+		(PyCFunction)Repo__add_package,
+		METH_VARARGS,
+		NULL
+	},
+	{ NULL }
+};
 
-	if (!PyArg_ParseTuple(args, "s", &filename)) {
-		return NULL;
-	}
+static struct PyGetSetDef Repo_getsetters[] = {
+	{
+		"name",
+		(getter)Repo_get_name,
+		(setter)Repo_set_name,
+		"The name of the repository",
+		NULL
+	},
+	{
+		"enabled",
+		(getter)Repo_get_enabled,
+		(setter)Repo_set_enabled,
+		NULL,
+		NULL
+	},
+	{
+		"priority",
+		(getter)Repo_get_priority,
+		(setter)Repo_set_priority,
+		"The priority of the repository",
+		NULL
+	},
+	{ NULL }
+};
 
-	// Prepare the pool and internalize all attributes.
-	//_Pool_prepare(self->_repo->pool);
+static PySequenceMethods Repo_sequence = {
+	sq_length:          (lenfunc)Repo_len,
+};
 
-	FILE *fp = NULL;
-	if ((fp = fopen(filename, "wb")) == NULL) {
-		snprintf(exception, STRING_SIZE - 1, "Could not open file for writing: %s (%s).",
-			filename, strerror(errno));
-		PyErr_SetString(PyExc_RuntimeError, exception);
-		return NULL;
-	}
-
-	repo_write(self->_repo, fp);
-	fclose(fp);
-
-	Py_RETURN_NONE;
-}
-
-PyObject *Repo_read(RepoObject *self, PyObject *args) {
-	const char *filename;
-
-	if (!PyArg_ParseTuple(args, "s", &filename)) {
-		return NULL;
-	}
-
-	// XXX catch if file cannot be opened
-	FILE *fp = fopen(filename, "rb");
-	repo_add_solv(self->_repo, fp, 0);
-	fclose(fp);
-
-	Py_RETURN_NONE;
-}
-
-PyObject *Repo_internalize(RepoObject *self) {
-	repo_internalize(self->_repo);
-
-	Py_RETURN_NONE;
-}
-
-PyObject *Repo_clear(RepoObject *self) {
-	repo_empty(self->_repo, 1);
-
-	Py_RETURN_NONE;
-}
-
-PyObject *Repo_get_all(RepoObject *self) {
-	Solvable *s;
-	Id p;
-	Repo *r = self->_repo;
-
-	assert(r != NULL);
-	assert(r->pool != NULL);
-
-	PyObject *list = PyList_New(0);
-
-	FOR_REPO_SOLVABLES(r, p, s) {
-		SolvableObject *solv;
-
-		solv = PyObject_New(SolvableObject, &SolvableType);
-		if (solv == NULL)
-			return NULL;
-
-		solv->_pool = r->pool;
-		solv->_id = p;
-
-		PyList_Append(list, (PyObject *)solv);
-		Py_DECREF(solv);
-	}
-
-	return list;
-}
+PyTypeObject RepoType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.Repo",
+	tp_basicsize:       sizeof(RepoObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Repo_new,
+	tp_dealloc:         (destructor)Repo_dealloc,
+	tp_init:            (initproc)Repo_init,
+	tp_doc:             "Repo object",
+	tp_methods:         Repo_methods,
+	tp_getset:          Repo_getsetters,
+	tp_as_sequence:     &Repo_sequence,
+	tp_hash:            (hashfunc)Repo_hash,
+	tp_richcompare:     (richcmpfunc)Repo_richcompare,
+};

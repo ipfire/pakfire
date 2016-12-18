@@ -153,7 +153,6 @@ pakfire_repository_PYTHON = \
 	src/pakfire/repository/base.py \
 	src/pakfire/repository/cache.py \
 	src/pakfire/repository/database.py \
-	src/pakfire/repository/index.py \
 	src/pakfire/repository/local.py \
 	src/pakfire/repository/metadata.py \
 	src/pakfire/repository/remote.py \

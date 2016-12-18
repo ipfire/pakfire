@@ -86,21 +86,6 @@ static PyMethodDef Relation_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-static PyMethodDef Repo_methods[] = {
-	{"name", (PyCFunction)Repo_name, METH_NOARGS, NULL},
-	{"size", (PyCFunction)Repo_size, METH_NOARGS, NULL},
-	{"get_enabled", (PyCFunction)Repo_get_enabled, METH_NOARGS, NULL},
-	{"set_enabled", (PyCFunction)Repo_set_enabled, METH_VARARGS, NULL},
-	{"get_priority", (PyCFunction)Repo_get_priority, METH_NOARGS, NULL},
-	{"set_priority", (PyCFunction)Repo_set_priority, METH_VARARGS, NULL},
-	{"write", (PyCFunction)Repo_write, METH_VARARGS, NULL},
-	{"read", (PyCFunction)Repo_read, METH_VARARGS, NULL},
-	{"internalize", (PyCFunction)Repo_internalize, METH_NOARGS, NULL},
-	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
-	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
 static PyMethodDef Solvable_methods[] = {
 	{"get_name", (PyCFunction)Solvable_get_name, METH_NOARGS, NULL},
 	{"get_evr", (PyCFunction)Solvable_get_evr, METH_NOARGS, NULL},
@@ -203,7 +188,7 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	// Archive
 	if (PyType_Ready(&ArchiveType) < 0)
-		return;
+		return NULL;
 
 	Py_INCREF(&ArchiveType);
 	PyModule_AddObject(module, "Archive", (PyObject *)&ArchiveType);
@@ -222,9 +207,9 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyModule_AddObject(module, "Problem", (PyObject *)&ProblemType);
 
 	// Repo
-	RepoType.tp_methods = Repo_methods;
 	if (PyType_Ready(&RepoType) < 0)
 		return NULL;
+
 	Py_INCREF(&RepoType);
 	PyModule_AddObject(module, "Repo", (PyObject *)&RepoType);
 

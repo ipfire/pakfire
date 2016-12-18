@@ -23,34 +23,22 @@
 
 #include <Python.h>
 
-#include <pakfire/types.h>
-#include <solv/repo.h>
+#include <pakfire/pool.h>
+#include <pakfire/repo.h>
 
 #include "pool.h"
 
-// Sat Repo object
 typedef struct {
-	PyObject_HEAD
-	PakfireRepo repo;
-	Repo *_repo;
+    PyObject_HEAD
+    PoolObject* pool;
+    PakfireRepo repo;
+
+	// XXX COMPAT
+	Repo* _repo;
 } RepoObject;
 
-PyObject* new_repo(PoolObject* pool, const char* name);
-
-extern PyObject *Repo_dealloc(RepoObject *self);
-extern PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-extern PyObject *Repo_name(RepoObject *self);
-extern PyObject *Repo_size(RepoObject *self);
-extern PyObject *Repo_get_enabled(RepoObject *self);
-extern PyObject *Repo_set_enabled(RepoObject *self, PyObject *args);
-extern PyObject *Repo_get_priority(RepoObject *self);
-extern PyObject *Repo_set_priority(RepoObject *self, PyObject *args);
-extern PyObject *Repo_write(RepoObject *self, PyObject *args);
-extern PyObject *Repo_read(RepoObject *self, PyObject *args);
-extern PyObject *Repo_internalize(RepoObject *self);
-extern PyObject *Repo_clear(RepoObject *self);
-extern PyObject *Repo_get_all(RepoObject *self);
-
 extern PyTypeObject RepoType;
+
+PyObject* new_repo(PoolObject* pool, const char* name);
 
 #endif /* PYTHON_PAKFIRE_REPO_H */

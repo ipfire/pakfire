@@ -22,81 +22,27 @@
 import logging
 log = logging.getLogger("pakfire")
 
-from .. import satsolver
+from .. import _pakfire
 
-from . import index
 from . import packages
 
-class RepositoryFactory(object):
+class RepositoryFactory(_pakfire.Repo):
 	def __init__(self, pakfire, name, description):
+		_pakfire.Repo.__init__(self, pakfire.pool, name)
 		self.pakfire = pakfire
-		self.name = name
-		self.description = description
 
-		# Reference to corresponding Repo object in the solver.
-		self.solver_repo = satsolver.Repo(self.pool, self.name)
-		self.solver_repo.set_priority(self.priority)
+		self.description = description
 
 		# Some repositories may have a cache.
 		self.cache = None
 
 		log.debug("Initialized new repository: %s" % self)
 
-		# Create an index (in memory).
-		self.index = index.Index(self.pakfire, self)
-
 		# Marks if this repository has been opened.
 		self.opened = False
 
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
-
-	def __lt__(self, other):
-		return self.priority < other.priority
-
-	def __len__(self):
-		return self.solver_repo.size()
-
-	def __iter__(self):
-		pkgs = []
-
-		for solv in self.solver_repo.get_all():
-			pkg = packages.SolvPackage(self.pakfire, solv, self)
-			pkgs.append(pkg)
-
-		return iter(pkgs)
-
-	@property
-	def pool(self):
-		return self.pakfire.pool
-
-	def get_enabled(self):
-		return self.solver_repo.get_enabled()
-
-	def set_enabled(self, val):
-		self.solver_repo.set_enabled(val)
-
-		if val:
-			log.debug("Enabled repository '%s'." % self.name)
-		else:
-			log.debug("Disabled repository '%s'." % self.name)
-
-	enabled = property(get_enabled, set_enabled)
-
-	@property
-	def arch(self):
-		return self.pakfire.distro.arch
-
-	@property
-	def distro(self):
-		"""
-			Link to distro object.
-		"""
-		return self.pakfire.distro
-
-	@property
-	def priority(self):
-		raise NotImplementedError
 
 	@property
 	def local(self):

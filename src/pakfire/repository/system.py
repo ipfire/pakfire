@@ -37,9 +37,6 @@ class RepositorySystem(base.RepositoryFactory):
 		# Open database connection.
 		self.db = database.DatabaseLocal(self.pakfire, self)
 
-		# Tell the solver, that these are the installed packages.
-		self.pool.set_installed(self.solver_repo)
-
 	@property
 	def cache_file(self):
 		return os.path.join(self.pakfire.path, PACKAGES_SOLV)
@@ -58,18 +55,14 @@ class RepositorySystem(base.RepositoryFactory):
 		# Create a progressbar.
 		pb = util.make_progress(_("Loading installed packages"), len(self.db))
 
-		# Remove all data from the current index.
-		self.index.clear()
-
 		i = 0
 		for pkg in self.db.packages:
 			if pb:
 				i += 1
 				pb.update(i)
 
-			self.index.add_package(pkg)
-
-		self.index.optimize()
+			print("Loading %s" % pkg)
+			#self.index.add_package(pkg)
 
 		if pb:
 			pb.finish()
@@ -84,9 +77,6 @@ class RepositorySystem(base.RepositoryFactory):
 		# Close database.
 		self.db.close()
 
-		# Remove indexed data from memory.
-		self.index.clear()
-
 		# Mark repo as closed.
 		self.opened = False
 
@@ -94,18 +84,9 @@ class RepositorySystem(base.RepositoryFactory):
 		# Commit the database to disk.
 		self.db.commit()
 
-		# Make sure that all data in the index is accessable.
-		self.index.optimize()
-
-		# Write the content of the index to a file
-		# for fast parsing.
-		# XXX this is currently disabled
-		#self.index.write(self.cache_file)
-
 	def add_package(self, pkg):
 		# Add package to the database.
 		self.db.add_package(pkg)
-		self.index.add_package(pkg)
 
 	def rem_package(self, pkg):
 		if isinstance(pkg, packages.SolvPackage):
