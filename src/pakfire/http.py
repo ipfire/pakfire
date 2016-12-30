@@ -275,7 +275,7 @@ class Client(object):
 				tries -= 1
 
 			try:
-				return self._request(url, **kwargs)
+				return self._one_request(url, **kwargs)
 
 			# Bad Gateway Error
 			except BadGatewayError as e:
