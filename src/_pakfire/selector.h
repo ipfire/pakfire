@@ -18,32 +18,21 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PYTHON_PAKFIRE_TRANSACTION_H
-#define PYTHON_PAKFIRE_TRANSACTION_H
+#ifndef PYTHON_PAKFIRE_SELECTOR_H
+#define PYTHON_PAKFIRE_SELECTOR_H
 
 #include <Python.h>
 
-#include <pakfire/types.h>
+#include <pakfire/selector.h>
 
-#include "request.h"
-
-typedef struct {
-	PyObject_HEAD
-	RequestObject* request;
-	PakfireTransaction transaction;
-} TransactionObject;
-
-extern PyTypeObject TransactionType;
+#include "pool.h"
 
 typedef struct {
-	PyObject_HEAD
-	TransactionObject* transaction;
-	int iterator;
-} TransactionIteratorObject;
+    PyObject_HEAD
+    PoolObject* pool;
+    PakfireSelector selector;
+} SelectorObject;
 
-extern PyTypeObject TransactionIteratorType;
+extern PyTypeObject SelectorType;
 
-PyObject* new_transaction(RequestObject* request, PakfireTransaction trans);
-PyObject* new_transaction_iterator(TransactionObject* transaction);
-
-#endif /* PYTHON_PAKFIRE_TRANSACTION_H */
+#endif /* PYTHON_PAKFIRE_SELECTOR_H */

@@ -36,7 +36,6 @@
 #include "request.h"
 #include "solution.h"
 #include "solvable.h"
-#include "solver.h"
 #include "step.h"
 #include "transaction.h"
 #include "util.h"
@@ -58,28 +57,6 @@ static PyMethodDef Problem_methods[] = {
 	{"get_target", (PyCFunction)Problem_get_target, METH_NOARGS, NULL},
 	{"get_dep", (PyCFunction)Problem_get_dep, METH_NOARGS, NULL},
 	{"get_solutions", (PyCFunction)Problem_get_solutions, METH_NOARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Request_methods[] = {
-	{"install_solvable", (PyCFunction)Request_install_solvable, METH_VARARGS, NULL},
-	{"install_relation", (PyCFunction)Request_install_relation, METH_VARARGS, NULL},
-	{"install_name", (PyCFunction)Request_install_name, METH_VARARGS, NULL},
-	{"remove_solvable", (PyCFunction)Request_remove_solvable, METH_VARARGS, NULL},
-	{"remove_relation", (PyCFunction)Request_remove_relation, METH_VARARGS, NULL},
-	{"remove_name", (PyCFunction)Request_remove_name, METH_VARARGS, NULL},
-	{"update_solvable", (PyCFunction)Request_update_solvable, METH_VARARGS, NULL},
-	{"update_relation", (PyCFunction)Request_update_relation, METH_VARARGS, NULL},
-	{"update_name", (PyCFunction)Request_update_name, METH_VARARGS, NULL},
-	{"lock_solvable", (PyCFunction)Request_lock_solvable, METH_VARARGS, NULL},
-	{"lock_relation", (PyCFunction)Request_lock_relation, METH_VARARGS, NULL},
-	{"lock_name", (PyCFunction)Request_lock_name, METH_VARARGS, NULL},
-	{"noobsoletes_solvable", (PyCFunction)Request_noobsoletes_solvable, METH_VARARGS, NULL},
-	{"noobsoletes_relation", (PyCFunction)Request_noobsoletes_relation, METH_VARARGS, NULL},
-	{"noobsoletes_name", (PyCFunction)Request_noobsoletes_name, METH_VARARGS, NULL},
-	{"updateall", (PyCFunction)Request_updateall, METH_NOARGS, NULL},
-	{"distupgrade", (PyCFunction)Request_distupgrade, METH_NOARGS, NULL},
-	{"verify", (PyCFunction)Request_verify, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -132,36 +109,6 @@ static PyMethodDef Solvable_methods[] = {
 };
 
 static PyMethodDef Solution_methods[] = {
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Solver_methods[] = {
-	{"solve", (PyCFunction)Solver_solve, METH_VARARGS, NULL},
-	{"get_flag", (PyCFunction)Solver_get_flag, METH_VARARGS, NULL},
-	{"set_flag", (PyCFunction)Solver_set_flag, METH_VARARGS, NULL},
-	{"get_allow_archchange", (PyCFunction)Solver_get_allow_archchange, METH_NOARGS, NULL},
-	{"set_allow_archchange", (PyCFunction)Solver_set_allow_archchange, METH_VARARGS, NULL},
-	{"get_allow_vendorchange", (PyCFunction)Solver_get_allow_vendorchange, METH_NOARGS, NULL},
-	{"set_allow_vendorchange", (PyCFunction)Solver_set_allow_vendorchange, METH_VARARGS, NULL},
-	{"get_allow_uninstall", (PyCFunction)Solver_get_allow_uninstall, METH_NOARGS, NULL},
-	{"set_allow_uninstall", (PyCFunction)Solver_set_allow_uninstall, METH_VARARGS, NULL},
-	{"get_updatesystem", (PyCFunction)Solver_get_updatesystem, METH_NOARGS, NULL},
-	{"set_updatesystem", (PyCFunction)Solver_set_updatesystem, METH_VARARGS, NULL},
-	{"get_do_split_provides", (PyCFunction)Solver_get_do_split_provides, METH_NOARGS, NULL},
-	{"set_do_split_provides", (PyCFunction)Solver_set_do_split_provides, METH_VARARGS, NULL},
-	{"get_problems", (PyCFunction)Solver_get_problems, METH_VARARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Step_methods[] = {
-	{"get_solvable", (PyCFunction)Step_get_solvable, METH_NOARGS, NULL},
-	{"get_type", (PyCFunction)Step_get_type, METH_NOARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Transaction_methods[] = {
-	{"steps", (PyCFunction)Transaction_steps, METH_NOARGS, NULL},
-	{"get_installsizechange", (PyCFunction)Transaction_get_installsizechange, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -232,9 +179,9 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyModule_AddObject(module, "Relation", (PyObject *)&RelationType);
 
 	// Request
-	RequestType.tp_methods = Request_methods;
 	if (PyType_Ready(&RequestType) < 0)
 		return NULL;
+
 	Py_INCREF(&RequestType);
 	PyModule_AddObject(module, "Request", (PyObject *)&RequestType);
 
@@ -245,26 +192,26 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	Py_INCREF(&SolutionType);
 	PyModule_AddObject(module, "Solution", (PyObject *)&SolutionType);
 
-	// Solver
-	SolverType.tp_methods = Solver_methods;
-	if (PyType_Ready(&SolverType) < 0)
-		return NULL;
-	Py_INCREF(&SolverType);
-	PyModule_AddObject(module, "Solver", (PyObject *)&SolverType);
-
 	// Step
-	StepType.tp_methods = Step_methods;
 	if (PyType_Ready(&StepType) < 0)
 		return NULL;
+
 	Py_INCREF(&StepType);
 	PyModule_AddObject(module, "Step", (PyObject *)&StepType);
 
 	// Transaction
-	TransactionType.tp_methods = Transaction_methods;
 	if (PyType_Ready(&TransactionType) < 0)
 		return NULL;
+
 	Py_INCREF(&TransactionType);
 	PyModule_AddObject(module, "Transaction", (PyObject *)&TransactionType);
+
+	// Transaction Iterator
+	if (PyType_Ready(&TransactionIteratorType) < 0)
+		return NULL;
+
+	Py_INCREF(&TransactionIteratorType);
+	PyModule_AddObject(module, "TransactionIterator", (PyObject *)&TransactionIteratorType);
 
 	// Add constants
 	PyObject* d = PyModule_GetDict(module);

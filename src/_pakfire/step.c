@@ -18,133 +18,170 @@
 #                                                                             #
 #############################################################################*/
 
-#include "solvable.h"
+#include <Python.h>
+
+#include <pakfire/package.h>
+#include <pakfire/step.h>
+#include <pakfire/transaction.h>
+#include <pakfire/util.h>
+
+#include "package.h"
 #include "step.h"
 #include "transaction.h"
 
-PyTypeObject StepType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Step",
-	tp_basicsize: sizeof(StepObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Step_new,
-	tp_dealloc: (destructor) Step_dealloc,
-	tp_doc: "Sat Step objects",
-};
+static StepObject* Step_new_core(PyTypeObject* type, TransactionObject* transaction) {
+	StepObject* self = (StepObject *)type->tp_alloc(type, 0);
+	if (!self)
+		return NULL;
 
-PyObject* Step_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	StepObject *self;
-	TransactionObject *transaction;
-	int num;
-
-	if (!PyArg_ParseTuple(args, "Oi", &transaction, &num)) {
-		/* XXX raise exception */
+	if (transaction) {
+		self->transaction = transaction;
+		Py_INCREF(self->transaction);
 	}
 
-	self = (StepObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		self->_transaction = transaction->_transaction;
+	self->step = NULL;
 
-		if (num >= transaction->_transaction->steps.count) {
-			Py_DECREF(self);
-			return NULL;
-		}
+	return self;
+}
 
-		self->_id = transaction->_transaction->steps.elements[num];
-	}
+PyObject* new_step(TransactionObject* transaction, PakfireStep s) {
+	StepObject* step = Step_new_core(&StepType, transaction);
+	step->step = s;
+
+	return (PyObject *)step;
+}
+
+static PyObject* Step_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	StepObject* self = Step_new_core(type, NULL);
 
 	return (PyObject *)self;
 }
 
-PyObject *Step_dealloc(StepObject *self) {
+static void Step_dealloc(StepObject* self) {
+	if (self->step)
+		pakfire_step_free(self->step);
+
+	Py_XDECREF(self->transaction);
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Step_get_solvable(StepObject *self, PyObject *args) {
-	SolvableObject *solvable;
+static int Step_init(StepObject* self, PyObject* args, PyObject* kwds) {
+	TransactionObject* transaction;
+	int index = 0;
 
-	solvable = PyObject_New(SolvableObject, &SolvableType);
-	if (solvable == NULL)
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O!i", &TransactionType, &transaction, &index))
+		return -1;
 
-	solvable->_pool = self->_transaction->pool;
-	solvable->_id = self->_id;
+	self->transaction = transaction;
+	Py_INCREF(self->transaction);
 
-	return (PyObject *)solvable;
-}
-
-PyObject *Step_get_type(StepObject *self, PyObject *args) {
-	const char *type = "unknown";
-
-	int trans_type = transaction_type(self->_transaction, self->_id,
-		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
-
-	switch(trans_type) {
-		case SOLVER_TRANSACTION_IGNORE:
-			type = "ignore";
-			break;
-
-		case SOLVER_TRANSACTION_ERASE:
-			type = "erase";
-			break;
-
-		case SOLVER_TRANSACTION_REINSTALLED:
-			type = "reinstalled";
-			break;
-
-		case SOLVER_TRANSACTION_DOWNGRADED:
-			type = "downgraded";
-			break;
-
-		case SOLVER_TRANSACTION_CHANGED:
-			type = "changed";
-			break;
-
-		case SOLVER_TRANSACTION_UPGRADED:
-			type = "upgraded";
-			break;
-
-		case SOLVER_TRANSACTION_OBSOLETED:
-			type = "obsoleted";
-			break;
-
-		case SOLVER_TRANSACTION_INSTALL:
-			type = "install";
-			break;
-
-		case SOLVER_TRANSACTION_REINSTALL:
-			type = "reinstall";
-			break;
-
-		case SOLVER_TRANSACTION_DOWNGRADE:
-			type = "downgrade";
-			break;
-
-		case SOLVER_TRANSACTION_CHANGE:
-			type = "change";
-			break;
-
-		case SOLVER_TRANSACTION_UPGRADE:
-			type = "upgrade";
-			break;
-
-		case SOLVER_TRANSACTION_OBSOLETES:
-			type = "obsoletes";
-			break;
-
-		case SOLVER_TRANSACTION_MULTIINSTALL:
-			type = "multiinstall";
-			break;
-
-		case SOLVER_TRANSACTION_MULTIREINSTALL:
-			type = "multireinstall";
-			break;
-
-		default:
-			break;
+	self->step = pakfire_transaction_get_step(transaction->transaction, index);
+	if (!self->step) {
+		PyErr_SetString(PyExc_AttributeError, "No such step");
+		return -1;
 	}
 
-	return Py_BuildValue("s", type);
+	return 0;
 }
+
+static PyObject* Step_repr(StepObject* self) {
+	PakfirePackage package = pakfire_step_get_package(self->step);
+	char* nevra = pakfire_package_get_nevra(package);
+
+	PyObject* repr = PyUnicode_FromFormat("<_pakfire.Step object type %s, %s>",
+		pakfire_step_get_type_string(self->step), nevra);
+
+	pakfire_package_free(package);
+	pakfire_free(nevra);
+
+	return repr;
+}
+
+static PyObject* Step_get_package(StepObject* self) {
+	PakfirePackage package = pakfire_step_get_package(self->step);
+
+	PyObject* obj = new_package(self->transaction->request->pool, pakfire_package_id(package));
+	pakfire_package_free(package);
+
+	return obj;
+}
+
+static PyObject* Step_get_type(StepObject* self) {
+	const char* type = pakfire_step_get_type_string(self->step);
+
+	if (!type)
+		Py_RETURN_NONE;
+
+	return PyUnicode_FromString(type);
+}
+
+static PyObject* Step_get_downloadsize(StepObject* self) {
+	unsigned long long downloadsize = pakfire_step_get_downloadsize(self->step);
+
+	return PyLong_FromUnsignedLongLong(downloadsize);
+}
+
+static PyObject* Step_get_installsizechange(StepObject* self) {
+	long installsizechange = pakfire_step_get_installsizechange(self->step);
+
+	return PyLong_FromLong(installsizechange);
+}
+
+static PyObject* Step_needs_download(StepObject* self) {
+	if (pakfire_step_needs_download(self->step))
+		Py_RETURN_TRUE;
+
+	Py_RETURN_FALSE;
+}
+
+static struct PyGetSetDef Step_getsetters[] = {
+	{
+		"downloadsize",
+		(getter)Step_get_downloadsize,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"installsizechange",
+		(getter)Step_get_installsizechange,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"needs_download",
+		(getter)Step_needs_download,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"package",
+		(getter)Step_get_package,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"type",
+		(getter)Step_get_type,
+		NULL,
+		NULL,
+		NULL
+	},
+	{ NULL },
+};
+
+PyTypeObject StepType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.Step",
+	tp_basicsize:       sizeof(StepObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Step_new,
+	tp_dealloc:         (destructor)Step_dealloc,
+	tp_init:            (initproc)Step_init,
+	tp_doc:             "Step object",
+	tp_repr:            (reprfunc)Step_repr,
+	tp_getset:          Step_getsetters,
+};

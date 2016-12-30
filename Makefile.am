@@ -195,12 +195,12 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/repo.h \
 	src/_pakfire/request.c \
 	src/_pakfire/request.h \
+	src/_pakfire/selector.c \
+	src/_pakfire/selector.h \
 	src/_pakfire/solution.c \
 	src/_pakfire/solution.h \
 	src/_pakfire/solvable.c \
 	src/_pakfire/solvable.h \
-	src/_pakfire/solver.c \
-	src/_pakfire/solver.h \
 	src/_pakfire/step.c \
 	src/_pakfire/step.h \
 	src/_pakfire/transaction.c \

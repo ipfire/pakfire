@@ -20,71 +20,169 @@
 
 #include <Python.h>
 
-#include <solv/transaction.h>
+#include <pakfire/package.h>
+#include <pakfire/packagelist.h>
+#include <pakfire/transaction.h>
 
-#include "solver.h"
+#include "package.h"
 #include "step.h"
 #include "transaction.h"
+#include "util.h"
+
+static TransactionObject* Transaction_new_core(PyTypeObject* type, RequestObject* request) {
+	TransactionObject* self = (TransactionObject *)type->tp_alloc(type, 0);
+	if (!self)
+		return NULL;
+
+	if (request) {
+		self->request = request;
+		Py_INCREF(self->request);
+	}
+
+	self->transaction = NULL;
+
+	return self;
+}
+
+PyObject* new_transaction(RequestObject* request, PakfireTransaction trans) {
+	TransactionObject* transaction = Transaction_new_core(&TransactionType, request);
+	transaction->transaction = trans;
+
+	return (PyObject *)transaction;
+}
+
+static PyObject* Transaction_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	TransactionObject* self = Transaction_new_core(type, NULL);
+
+	return (PyObject *)self;
+}
+
+static void Transaction_dealloc(TransactionObject* self) {
+	if (self->transaction)
+		pakfire_transaction_free(self->transaction);
+
+	Py_XDECREF(self->request);
+	Py_TYPE(self)->tp_free((PyObject *)self);
+}
+
+static int Transaction_init(TransactionObject* self, PyObject* args, PyObject* kwds) {
+	RequestObject* request;
+
+	if (!PyArg_ParseTuple(args, "O!", &RequestType, &request))
+		return -1;
+
+	self->request = request;
+	Py_INCREF(self->request);
+
+	PakfireRequest req = request->request;
+	self->transaction = pakfire_request_get_transaction(req);
+
+	// If request has got no transaction, we will create an (empty) new one.
+	if (!self->transaction) {
+		PakfirePool pool = pakfire_request_pool(req);
+
+		self->transaction = pakfire_transaction_create(pool, NULL);
+	}
+
+	return 0;
+}
+
+static PyObject* Transaction_iter(TransactionObject* self) {
+	TransactionIteratorObject* iterator = PyObject_New(TransactionIteratorObject, &TransactionIteratorType);
+
+	iterator->transaction = self;
+	Py_INCREF(iterator->transaction);
+
+	iterator->iterator = 0;
+
+	return (PyObject *)iterator;
+}
+
+static PyObject* Transaction_get_installsizechange(TransactionObject* self) {
+	long installsizechange = pakfire_transaction_installsizechange(self->transaction);
+
+	return PyLong_FromLong(installsizechange);
+}
+
+#if 0
+static PyObject* Transaction_get_installs(TransactionObject* self) {
+	PakfirePackageList packagelist = pakfire_transaction_get_packages(self->transaction,
+		SOLVER_TRANSACTION_INSTALL);
+
+	PyObject* list = PyList_FromPackageList(self->request->pool, packagelist);
+	return list;
+}
+#endif
+
+static struct PyGetSetDef Transaction_getsetters[] = {
+	{
+		"installsizechange",
+		(getter)Transaction_get_installsizechange,
+		NULL,
+		NULL,
+		NULL
+	},
+	{ NULL },
+};
 
 PyTypeObject TransactionType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Transaction",
-	tp_basicsize: sizeof(TransactionObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Transaction_new,
-	tp_dealloc: (destructor) Transaction_dealloc,
-	tp_doc: "Sat Transaction objects",
+	tp_name:            "_pakfire.Transaction",
+	tp_basicsize:       sizeof(TransactionObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Transaction_new,
+	tp_dealloc:         (destructor)Transaction_dealloc,
+	tp_init:            (initproc)Transaction_init,
+	tp_doc:             "Transaction object",
+	tp_getset:          Transaction_getsetters,
+	tp_iter:            (getiterfunc)Transaction_iter,
 };
 
-PyObject* Transaction_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	TransactionObject *self;
-	SolverObject *solver;
+static PyObject* TransactionIterator_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	TransactionIteratorObject* self = (TransactionIteratorObject *)type->tp_alloc(type, 0);
 
-	if (!PyArg_ParseTuple(args, "O", &solver)) {
-		/* XXX raise exception */
-	}
-
-	self = (TransactionObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		self->_pool = solver->_solver->pool;
-		if (self->_pool == NULL) {
-			Py_DECREF(self);
-			return NULL;
-		}
-
-		// Create a new transaction from the solver and order it.
-		self->_transaction = solver_create_transaction(solver->_solver);
-		transaction_order(self->_transaction, 0);
+	if (self) {
+		self->transaction = NULL;
+		self->iterator = 0;
 	}
 
 	return (PyObject *)self;
 }
 
-PyObject *Transaction_dealloc(TransactionObject *self) {
-	/* XXX need to free self->_transaction */
+static void TransactionIterator_dealloc(TransactionIteratorObject* self) {
+	Py_XDECREF(self->transaction);
+
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Transaction_steps(TransactionObject *self, PyObject *args) {
-	PyObject *list = PyList_New(0);
+static int TransactionIterator_init(TransactionIteratorObject* self, PyObject* args, PyObject* kwds) {
+	TransactionObject* transaction;
 
-	StepObject *step;
-	int i = 0;
-	for(; i < self->_transaction->steps.count; i++) {
-		step = PyObject_New(StepObject, &StepType);
-		step->_transaction = self->_transaction;
-		step->_id = self->_transaction->steps.elements[i];
+	if (!PyArg_ParseTuple(args, "O!", &TransactionType, &transaction))
+		return -1;
 
-		PyList_Append(list, (PyObject *)step);
-	}
+	self->transaction = transaction;
+	Py_INCREF(self->transaction);
 
-	return list;
+	return 0;
 }
 
-PyObject *Transaction_get_installsizechange(TransactionObject *self) {
-	int installsizechange = transaction_calc_installsizechange(self->_transaction);
+static PyObject* TransactionIterator_next(TransactionIteratorObject* self) {
+	PakfireStep step = pakfire_transaction_get_step(self->transaction->transaction, self->iterator++);
+	if (step)
+		return new_step(self->transaction, step);
 
-	return Py_BuildValue("i", installsizechange * 1024);
+	return NULL;
 }
+
+PyTypeObject TransactionIteratorType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.TransactionIterator",
+	tp_basicsize:       sizeof(TransactionIteratorObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             TransactionIterator_new,
+	tp_dealloc:         (destructor)TransactionIterator_dealloc,
+	tp_init:            (initproc)TransactionIterator_init,
+	tp_doc:             "TransactionIterator object",
+	tp_iternext:        (iternextfunc)TransactionIterator_next,
+};

@@ -23,21 +23,18 @@
 
 #include <Python.h>
 
-#include <solv/pool.h>
-#include <solv/transaction.h>
+#include <pakfire/types.h>
 
-// Sat Step object
+#include "transaction.h"
+
 typedef struct {
-    PyObject_HEAD
-    Transaction *_transaction;
-    Id _id;
+	PyObject_HEAD
+	TransactionObject* transaction;
+	PakfireStep step;
 } StepObject;
 
-extern PyObject* Step_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-extern PyObject *Step_dealloc(StepObject *self);
-extern PyObject *Step_get_type(StepObject *self, PyObject *args);
-extern PyObject *Step_get_solvable(StepObject *self, PyObject *args);
-
 extern PyTypeObject StepType;
+
+PyObject* new_step(TransactionObject* transaction, PakfireStep step);
 
 #endif /* PYTHON_PAKFIRE_STEP_H */
