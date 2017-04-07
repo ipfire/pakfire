@@ -23,6 +23,7 @@ import os
 import random
 import string
 
+from . import _pakfire
 from . import actions
 from . import builder
 from . import config
@@ -46,7 +47,7 @@ from .i18n import _
 class Pakfire(object):
 	mode = None
 
-	def __init__(self, path="/", arch=None, distro=None):
+	def __init__(self, path="/", arch=None, distro=None, cache_path=None):
 		# The path where we are operating in
 		self.path = path
 
@@ -69,7 +70,10 @@ class Pakfire(object):
 		# Initialize the keyring
 		self.keyring = keyring.Keyring(self)
 
-		self.pool = satsolver.Pool(self.arch.name)
+		self.pool = _pakfire.Pool(self.arch.name)
+		self.pool.cache_path = cache_path or \
+			os.path.join(CACHE_DIR, self.distro.sname, self.distro.release)
+
 		self.repos = repository.Repositories(self)
 
 		# Load default repository configuration
@@ -211,14 +215,7 @@ class PakfireContext(object):
 					pkgs.append(pkg)
 
 			else:
-				solvs = self.pakfire.pool.search(pattern, satsolver.SEARCH_GLOB, "solvable:name")
-
-				for solv in solvs:
-					pkg = packages.SolvPackage(self.pakfire, solv)
-					if pkg in pkgs:
-						continue
-
-					pkgs.append(pkg)
+				pkgs += self.pakfire.pool.whatprovides(pattern, name_only=True)
 
 		return sorted(pkgs)
 

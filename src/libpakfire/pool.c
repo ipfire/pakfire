@@ -154,7 +154,10 @@ void pakfire_pool_set_cache_path(PakfirePool pool, const char* path) {
 }
 
 PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
-	return pool->cache;
+	if (pool->cache)
+		return pool->cache;
+
+	return NULL;
 }
 
 static PakfirePackageList pakfire_pool_dataiterator(PakfirePool pool, const char* what, int key, int flags) {
