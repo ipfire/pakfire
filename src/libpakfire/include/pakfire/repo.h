@@ -56,6 +56,8 @@ int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int flags);
 
 PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo);
 
+int pakfire_repo_clean(PakfireRepo repo);
+
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireRepo {

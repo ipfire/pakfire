@@ -291,6 +291,17 @@ static PyObject* Repo_cache_path(RepoObject* self, PyObject* args) {
 	return obj;
 }
 
+static PyObject* Repo_clean(RepoObject* self, PyObject* args) {
+	int r = pakfire_repo_clean(self->repo);
+
+	if (r) {
+		PyErr_SetFromErrno(PyExc_OSError);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
 static struct PyMethodDef Repo_methods[] = {
 	{
 		"cache_age",
@@ -315,6 +326,12 @@ static struct PyMethodDef Repo_methods[] = {
 		(PyCFunction)Repo_cache_path,
 		METH_VARARGS,
 		NULL
+	},
+	{
+		"clean",
+		(PyCFunction)Repo_clean,
+		METH_VARARGS,
+		NULL,
 	},
 	{
 		"read_solv",

@@ -99,22 +99,6 @@ class RepositoryRemote(base.RepositoryFactory):
 
 		return priority
 
-	def cache_path(self, *paths):
-		return os.path.join(
-			"repodata",
-			self.distro.sname,
-			self.distro.release,
-			self.name,
-			self.distro.arch,
-			*paths
-		)
-
-	def clean(self):
-		base.RepositoryFactory.clean(self)
-
-		# Remove all files in the files cache.
-		self.cache.destroy()
-
 	def open(self):
 		# First update the repository metadata.
 		self.update_metadata()

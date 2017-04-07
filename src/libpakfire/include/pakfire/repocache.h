@@ -36,6 +36,8 @@ int pakfire_repocache_age(PakfireRepoCache repo_cache, const char* filename);
 
 FILE* pakfire_repocache_open(PakfireRepoCache repo_cache, const char* filename, const char* flags);
 
+int pakfire_repocache_destroy(PakfireRepoCache repo_cache);
+
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireRepoCache {

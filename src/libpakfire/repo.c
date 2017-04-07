@@ -18,6 +18,7 @@
 #                                                                             #
 #############################################################################*/
 
+#include <assert.h>
 #include <string.h>
 
 #include <solv/repo.h>
@@ -231,5 +232,16 @@ PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
 }
 
 PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {
+	assert(repo);
+
 	return repo->cache;
+}
+
+int pakfire_repo_clean(PakfireRepo repo) {
+	PakfireRepoCache cache = pakfire_repo_get_cache(repo);
+
+	if (cache)
+		return pakfire_repocache_destroy(cache);
+
+	return 0;
 }

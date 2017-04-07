@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#define _XOPEN_SOURCE 500
+#include <ftw.h>
 #include <stdio.h>
 #include <sys/stat.h>
 
@@ -95,4 +97,13 @@ FILE* pakfire_repocache_open(PakfireRepoCache repo_cache, const char* filename, 
 	pakfire_free(cache_filename);
 
 	return fp;
+}
+
+static int _unlink(const char* path, const struct stat* stat, int typeflag, struct FTW* ftwbuf) {
+	return remove(path);
+}
+
+int pakfire_repocache_destroy(PakfireRepoCache repo_cache) {
+	// Completely delete the tree of files
+	return nftw(repo_cache->prefix, _unlink, 64, FTW_DEPTH|FTW_PHYS);
 }

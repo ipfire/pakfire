@@ -65,15 +65,6 @@ class RepositoryFactory(_pakfire.Repo):
 		"""
 		self.opened = False
 
-	def clean(self):
-		"""
-			Cleanup all temporary files of this repository.
-		"""
-		log.info("Cleaning up repository '%s'..." % self.name)
-
-		# Clear all packages in the index.
-		self.index.clear()
-
 	def dump(self, long=False, filelist=False):
 		dumps = []
 		# Dump all package information of the packages in this repository.

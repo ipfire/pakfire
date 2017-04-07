@@ -162,6 +162,7 @@ global:
 	# repo
 	pakfire_repo_cmp;
 	pakfire_repo_count;
+	pakfire_repo_clean;
 	pakfire_repo_create;
 	pakfire_repo_free;
 	pakfire_repo_get_cache;
@@ -183,6 +184,7 @@ global:
 	# repocache
 	pakfire_repocache_age;
 	pakfire_repocache_create;
+	pakfire_repocache_destroy;
 	pakfire_repocache_free;
 	pakfire_repocache_get_cache_path;
 	pakfire_repocache_get_full_path;
