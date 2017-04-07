@@ -353,9 +353,3 @@ class DatabasePackage(Package):
 	def signatures(self):
 		# Database packages do not have any signatures.
 		return []
-
-
-# XXX maybe we can remove this later?
-class InstalledPackage(DatabasePackage):
-	type = "installed"
-

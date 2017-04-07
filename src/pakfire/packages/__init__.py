@@ -24,7 +24,7 @@ import tarfile
 from . import file
 
 from .base import Package
-from .installed import DatabasePackage, InstalledPackage
+from .installed import DatabasePackage
 from .solv import SolvPackage
 
 from .make import Makefile
