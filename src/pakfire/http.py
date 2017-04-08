@@ -20,6 +20,7 @@
 ###############################################################################
 
 import base64
+import hashlib
 import json
 import logging
 import shutil
@@ -296,7 +297,7 @@ class Client(object):
 
 		raise MaxTriesExceededError
 
-	def retrieve(self, url, filename=None, message=None, **kwargs):
+	def retrieve(self, url, filename=None, message=None, checksum=None, checksum_algo=None, **kwargs):
 		p = None
 		skipped_mirrors = []
 
@@ -329,16 +330,24 @@ class Client(object):
 								l = self._get_content_length(res)
 								p.value_max = l
 
+								# Compute a checksum of each downloaded file
+								h = hashlib.new(checksum_algo or "sha512")
+
 								while True:
 									buf = res.read(BUFFER_SIZE)
 									if not buf:
 										break
 
 									# Write downloaded data to file
+									h.update(buf)
 									f.write(buf)
 
 									l = len(buf)
 									p.increment(l)
+
+								# Check integrity of the downloaded file
+								if checksum and not checksum == h.hexdigest():
+									raise DownloadError(_("Invalid checksum"))
 
 								# If the download succeeded, we will
 								# break the loop
