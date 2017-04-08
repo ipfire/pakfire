@@ -364,9 +364,9 @@ class Client(object):
 							# Otherwise raise this error
 							raise e
 
-						# Downloaded succeeded, writing data to filesystem
-						with open(filename, "wb") as output:
-							shutil.copyobj(f, output)
+					# Downloaded succeeded, writing data to filesystem
+					with open(filename, "wb") as output:
+						shutil.copyfileobj(f, output)
 
 		finally:
 			# Re-add any skipped mirrors again so that the next
