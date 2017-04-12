@@ -351,6 +351,7 @@ class Client(object):
 
 								# If the download succeeded, we will
 								# break the loop
+								f.seek(0)
 								break
 
 						except DownloadError as e:
