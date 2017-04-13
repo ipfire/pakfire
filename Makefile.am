@@ -292,6 +292,7 @@ libpakfire_la_LDFLAGS = \
 
 libpakfire_la_LIBADD = \
 	$(ARCHIVE_LIBS) \
+	$(LZMA_LIBS) \
 	$(SOLV_LIBS)
 
 EXTRA_DIST += \

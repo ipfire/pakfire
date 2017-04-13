@@ -19,11 +19,15 @@
 #############################################################################*/
 
 #include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <solv/repo.h>
 #include <solv/repo_solv.h>
 #include <solv/repo_write.h>
+
+#include <lzma.h>
 
 #include <pakfire/constants.h>
 #include <pakfire/errno.h>
@@ -33,6 +37,9 @@
 #include <pakfire/repocache.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
+
+const uint8_t XZ_HEADER_MAGIC[] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
+const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
 
 static Repo* get_repo_by_name(Pool* pool, const char* name) {
 	Repo* repo;
@@ -199,7 +206,126 @@ int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags) {
 	return ret;
 }
 
+struct xz_cookie {
+	FILE* f;
+	lzma_stream stream;
+	int done;
+
+	// XXX This should actually be larger than one byte, but fread()
+	// in _xz_read() somehow segfaults when this is larger
+	uint8_t buffer[1];
+};
+
+static ssize_t _xz_read(void* data, char* buffer, size_t size) {
+	struct xz_cookie* cookie = (struct xz_cookie*)data;
+	if (!cookie)
+		return -1;
+
+	// Return nothing after we are done
+	if (cookie->done)
+		return 0;
+
+	lzma_action action = LZMA_RUN;
+
+	// Set output to allocated buffer
+	cookie->stream.next_out  = (uint8_t *)buffer;
+	cookie->stream.avail_out = size;
+
+	while (1) {
+		// Read something when the input buffer is empty
+		if (cookie->stream.avail_in == 0) {
+			cookie->stream.next_in  = cookie->buffer;
+			cookie->stream.avail_in = fread(cookie->buffer,
+				1, sizeof(cookie->buffer), cookie->f);
+
+			// Break if the input file could not be read
+			if (ferror(cookie->f))
+				return -1;
+
+			// Finish after we have reached the end of the input file
+			if (feof(cookie->f)) {
+				action = LZMA_FINISH;
+				cookie->done = 1;
+			}
+		}
+
+		lzma_ret ret = lzma_code(&cookie->stream, action);
+
+		// If the stream has ended, we just send the
+		// remaining output and mark that we are done.
+		if (ret == LZMA_STREAM_END) {
+			cookie->done = 1;
+			return size - cookie->stream.avail_out;
+		}
+
+		// Break on all other unexpected errors
+		if (ret != LZMA_OK)
+			return -1;
+
+		// When we have read enough to fill the entire output buffer, we return
+		if (cookie->stream.avail_out == 0)
+			return size;
+
+		if (cookie->done)
+			return -1;
+	}
+}
+
+static int _xz_close(void* data) {
+	struct xz_cookie* cookie = (struct xz_cookie*)data;
+
+	// Free the deocder
+	lzma_end(&cookie->stream);
+
+	// Close input file
+	fclose(cookie->f);
+
+	return 0;
+}
+
+static FILE* decompression_proxy(FILE* f) {
+	uint8_t buffer;
+
+	// Search for XZ header
+	for (unsigned int i = 0; i < XZ_HEADER_LENGTH; i++) {
+		fread(&buffer, 1, 1, f);
+
+		if (buffer != XZ_HEADER_MAGIC[i])
+			goto UNCOMPRESSED;
+	}
+
+	// Reset to beginning
+	fseek(f, 0, SEEK_SET);
+
+	// If we get here, an XZ header was found
+	struct xz_cookie cookie = {
+		.f = f,
+		.stream = LZMA_STREAM_INIT,
+		.done = 0,
+	};
+
+	// Initialise the decoder
+	lzma_ret ret = lzma_stream_decoder(&cookie.stream, UINT64_MAX, 0);
+	if (ret != LZMA_OK)
+		return NULL;
+
+	cookie_io_functions_t functions = {
+		.read  = _xz_read,
+		.write = NULL,
+		.seek  = NULL,
+		.close = _xz_close,
+	};
+
+	return fopencookie(&cookie, "rb", functions);
+
+UNCOMPRESSED:
+	fseek(f, 0, SEEK_SET);
+	return f;
+}
+
 int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags) {
+	f = decompression_proxy(f);
+
 	int ret = repo_add_solv(repo->repo, f, flags);
 
 	repo->pool->provides_ready = 0;
