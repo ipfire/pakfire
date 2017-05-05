@@ -99,14 +99,13 @@ class Pakfire(object):
 		# Dump the configuration when we enter the context
 		self.config.dump()
 
-		# Initialize repositories
-		self.repos.initialize()
+		# Refresh repositories
+		self.repos.refresh()
 
 		return PakfireContext(self)
 
 	def __exit__(self, type, value, traceback):
-		# Close repositories
-		self.repos.shutdown()
+		pass
 
 	@property
 	def offline(self):

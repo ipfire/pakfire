@@ -46,6 +46,9 @@ def cli_is_interactive():
 
 	return False
 
+def is_enabled(s):
+	return s in ("true", "yes", "1")
+
 def ask_user(question):
 	"""
 		Ask the user the question, he or she can answer with yes or no.

@@ -74,35 +74,13 @@ class Repositories(object):
 		"""
 		return len([r for r in self if r.enabled])
 
-	@property
-	def initialized(self):
+	def refresh(self):
 		"""
-			Indicates if all repositories are initialized.
-		"""
-		for repo in self:
-			if not repo.opened:
-				return False
-
-		return True
-
-	def initialize(self):
-		# Nothing to do, if everything is already up to date.
-		if self.initialized:
-			return
-
-		log.info(_("Initializing repositories..."))
-		for repo in self:
-			repo.open()
-
-		# Empty line.
-		log.info("")
-
-	def shutdown(self):
-		"""
-			Shuts down all repositores.
+			Refreshes all repositories
 		"""
 		for repo in self:
-			repo.close()
+			if repo.enabled:
+				repo.refresh()
 
 	@property
 	def distro(self):

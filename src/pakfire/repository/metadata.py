@@ -70,20 +70,12 @@ class Metadata(object):
 		with open(filename) as f:
 			self.parse(f.read())
 
-	def save(self, filename=None):
+	def save(self, fp):
 		"""
 			Save all data to a file that could be exported to a
 			remote repository.
 		"""
-		if not filename:
-			filename = self.filename
-
-		f = open(filename, "w")
-
-		# Write all data to the fileobj.
-		json.dump(self._data, f, indent=2)
-
-		f.close()
+		json.dump(self._data, fp, indent=2)
 
 	@property
 	def version(self):

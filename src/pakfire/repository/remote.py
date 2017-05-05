@@ -19,45 +19,33 @@
 #                                                                             #
 ###############################################################################
 
+import json
+import lzma
 import os
 
 import logging
 log = logging.getLogger("pakfire")
 
+from .. import http
+from .. import util
+
 from . import base
 from . import cache
 from . import metadata
 
-import pakfire.compress as compress
-
-from pakfire.constants import *
-from pakfire.i18n import _
+from ..constants import *
+from ..i18n import _
 
 class RepositoryRemote(base.RepositoryFactory):
 	# XXX TODO Make metadata age configureable.
 
-	def __init__(self, pakfire, name, description=None, **settings):
-		# Save the settings that come from the configuration file.
+	def init(self, **settings):
+		# Save the settings that come from the configuration file
 		self.settings = settings
-
-		base.RepositoryFactory.__init__(self, pakfire, name, description)
 
 		# Enabled/disable the repository, based on the configuration setting.
 		enabled = self.settings.get("enabled", True)
-		if enabled in ("1", "yes", "on", True, 1):
-			self.enabled = True
-		else:
-			self.enabled = False
-
-		# Create an cache object
-		self.cache = cache.RepositoryCache(self.pakfire, self)
-
-		# Initialize mirror servers.
-		mirrorlist = self.settings.get("mirrors", None)
-		self.mirrors = downloader.MirrorList(self.pakfire, self, mirrorlist)
-
-		# Open metadata if any.
-		self.metadata = self.open_metadata()
+		self.enabled = util.is_enabled(enabled)
 
 	@property
 	def baseurl(self):
@@ -66,6 +54,7 @@ class RepositoryRemote(base.RepositoryFactory):
 	@property
 	def keyfile(self):
 		keyfile = self.settings.get("keyfile", None)
+
 		if keyfile is None:
 			keyfile = self.settings.get("gpgkey", None)
 
@@ -99,153 +88,134 @@ class RepositoryRemote(base.RepositoryFactory):
 
 		return priority
 
-	def open(self):
-		# First update the repository metadata.
-		self.update_metadata()
-		self.update_database()
+	def make_downloader(self):
+		"""
+			Creates a downloader that can be used to download
+			metadata, databases or packages from this repository.
+		"""
+		downloader = http.Client(baseurl=self.baseurl)
 
-		# Read the database.
-		self.open_database()
+		# Add any mirrors that we know of
+		for mirror in self.mirrorlist:
+			downloader.add_mirror(mirror.get("url"))
 
-		# Mark the repository as open.
-		self.opened = True
+		return downloader
 
-	def close(self):
-		# Mark the repository as not open.
-		self.opened = False
-
-	def open_metadata(self, path=None):
-		if not path:
-			path = self.cache_path(os.path.basename(METADATA_DOWNLOAD_FILE))
-			path = self.cache.abspath(path)
-
-		if self.cache.exists(path):
-			return metadata.Metadata(self.pakfire, path)
-
-	def update_metadata(self, force=False, offline=False):
-		filename = os.path.join(METADATA_DOWNLOAD_PATH, METADATA_DOWNLOAD_FILE)
-		cache_filename = self.cache_path(os.path.basename(filename))
-
-		# Check if the metadata is already recent enough...
-		exists = self.cache.exists(cache_filename)
-
-		if not exists and offline:
-			raise OfflineModeError(_("No metadata available for repository %s. Cannot download any.") \
-				% self.name)
-
-		elif exists and offline:
-			# Repository metadata exists. We cannot update anything because of the offline mode.
+	def refresh(self, force=False):
+		# Don't do anything if running in offline mode
+		if self.pakfire.offline:
+			log.debug(_("Skipping refreshing %s since we are running in offline mode") % self)
 			return
 
-		if not force and exists:
-			age = self.cache.age(cache_filename)
-			if age and age < TIME_10M:
-				log.debug("Metadata is recent enough. I don't download it again.")
-				return
+		# Refresh the mirror list
+		self._refresh_mirror_list(force=force)
 
-		# Going to download metada.
-		log.debug("Going to download repository metadata for %s..." % self.name)
-		assert not offline
+		# Refresh metadata
+		self._refresh_metadata(force=force)
 
-		grabber = downloader.MetadataDownloader(self.pakfire)
-		grabber = self.mirrors.group(grabber)
+		# Refresh database
+		self._refresh_database()
+
+		# Read database
+		if self.database:
+			self.read_solv(self.database)
+
+	@property
+	def mirrorlist(self):
+		"""
+			Opens a cached mirror list
+		"""
+		with self.cache_open("mirrors", "r") as f:
+			mirrors = json.load(f)
+
+			return mirrors.get("mirrors")
+
+		return []
+
+	def _refresh_mirror_list(self, force=False):
+		# Check age of the mirror list first
+		age = self.cache_age("mirrors")
+
+		# Don't refresh anything if the mirror list
+		# has been refreshed in the last 24 hours
+		if not force and age and age <= 24 * 3600:
+			return
+
+		# (Re-)download the mirror list
+		url = self.settings.get("mirrors", None)
+		if not url:
+			return
+
+		# Use a generic downloader
+		downloader = http.Client()
+
+		# Download a new mirror list
+		mirrorlist = downloader.get(url, decode="json")
+
+		# Write new list to disk
+		with self.cache_open("mirrors", "w") as f:
+			s = json.dumps(mirrorlist)
+			f.write(s)
+
+	@property
+	def metadata(self):
+		if not self.cache_exists("repomd.json"):
+			return
+
+		with self.cache_open("repomd.json", "r") as f:
+			return metadata.Metadata(self.pakfire, metadata=f.read())
+
+	def _refresh_metadata(self, force=False):
+		# Check age of the metadata first
+		age = self.cache_age("repomd.json")
+
+		# Don't refresh anything if the metadata
+		# has been refresh within the last 10 minutes
+		if not force and age and age <= 600:
+			return
+
+		# Get a downloader
+		downloader = self.make_downloader()
 
 		while True:
-			try:
-				data = grabber.urlread(filename, limit=METADATA_DOWNLOAD_LIMIT)
-			except urlgrabber.grabber.URLGrabError as e:
-				if e.errno == 256:
-					raise DownloadError(_("Could not update metadata for %s from any mirror server") % self.name)
+			data = downloader.get("%s/repodata/repomd.json" % self.pakfire.arch.name, decode="ascii")
 
-				grabber.increment_mirror(grabber)
-				continue
-
-			# Parse new metadata for comparison.
+			# Parse new metadata for comparison
 			md = metadata.Metadata(self.pakfire, metadata=data)
 
 			if self.metadata and md < self.metadata:
 				log.warning(_("The downloaded metadata was less recent than the current one."))
-				grabber.increment_mirror(grabber)
+				downloader.skip_current_mirror()
 				continue
 
 			# If the download went well, we write the downloaded data to disk
 			# and break the loop.
-			f = self.cache.open(cache_filename, "w")
-			f.write(data)
-			f.close()
+			with self.cache_open("repomd.json", "w") as f:
+				md.save(f)
 
 			break
 
-		# Re-open metadata.
-		self.metadata = self.open_metadata()
-		assert self.metadata
+	@property
+	def database(self):
+		if self.metadata and self.metadata.database and self.cache_exists(self.metadata.database):
+			return self.cache_path(self.metadata.database)
 
-	def open_database(self):
-		assert self.metadata, "Metadata needs to be openend first."
+	def _refresh_database(self):
+		assert self.metadata, "Metadata does not exist"
 
-		filename = self.cache_path("database", self.metadata.database)
-		filename = self.cache.abspath(filename)
-
-		assert os.path.exists(filename)
-
-		self.index.clear()
-		self.index.read(filename)
-
-	def update_database(self, force=False, offline=False):
-		assert self.metadata, "Metadata needs to be openend first."
-
-		# Construct cache and download filename.
-		filename = os.path.join(METADATA_DOWNLOAD_PATH, self.metadata.database)
-		cache_filename = self.cache_path("database", self.metadata.database)
-
-		if not force:
-			force = not self.cache.exists(cache_filename)
-
-		# Raise an exception when we are running in offline mode but an update is required.
-		if force and offline:
-			raise OfflineModeError(_("Cannot download package database for %s in offline mode.") % self.name)
-
-		elif not force:
+		# Exit if the file already exists in the cache
+		if self.cache_exists(self.metadata.database):
 			return
 
-		# Just make sure we don't try to download anything in offline mode.
-		assert not offline
+		# Make the downloader
+		downloader = self.make_downloader()
 
-		# Initialize a grabber for download.
-		grabber = downloader.DatabaseDownloader(
-			self.pakfire,
-			text = _("%s: package database") % self.name,
-		)
-		grabber = self.mirrors.group(grabber)
+		# This is where the file will be saved after download
+		path = self.cache_path(self.metadata.database)
 
-		while True:
-			# Open file on server.
-			urlobj = fileobj = grabber.urlopen(filename)
-
-			if self.metadata.database_compression:
-				fileobj = compress.decompressobj(fileobj=fileobj,
-					algo=self.metadata.database_compression)
-
-			# Make a new file in the cache.
-			cacheobj = self.cache.open(cache_filename, "wb")
-
-			try:
-				while True:
-					buf = fileobj.read(BUFFER_SIZE)
-					if not buf:
-						break
-					cacheobj.write(buf)
-
-			finally:
-				# XXX we should catch decompression errors
-
-				# Close all file descriptors.
-				cacheobj.close()
-				fileobj.close()
-				if not urlobj == fileobj:
-					urlobj.close()
-
-			break
+		# XXX compare checksum here
+		downloader.retrieve("repodata/%s" % self.metadata.database, filename=path,
+			message=_("%s: package database") % self.name)
 
 	def download(self, pkg, text="", logger=None):
 		"""
@@ -344,8 +314,9 @@ class RepositoryRemote(base.RepositoryFactory):
 			"baseurl = %s" % self.baseurl,
 		]
 
-		if self.mirrors.mirrorlist:
-			lines.append("mirrors = %s" % self.mirrors.mirrorlist)
+		mirrors = self.settings.get("mirrors", None)
+		if mirrors:
+			lines.append("mirrors = %s" % mirrors)
 
 		lines += [
 			#"gpgkey = %s" % self.keyfile,

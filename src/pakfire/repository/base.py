@@ -27,22 +27,36 @@ from .. import _pakfire
 from . import packages
 
 class RepositoryFactory(_pakfire.Repo):
-	def __init__(self, pakfire, name, description):
-		_pakfire.Repo.__init__(self, pakfire.pool, name)
+	def __init__(self, pakfire, name, description, **kwargs):
 		self.pakfire = pakfire
 
-		self.description = description
+		# Inherit
+		_pakfire.Repo.__init__(self, self.pakfire.pool, name)
 
-		# Some repositories may have a cache.
-		self.cache = None
+		# Save description
+		self.description = description
 
 		log.debug("Initialized new repository: %s" % self)
 
 		# Marks if this repository has been opened.
 		self.opened = False
 
+		self.init(**kwargs)
+
 	def __repr__(self):
 		return "<%s %s>" % (self.__class__.__name__, self.name)
+
+	def init(self, **kwargs):
+		pass # To be overwritten by inheriting classes
+
+	def refresh(self):
+		"""
+			Called to refresh the repository metadata.
+
+			This is probably only hand for remote repositories
+			that need to re-download data.
+		"""
+		pass
 
 	@property
 	def local(self):
