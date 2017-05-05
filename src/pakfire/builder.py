@@ -105,7 +105,6 @@ class BuildEnviron(object):
 		self.settings = {
 			"enable_loop_devices" : self.config.get_bool("builder", "use_loop_devices", True),
 			"enable_ccache"       : self.config.get_bool("builder", "use_ccache", True),
-			"enable_icecream"     : self.config.get_bool("builder", "use_icecream", False),
 			"sign_packages"       : False,
 			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
 			"private_network"     : self.config.get_bool("builder", "private_network", False),
@@ -416,11 +415,6 @@ class BuildEnviron(object):
 		if self.settings.get("enable_ccache"):
 			requires.append("ccache")
 
-		# If we have icecream enabled, we need to extract it
-		# to the build chroot.
-		if self.settings.get("enable_icecream"):
-			requires.append("icecream")
-
 		# Get build dependencies from source package.
 		if self.pkg:
 			for req in self.pkg.requires:
@@ -649,17 +643,6 @@ class BuildEnviron(object):
 
 			# Let ccache create its temporary files in /tmp.
 			env["CCACHE_TEMPDIR"] = "/tmp"
-
-		# Icecream environment settings
-		if self.settings.get("enable_icecream", False):
-			# Set the toolchain path
-			if self.settings.get("icecream_toolchain", None):
-				env["ICECC_VERSION"] = self.settings.get("icecream_toolchain")
-
-			# Set preferred host if configured.
-			if self.settings.get("icecream_preferred_host", None):
-				env["ICECC_PREFERRED_HOST"] = \
-					self.settings.get("icecream_preferred_host")
 
 		# Fake UTS_MACHINE, when we cannot use the personality syscall and
 		# if the host architecture is not equal to the target architecture.
@@ -997,22 +980,6 @@ class Builder(object):
 		if exe.exitcode == 0:
 			return exe.output
 
-	def create_icecream_toolchain(self):
-		try:
-			exe = self.execute(
-				"icecc --build-native 2>/dev/null",
-				record_output=True, record_stderr=False,
-				log_output=False, log_errors=False,
-				cwd="/tmp",
-			)
-		except ShellEnvironmentError:
-			return
-
-		for line in exe.output.splitlines():
-			m = re.match(r"^creating ([a-z0-9]+\.tar\.gz)", line)
-			if m:
-				self._environ["ICECC_VERSION"] = "/tmp/%s" % m.group(1)
-
 	def create_buildscript(self, stage):
 		# Get buildscript from the package.
 		script = self.pkg.get_buildscript(stage)
@@ -1035,9 +1002,6 @@ class Builder(object):
 		# Create buildroot and remove all content if it was existant.
 		util.rm(self.buildroot)
 		os.makedirs(self.buildroot)
-
-		# Build icecream toolchain if icecream is installed.
-		self.create_icecream_toolchain()
 
 		# Process stages in order.
 		for stage in ("prepare", "build", "test", "install"):
