@@ -26,7 +26,12 @@ log.propagate = 1
 
 class Arch(object):
 	def __init__(self, name):
+		assert name
+
 		self.name = name
+
+	def __repr__(self):
+		return "<%s %s>" % (self.__class__.__name__, self.name)
 
 	def __eq__(self, other):
 		return self.name == other.name
@@ -66,7 +71,7 @@ class Arch(object):
 		return machine.replace("-gnu", "")
 
 	@property
-	def compatbile_arches(self):
+	def compatible_arches(self):
 		"""
 			Returns a list of all architectures that are
 			compatible (i.e. can be emulated)
@@ -88,7 +93,7 @@ class Arch(object):
 		}
 
 		try:
-			return x[self.name]
+			return (Arch(a) for a in x[self.name])
 		except KeyError:
 			return []
 
