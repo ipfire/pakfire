@@ -219,7 +219,7 @@ class ShellExecuteEnvironment(object):
 			# Process output.
 			for s in i_rdy:
 				# Read as much data as possible.
-				input = s.read()
+				input = s.read().decode()
 
 				if input == "":
 					done = True
