@@ -26,6 +26,7 @@
 
 #include "pool.h"
 #include "problem.h"
+#include "solution.h"
 
 static ProblemObject* Problem_new_core(PyTypeObject* type, PakfireProblem problem) {
 	ProblemObject* self = (ProblemObject *)type->tp_alloc(type, 0);
@@ -77,11 +78,33 @@ static PyObject* Problem_string(ProblemObject* self) {
 	return PyUnicode_FromString(string);
 }
 
+static PyObject* Problem_get_solutions(ProblemObject* self) {
+	PyObject* list = PyList_New(0);
+
+	PakfireSolution solution = pakfire_problem_get_solutions(self->problem);
+	while (solution) {
+		PyObject* s = new_solution(solution);
+		PyList_Append(list, s);
+		Py_DECREF(s);
+
+		solution = pakfire_solution_next(solution);
+	}
+
+	return list;
+}
+
 static struct PyMethodDef Problem_methods[] = {
 	{ NULL }
 };
 
 static struct PyGetSetDef Problem_getsetters[] = {
+	{
+		"solutions",
+		(getter)Problem_get_solutions,
+		NULL,
+		NULL,
+		NULL,
+	},
 	{ NULL },
 };
 

@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2011 Pakfire development team                                 #
+# Copyright (C) 2017 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -23,21 +23,15 @@
 
 #include <Python.h>
 
-#include "solver.h"
+#include <pakfire/solution.h>
 
-// Sat Solution object
 typedef struct {
-    PyObject_HEAD
-    Solver *_solver;
-    Id problem_id;
-    Id id;
+	PyObject_HEAD
+	PakfireSolution solution;
 } SolutionObject;
 
-extern PyObject *Solution_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-extern PyObject *Solution_dealloc(SolutionObject *self);
-
-extern PyObject *Solution_string(SolutionObject *self);
-
 extern PyTypeObject SolutionType;
+
+PyObject* new_solution(PakfireSolution solution);
 
 #endif /* PYTHON_PAKFIRE_SOLUTION_H */

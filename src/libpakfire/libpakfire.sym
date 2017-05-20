@@ -163,6 +163,7 @@ global:
 	pakfire_problem_append;
 	pakfire_problem_create;
 	pakfire_problem_free;
+	pakfire_problem_get_solutions;
 	pakfire_problem_next;
 	pakfire_problem_ref;
 	pakfire_problem_to_string;
@@ -242,6 +243,13 @@ global:
 	pakfire_selector_free;
 	pakfire_selector_providers;
 	pakfire_selector_set;
+
+	# solution
+	pakfire_solution_create;
+	pakfire_solution_free;
+	pakfire_solution_next;
+	pakfire_solution_ref;
+	pakfire_solution_to_string;
 
 	# step
 	pakfire_step_create;

@@ -99,10 +99,6 @@ static PyMethodDef Solvable_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-static PyMethodDef Solution_methods[] = {
-	{ NULL, NULL, 0, NULL }
-};
-
 static struct PyModuleDef moduledef = {
 	.m_base = PyModuleDef_HEAD_INIT,
 	.m_name = "_pakfire",
@@ -176,9 +172,9 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyModule_AddObject(module, "Request", (PyObject *)&RequestType);
 
 	// Solution
-	SolutionType.tp_methods = Solution_methods;
 	if (PyType_Ready(&SolutionType) < 0)
 		return NULL;
+
 	Py_INCREF(&SolutionType);
 	PyModule_AddObject(module, "Solution", (PyObject *)&SolutionType);
 

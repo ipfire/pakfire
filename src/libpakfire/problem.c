@@ -22,6 +22,7 @@
 #include <pakfire/i18n.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
+#include <pakfire/solution.h>
 #include <pakfire/util.h>
 
 static char* to_string(PakfireProblem problem) {
@@ -241,4 +242,20 @@ void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem) 
 
 const char* pakfire_problem_to_string(PakfireProblem problem) {
 	return problem->string;
+}
+
+PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem) {
+	PakfireSolution ret = NULL;
+
+	Id solution = 0;
+	while ((solution = solver_next_solution(problem->request->solver, problem->id, solution)) != 0) {
+		PakfireSolution s = pakfire_solution_create(problem, solution);
+
+		if (ret)
+			pakfire_solution_append(ret, s);
+		else
+			ret = s;
+	}
+
+	return ret;
 }

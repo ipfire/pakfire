@@ -248,6 +248,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/repocache.c \
 	src/libpakfire/request.c \
 	src/libpakfire/selector.c \
+	src/libpakfire/solution.c \
 	src/libpakfire/solver.c \
 	src/libpakfire/step.c \
 	src/libpakfire/transaction.c \
@@ -272,6 +273,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/repocache.h \
 	src/libpakfire/include/pakfire/request.h \
 	src/libpakfire/include/pakfire/selector.h \
+	src/libpakfire/include/pakfire/solution.h \
 	src/libpakfire/include/pakfire/solver.h \
 	src/libpakfire/include/pakfire/step.h \
 	src/libpakfire/include/pakfire/transaction.h \

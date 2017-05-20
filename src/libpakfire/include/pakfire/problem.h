@@ -35,6 +35,8 @@ void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem);
 
 const char* pakfire_problem_to_string(PakfireProblem problem);
 
+PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem);
+
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireProblem {

@@ -18,61 +18,31 @@
 #                                                                             #
 #############################################################################*/
 
-#include <Python.h>
-#include <assert.h>
+#ifndef PAKFIRE_SOLUTION_H
+#define PAKFIRE_SOLUTION_H
 
-#include <pakfire/errno.h>
-#include <pakfire/solution.h>
+#include <pakfire/problem.h>
 
-#include "pool.h"
-#include "solution.h"
+PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id);
+PakfireSolution pakfire_solution_ref(PakfireSolution solution);
+void pakfire_solution_free(PakfireSolution solution);
 
-static SolutionObject* Solution_new_core(PyTypeObject* type, PakfireSolution solution) {
-	SolutionObject* self = (SolutionObject *)type->tp_alloc(type, 0);
-	if (self) {
-		self->solution = solution;
-	}
+PakfireSolution pakfire_solution_next(PakfireSolution solution);
+void pakfire_solution_append(PakfireSolution solution, PakfireSolution new_solution);
 
-	return self;
-}
+char* pakfire_solution_to_string(PakfireSolution solution);
 
-PyObject* new_solution(PakfireSolution solution) {
-	SolutionObject* s = Solution_new_core(&SolutionType, solution);
+#ifdef PAKFIRE_PRIVATE
 
-	return (PyObject*)s;
-}
+struct _PakfireSolution {
+	PakfireProblem problem;
+	Id id;
+	char** elements;
 
-static PyObject* Solution_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-	SolutionObject* self = Solution_new_core(type, NULL);
-
-	return (PyObject *)self;
-}
-
-static void Solution_dealloc(SolutionObject* self) {
-	if (self->solution)
-		pakfire_solution_free(self->solution);
-
-	Py_TYPE(self)->tp_free((PyObject *)self);
-}
-
-static int Solution_init(SolutionObject* self, PyObject* args, PyObject* kwds) {
-	return 0;
-}
-
-static PyObject* Solution_string(SolutionObject* self) {
-	const char* string = pakfire_solution_to_string(self->solution);
-
-	return PyUnicode_FromString(string);
-}
-
-PyTypeObject SolutionType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name:            "_pakfire.Solution",
-	tp_basicsize:       sizeof(SolutionObject),
-	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
-	tp_new:             Solution_new,
-	tp_dealloc:         (destructor)Solution_dealloc,
-	tp_init:            (initproc)Solution_init,
-	tp_doc:             "Solution object",
-	tp_str:             (reprfunc)Solution_string,
+	PakfireSolution next;
+	int nrefs;
 };
+
+#endif
+
+#endif /* PAKFIRE_SOLUTION_H */
