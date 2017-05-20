@@ -39,6 +39,7 @@ from . import util
 import logging
 log = logging.getLogger("pakfire")
 
+from .config import Config
 from .system import system
 
 from .constants import *
@@ -47,7 +48,7 @@ from .i18n import _
 class Pakfire(object):
 	mode = None
 
-	def __init__(self, path="/", arch=None, distro=None, cache_path=None):
+	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None):
 		# The path where we are operating in
 		self.path = path
 
@@ -65,7 +66,7 @@ class Pakfire(object):
 			self.check_is_ipfire()
 
 		# Load configuration
-		self.config = config.Config("general.conf")
+		self.config = config or Config("general.conf")
 
 		# Initialize the keyring
 		self.keyring = keyring.Keyring(self)
