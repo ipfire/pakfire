@@ -46,6 +46,7 @@ from .constants import *
 from .i18n import _
 
 class Pakfire(object):
+	__version__ = PAKFIRE_VERSION
 	mode = None
 
 	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None):
