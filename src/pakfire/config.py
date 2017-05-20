@@ -48,6 +48,10 @@ class Config(object):
 		if not path.startswith("/"):
 			path = os.path.join(CONFIG_DIR, path)
 
+		# Silently return if nothing is found
+		if not os.path.exists(path):
+			return
+
 		log.debug("Reading configuration from %s" % path)
 
 		with open(path) as f:
