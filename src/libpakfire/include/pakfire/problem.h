@@ -18,20 +18,34 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PYTHON_PAKFIRE_PROBLEM_H
-#define PYTHON_PAKFIRE_PROBLEM_H
+#ifndef PAKFIRE_PROBLEM_H
+#define PAKFIRE_PROBLEM_H
 
-#include <Python.h>
+#include <solv/pool.h>
+#include <solv/queue.h>
 
-#include <pakfire/problem.h>
+#include <pakfire/request.h>
 
-typedef struct {
-	PyObject_HEAD
-	PakfireProblem problem;
-} ProblemObject;
+PakfireProblem pakfire_problem_create(PakfireRequest request, Id id);
+PakfireProblem pakfire_problem_ref(PakfireProblem problem);
+void pakfire_problem_free(PakfireProblem problem);
 
-extern PyTypeObject ProblemType;
+PakfireProblem pakfire_problem_next(PakfireProblem problem);
+void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem);
 
-PyObject* new_problem(PakfireProblem problem);
+const char* pakfire_problem_to_string(PakfireProblem problem);
 
-#endif /* PYTHON_PAKFIRE_PROBLEM_H */
+#ifdef PAKFIRE_PRIVATE
+
+struct _PakfireProblem {
+	PakfireRequest request;
+	Id id;
+	char* string;
+
+	PakfireProblem next;
+	int nrefs;
+};
+
+#endif
+
+#endif /* PAKFIRE_PROBLEM_H */

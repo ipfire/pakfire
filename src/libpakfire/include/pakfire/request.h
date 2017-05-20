@@ -38,11 +38,13 @@ enum _pakfire_solver_flags {
 };
 
 PakfireRequest pakfire_request_create(PakfirePool pool);
+PakfireRequest pakfire_request_ref(PakfireRequest request);
 void pakfire_request_free(PakfireRequest request);
 
 PakfirePool pakfire_request_pool(PakfireRequest request);
 
 int pakfire_request_solve(PakfireRequest request, int flags);
+PakfireProblem pakfire_request_get_problems(PakfireRequest request);
 PakfireTransaction pakfire_request_get_transaction(PakfireRequest request);
 
 int pakfire_request_install(PakfireRequest request, PakfirePackage package);
@@ -73,6 +75,7 @@ struct _PakfireRequest {
 	Queue queue;
 	Solver* solver;
 	Transaction* transaction;
+	int nrefs;
 };
 
 #endif

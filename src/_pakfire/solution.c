@@ -50,8 +50,10 @@ PyObject *Solution_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 
 	self = (SolutionObject *)type->tp_alloc(type, 0);
 	if (self != NULL) {
+#if 0
 		self->_solver = problem->_solver;
 		self->problem_id = problem->_id;
+#endif
 		self->id = id;
 	}
 

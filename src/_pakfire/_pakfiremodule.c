@@ -51,15 +51,6 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-static PyMethodDef Problem_methods[] = {
-	{"get_rule", (PyCFunction)Problem_get_rule, METH_NOARGS, NULL},
-	{"get_source", (PyCFunction)Problem_get_source, METH_NOARGS, NULL},
-	{"get_target", (PyCFunction)Problem_get_target, METH_NOARGS, NULL},
-	{"get_dep", (PyCFunction)Problem_get_dep, METH_NOARGS, NULL},
-	{"get_solutions", (PyCFunction)Problem_get_solutions, METH_NOARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
 static PyMethodDef Solvable_methods[] = {
 	{"get_name", (PyCFunction)Solvable_get_name, METH_NOARGS, NULL},
 	{"get_evr", (PyCFunction)Solvable_get_evr, METH_NOARGS, NULL},
@@ -151,7 +142,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyModule_AddObject(module, "Pool", (PyObject *)&PoolType);
 
 	// Problem
-	ProblemType.tp_methods = Problem_methods;
 	if (PyType_Ready(&ProblemType) < 0)
 		return NULL;
 	Py_INCREF(&ProblemType);

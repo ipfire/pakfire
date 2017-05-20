@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2011 Pakfire development team                                 #
+# Copyright (C) 2017 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -19,252 +19,82 @@
 #############################################################################*/
 
 #include <Python.h>
+#include <assert.h>
 
-#include "constants.h"
+#include <pakfire/errno.h>
+#include <pakfire/problem.h>
+
+#include "pool.h"
 #include "problem.h"
-#include "relation.h"
-#include "request.h"
-#include "solution.h"
-#include "solvable.h"
-#include "solver.h"
 
-PyTypeObject ProblemType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	tp_name: "_pakfire.Problem",
-	tp_basicsize: sizeof(ProblemObject),
-	tp_flags: Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-	tp_new : Problem_new,
-	tp_dealloc: (destructor) Problem_dealloc,
-	tp_doc: "Sat Problem objects",
-	tp_str: (reprfunc)Problem_string,
-};
-
-PyObject* Problem_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-	ProblemObject *self;
-	SolverObject *solver;
-	RequestObject *request;
-	Id problem_id;
-
-	if (!PyArg_ParseTuple(args, "OOi", &solver, &request, &problem_id)) {
-		/* XXX raise exception */
-		return NULL;
+static ProblemObject* Problem_new_core(PyTypeObject* type, PakfireProblem problem) {
+	ProblemObject* self = (ProblemObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->problem = problem;
 	}
 
-	self = (ProblemObject *)type->tp_alloc(type, 0);
-	if (self != NULL) {
-		self->_pool = request->_pool;
-		self->_solver = solver->_solver;
-		self->_id = problem_id;
+	return self;
+}
 
-		// Initialize problem information.
-		Problem_init(self);
-	}
+PyObject* new_problem(PakfireProblem problem) {
+	ProblemObject* p = Problem_new_core(&ProblemType, problem);
+
+	return (PyObject*)p;
+}
+
+static PyObject* Problem_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	ProblemObject* self = Problem_new_core(type, NULL);
 
 	return (PyObject *)self;
 }
 
-PyObject *Problem_dealloc(ProblemObject *self) {
+static void Problem_dealloc(ProblemObject* self) {
+	if (self->problem)
+		pakfire_problem_free(self->problem);
+
 	Py_TYPE(self)->tp_free((PyObject *)self);
-
-	Py_RETURN_NONE;
 }
 
-PyObject *Problem_init(ProblemObject *self) {
-	Id id = solver_findproblemrule(self->_solver, self->_id);
+static int Problem_init(ProblemObject* self, PyObject* args, PyObject* kwds) {
+#if 0
+	PyObject* pool;
 
-	self->rule = solver_ruleinfo(self->_solver, id, &self->source,
-		&self->target, &self->dep);
+	if (!PyArg_ParseTuple(args, "O!", &PoolType, &pool))
+		return -1;
 
-	Py_RETURN_NONE;
+	self->pool = (PoolObject *)pool;
+	Py_INCREF(self->pool);
+
+	self->request = pakfire_request_create(self->pool->pool);
+#endif
+
+	return 0;
 }
 
-PyObject *Problem_get_rule(ProblemObject *self) {
-	return Py_BuildValue("i", self->rule);
+static PyObject* Problem_string(ProblemObject* self) {
+	const char* string = pakfire_problem_to_string(self->problem);
+
+	return PyUnicode_FromString(string);
 }
 
-PyObject *Problem_get_source(ProblemObject *self) {
-	SolvableObject *solvable;
+static struct PyMethodDef Problem_methods[] = {
+	{ NULL }
+};
 
-	if (self->source == ID_NULL)
-		Py_RETURN_NONE;
+static struct PyGetSetDef Problem_getsetters[] = {
+	{ NULL },
+};
 
-	solvable = PyObject_New(SolvableObject, &SolvableType);
-	if (solvable == NULL)
-		return NULL;
-
-	solvable->_pool = self->_pool;
-	solvable->_id = self->source;
-
-	return (PyObject *)solvable;
-}
-
-PyObject *Problem_get_target(ProblemObject *self) {
-	SolvableObject *solvable;
-
-	if (self->target == ID_NULL)
-		Py_RETURN_NONE;
-
-	solvable = PyObject_New(SolvableObject, &SolvableType);
-	if (solvable == NULL)
-		return NULL;
-
-	solvable->_pool = self->_pool;
-	solvable->_id = self->target;
-
-	return (PyObject *)solvable;
-}
-
-PyObject *Problem_get_dep(ProblemObject *self) {
-	RelationObject *relation;
-
-	if (self->dep == ID_NULL)
-		Py_RETURN_NONE;
-
-	relation = PyObject_New(RelationObject, &RelationType);
-	if (relation == NULL)
-		return NULL;
-
-	relation->_pool = self->_pool;
-	relation->_id = self->dep;
-
-	return (PyObject *)relation;
-}
-
-PyObject *Problem_get_solutions(ProblemObject *self) {
-	SolutionObject *solution;
-	Id s = 0;
-
-	PyObject *list = PyList_New(0);
-
-	while ((s = solver_next_solution(self->_solver, self->_id, s)) != 0) {
-		solution = PyObject_New(SolutionObject, &SolutionType);
-
-		solution->_solver = self->_solver;
-		solution->problem_id = self->_id;
-		solution->id = s;
-
-		PyList_Append(list, (PyObject *)solution);
-	}
-
-	return list;
-}
-
-PyObject *Problem_string(ProblemObject *self) {
-	Pool *pool = self->_pool;
-	char s[STRING_SIZE];
-
-	switch (self->rule) {
-		case SOLVER_RULE_DISTUPGRADE:
-			snprintf(s, STRING_SIZE - 1,
-				_("%s does not belong to a distupgrade repository"),
-				pool_solvid2str(pool, self->source)
-			);
-			break;
-
-		case SOLVER_RULE_INFARCH:
-			snprintf(s, STRING_SIZE - 1,
-				_("%s has inferior architecture"),
-				pool_solvid2str(pool, self->source)
-			);
-			break;
-
-		case SOLVER_RULE_UPDATE:
-			snprintf(s, STRING_SIZE - 1,
-				_("problem with installed package %s"),
-				pool_solvid2str(pool, self->source)
-			);
-			break;
-
-		case SOLVER_RULE_JOB:
-			snprintf(s, STRING_SIZE - 1, _("conflicting requests"));
-			break;
-
-		case SOLVER_RULE_JOB_NOTHING_PROVIDES_DEP:
-			snprintf(s, STRING_SIZE - 1,
-				_("nothing provides requested %s"),
-				pool_dep2str(pool, self->dep)
-			);
-			break;
-
-		case SOLVER_RULE_RPM:
-			snprintf(s, STRING_SIZE - 1, _("some dependency problem"));
-			break;
-
-		case SOLVER_RULE_RPM_NOT_INSTALLABLE:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s is not installable"),
-				pool_solvid2str(pool, self->source)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_NOTHING_PROVIDES_DEP:
-			snprintf(s, STRING_SIZE - 1,
-				_("nothing provides %s needed by %s"),
-				pool_dep2str(pool, self->dep),  pool_solvid2str(pool, self->source)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_SAME_NAME:
-			snprintf(s, STRING_SIZE - 1,
-				_("cannot install both %s and %s"),
-				pool_solvid2str(pool, self->source),  pool_solvid2str(pool, self->target)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_PACKAGE_CONFLICT:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s conflicts with %s provided by %s"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep),
-				pool_solvid2str(pool, self->target)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_PACKAGE_OBSOLETES:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s obsoletes %s provided by %s"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep),
-				pool_solvid2str(pool, self->target)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_INSTALLEDPKG_OBSOLETES:
-			snprintf(s, STRING_SIZE - 1,
-				_("installed package %s obsoletes %s provided by %s"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep),
-				pool_solvid2str(pool, self->target)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_IMPLICIT_OBSOLETES:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s implicitely obsoletes %s provided by %s"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep),
-				pool_solvid2str(pool, self->target)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_PACKAGE_REQUIRES:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s requires %s, but none of the providers can be installed"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep)
-			);
-			break;
-
-		case SOLVER_RULE_RPM_SELF_CONFLICT:
-			snprintf(s, STRING_SIZE - 1,
-				_("package %s conflicts with %s provided by itself"),
-				pool_solvid2str(pool, self->source), pool_dep2str(pool, self->dep)
-			);
-			break;
-
-		case SOLVER_RULE_UNKNOWN:
-		case SOLVER_RULE_FEATURE:
-		case SOLVER_RULE_LEARNT:
-		case SOLVER_RULE_CHOICE:
-			snprintf(s, STRING_SIZE - 1, _("bad rule type"));
-			break;
-
-	}
-
-	return Py_BuildValue("s", &s);
-}
+PyTypeObject ProblemType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.Problem",
+	tp_basicsize:       sizeof(ProblemObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             Problem_new,
+	tp_dealloc:         (destructor)Problem_dealloc,
+	tp_init:            (initproc)Problem_init,
+	tp_doc:             "Problem object",
+	tp_methods:         Problem_methods,
+	tp_getset:          Problem_getsetters,
+	tp_str:             (reprfunc)Problem_string,
+};

@@ -159,6 +159,14 @@ global:
 	pakfire_pool_version_compare;
 	pakfire_pool_whatprovides;
 
+	# problem
+	pakfire_problem_append;
+	pakfire_problem_create;
+	pakfire_problem_free;
+	pakfire_problem_next;
+	pakfire_problem_ref;
+	pakfire_problem_to_string;
+
 	# repo
 	pakfire_repo_cmp;
 	pakfire_repo_count;
@@ -213,6 +221,7 @@ global:
 	pakfire_request_erase;
 	pakfire_request_erase_relation;
 	pakfire_request_erase_selector;
+	pakfire_request_get_problems;
 	pakfire_request_get_transaction;
 	pakfire_request_install;
 	pakfire_request_install_relation;

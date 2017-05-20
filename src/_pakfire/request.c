@@ -25,6 +25,7 @@
 #include <pakfire/request.h>
 
 #include "package.h"
+#include "problem.h"
 #include "relation.h"
 #include "request.h"
 #include "selector.h"
@@ -214,6 +215,23 @@ static PyObject* Request_get_pool(RequestObject* self) {
 	return (PyObject *)pool;
 }
 
+static PyObject* Request_get_problems(RequestObject* self) {
+	PyObject* list = PyList_New(0);
+
+	PakfireProblem problem = pakfire_request_get_problems(self->request);
+	while (problem) {
+		PyObject* p = new_problem(problem);
+		PyList_Append(list, p);
+
+		Py_DECREF(p);
+
+		// Move on to next problem
+		problem = pakfire_problem_next(problem);
+	}
+
+	return list;
+}
+
 static struct PyMethodDef Request_methods[] = {
 	{
 		"install",
@@ -261,6 +279,13 @@ static struct PyMethodDef Request_methods[] = {
 };
 
 static struct PyGetSetDef Request_getsetters[] = {
+	{
+		"problems",
+		(getter)Request_get_problems,
+		NULL,
+		NULL,
+		NULL
+	},
 	{
 		"pool",
 		(getter)Request_get_pool,

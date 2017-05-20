@@ -27,6 +27,7 @@
 #endif
 
 #include <pakfire/package.h>
+#include <pakfire/problem.h>
 #include <pakfire/request.h>
 #include <pakfire/selector.h>
 #include <pakfire/transaction.h>
@@ -39,10 +40,22 @@ PakfireRequest pakfire_request_create(PakfirePool pool) {
 
 	queue_init(&request->queue);
 
+	// Initialise reference counter
+	request->nrefs = 1;
+
+	return request;
+}
+
+PakfireRequest pakfire_request_ref(PakfireRequest request) {
+	request->nrefs++;
+
 	return request;
 }
 
 void pakfire_request_free(PakfireRequest request) {
+	if (--request->nrefs > 0)
+		return;
+
 	if (request->transaction)
 		transaction_free(request->transaction);
 
@@ -130,6 +143,22 @@ int pakfire_request_solve(PakfireRequest request, int flags) {
 	int ret = solve(request, &queue);
 
 	queue_free(&queue);
+
+	return ret;
+}
+
+PakfireProblem pakfire_request_get_problems(PakfireRequest request) {
+	Id problem = 0;
+	PakfireProblem ret = NULL;
+
+	while ((problem = solver_next_problem(request->solver, problem)) != 0) {
+		PakfireProblem p = pakfire_problem_create(request, problem);
+
+		if (ret)
+			pakfire_problem_append(ret, p);
+		else
+			ret = p;
+	}
 
 	return ret;
 }
