@@ -112,10 +112,10 @@ void pakfire_repo_free(PakfireRepo repo) {
 	// Free repodata.
 	repodata_free(repo->filelist);
 
-	pakfire_free(repo);
-
 	if (repo->cache)
 		pakfire_repocache_free(repo->cache);
+
+	pakfire_free(repo);
 }
 
 PakfirePool pakfire_repo_pool(PakfireRepo repo) {
