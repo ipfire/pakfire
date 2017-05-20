@@ -28,6 +28,8 @@ import socket
 log = logging.getLogger("pakfire.config")
 log.propagate = 1
 
+from . import distro
+
 from .constants import *
 from .i18n import _
 
@@ -93,6 +95,10 @@ class Config(object):
 
 				log.debug("    %-20s: %s" % (option, value))
 
+	@property
+	def distro(self):
+		return distro.Distribution(self._config["distro"])
+
 	def get_repos(self):
 		repos = []
 		for section in self._config.sections():
@@ -109,18 +115,3 @@ class Config(object):
 
 # Read initial configuration
 config = Config("general.conf")
-
-class ConfigBuilder(_Config):
-	files = ["general.conf", "builder.conf"]
-
-	def load_distro_config(self, distro_name):
-		if distro_name is None:
-			return False
-
-		filename = os.path.join(CONFIG_DISTRO_DIR, "%s.conf" % distro_name)
-
-		if not os.path.exists(filename):
-			return False
-
-		self.read(filename)
-		return True
