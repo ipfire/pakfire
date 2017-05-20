@@ -80,11 +80,6 @@ DATABASE_FORMATS_SUPPORTED = [0, 1, 2, 3, 4, 5, 6, 7]
 
 PACKAGE_FILENAME_FMT = "%(name)s-%(version)s-%(release)s.%(arch)s.%(ext)s"
 
-BUILD_PACKAGES = [
-	"@Build",
-	"pakfire-build>=%s" % PAKFIRE_LEAST_COMPATIBLE_VERSION,
-]
-
 # A script that is called, when a user is dropped to a chroot shell.
 SHELL_SCRIPT = "/usr/lib/pakfire/chroot-shell"
 SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]

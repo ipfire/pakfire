@@ -27,7 +27,9 @@ import sys
 import tempfile
 import time
 
+from . import arch
 from . import base
+from . import builder
 from . import client
 from . import config
 from . import daemon
@@ -434,67 +436,23 @@ class CliBuilder(Cli):
 
 		return parser.parse_args()
 
-	def handle_build(self):
-		# Get the package descriptor from the command line options
-		pkg = self.args.package[0]
+	def builder(self, ns):
+		a = arch.Arch(ns.arch or system.native_arch)
 
-		# Check, if we got a regular file
-		if os.path.exists(pkg):
-			pkg = os.path.abspath(pkg)
+		b = builder.Builder(arch=a)
 
-		else:
-			raise FileNotFoundError(pkg)
+		return b
 
-		# Build argument list.
-		kwargs = {
-			"after_shell"   : self.args.after_shell,
-			# Check whether to enable the install test.
-			"install_test"  : not self.args.no_install_test,
-			"result_dir"    : [self.args.resultdir,],
-			"shell"         : True,
-		}
+	def handle_build(self, ns):
+		package, = ns.package
 
-		if self.args.mode == "release":
-			kwargs["release_build"] = True
-		else:
-			kwargs["release_build"] = False
+		# Initialise a builder instance and build this package
+		with self.builder(ns) as b:
+			b.build(package)
 
-		if self.args.private_network:
-			kwargs["private_network"] = True
-
-		p = self.create_pakfire()
-		p.build(pkg, **kwargs)
-
-	def handle_shell(self):
-		pkg = None
-
-		# Get the package descriptor from the command line options
-		if self.args.package:
-			pkg = self.args.package
-
-			# Check, if we got a regular file
-			if os.path.exists(pkg):
-				pkg = os.path.abspath(pkg)
-
-			else:
-				raise FileNotFoundError(pkg)
-
-		if self.args.mode == "release":
-			release_build = True
-		else:
-			release_build = False
-
-		p = self.create_pakfire()
-
-		kwargs = {
-			"release_build" : release_build,
-		}
-
-		# Private network
-		if self.args.private_network:
-			kwargs["private_network"] = True
-
-		p.shell(pkg, **kwargs)
+	def handle_shell(self, ns):
+		with self.builder(ns) as b:
+			b.shell()
 
 	def handle_dist(self, ns):
 		# Get the packages from the command line options

@@ -25,8 +25,6 @@ import string
 
 from . import _pakfire
 from . import actions
-from . import builder
-from . import config
 from . import distro
 from . import filelist
 from . import keyring
