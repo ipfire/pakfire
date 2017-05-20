@@ -109,9 +109,6 @@ void pakfire_repo_free(PakfireRepo repo) {
 	if (repo->repo)
 		repo->repo->appdata = NULL;
 
-	// Free repodata.
-	repodata_free(repo->filelist);
-
 	if (repo->cache)
 		pakfire_repocache_free(repo->cache);
 
