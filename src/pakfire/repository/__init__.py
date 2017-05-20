@@ -62,6 +62,8 @@ class Repositories(object):
 			self.local_build = RepositoryBuild(self.pakfire)
 			self.add_repo(self.local_build)
 
+		self._load_from_configuration(self.pakfire.config)
+
 	def __iter__(self):
 		repositories = list(self.__repos.values())
 		repositories.sort()
@@ -103,8 +105,11 @@ class Repositories(object):
 			else:
 				c.read(path)
 
+		self._load_from_configuration(c)
+
+	def _load_from_configuration(self, config):
 		# Add all repositories that have been found
-		for name, settings in c.get_repos():
+		for name, settings in config.get_repos():
 			self._parse(name, settings)
 
 	def _parse(self, name, args):
