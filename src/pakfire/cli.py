@@ -37,6 +37,7 @@ from . import packages
 from . import repository
 from . import server
 from . import transaction
+from . import ui
 from . import util
 
 from .system import system
@@ -45,7 +46,7 @@ from .i18n import _
 
 class Cli(object):
 	def __init__(self):
-		pass
+		self.ui = ui.cli.CliUI()
 
 	def parse_cli(self):
 		parser = argparse.ArgumentParser(
@@ -332,6 +333,8 @@ class Cli(object):
 
 class CliBuilder(Cli):
 	def __init__(self):
+		Cli.__init__(self)
+
 		# Check if we are already running in a pakfire container. In that
 		# case, we cannot start another pakfire-builder.
 		if os.environ.get("container", None) == "pakfire-builder":

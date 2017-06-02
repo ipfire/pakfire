@@ -21,6 +21,7 @@
 
 import sys
 
+from . import cli
 from . import progressbar
 
 def make_progress(message, maxval, eta=True, speed=False):
