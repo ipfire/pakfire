@@ -498,7 +498,7 @@ class BuilderContext(object):
 
 		packages = [
 			"@Build",
-			#"pakfire-build >= %s" % self.pakfire.__version__,
+			"pakfire-build >= %s" % self.pakfire.__version__,
 		]
 
 		# If we have ccache enabled, we need to extract it
