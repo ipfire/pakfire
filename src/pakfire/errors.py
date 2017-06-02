@@ -55,7 +55,31 @@ class DatabaseError(Error):
 class DependencyError(Error):
 	exit_code = 4
 
-	message = _("One or more dependencies could not been resolved.")
+	def __init__(self, request):
+		Error.__init__(self)
+
+		# Request object that could not be solved
+		self.request = request
+
+	@property
+	def message(self):
+		lines = [
+			_("One or more dependencies could not been resolved"),
+			"", # empty line
+		]
+
+		for problem in self.request.problems:
+			lines.append("%s" % problem)
+
+			lines.append(_("Possible solutions are:"))
+			for solution in problem.solutions:
+				lines.append("  %s" % solution)
+
+			# Add another empty line
+			lines.append("")
+
+		return "\n".join(lines)
+
 
 class DownloadError(Error):
 	message = _("An error occured when pakfire tried to download files.")
