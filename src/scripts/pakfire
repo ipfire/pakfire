@@ -1,20 +1,32 @@
 #!/usr/bin/python3
+###############################################################################
+#                                                                             #
+# Pakfire - The IPFire package management system                              #
+# Copyright (C) 2017 Pakfire development team                                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
 
 import os
 import sys
 
-import logging
-log = logging.getLogger("pakfire")
-
+# Catch ImportError and show a more user-friendly message about what went wrong
 try:
-	from pakfire.cli import *
-	from pakfire.i18n import _
+	import pakfire.cli
 
 except ImportError as e:
-	# Catch ImportError and show a more user-friendly message about what
-	# went wrong.
-	raise
-
 	# Try to load at least the i18n support, but when this fails as well we can
 	# go with an English error message.
 	try:
@@ -22,7 +34,6 @@ except ImportError as e:
 	except ImportError:
 		_ = lambda x: x
 
-	# XXX Maybe we can make a more beautiful message here?!
 	print(_("There has been an error when trying to import one or more of the"
 		" modules, that are required to run Pakfire."))
 	print(_("Please check your installation of Pakfire."))
@@ -35,13 +46,13 @@ except ImportError as e:
 	sys.exit(1)
 
 basename2cls = {
-	"pakfire"         : Cli,
-	"pakfire-builder" : CliBuilder,
-	"pakfire-client"  : CliClient,
-	"pakfire-daemon"  : CliDaemon,
-	"pakfire-key"     : CliKey,
-	"pakfire-server"  : CliServer,
-	"builder"         : CliBuilderIntern,
+	"pakfire"         : pakfire.cli.Cli,
+	"pakfire-builder" : pakfire.cli.CliBuilder,
+	"pakfire-client"  : pakfire.cli.CliClient,
+	"pakfire-daemon"  : pakfire.cli.CliDaemon,
+	"pakfire-key"     : pakfire.cli.CliKey,
+	"pakfire-server"  : pakfire.cli.CliServer,
+	"builder"         : pakfire.cli.CliBuilderIntern,
 }
 
 # Get the basename of the program
@@ -52,39 +63,7 @@ basename = os.path.basename(sys.argv[0])
 if basename not in basename2cls:
 	sys.exit(127)
 
-# Return code for the shell.
-ret = 0
-
-try:
-	# Creating command line interface
-	cli = basename2cls[basename]()
-
-	cli.run()
-
-except KeyboardInterrupt:
-	log.critical("Recieved keyboard interupt (Ctrl-C). Exiting.")
-	ret = 1
-
-# Catch all errors and show a user-friendly error message.
-except Error as e:
-	log.critical("")
-	log.critical(_("An error has occured when running Pakfire."))
-	log.error("")
-
-	log.error(_("Error message:"))
-	log.error("  %s: %s" % (e.__class__.__name__, e.message))
-	log.error("")
-
-	# Log the traceback when in debugging mode.
-	log.debug("", exc_info=True)
-
-	log.error(_("Further description:"))
-	msg = "%s" % e
-	for line in msg.splitlines():
-		log.error("  %s" % line)
-	log.error("")
-
-	ret = e.exit_code
+cli = basename2cls[basename]()
+ret = cli.run()
 
 sys.exit(ret)
-

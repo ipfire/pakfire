@@ -21,8 +21,10 @@
 
 import argparse
 import datetime
+import logging
 import os
 import shutil
+import signal
 import sys
 import tempfile
 import time
@@ -208,7 +210,23 @@ class Cli(object):
 		args = self.parse_cli()
 		assert args.func, "Argument function not defined"
 
-		return args.func(args)
+		try:
+			return args.func(args)
+
+		except KeyboardInterrupt:
+			self.ui.message(_("Received keyboard interupt (Ctrl-C). Exiting."),
+				level=logging.CRITICAL)
+
+			return 128 + signal.SIGINT
+
+		# Catch all errors and show a user-friendly error message.
+		except Error as e:
+			self.ui.message(_("An error has occured when running Pakfire"), level=logging.CRITICAL)
+
+			self.ui.message(_("%s: %s") % (e.__class__.__name__, e.message),
+				level=logging.ERROR)
+
+			return e.exit_code
 
 	def handle_info(self, ns):
 		with self.pakfire(ns) as p:
