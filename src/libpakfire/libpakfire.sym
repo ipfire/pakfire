@@ -144,6 +144,7 @@ global:
 	pakfire_packagelist_has;
 	pakfire_packagelist_push;
 	pakfire_packagelist_push_if_not_exists;
+	pakfire_packagelist_sort;
 
 	# pool
 	pakfire_pool_count;

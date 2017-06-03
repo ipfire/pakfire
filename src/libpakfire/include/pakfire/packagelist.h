@@ -29,6 +29,7 @@ PakfirePackageList pakfire_packagelist_create(void);
 void pakfire_packagelist_free(PakfirePackageList list);
 
 int pakfire_packagelist_count(PakfirePackageList list);
+void pakfire_packagelist_sort(PakfirePackageList list);
 int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg);
 PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index);
 

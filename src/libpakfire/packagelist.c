@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#include <stdlib.h>
+
 #include <solv/pool.h>
 #include <solv/pooltypes.h>
 #include <solv/solver.h>
@@ -48,6 +50,14 @@ void pakfire_packagelist_free(PakfirePackageList list) {
 
 int pakfire_packagelist_count(PakfirePackageList list) {
 	return list->count;
+}
+
+int _packagelist_cmp(const void* pkg1, const void* pkg2) {
+	return pakfire_package_cmp(*(PakfirePackage*)pkg1, *(PakfirePackage*)pkg2);
+}
+
+void pakfire_packagelist_sort(PakfirePackageList list) {
+	qsort(list->elements, list->count, sizeof(*list->elements), _packagelist_cmp);
 }
 
 PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index) {
