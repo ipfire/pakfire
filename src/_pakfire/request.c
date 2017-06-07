@@ -194,16 +194,11 @@ static PyObject* Request_solve(RequestObject* self) {
 	int ret = pakfire_request_solve(self->request, 0);
 
 	if (ret)
-		Py_RETURN_FALSE;
-
-	Py_RETURN_TRUE;
-}
-
-static PyObject* Request_get_transaction(RequestObject* self) {
-	PakfireTransaction transaction = pakfire_request_get_transaction(self->request);
-
-	if (!transaction)
 		Py_RETURN_NONE;
+
+	// Allocate the transaction and return it
+	PakfireTransaction transaction = pakfire_request_get_transaction(self->request);
+	assert(transaction);
 
 	return new_transaction(self, transaction);
 }
@@ -266,12 +261,6 @@ static struct PyMethodDef Request_methods[] = {
 	{
 		"solve",
 		(PyCFunction)Request_solve,
-		METH_NOARGS,
-		NULL
-	},
-	{
-		"get_transaction",
-		(PyCFunction)Request_get_transaction,
 		METH_NOARGS,
 		NULL
 	},

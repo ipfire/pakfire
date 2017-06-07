@@ -264,6 +264,7 @@ global:
 
 	# transaction
 	pakfire_transaction_create;
+	pakfire_transaction_dump;
 	pakfire_transaction_free;
 	pakfire_transaction_get_packages;
 	pakfire_transaction_get_step;

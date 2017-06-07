@@ -28,12 +28,14 @@
 PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans);
 void pakfire_transaction_free(PakfireTransaction transaction);
 
-int pakfire_transaction_count(PakfireTransaction transaction);
+size_t pakfire_transaction_count(PakfireTransaction transaction);
 
-int pakfire_transaction_installsizechange(PakfireTransaction transaction);
+ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction);
 
 PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index);
 PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type);
+
+char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width);
 
 #ifdef PAKFIRE_PRIVATE
 

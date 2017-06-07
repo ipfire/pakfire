@@ -104,15 +104,22 @@ static PyObject* Transaction_get_installsizechange(TransactionObject* self) {
 	return PyLong_FromLong(installsizechange);
 }
 
-#if 0
-static PyObject* Transaction_get_installs(TransactionObject* self) {
-	PakfirePackageList packagelist = pakfire_transaction_get_packages(self->transaction,
-		SOLVER_TRANSACTION_INSTALL);
+static PyObject* Transaction_dump(TransactionObject* self) {
+	char* string = pakfire_transaction_dump(self->transaction, 80);
+	assert(string);
 
-	PyObject* list = PyList_FromPackageList(self->request->pool, packagelist);
-	return list;
+	return PyUnicode_FromString(string);
 }
-#endif
+
+static struct PyMethodDef Transaction_methods[] = {
+	{
+		"dump",
+		(PyCFunction)Transaction_dump,
+		METH_NOARGS,
+		NULL
+	},
+	{ NULL },
+};
 
 static struct PyGetSetDef Transaction_getsetters[] = {
 	{
@@ -134,6 +141,7 @@ PyTypeObject TransactionType = {
 	tp_dealloc:         (destructor)Transaction_dealloc,
 	tp_init:            (initproc)Transaction_init,
 	tp_doc:             "Transaction object",
+	tp_methods:         Transaction_methods,
 	tp_getset:          Transaction_getsetters,
 	tp_iter:            (getiterfunc)Transaction_iter,
 };
