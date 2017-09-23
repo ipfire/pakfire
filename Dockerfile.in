@@ -8,10 +8,10 @@ LABEL \
 	org.ipfire.pakfire.version = "@PACKAGE_VERSION@"
 
 # Update all OS packages
-RUN yum update -y
+RUN yum update -y && yum clean all
 
 # Add EPEL
-RUN yum install -y epel-release
+RUN yum install -y epel-release && yum clean all
 
 # Install all dependencies
 RUN yum install -y \
@@ -27,7 +27,7 @@ RUN yum install -y \
 	libsolv-devel \
 	make \
 	python-devel \
-	xz-devel
+	xz-devel && yum clean all
 
 # Copy the pakfire source code
 ADD . /build/pakfire
@@ -35,13 +35,13 @@ ADD . /build/pakfire
 WORKDIR /build/pakfire
 
 # Compile pakfire
-RUN ./autogen.sh && ./configure --prefix=/usr --sysconfdir=/etc && make -j4 && make check && make install
+RUN ./autogen.sh && ./configure --prefix=/usr --sysconfdir=/etc && make -j4 && make check && make install && rm -rf /build/pakfire
 
 # Go back to /root
 WORKDIR /root
 
 # Cleanup
-RUN rm -rf /build/pakfire && yum remove -y *-devel && yum autoremove -y && yum clean all
+RUN yum remove -y *-devel && yum autoremove -y && yum clean all
 
 USER root
 
