@@ -35,6 +35,7 @@ pythondir  = $(pyexecdir)
 
 configsdir = $(sysconfdir)/pakfire
 configsdistrosdir = $(configsdir)/distros
+dockerdir = $(datadir)/docker
 macrosdir = $(prefix)/lib/pakfire/macros
 qualityagentdir = $(prefix)/lib/quality-agent
 scriptsdir = $(prefix)/lib/$(PACKAGE_NAME)
@@ -329,6 +330,14 @@ endif
 
 # ------------------------------------------------------------------------------
 
+EXTRA_DIST += \
+	Dockerfile.in
+
+docker_DATA = \
+	Dockerfile
+
+# ------------------------------------------------------------------------------
+
 dist_configs_DATA = \
 	contrib/config/builder.conf \
 	contrib/config/client.conf \
@@ -352,10 +361,7 @@ SED_PROCESS = \
 	$(SED) $(subst '|,-e 's|@,$(subst =,\@|,$(subst |',|g',$(substitutions)))) \
 		< $< > $@
 
-src/scripts/%: src/scripts/%.in Makefile
-	$(SED_PROCESS)
-
-src/systemd/%: src/systemd/%.in Makefile
+%: %.in Makefile
 	$(SED_PROCESS)
 
 # - testsuite ------------------------------------------------------------------

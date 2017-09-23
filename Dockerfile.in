@@ -1,0 +1,49 @@
+FROM centos:latest
+MAINTAINER jonatanschlag
+
+LABEL \
+	org.ipfire.pakfire.name = "@PACKAGE_NAME@" \
+	org.ipfire.pakfire.url = "https://pakfire.ipfire.org" \
+	org.ipfire.pakfire.vendor = "IPFire Project" \
+	org.ipfire.pakfire.version = "@PACKAGE_VERSION@"
+
+# Update all OS packages
+RUN yum update -y
+
+# Add EPEL
+RUN yum install -y epel-release
+
+# Install all dependencies
+RUN yum install -y \
+	autoconf \
+	file \
+	gcc \
+	git \
+	intltool \
+	libcap \
+	libcap-devel \
+	libtool \
+	libsolv \
+	libsolv-devel \
+	make \
+	python-devel \
+	xz-devel
+
+# Copy the pakfire source code
+ADD . /build/pakfire
+
+WORKDIR /build/pakfire
+
+# Compile pakfire
+RUN ./autogen.sh && ./configure --prefix=/usr --sysconfdir=/etc && make -j4 && make check && make install
+
+# Go back to /root
+WORKDIR /root
+
+# Cleanup
+RUN rm -rf /build/pakfire && yum remove -y *-devel && yum autoremove -y && yum clean all
+
+USER root
+
+# Define default command.
+CMD ["/bin/bash"]
