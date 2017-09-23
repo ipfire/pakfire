@@ -336,6 +336,10 @@ EXTRA_DIST += \
 docker_DATA = \
 	Dockerfile
 
+.PHONY: docker
+docker: Dockerfile
+	docker build -t "ipfire/pakfire:$(PACKAGE_VERSION)" .
+
 # ------------------------------------------------------------------------------
 
 dist_configs_DATA = \
