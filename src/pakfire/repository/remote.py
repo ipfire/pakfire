@@ -125,10 +125,16 @@ class RepositoryRemote(base.RepositoryFactory):
 		"""
 			Opens a cached mirror list
 		"""
-		with self.cache_open("mirrors", "r") as f:
-			mirrors = json.load(f)
+		try:
+			with self.cache_open("mirrors", "r") as f:
+				mirrors = json.load(f)
 
-			return mirrors.get("mirrors")
+				return mirrors.get("mirrors")
+
+		# If there is no mirror list in the cache,
+		# we won't be able to open it
+		except IOError:
+			pass
 
 		return []
 
