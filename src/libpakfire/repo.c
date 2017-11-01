@@ -325,6 +325,31 @@ int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags) {
 
 	int ret = repo_add_solv(repo->repo, f, flags);
 
+	switch (ret) {
+		// Everything OK
+		case 0:
+			break;
+
+		// Not SOLV format
+		case 1:
+			return PAKFIRE_E_SOLV_NOT_SOLV;
+
+		// Unsupported version
+		case 2:
+			return PAKFIRE_E_SOLV_UNSUPPORTED;
+
+		// End of file
+		case 3:
+			return PAKFIRE_E_EOF;
+
+		// Corrupted
+		case 4:
+		case 5:
+		case 6:
+		default:
+			return PAKFIRE_E_SOLV_CORRUPTED;
+	}
+
 	repo->pool->provides_ready = 0;
 
 	return ret;

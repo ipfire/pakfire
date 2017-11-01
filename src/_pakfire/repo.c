@@ -163,12 +163,25 @@ static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
 			Py_RETURN_NONE;
 			break;
 
+		case PAKFIRE_E_SOLV_NOT_SOLV:
+			PyErr_Format(PyExc_ValueError, "File not in SOLV format: %s", filename);
+			break;
+
+		case PAKFIRE_E_SOLV_UNSUPPORTED:
+			PyErr_Format(PyExc_ValueError, "File in an unsupported version"
+				" of the SOLV format: %s", filename);
+			break;
+
+		case PAKFIRE_E_SOLV_CORRUPTED:
+			PyErr_Format(PyExc_ValueError, "SOLV file is corrupted: %s", filename);
+			break;
+
 		case PAKFIRE_E_IO:
-			PyErr_Format(PyExc_IOError, "Could not read file %s", filename);
+			PyErr_Format(PyExc_IOError, "Could not read file %s: %s", filename, strerror(errno));
 			break;
 
 		default:
-			PyErr_Format(PyExc_RuntimeError, "pakfire_repo_read() failed: %d", ret);
+			PyErr_Format(PyExc_RuntimeError, "pakfire_repo_read() failed: %s", ret);
 			break;
 	}
 

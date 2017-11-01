@@ -30,6 +30,9 @@ enum _pakfire_errors {
 	PAKFIRE_E_SELECTOR,
 	PAKFIRE_E_PKG_INVALID,					// when a package is not in the pakfire format
 	PAKFIRE_E_EOF,
+	PAKFIRE_E_SOLV_NOT_SOLV,				// SOLV file in not in SOLV format
+	PAKFIRE_E_SOLV_UNSUPPORTED,				// SOLV file is in an unsupported format
+	PAKFIRE_E_SOLV_CORRUPTED,				// SOLV file is corrupted
 };
 
 extern __thread int pakfire_errno;
