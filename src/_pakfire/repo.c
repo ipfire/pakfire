@@ -263,9 +263,8 @@ static PyObject* Repo_cache_open(RepoObject* self, PyObject* args) {
 		Py_RETURN_NONE;
 
 	FILE* fp = pakfire_repocache_open(cache, filename, mode);
-
 	if (!fp) {
-		PyErr_Format(PyExc_IOError, "Could not open file %s", filename);
+		PyErr_Format(PyExc_IOError, "Could not open file %s: %s", filename, strerror(errno));
 		return NULL;
 	}
 
