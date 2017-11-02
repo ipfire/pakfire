@@ -24,7 +24,6 @@ import random
 import string
 
 from . import _pakfire
-from . import actions
 from . import distro
 from . import filelist
 from . import keyring
