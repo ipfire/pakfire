@@ -232,6 +232,15 @@ class PakfireContext(object):
 		"""
 		raise NotImplementedError
 
+	def erase(self, pkgs, **kwargs):
+		request = _pakfire.Request(self.pakfire.pool)
+
+		for pkg in pkgs:
+			relation = _pakfire.Relation(self.pakfire.pool, pkg)
+			request.erase(relation)
+
+		return request.solve(**kwargs)
+
 	def update(self, reqs=None, excludes=None, **kwargs):
 		request = _pakfire.Request(self.pakfire.pool)
 
@@ -294,32 +303,6 @@ class PakfireContext(object):
 		if not t.cli_yesno():
 			return
 
-		t.run()
-
-	def remove(self, pkgs, logger=None):
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# Create a new request.
-		request = self.pakfire.pool.create_request(remove=pkgs)
-
-		# Solve the request.
-		solver = self.pakfire.pool.solve(request, allow_uninstall=True)
-		assert solver.status is True
-
-		# Create the transaction.
-		t = transaction.Transaction.from_solver(self.pakfire, solver)
-		t.dump()
-
-		if not t:
-			log.info(_("Nothing to do"))
-			return
-
-		# Ask the user if okay.
-		if not t.cli_yesno():
-			return
-
-		# Process the transaction.
 		t.run()
 
 

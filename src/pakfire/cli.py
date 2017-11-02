@@ -346,7 +346,7 @@ class Cli(object):
 
 	def handle_remove(self, ns):
 		with self.pakfire(ns) as p:
-			transaction = p.remove(ns.package)
+			transaction = p.erase(ns.package)
 
 			self._execute_transaction(transaction)
 
