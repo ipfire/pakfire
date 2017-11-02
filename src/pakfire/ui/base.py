@@ -37,3 +37,6 @@ class UI(object):
 
 	def message(self, msg, level=None):
 		raise NotImplementedError
+
+	def confirm(self, message=None):
+		raise NotImplementedError

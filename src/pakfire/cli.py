@@ -248,6 +248,19 @@ class Cli(object):
 
 			return e.exit_code
 
+	def _execute_transaction(self, transaction):
+		# Dump transaction
+		t = transaction.dump()
+		for line in t.splitlines():
+			self.ui.message(line)
+
+		# Ask the user to confirm to go ahead
+		if not self.ui.confirm():
+			self.ui.message(_("Aborted by user"))
+			return
+
+		# XXX run the transaction
+
 	def handle_info(self, ns):
 		with self.pakfire(ns) as p:
 			for pkg in p.info(ns.package):
@@ -290,15 +303,23 @@ class Cli(object):
 
 	def handle_install(self, ns):
 		with self.pakfire(ns) as p:
-			p.install(ns.package, without_recommends=ns.without_recommends)
+			transaction = p.install(ns.package, without_recommends=ns.without_recommends)
+
+			# Execute the transaction
+			self._execute_transaction(transaction)
 
 	def handle_reinstall(self, ns):
 		with self.pakfire(ns) as p:
-			p.reinstall(ns.package)
+			transaction = p.reinstall(ns.package)
+
+			# Execute the transaction
+			self._execute_transaction(transaction)
 
 	def handle_remove(self, ns):
 		with self.pakfire(ns) as p:
-			p.remove(ns.package)
+			transaction = p.remove(ns.package)
+
+			self._execute_transaction(transaction)
 
 	def handle_provides(self, ns, long=False):
 		with self.pakfire(ns) as p:

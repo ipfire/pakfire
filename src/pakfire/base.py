@@ -249,191 +249,22 @@ class PakfireContext(object):
 
 	# Transactions
 
-	def install(self, requires, interactive=True, logger=None, signatures_mode=None, **kwargs):
-		if not logger:
-			logger = logging.getLogger("pakfire")
+	def install(self, requires, **kwargs):
+		request = _pakfire.Request(self.pakfire.pool)
 
-		# Pointer to temporary repository.
-		repo = None
-
-		# Sort out what we got...
-		download_packages = []
-		local_packages = []
-		relations = []
+		# XXX handle files and URLs
 
 		for req in requires:
-			if isinstance(req, packages.Package):
-				relations.append(req)
-				continue
+			relation = _pakfire.Relation(self.pakfire.pool, req)
+			request.install(relation)
 
-			# This looks like a file.
-			elif req.endswith(".%s" % PACKAGE_EXTENSION) and os.path.exists(req) and os.path.isfile(req):
-				local_packages.append(req)
-				continue
-
-			# Remote files.
-			elif req.startswith("http://") or req.startswith("https://") or req.startswith("ftp://"):
-				download_packages.append(req)
-				continue
-
-			# We treat the rest as relations. The solver will return any errors.
-			relations.append(req)
-
-		# Redefine requires, which will be the list that will be passed to the
-		# solver.
-		requires = relations
-
-		try:
-			# If we have got files to install, we need to create a temporary repository
-			# called 'localinstall'.
-			# XXX FIX TMP PATH
-			if local_packages or download_packages:
-				repo = repository.RepositoryDir(self.pakfire, "localinstall", _("Local install repository"),
-					os.path.join(LOCAL_TMP_PATH, "repo_%s" % util.random_string()))
-
-				# Register the repository.
-				self.pakfire.repos.add_repo(repo)
-
-				# Download packages.
-				for download_package in download_packages:
-					repo.download_package(download_package)
-
-				# Add all packages to the repository index.
-				repo.add_packages(local_packages)
-
-				# Add all packages to the requires.
-				requires += repo
-
-			# Do the solving.
-			request = self.pakfire.pool.create_request(install=requires)
-			solver  = self.pakfire.pool.solve(request, logger=logger, interactive=interactive, **kwargs)
-
-			# Create the transaction.
-			t = transaction.Transaction.from_solver(self.pakfire, solver)
-			t.dump(logger=logger)
-
-			# Ask if the user acknowledges the transaction.
-			if interactive and not t.cli_yesno():
-				return
-
-			# Run the transaction.
-			t.run(logger=logger, signatures_mode=signatures_mode)
-
-		finally:
-			if repo:
-				# Remove the temporary repository we have created earlier.
-				repo.remove()
-				self.pakfire.repos.rem_repo(repo)
+		return request.solve(**kwargs)
 
 	def reinstall(self, pkgs, strict=False, logger=None):
 		"""
-			Reinstall one or more packages.
-
-			If strict is True, only a package with excatly the same UUID
-			will replace the currently installed one.
+			Reinstall one or more packages
 		"""
-		if logger is None:
-			logger = logging.getLogger("pakfire")
-
-		# XXX it is possible to install packages without fulfulling
-		# all dependencies.
-
-		reinstall_pkgs = []
-		for pattern in pkgs:
-			_pkgs = []
-			for pkg in self.pakfire.repos.whatprovides(pattern):
-				# Do not reinstall non-installed packages.
-				if not pkg.is_installed():
-					continue
-
-				_pkgs.append(pkg)
-
-			if not _pkgs:
-				logger.warning(_("Could not find any installed package providing \"%s\".") \
-					% pattern)
-			elif len(_pkgs) == 1:
-				reinstall_pkgs.append(_pkgs[0])
-				#t.add("reinstall", _pkgs[0])
-			else:
-				logger.warning(_("Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s") \
-					% { "pattern" : pattern, "pkgs" : ", ".join(p.friendly_name for p in sorted(_pkgs)) })
-
-		if not reinstall_pkgs:
-			logger.info(_("Nothing to do"))
-			return
-
-		# Packages we want to replace.
-		# Contains a tuple with the old and the new package.
-		pkgs = []
-
-		# Find the package that is installed in a remote repository to
-		# download it again and re-install it. We need that.
-		for pkg in reinstall_pkgs:
-			# Collect all candidates in here.
-			_pkgs = []
-
-			provides = "%s=%s" % (pkg.name, pkg.friendly_version)
-			for _pkg in self.pakfire.repos.whatprovides(provides):
-				if _pkg.is_installed():
-					continue
-
-				if strict:
-					if pkg.uuid == _pkg.uuid:
-						_pkgs.append(_pkg)
-				else:
-					_pkgs.append(_pkg)
-
-			if not _pkgs:
-				logger.warning(_("Could not find package %s in a remote repository.") % \
-					pkg.friendly_name)
-			else:
-				# Sort packages to reflect repository priorities, etc...
-				# and take the best (first) one.
-				_pkgs.sort()
-
-				# Re-install best package and cleanup the old one.
-				pkgs.append((pkg, _pkgs[0]))
-
-		# Eventually, create a request.
-		request = None
-
-		_pkgs = []
-		for old, new in pkgs:
-			if old.uuid == new.uuid:
-				_pkgs.append((old, new))
-			else:
-				if request is None:
-					# Create a new request.
-					request = self.pakfire.pool.create_request()
-
-				# Install the new package, the old will
-				# be cleaned up automatically.
-				request.install(new.solvable)
-
-		if request:
-			solver = self.pakfire.pool.solve(request)
-			t = transaction.Transaction.from_solver(self.pakfire, solver)
-		else:
-			# Create new transaction.
-			t = transaction.Transaction(self.pakfire)
-
-		for old, new in _pkgs:
-			# Install the new package and remove the old one.
-			t.add(actions.ActionReinstall.type, new)
-			t.add(actions.ActionCleanup.type, old)
-
-		t.sort()
-
-		if not t:
-			logger.info(_("Nothing to do"))
-			return
-
-		t.dump(logger=logger)
-
-		if not t.cli_yesno():
-			return
-
-		t.run(logger=logger)
+		raise NotImplementedError
 
 	def update(self, pkgs=None, check=False, excludes=None, interactive=True, logger=None, sync=False, **kwargs):
 		"""

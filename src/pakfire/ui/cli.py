@@ -24,6 +24,8 @@ import sys
 from . import base
 from . import helpers
 
+from ..i18n import _
+
 class CliUI(base.UI):
 	def write(self, data):
 		print(data)
@@ -39,3 +41,17 @@ class CliUI(base.UI):
 			Simply print out the given message.
 		"""
 		self.write(msg)
+
+	def confirm(self, message=None):
+		# Cannot perform this when we are not interactive
+		if not self.is_interactive():
+			return False
+
+		if not message:
+			message = _("Is this okay? [y/N]")
+
+		# Show the message and let the user decide
+		i = input(message)
+
+		# Return true if the user entered y or Y
+		return i in ("y", "Y")
