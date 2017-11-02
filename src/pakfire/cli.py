@@ -143,13 +143,6 @@ class Cli(object):
 			help=_("List all currently enabled repositories"))
 		repolist.set_defaults(func=self.handle_repolist)
 
-		# resolvdep
-		resolvdep = subparsers.add_parser("resolvdep",
-			help=_("Check the dependencies for a particular package"))
-		resolvdep.add_argument("package", nargs=1,
-			help=_("Give name of at least one package to check"))
-		resolvdep.set_defaults(func=self.handle_resolvdep)
-
 		# search
 		search = subparsers.add_parser("search", help=_("Search for a given pattern"))
 		search.add_argument("pattern", help=_("A pattern to search for"))
@@ -379,14 +372,6 @@ class Cli(object):
 
 			self.ui.message(_("Everything okay"))
 
-	def handle_resolvdep(self, ns):
-		with self.pakfire(ns) as p:
-			solver = p.resolvdep(ns.package[0])
-			assert solver.status
-
-			t = transaction.Transaction.from_solver(p, solver)
-			t.dump()
-
 	def handle_extract(self, ns):
 		with self.pakfire(ns) as p:
 			# Open all packages.
@@ -501,13 +486,6 @@ class CliBuilder(Cli):
 		repolist = subparsers.add_parser("repolist",
 			help=_("List all currently enabled repositories"))
 		repolist.set_defaults(func=self.handle_repolist)
-
-		# resolvdep
-		resolvdep = subparsers.add_parser("resolvdep",
-			help=_("Check the dependencies for a particular package"))
-		resolvdep.add_argument("package", nargs=1,
-			help=_("Give name of at least one package to check"))
-		resolvdep.set_defaults(func=self.handle_resolvdep)
 
 		# search
 		search = subparsers.add_parser("search", help=_("Search for a given pattern"))

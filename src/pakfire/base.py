@@ -123,9 +123,6 @@ class Pakfire(object):
 		if not ret:
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
-	def resolvdep(self, pkg):
-		return self.pool.resolvdep(self, pkg)
-
 	def clean(self):
 		log.debug("Cleaning up everything...")
 
