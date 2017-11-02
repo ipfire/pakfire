@@ -23,6 +23,7 @@ import base64
 import hashlib
 import json
 import logging
+import os.path
 import shutil
 import ssl
 import tempfile
@@ -33,12 +34,15 @@ import urllib.request
 from .ui import progressbar
 
 from .config import config
-from .constants import *
 from .i18n import _
 from . import errors
 
+from .__version__ import PAKFIRE_VERSION
+
 log = logging.getLogger("pakfire.http")
 log.propagate = 1
+
+BUFFER_SIZE = 128 * 1024 # 128kb
 
 # Maximum size of temporary files that is being kept in memory
 TMP_MAX_SIZE = 10485760 # 10M
