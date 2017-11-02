@@ -286,8 +286,11 @@ class Cli(object):
 	def handle_search(self, ns):
 		with self.pakfire(ns) as p:
 			for pkg in p.search(ns.pattern):
-				s = pkg.dump(short=True)
-				print(s)
+				# Skip any -debuginfo packages
+				if pkg.name.endswith("-debuginfo"):
+					continue
+
+				print("%-24s: %s" % (pkg.name, pkg.summary))
 
 	def handle_update(self, ns, check=False):
 		with self.pakfire(ns) as p:
