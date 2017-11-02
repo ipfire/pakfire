@@ -30,7 +30,6 @@ from . import filelist
 from . import keyring
 from . import packages
 from . import repository
-from . import satsolver
 from . import transaction
 from . import util
 
