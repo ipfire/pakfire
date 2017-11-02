@@ -300,6 +300,9 @@ libpakfire_la_LIBADD = \
 	$(LZMA_LIBS) \
 	$(SOLV_LIBS)
 
+libpakfire_la_DEPENDENCIES = \
+	src/libpakfire/libpakfire.sym
+
 EXTRA_DIST += \
 	src/libpakfire/libpakfire.sym
 
