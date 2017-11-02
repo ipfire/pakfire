@@ -111,6 +111,10 @@ static PyObject* Transaction_dump(TransactionObject* self) {
 	return PyUnicode_FromString(string);
 }
 
+static Py_ssize_t Transaction_len(TransactionObject* self) {
+	return pakfire_transaction_count(self->transaction);
+}
+
 static struct PyMethodDef Transaction_methods[] = {
 	{
 		"dump",
@@ -132,6 +136,10 @@ static struct PyGetSetDef Transaction_getsetters[] = {
 	{ NULL },
 };
 
+static PySequenceMethods Transaction_sequence = {
+	sq_length:          (lenfunc)Transaction_len,
+};
+
 PyTypeObject TransactionType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name:            "_pakfire.Transaction",
@@ -144,6 +152,7 @@ PyTypeObject TransactionType = {
 	tp_methods:         Transaction_methods,
 	tp_getset:          Transaction_getsetters,
 	tp_iter:            (getiterfunc)Transaction_iter,
+	tp_as_sequence:     &Transaction_sequence,
 };
 
 static PyObject* TransactionIterator_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {

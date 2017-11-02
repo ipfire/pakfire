@@ -263,6 +263,7 @@ global:
 	pakfire_step_needs_download;
 
 	# transaction
+	pakfire_transaction_count;
 	pakfire_transaction_create;
 	pakfire_transaction_dump;
 	pakfire_transaction_free;

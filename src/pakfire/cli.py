@@ -262,6 +262,12 @@ class Cli(object):
 			self.ui.message(line)
 
 	def _execute_transaction(self, transaction):
+		# Don't do anything if the transaction is empty
+		if len(transaction) == 0:
+			self.ui.message(_("Nothing to do"))
+			return
+
+		# Dump the transaction
 		self._dump_transaction(transaction)
 
 		# Ask the user to confirm to go ahead
