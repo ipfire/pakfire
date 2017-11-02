@@ -14,7 +14,6 @@ src/pakfire/client.py
 src/pakfire/compress.py
 src/pakfire/config.py
 src/pakfire/daemon.py
-src/pakfire/downloader.py
 src/pakfire/errors.py
 src/pakfire/http.py
 src/pakfire/i18n.py

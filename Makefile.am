@@ -113,7 +113,6 @@ pakfire_PYTHON = \
 	src/pakfire/constants.py \
 	src/pakfire/daemon.py \
 	src/pakfire/distro.py \
-	src/pakfire/downloader.py \
 	src/pakfire/errors.py \
 	src/pakfire/filelist.py \
 	src/pakfire/http.py \
