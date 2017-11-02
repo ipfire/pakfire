@@ -72,10 +72,12 @@ class Cli(object):
 		check_update.set_defaults(func=self.handle_check_update)
 		check_update.add_argument("--exclude", "-x", nargs="+",
 			help=_("Exclude package from update"))
+		check_update.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages"))
+		check_update.add_argument("--allow-downgrade", action="store_true",
+			help=_("Allow downgrading of packages"))
 		check_update.add_argument("--allow-vendorchange", action="store_true",
 			help=_("Allow changing the vendor of packages"))
-		check_update.add_argument("--disallow-archchange", action="store_true",
-			help=_("Disallow changing the architecture of packages"))
 
 		# clean
 		clean = subparsers.add_parser("clean", help=_("Cleanup all temporary files"))
@@ -164,11 +166,13 @@ class Cli(object):
 		update.add_argument("package", nargs="*",
 			help=_("Give a name of a package to update or leave emtpy for all"))
 		update.add_argument("--exclude", "-x", nargs="+",
-			help=_("Exclude package from update."))
+			help=_("Exclude package from update"))
+		update.add_argument("--allow-archchange", action="store_true",
+			help=_("Allow changing the architecture of packages"))
+		update.add_argument("--allow-downgrade", action="store_true",
+			help=_("Allow downgrading of packages"))
 		update.add_argument("--allow-vendorchange", action="store_true",
-			help=_("Allow changing the vendor of packages."))
-		update.add_argument("--disallow-archchange", action="store_true",
-			help=_("Disallow changing the architecture of packages."))
+			help=_("Allow changing the vendor of packages"))
 		update.set_defaults(func=self.handle_update)
 
 		return parser.parse_args()
@@ -248,11 +252,17 @@ class Cli(object):
 
 			return e.exit_code
 
-	def _execute_transaction(self, transaction):
-		# Dump transaction
+	def _dump_transaction(self, transaction):
+		"""
+			Dumps the transaction
+		"""
 		t = transaction.dump()
+
 		for line in t.splitlines():
 			self.ui.message(line)
+
+	def _execute_transaction(self, transaction):
+		self._dump_transaction(transaction)
 
 		# Ask the user to confirm to go ahead
 		if not self.ui.confirm():
@@ -273,21 +283,31 @@ class Cli(object):
 				s = pkg.dump(short=True)
 				print(s)
 
-	def handle_update(self, **args):
-		p = self.create_pakfire()
+	def handle_update(self, ns, check=False):
+		with self.pakfire(ns) as p:
+			transaction = p.update(
+				ns.package, excludes=ns.exclude,
+				allow_archchange=ns.allow_archchange,
+				allow_vendorchange=ns.allow_vendorchange,
+			)
 
-		packages = getattr(self.args, "package", [])
+			# If we are only checking for updates,
+			# we dump the transaction and exit here.
+			if check:
+				self._dump_transaction(transaction)
+				return
 
-		args.update({
-			"allow_archchange"   : not self.args.disallow_archchange,
-			"allow_vendorchange" : self.args.allow_vendorchange,
-			"excludes"           : self.args.exclude,
-		})
-
-		p.update(packages, **args)
+			# Otherwise we execute the transaction
+			self._execute_transaction(transaction)
 
 	def handle_sync(self, ns):
-		self.handle_update(ns, sync=True)
+		with self.pakfire(ns) as p:
+			transaction = p.update(
+				allow_archchange=True,
+				allow_vendorchange=True,
+			)
+
+			self._execute_transaction(transaction)
 
 	def handle_check_update(self, ns):
 		self.handle_update(ns, check=True)

@@ -84,15 +84,20 @@ static void init_solver(PakfireRequest request, int flags) {
 
 	request->solver = solver;
 
+	if (flags & PAKFIRE_SOLVER_ALLOW_ARCHCHANGE)
+		solver_set_flag(solver, SOLVER_FLAG_ALLOW_ARCHCHANGE, 1);
+
+	if (flags & PAKFIRE_SOLVER_ALLOW_DOWNGRADE)
+		solver_set_flag(solver, SOLVER_FLAG_ALLOW_DOWNGRADE, 1);
+
 	if (flags & PAKFIRE_SOLVER_ALLOW_UNINSTALL)
 		solver_set_flag(solver, SOLVER_FLAG_ALLOW_UNINSTALL, 1);
 
-	/* ignore recommends */
+	if (flags & PAKFIRE_SOLVER_ALLOW_VENDORCHANGE)
+		solver_set_flag(solver, SOLVER_FLAG_ALLOW_VENDORCHANGE, 1);
+
 	if (flags & PAKFIRE_SOLVER_WITHOUT_RECOMMENDS)
 		solver_set_flag(solver, SOLVER_FLAG_IGNORE_RECOMMENDED, 1);
-
-	/* no vendor locking */
-	solver_set_flag(solver, SOLVER_FLAG_ALLOW_VENDORCHANGE, 1);
 
 	/* no arch change for forcebest */
 	solver_set_flag(solver, SOLVER_FLAG_BEST_OBEY_POLICY, 1);

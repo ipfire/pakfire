@@ -209,13 +209,33 @@ static PyObject* Request_get_problems(RequestObject* self) {
 }
 
 static PyObject* Request_solve(RequestObject* self, PyObject* args, PyObject *kwds) {
-	char* kwlist[] = {"without_recommends", NULL};
+	char* kwlist[] = {"allow_archchange", "allow_downgrade", "allow_uninstall",
+		"allow_vendorchange", "without_recommends", NULL};
 
+	int allow_archchange = 0;
+	int allow_downgrade = 0;
+	int allow_uninstall = 0;
+	int allow_vendorchange = 0;
 	int without_recommends = 0;
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|p", kwlist, &without_recommends))
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ppppp", kwlist,
+			&allow_archchange, &allow_downgrade, &allow_uninstall,
+			&allow_vendorchange, &without_recommends))
 		return NULL;
 
 	int flags = 0;
+	if (allow_archchange)
+		flags |= PAKFIRE_SOLVER_ALLOW_ARCHCHANGE;
+
+	if (allow_downgrade)
+		flags |= PAKFIRE_SOLVER_ALLOW_DOWNGRADE;
+
+	if (allow_uninstall)
+		flags |= PAKFIRE_SOLVER_ALLOW_UNINSTALL;
+
+	if (allow_vendorchange)
+		flags |= PAKFIRE_SOLVER_ALLOW_VENDORCHANGE;
+
 	if (without_recommends)
 		flags |= PAKFIRE_SOLVER_WITHOUT_RECOMMENDS;
 
