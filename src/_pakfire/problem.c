@@ -72,6 +72,12 @@ static int Problem_init(ProblemObject* self, PyObject* args, PyObject* kwds) {
 	return 0;
 }
 
+static PyObject* Problem_repr(ProblemObject* self) {
+	const char* string = pakfire_problem_to_string(self->problem);
+
+	return PyUnicode_FromFormat("<_pakfire.Problem %s>", string);
+}
+
 static PyObject* Problem_string(ProblemObject* self) {
 	const char* string = pakfire_problem_to_string(self->problem);
 
@@ -119,5 +125,6 @@ PyTypeObject ProblemType = {
 	tp_doc:             "Problem object",
 	tp_methods:         Problem_methods,
 	tp_getset:          Problem_getsetters,
+	tp_repr:            (reprfunc)Problem_repr,
 	tp_str:             (reprfunc)Problem_string,
 };
