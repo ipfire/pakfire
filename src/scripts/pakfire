@@ -51,7 +51,6 @@ basename2cls = {
 	"pakfire-client"  : pakfire.cli.CliClient,
 	"pakfire-daemon"  : pakfire.cli.CliDaemon,
 	"pakfire-key"     : pakfire.cli.CliKey,
-	"pakfire-server"  : pakfire.cli.CliServer,
 	"builder"         : pakfire.cli.CliBuilderIntern,
 }
 

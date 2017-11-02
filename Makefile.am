@@ -122,7 +122,6 @@ pakfire_PYTHON = \
 	src/pakfire/keyring.py \
 	src/pakfire/logger.py \
 	src/pakfire/progressbar.py \
-	src/pakfire/server.py \
 	src/pakfire/shell.py \
 	src/pakfire/system.py \
 	src/pakfire/transaction.py \

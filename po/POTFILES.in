@@ -31,7 +31,6 @@ src/pakfire/repository/database.py
 src/pakfire/repository/local.py
 src/pakfire/repository/remote.py
 src/pakfire/repository/system.py
-src/pakfire/server.py
 src/pakfire/shell.py
 src/pakfire/system.py
 src/pakfire/transaction.py
