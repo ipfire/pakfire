@@ -79,7 +79,8 @@ class Client(object):
 			self.disable_certificate_verification()
 
 		# Add the baseurl as mirror with worst priority
-		self.add_mirror(self.baseurl, priority=999)
+		if self.baseurl:
+			self.add_mirror(self.baseurl, priority=999)
 
 	def set_proxy(self, protocol, host):
 		"""
