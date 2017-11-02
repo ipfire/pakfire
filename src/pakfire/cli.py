@@ -374,7 +374,10 @@ class Cli(object):
 
 	def handle_check(self, ns):
 		with self.pakfire(ns) as p:
-			p.check()
+			# This will throw an exception when there are errors
+			transaction = p.check()
+
+			self.ui.message(_("Everything okay"))
 
 	def handle_resolvdep(self, ns):
 		with self.pakfire(ns) as p:

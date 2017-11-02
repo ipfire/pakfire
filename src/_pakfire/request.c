@@ -191,6 +191,12 @@ static PyObject* Request_distupgrade(RequestObject* self) {
 	return Request_operation_return(ret);
 }
 
+static PyObject* Request_verify(RequestObject* self) {
+	int ret = pakfire_request_verify(self->request);
+
+	return Request_operation_return(ret);
+}
+
 static PyObject* Request_get_problems(RequestObject* self) {
 	PyObject* list = PyList_New(0);
 
@@ -293,6 +299,12 @@ static struct PyMethodDef Request_methods[] = {
 	{
 		"distupgrade",
 		(PyCFunction)Request_distupgrade,
+		METH_NOARGS,
+		NULL
+	},
+	{
+		"verify",
+		(PyCFunction)Request_verify,
 		METH_NOARGS,
 		NULL
 	},
