@@ -208,8 +208,18 @@ static PyObject* Request_get_problems(RequestObject* self) {
 	return list;
 }
 
-static PyObject* Request_solve(RequestObject* self) {
-	int ret = pakfire_request_solve(self->request, 0);
+static PyObject* Request_solve(RequestObject* self, PyObject* args, PyObject *kwds) {
+	char* kwlist[] = {"without_recommends", NULL};
+
+	int without_recommends = 0;
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|p", kwlist, &without_recommends))
+		return NULL;
+
+	int flags = 0;
+	if (without_recommends)
+		flags |= PAKFIRE_SOLVER_WITHOUT_RECOMMENDS;
+
+	int ret = pakfire_request_solve(self->request, flags);
 
 	// Raise a DependencyError with all problems
 	// if the request could not be solved
@@ -269,7 +279,7 @@ static struct PyMethodDef Request_methods[] = {
 	{
 		"solve",
 		(PyCFunction)Request_solve,
-		METH_NOARGS,
+		METH_VARARGS|METH_KEYWORDS,
 		NULL
 	},
 	{ NULL }

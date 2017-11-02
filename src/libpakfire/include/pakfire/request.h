@@ -33,8 +33,9 @@ enum _pakfire_request_op_flags {
 };
 
 enum _pakfire_solver_flags {
-	PAKFIRE_SOLVER_ALLOW_UNINSTALL = 1 << 0,
-	PAKFIRE_SOLVER_FORCE_BEST      = 1 << 1,
+	PAKFIRE_SOLVER_ALLOW_UNINSTALL    = 1 << 0,
+	PAKFIRE_SOLVER_FORCE_BEST         = 1 << 1,
+	PAKFIRE_SOLVER_WITHOUT_RECOMMENDS = 1 << 2,
 };
 
 PakfireRequest pakfire_request_create(PakfirePool pool);

@@ -290,7 +290,7 @@ class Cli(object):
 
 	def handle_install(self, ns):
 		with self.pakfire(ns) as p:
-			p.install(ns.package, ignore_recommended=ns.without_recommends)
+			p.install(ns.package, without_recommends=ns.without_recommends)
 
 	def handle_reinstall(self, ns):
 		with self.pakfire(ns) as p:

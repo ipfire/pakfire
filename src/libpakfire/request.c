@@ -87,6 +87,10 @@ static void init_solver(PakfireRequest request, int flags) {
 	if (flags & PAKFIRE_SOLVER_ALLOW_UNINSTALL)
 		solver_set_flag(solver, SOLVER_FLAG_ALLOW_UNINSTALL, 1);
 
+	/* ignore recommends */
+	if (flags & PAKFIRE_SOLVER_WITHOUT_RECOMMENDS)
+		solver_set_flag(solver, SOLVER_FLAG_IGNORE_RECOMMENDED, 1);
+
 	/* no vendor locking */
 	solver_set_flag(solver, SOLVER_FLAG_ALLOW_VENDORCHANGE, 1);
 
