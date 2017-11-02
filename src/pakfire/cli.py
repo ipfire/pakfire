@@ -219,6 +219,26 @@ class Cli(object):
 
 			return 128 + signal.SIGINT
 
+		except DependencyError as e:
+			self.ui.message(_("One or more dependencies could not been resolved"))
+			self.ui.message("") # empty line
+
+			# This exception provides a list of all problems
+			problems, = e.args
+
+			# List all problems
+			for problem in problems:
+				self.ui.message("  * %s" % problem)
+
+				self.ui.message("    %s" % _("Possible solutions are:"))
+				for solution in problem.solutions:
+					self.ui.message("    * %s" % solution)
+
+				# Add another empty line
+				self.ui.message("")
+
+			return 4
+
 		# Catch all errors and show a user-friendly error message.
 		except Error as e:
 			self.ui.message(_("An error has occured when running Pakfire"), level=logging.CRITICAL)
