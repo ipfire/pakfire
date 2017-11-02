@@ -1,4 +1,7 @@
 src/libpakfire/package.c
+src/libpakfire/problem.c
+src/libpakfire/solution.c
+src/libpakfire/transaction.c
 
 src/_pakfire/problem.c
 src/_pakfire/solution.c
@@ -34,3 +37,5 @@ src/pakfire/system.py
 src/pakfire/transaction.py
 src/pakfire/ui/progressbar.py
 src/pakfire/util.py
+
+src/pakfire/ui/cli.py
