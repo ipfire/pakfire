@@ -28,6 +28,7 @@
 #include "archive.h"
 #include "capabilities.h"
 #include "constants.h"
+#include "errors.h"
 #include "package.h"
 #include "pool.h"
 #include "problem.h"
@@ -116,6 +117,10 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyObject* module = PyModule_Create(&moduledef);
 	if (!module)
 		return NULL;
+
+	PyExc_DependencyError = PyErr_NewException("_pakfire.DependencyError", NULL, NULL);
+	Py_INCREF(PyExc_DependencyError);
+	PyModule_AddObject(module, "DependencyError", PyExc_DependencyError);
 
 	// Archive
 	if (PyType_Ready(&ArchiveType) < 0)

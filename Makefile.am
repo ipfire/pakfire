@@ -183,6 +183,7 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/capabilities.c \
 	src/_pakfire/capabilities.h \
 	src/_pakfire/constants.h \
+	src/_pakfire/errors.h \
 	src/_pakfire/package.c \
 	src/_pakfire/package.h \
 	src/_pakfire/pool.c \

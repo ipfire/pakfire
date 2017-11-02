@@ -24,6 +24,7 @@
 #include <pakfire/errno.h>
 #include <pakfire/request.h>
 
+#include "errors.h"
 #include "package.h"
 #include "problem.h"
 #include "relation.h"
@@ -190,26 +191,6 @@ static PyObject* Request_distupgrade(RequestObject* self) {
 	return Request_operation_return(ret);
 }
 
-static PyObject* Request_solve(RequestObject* self) {
-	int ret = pakfire_request_solve(self->request, 0);
-
-	if (ret)
-		Py_RETURN_NONE;
-
-	// Allocate the transaction and return it
-	PakfireTransaction transaction = pakfire_request_get_transaction(self->request);
-	assert(transaction);
-
-	return new_transaction(self, transaction);
-}
-
-static PyObject* Request_get_pool(RequestObject* self) {
-	PoolObject* pool = self->pool;
-	Py_INCREF(pool);
-
-	return (PyObject *)pool;
-}
-
 static PyObject* Request_get_problems(RequestObject* self) {
 	PyObject* list = PyList_New(0);
 
@@ -225,6 +206,33 @@ static PyObject* Request_get_problems(RequestObject* self) {
 	}
 
 	return list;
+}
+
+static PyObject* Request_solve(RequestObject* self) {
+	int ret = pakfire_request_solve(self->request, 0);
+
+	// Raise a DependencyError with all problems
+	// if the request could not be solved
+	if (ret) {
+		PyObject* problems = Request_get_problems(self);
+		PyErr_SetObject(PyExc_DependencyError, problems);
+
+		Py_DECREF(problems);
+		return NULL;
+	}
+
+	// Allocate the transaction and return it
+	PakfireTransaction transaction = pakfire_request_get_transaction(self->request);
+	assert(transaction);
+
+	return new_transaction(self, transaction);
+}
+
+static PyObject* Request_get_pool(RequestObject* self) {
+	PoolObject* pool = self->pool;
+	Py_INCREF(pool);
+
+	return (PyObject *)pool;
 }
 
 static struct PyMethodDef Request_methods[] = {
