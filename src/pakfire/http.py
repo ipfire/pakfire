@@ -28,6 +28,7 @@ import shutil
 import ssl
 import tempfile
 import time
+import types
 import urllib.parse
 import urllib.request
 
@@ -169,7 +170,7 @@ class Client(object):
 			url = urllib.parse.urljoin(baseurl or self.baseurl, url)
 
 		# Encode data
-		if data:
+		if data and not isinstance(data, types.GeneratorType):
 			data = urllib.parse.urlencode(data)
 
 			# Add data arguments to the URL when using GET
@@ -198,7 +199,7 @@ class Client(object):
 
 		# When we send data in a post request, we must set the
 		# Content-Length header
-		if data and method == "POST":
+		if data and method == "POST" and not req.has_header("Content-Length"):
 			req.add_header("Content-Length", len(data))
 
 		# Check if method is correct
@@ -399,6 +400,39 @@ class Client(object):
 			return int(s)
 		except TypeError:
 			pass
+
+	def upload(self, url, filename, message=None, method="PUT", **kwargs):
+		if message is None:
+			message = os.path.basename(filename)
+
+		# Get the size of the file
+		filesize = os.path.getsize(filename)
+
+		with self._make_progressbar(message) as p:
+			p.value_max = filesize
+
+			with open(filename, "rb") as f:
+				# This streams the data in small chunks and
+				# updates the progress bar accordingly
+				def streamer():
+					with open(filename, "rb") as f:
+						while True:
+							buf = f.read(BUFFER_SIZE)
+							if not buf:
+								break
+
+							# Update the progress bar
+							l = len(buf)
+							p.increment(l)
+
+							yield buf
+
+				# Prepare HTTP request
+				r = self._make_request(url, method=method, data=streamer(), **kwargs)
+
+				# Send the request and return the response
+				with self._send_request(r) as res:
+					return res.read()
 
 	@staticmethod
 	def _make_auth_header(auth):
