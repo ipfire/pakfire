@@ -50,96 +50,71 @@ PakfirePackage pakfire_step_get_package(PakfireStep step) {
 	return pakfire_package_create(step->pool, step->id);
 }
 
-int pakfire_step_get_type(PakfireStep step) {
+pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 	Transaction* trans = step->transaction->transaction;
 
-	return transaction_type(trans, step->id,
+	int type = transaction_type(trans, step->id,
 		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
+
+	// Translate solver types into our own types
+	switch (type) {
+		case SOLVER_TRANSACTION_INSTALL:
+		case SOLVER_TRANSACTION_MULTIINSTALL:
+		case SOLVER_TRANSACTION_REINSTALL:
+		case SOLVER_TRANSACTION_MULTIREINSTALL:
+			return PAKFIRE_STEP_INSTALL;
+
+		case SOLVER_TRANSACTION_ERASE:
+			return PAKFIRE_STEP_ERASE;
+
+		case SOLVER_TRANSACTION_DOWNGRADE:
+			return PAKFIRE_STEP_DOWNGRADE;
+
+		case SOLVER_TRANSACTION_UPGRADE:
+			return PAKFIRE_STEP_UPGRADE;
+
+		// Anything we don't care about
+		case SOLVER_TRANSACTION_IGNORE:
+		case SOLVER_TRANSACTION_REINSTALLED:
+		case SOLVER_TRANSACTION_DOWNGRADED:
+		default:
+				return PAKFIRE_STEP_IGNORE;
+	}
 }
 
 const char* pakfire_step_get_type_string(PakfireStep step) {
-	const char *type;
+	pakfire_step_type type = pakfire_step_get_type(step);
 
-	switch(pakfire_step_get_type(step)) {
-		case SOLVER_TRANSACTION_IGNORE:
-			type = "ignore";
-			break;
+	switch(type) {
+		case PAKFIRE_STEP_INSTALL:
+			return "install";
 
-		case SOLVER_TRANSACTION_ERASE:
-			type = "erase";
-			break;
+		case PAKFIRE_STEP_ERASE:
+			return "erase";
 
-		case SOLVER_TRANSACTION_REINSTALLED:
-			type = "reinstalled";
-			break;
+		case PAKFIRE_STEP_DOWNGRADE:
+			return "downgrade";
 
-		case SOLVER_TRANSACTION_DOWNGRADED:
-			type = "downgraded";
-			break;
+		case PAKFIRE_STEP_UPGRADE:
+			return "upgrade";
 
-		case SOLVER_TRANSACTION_CHANGED:
-			type = "changed";
-			break;
-
-		case SOLVER_TRANSACTION_UPGRADED:
-			type = "upgraded";
-			break;
-
-		case SOLVER_TRANSACTION_OBSOLETED:
-			type = "obsoleted";
-			break;
-
-		case SOLVER_TRANSACTION_INSTALL:
-			type = "install";
-			break;
-
-		case SOLVER_TRANSACTION_REINSTALL:
-			type = "reinstall";
-			break;
-
-		case SOLVER_TRANSACTION_DOWNGRADE:
-			type = "downgrade";
-			break;
-
-		case SOLVER_TRANSACTION_CHANGE:
-			type = "change";
-			break;
-
-		case SOLVER_TRANSACTION_UPGRADE:
-			type = "upgrade";
-			break;
-
-		case SOLVER_TRANSACTION_OBSOLETES:
-			type = "obsoletes";
-			break;
-
-		case SOLVER_TRANSACTION_MULTIINSTALL:
-			type = "multiinstall";
-			break;
-
-		case SOLVER_TRANSACTION_MULTIREINSTALL:
-			type = "multireinstall";
-			break;
-
+		case PAKFIRE_STEP_IGNORE:
 		default:
-			type = NULL;
-			break;
+			return NULL;
 	}
-
-	return type;
 }
 
 static int pakfire_step_get_downloadtype(PakfireStep step) {
 	int type = pakfire_step_get_type(step);
+
 	switch (type) {
-		case SOLVER_TRANSACTION_DOWNGRADE:
-		//case SOLVER_TRANSACTION_IGNORE:
-		case SOLVER_TRANSACTION_INSTALL:
-		case SOLVER_TRANSACTION_MULTIINSTALL:
-		case SOLVER_TRANSACTION_MULTIREINSTALL:
-		case SOLVER_TRANSACTION_REINSTALL:
-		case SOLVER_TRANSACTION_UPGRADE:
+		case PAKFIRE_STEP_INSTALL:
+		case PAKFIRE_STEP_DOWNGRADE:
+		case PAKFIRE_STEP_UPGRADE:
 			return 1;
+
+		default:
+			break;
 	}
 
 	return 0;

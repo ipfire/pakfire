@@ -25,11 +25,19 @@
 
 #include <pakfire/types.h>
 
+typedef enum _pakfire_step_types {
+	PAKFIRE_STEP_IGNORE = 0,
+	PAKFIRE_STEP_INSTALL,
+	PAKFIRE_STEP_ERASE,
+	PAKFIRE_STEP_UPGRADE,
+	PAKFIRE_STEP_DOWNGRADE,
+} pakfire_step_type;
+
 PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id);
 void pakfire_step_free(PakfireStep step);
 
 PakfirePackage pakfire_step_get_package(PakfireStep step);
-int pakfire_step_get_type(PakfireStep step);
+pakfire_step_type pakfire_step_get_type(PakfireStep step);
 const char* pakfire_step_get_type_string(PakfireStep step);
 
 unsigned long long pakfire_step_get_downloadsize(PakfireStep step);
