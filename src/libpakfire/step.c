@@ -151,11 +151,15 @@ long pakfire_step_get_installsizechange(PakfireStep step) {
 	PakfirePackage pkg = pakfire_step_get_package(step);
 	int installsize = pakfire_package_get_installsize(pkg);
 
-	int type = pakfire_step_get_type(step);
+	pakfire_step_type type = pakfire_step_get_type(step);
 	switch (type) {
-		case SOLVER_TRANSACTION_IGNORE:
-		case SOLVER_TRANSACTION_ERASE:
+		case PAKFIRE_STEP_IGNORE:
+		case PAKFIRE_STEP_ERASE:
+		case PAKFIRE_STEP_OBSOLETE:
 			installsize *= -1;
+			break;
+
+		default:
 			break;
 	}
 
