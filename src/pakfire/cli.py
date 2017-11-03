@@ -642,6 +642,11 @@ class CliClient(Cli):
 			help=_("Check the connection to the hub"))
 		check_connection.set_defaults(func=self.handle_check_connection)
 
+		# upload
+		upload = subparsers.add_parser("upload", help=_("Upload a file to the build service"))
+		upload.add_argument("file", nargs=1, help=_("Filename"))
+		upload.set_defaults(func=self.handle_upload)
+
 		# watch-build
 		watch_build = subparsers.add_parser("watch-build", help=_("Watch the status of a build"))
 		watch_build.add_argument("id", nargs=1, help=_("Build ID"))
@@ -702,6 +707,10 @@ class CliClient(Cli):
 
 		if success:
 			print("%s: %s" % (_("Connection OK"), success))
+
+	def handle_upload(self, ns):
+		for path in ns.file:
+			self.client.upload_file(path)
 
 	def handle_watch_build(self, ns):
 		build = self.client.get_build(ns.id[0])

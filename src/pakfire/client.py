@@ -74,6 +74,11 @@ class Client(object):
 	def get_job(self, job_id):
 		return Job(self, job_id)
 
+	# Uploads
+
+	def upload_file(self, path):
+		return self.hub.upload_file(path)
+
 
 class _ClientObject(object):
 	def __init__(self, client, id):
