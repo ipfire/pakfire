@@ -267,7 +267,8 @@ class Cli(object):
 			self.ui.message(_("Aborted by user"))
 			return
 
-		# XXX run the transaction
+		# Run the transaction
+		transaction.run()
 
 	def handle_info(self, ns):
 		with self.pakfire(ns) as p:

@@ -181,3 +181,56 @@ finish:
 
 	return ret;
 }
+
+static int pakfire_step_verify(PakfireStep step) {
+	// The package must have been downloaded
+	if (pakfire_step_needs_download(step))
+		return 1;
+
+	// TODO verify package and signature
+
+	return 0;
+}
+
+static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script) {
+	return 0; // XXX
+}
+
+int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
+	pakfire_step_type type = pakfire_step_get_type(step);
+
+	// Get the package
+	PakfirePackage pkg = pakfire_step_get_package(step);
+
+	int r = 0;
+	switch (action) {
+		// Verify this step
+		case PAKFIRE_ACTION_VERIFY:
+			r = pakfire_step_verify(step);
+			goto END;
+
+		// Run the pre-transaction scripts
+		case PAKFIRE_ACTION_PRETRANS:
+			// XXX TODO
+			goto END;
+
+		// Run the post-transaction scripts
+		case PAKFIRE_ACTION_POSTTRANS:
+			// XXX TODO
+			goto END;
+
+		// Execute the action of this script
+		case PAKFIRE_ACTION_EXECUTE:
+			// XXX TODO
+			goto END;
+
+		// Do nothing
+		case PAKFIRE_ACTION_NOOP:
+			goto END;
+	}
+
+END:
+	pakfire_package_free(pkg);
+
+	return r;
+}

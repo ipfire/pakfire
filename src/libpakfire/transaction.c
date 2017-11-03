@@ -264,3 +264,50 @@ char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width) {
 
 	return string;
 }
+
+static int pakfire_transaction_run_steps(PakfireTransaction transaction, const pakfire_action_type action) {
+	size_t steps = pakfire_transaction_count(transaction);
+
+	// Walk through all steps
+	int r = 0;
+	for (unsigned int i = 0; i < steps; i++) {
+		PakfireStep step = pakfire_transaction_get_step(transaction, i);
+
+		// Verify the step
+		r = pakfire_step_run(step, action);
+
+		// Free memory
+		pakfire_step_free(step);
+
+		// End loop if action was unsuccessful
+		if (r)
+			break;
+	}
+
+	return r;
+}
+
+int pakfire_transaction_run(PakfireTransaction transaction) {
+	int r = 0;
+
+	// Verify steps
+	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_VERIFY);
+	if (r)
+		return r;
+
+	// Execute all pre transaction actions
+	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_PRETRANS);
+	if (r)
+		return r;
+
+	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_EXECUTE);
+	if (r)
+		return r;
+
+	// Execute all post transaction actions
+	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_POSTTRANS);
+	if (r)
+		return r;
+
+	return 0;
+}

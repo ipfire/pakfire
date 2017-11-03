@@ -37,7 +37,17 @@ PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transacti
 
 char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width);
 
+int pakfire_transaction_run(PakfireTransaction transaction);
+
 #ifdef PAKFIRE_PRIVATE
+
+typedef enum _pakfire_action_types {
+	PAKFIRE_ACTION_NOOP      = 0,
+	PAKFIRE_ACTION_VERIFY    = 1 << 0,
+	PAKFIRE_ACTION_EXECUTE   = 1 << 1,
+	PAKFIRE_ACTION_PRETRANS  = 1 << 2,
+	PAKFIRE_ACTION_POSTTRANS = 1 << 3,
+} pakfire_action_type;
 
 struct _PakfireTransaction {
 	PakfirePool pool;

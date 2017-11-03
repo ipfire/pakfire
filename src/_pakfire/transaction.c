@@ -111,6 +111,18 @@ static PyObject* Transaction_dump(TransactionObject* self) {
 	return PyUnicode_FromString(string);
 }
 
+static PyObject* Transaction_run(TransactionObject* self) {
+	int r = pakfire_transaction_run(self->transaction);
+
+	if (r) {
+		PyErr_SetString(PyExc_RuntimeError, "Could not run transaction");
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
 static Py_ssize_t Transaction_len(TransactionObject* self) {
 	return pakfire_transaction_count(self->transaction);
 }
@@ -121,6 +133,12 @@ static struct PyMethodDef Transaction_methods[] = {
 		(PyCFunction)Transaction_dump,
 		METH_NOARGS,
 		NULL
+	},
+	{
+		"run",
+		(PyCFunction)Transaction_run,
+		METH_NOARGS,
+		NULL,
 	},
 	{ NULL },
 };

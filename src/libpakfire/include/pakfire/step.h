@@ -23,6 +23,7 @@
 
 #include <solv/pooltypes.h>
 
+#include <pakfire/transaction.h>
 #include <pakfire/types.h>
 
 typedef enum _pakfire_step_types {
@@ -47,6 +48,21 @@ int pakfire_step_needs_download(PakfireStep step);
 
 #ifdef PAKFIRE_PRIVATE
 
+typedef enum _pakfire_script_types {
+	PAKFIRE_SCRIPT_PREIN,
+	PAKFIRE_SCRIPT_PREUN,
+	PAKFIRE_SCRIPT_PREUP,
+	PAKFIRE_SCRIPT_PRETRANSIN,
+	PAKFIRE_SCRIPT_PRETRANSUN,
+	PAKFIRE_SCRIPT_PRETRANSUP,
+	PAKFIRE_SCRIPT_POSTIN,
+	PAKFIRE_SCRIPT_POSTUN,
+	PAKFIRE_SCRIPT_POSTUP,
+	PAKFIRE_SCRIPT_POSTTRANSIN,
+	PAKFIRE_SCRIPT_POSTTRANSUN,
+	PAKFIRE_SCRIPT_POSTTRANSUP,
+} pakfire_script_type;
+
 struct _PakfireStep {
 	PakfirePool pool;
 	PakfireTransaction transaction;
@@ -56,6 +72,8 @@ struct _PakfireStep {
 static inline PakfirePool pakfire_step_pool(PakfireStep step) {
 	return step->pool;
 }
+
+int pakfire_step_run(PakfireStep step, pakfire_action_type action);
 
 #endif
 

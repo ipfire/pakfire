@@ -270,6 +270,7 @@ global:
 	pakfire_transaction_get_packages;
 	pakfire_transaction_get_step;
 	pakfire_transaction_installsizechange;
+	pakfire_transaction_run;
 
 	# util
 	pakfire_free;
