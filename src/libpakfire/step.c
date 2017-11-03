@@ -60,9 +60,11 @@ pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 	switch (type) {
 		case SOLVER_TRANSACTION_INSTALL:
 		case SOLVER_TRANSACTION_MULTIINSTALL:
+			return PAKFIRE_STEP_INSTALL;
+
 		case SOLVER_TRANSACTION_REINSTALL:
 		case SOLVER_TRANSACTION_MULTIREINSTALL:
-			return PAKFIRE_STEP_INSTALL;
+			return PAKFIRE_STEP_REINSTALL;
 
 		case SOLVER_TRANSACTION_ERASE:
 			return PAKFIRE_STEP_ERASE;
@@ -72,6 +74,9 @@ pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 
 		case SOLVER_TRANSACTION_UPGRADE:
 			return PAKFIRE_STEP_UPGRADE;
+
+		case SOLVER_TRANSACTION_OBSOLETES:
+			return PAKFIRE_STEP_OBSOLETE;
 
 		// Anything we don't care about
 		case SOLVER_TRANSACTION_IGNORE:
@@ -89,6 +94,9 @@ const char* pakfire_step_get_type_string(PakfireStep step) {
 		case PAKFIRE_STEP_INSTALL:
 			return "install";
 
+		case PAKFIRE_STEP_REINSTALL:
+			return "reinstall";
+
 		case PAKFIRE_STEP_ERASE:
 			return "erase";
 
@@ -97,6 +105,9 @@ const char* pakfire_step_get_type_string(PakfireStep step) {
 
 		case PAKFIRE_STEP_UPGRADE:
 			return "upgrade";
+
+		case PAKFIRE_STEP_OBSOLETE:
+			return "obsolete";
 
 		case PAKFIRE_STEP_IGNORE:
 		default:
@@ -109,6 +120,7 @@ static int pakfire_step_get_downloadtype(PakfireStep step) {
 
 	switch (type) {
 		case PAKFIRE_STEP_INSTALL:
+		case PAKFIRE_STEP_REINSTALL:
 		case PAKFIRE_STEP_DOWNGRADE:
 		case PAKFIRE_STEP_UPGRADE:
 			return 1;

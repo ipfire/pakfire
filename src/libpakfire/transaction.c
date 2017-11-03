@@ -166,7 +166,7 @@ static void pakfire_transaction_add_separator(char** str, size_t width) {
 }
 
 static size_t pakfire_transaction_add_section(char** str, size_t width, PakfireTransaction transaction,
-		const char* headline, int type) {
+		const char* headline, pakfire_step_type type) {
 	PakfirePackageList list = pakfire_transaction_get_packages(transaction, type);
 
 	// Nothing to do if there are no packages in this stage
@@ -221,17 +221,17 @@ char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width) {
 
 	// Show what we are doing
 	size_t installing = pakfire_transaction_add_section(&string, width, transaction,
-		_("Installing:"), SOLVER_TRANSACTION_INSTALL);
+		_("Installing:"), PAKFIRE_STEP_INSTALL);
 	size_t reinstalling = pakfire_transaction_add_section(&string, width, transaction,
-		_("Reinstalling:"), SOLVER_TRANSACTION_REINSTALL);
+		_("Reinstalling:"), PAKFIRE_STEP_REINSTALL);
 	size_t updating = pakfire_transaction_add_section(&string, width, transaction,
-		_("Updating:"), SOLVER_TRANSACTION_UPGRADE);
+		_("Updating:"), PAKFIRE_STEP_UPGRADE);
 	size_t downgrading = pakfire_transaction_add_section(&string, width, transaction,
-		_("Downgrading:"), SOLVER_TRANSACTION_DOWNGRADE);
+		_("Downgrading:"), PAKFIRE_STEP_DOWNGRADE);
 	size_t removing = pakfire_transaction_add_section(&string, width, transaction,
-		_("Removing:"), SOLVER_TRANSACTION_ERASE);
+		_("Removing:"), PAKFIRE_STEP_ERASE);
 	size_t obsoleting = pakfire_transaction_add_section(&string, width, transaction,
-		_("Obsoleting:"), SOLVER_TRANSACTION_OBSOLETES);
+		_("Obsoleting:"), PAKFIRE_STEP_OBSOLETE);
 
 	// Summary
 	pakfire_transaction_add_headline(&string, width, _("Transaction Summary"));
