@@ -182,7 +182,7 @@ class Client(object):
 				data = bytes(data, "ascii")
 
 		# Create a request
-		req = urllib.request.Request(url, data=data)
+		req = urllib.request.Request(url, method=method, data=data)
 
 		# Add our user agent
 		req.add_header("User-Agent", "pakfire/%s" % PAKFIRE_VERSION)
@@ -207,7 +207,7 @@ class Client(object):
 		return req
 
 	def _send_request(self, req, timeout=None):
-		log.debug("HTTP Request to %s" % req.host)
+		log.debug("HTTP %s Request to %s" % (req.method, req.host))
 		log.debug("    URL: %s" % req.full_url)
 		log.debug("    Headers:")
 		for k, v in req.header_items():
