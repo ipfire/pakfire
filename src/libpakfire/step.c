@@ -212,6 +212,14 @@ static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script)
 	return 0; // XXX
 }
 
+static int pakfire_step_extract(PakfireStep step) {
+	return 0; // TODO
+}
+
+static int pakfire_step_erase(PakfireStep step) {
+	return 0; // TODO
+}
+
 int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
 	pakfire_step_type type = pakfire_step_get_type(step);
 
@@ -227,17 +235,95 @@ int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
 
 		// Run the pre-transaction scripts
 		case PAKFIRE_ACTION_PRETRANS:
-			// XXX TODO
+			switch (type) {
+				case PAKFIRE_STEP_INSTALL:
+				case PAKFIRE_STEP_REINSTALL:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSIN);
+					break;
+
+				case PAKFIRE_STEP_UPGRADE:
+				case PAKFIRE_STEP_DOWNGRADE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSUP);
+					break;
+
+				case PAKFIRE_STEP_ERASE:
+				case PAKFIRE_STEP_OBSOLETE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSUN);
+					break;
+
+				case PAKFIRE_STEP_IGNORE:
+					break;
+			}
 			goto END;
 
 		// Run the post-transaction scripts
 		case PAKFIRE_ACTION_POSTTRANS:
-			// XXX TODO
+			switch (type) {
+				case PAKFIRE_STEP_INSTALL:
+				case PAKFIRE_STEP_REINSTALL:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSIN);
+					break;
+
+				case PAKFIRE_STEP_UPGRADE:
+				case PAKFIRE_STEP_DOWNGRADE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSUP);
+					break;
+
+				case PAKFIRE_STEP_ERASE:
+				case PAKFIRE_STEP_OBSOLETE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSUN);
+					break;
+
+				case PAKFIRE_STEP_IGNORE:
+					break;
+			}
 			goto END;
 
 		// Execute the action of this script
 		case PAKFIRE_ACTION_EXECUTE:
-			// XXX TODO
+			switch (type) {
+				case PAKFIRE_STEP_INSTALL:
+				case PAKFIRE_STEP_REINSTALL:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREIN);
+					if (r)
+						goto END;
+
+					r = pakfire_step_extract(step);
+					if (r)
+						goto END;
+
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTIN);
+					break;
+
+				case PAKFIRE_STEP_UPGRADE:
+				case PAKFIRE_STEP_DOWNGRADE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUP);
+					if (r)
+						goto END;
+
+					r = pakfire_step_extract(step);
+					if (r)
+						goto END;
+
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUP);
+					break;
+
+				case PAKFIRE_STEP_ERASE:
+				case PAKFIRE_STEP_OBSOLETE:
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUN);
+					if (r)
+						goto END;
+
+					r = pakfire_step_erase(step);
+					if (r)
+						goto END;
+
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUN);
+					break;
+
+				case PAKFIRE_STEP_IGNORE:
+					break;
+			}
 			goto END;
 
 		// Do nothing
