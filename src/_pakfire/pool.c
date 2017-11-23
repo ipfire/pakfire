@@ -24,10 +24,12 @@
 #include <solv/solver.h>
 
 #include <pakfire/errno.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/repo.h>
 
 #include "constants.h"
+#include "pakfire.h"
 #include "pool.h"
 #include "relation.h"
 #include "repo.h"
@@ -45,25 +47,20 @@ static PyObject* Pool_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 static void Pool_dealloc(PoolObject* self) {
 	if (self->pool)
-		pakfire_pool_free(self->pool);
+		pakfire_pool_unref(self->pool);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Pool_init(PoolObject* self, PyObject* args, PyObject* kwds) {
-	const char* arch;
+	PakfireObject* pakfire = NULL;
 
-	if (!PyArg_ParseTuple(args, "s", &arch))
+	if (!PyArg_ParseTuple(args, "O!", &PakfireType, &pakfire))
 		return -1;
 
-	self->pool = pakfire_pool_create(arch);
-	if (self->pool == NULL) {
-		switch(pakfire_get_errno()) {
-			default:
-				assert(0);
-		}
+	self->pool = pakfire_get_pool(pakfire->pakfire);
+	if (!self->pool)
 		return -1;
-	}
 
 	return 0;
 }

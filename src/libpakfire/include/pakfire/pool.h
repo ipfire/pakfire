@@ -25,8 +25,9 @@
 
 #include <pakfire/types.h>
 
-PakfirePool pakfire_pool_create(const char* arch);
-void pakfire_pool_free(PakfirePool pool);
+PakfirePool pakfire_pool_create(Pakfire pakfire);
+PakfirePool pakfire_pool_ref(PakfirePool pool);
+void pakfire_pool_unref(PakfirePool pool);
 
 int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2);
 int pakfire_pool_count(PakfirePool pool);
@@ -52,6 +53,7 @@ struct _PakfirePool {
 	Queue installonly;
 
 	PakfireCache cache;
+	int nrefs;
 };
 
 void pakfire_pool_make_provides_ready(PakfirePool pool);

@@ -19,38 +19,50 @@
 #############################################################################*/
 
 #include <pakfire/pakfire.h>
+#include <pakfire/pool.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
 Pakfire pakfire_create(const char* path, const char* arch) {
-    Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
-    if (pakfire) {
-        pakfire->path = pakfire_strdup(path);
-        pakfire->arch = pakfire_strdup(arch);
-    }
+	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
+	if (pakfire) {
+		pakfire->nrefs = 1;
 
-    return pakfire;
+		pakfire->path = pakfire_strdup(path);
+		pakfire->arch = pakfire_strdup(arch);
+
+		// Initialize the pool
+		pakfire->pool = pakfire_pool_create(pakfire);
+	}
+
+	return pakfire;
 }
 
 Pakfire pakfire_ref(Pakfire pakfire) {
-    ++pakfire->nrefs;
+	++pakfire->nrefs;
 
-    return pakfire;
+	return pakfire;
 }
 
 void pakfire_unref(Pakfire pakfire) {
-    if (--pakfire->nrefs > 0)
-        return;
+	if (--pakfire->nrefs > 0)
+		return;
 
-    pakfire_free(pakfire->path);
-    pakfire_free(pakfire->arch);
-    pakfire_free(pakfire);
+	pakfire_pool_unref(pakfire->pool);
+
+	pakfire_free(pakfire->path);
+	pakfire_free(pakfire->arch);
+	pakfire_free(pakfire);
 }
 
 const char* pakfire_get_path(Pakfire pakfire) {
-    return pakfire->path;
+	return pakfire->path;
 }
 
 const char* pakfire_get_arch(Pakfire pakfire) {
-    return pakfire->arch;
+	return pakfire->arch;
+}
+
+PakfirePool pakfire_get_pool(Pakfire pakfire) {
+	return pakfire_pool_ref(pakfire->pool);
 }

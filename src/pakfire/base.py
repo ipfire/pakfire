@@ -64,7 +64,7 @@ class Pakfire(_pakfire.Pakfire):
 		# Initialize the keyring
 		#self.keyring = keyring.Keyring(self)
 
-		self.pool = _pakfire.Pool(self.arch)
+		self.pool = _pakfire.Pool(self)
 		self.pool.cache_path = cache_path or \
 			os.path.join(CACHE_DIR, self.distro.sname, self.distro.release)
 

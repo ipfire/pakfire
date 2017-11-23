@@ -31,11 +31,14 @@ void pakfire_unref(Pakfire pakfire);
 const char* pakfire_get_path(Pakfire pakfire);
 const char* pakfire_get_arch(Pakfire pakfire);
 
+PakfirePool pakfire_get_pool(Pakfire pakfire);
+
 #ifdef PAKFIRE_PRIVATE
 
 struct _Pakfire {
-    char* path;
-    char* arch;
+	char* path;
+	char* arch;
+	PakfirePool pool;
 	int nrefs;
 };
 

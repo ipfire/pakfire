@@ -29,18 +29,23 @@
 #include <pakfire/cache.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/repo.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfirePool pakfire_pool_create(const char* arch) {
+PakfirePool pakfire_pool_create(Pakfire pakfire) {
 	PakfirePool pool = pakfire_calloc(1, sizeof(*pool));
+	if (pool) {
+		pool->nrefs = 1;
+	}
 	pool->pool = pool_create();
 
 	queue_init(&pool->installonly);
 
 	// Set architecture
+	const char* arch = pakfire_get_arch(pakfire);
 	pool_setarch(pool->pool, arch);
 
 	return pool;
@@ -59,13 +64,26 @@ static void pakfire_pool_free_repos(Pool* pool) {
 	}
 }
 
-void pakfire_pool_free(PakfirePool pool) {
+static void pakfire_pool_free(PakfirePool pool) {
 	pakfire_pool_free_repos(pool->pool);
 
 	queue_free(&pool->installonly);
 
 	pool_free(pool->pool);
 	pakfire_free(pool);
+}
+
+PakfirePool pakfire_pool_ref(PakfirePool pool) {
+	++pool->nrefs;
+
+	return pool;
+}
+
+void pakfire_pool_unref(PakfirePool pool) {
+	if (--pool->nrefs > 0)
+		return;
+
+	pakfire_pool_free(pool);
 }
 
 int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2) {
