@@ -44,6 +44,7 @@ void pakfire_unref(Pakfire pakfire) {
 
     pakfire_free(pakfire->path);
     pakfire_free(pakfire->arch);
+    pakfire_free(pakfire);
 }
 
 const char* pakfire_get_path(Pakfire pakfire) {
