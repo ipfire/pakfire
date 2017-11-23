@@ -21,6 +21,7 @@
 #ifndef PAKFIRE_TYPES_H
 #define PAKFIRE_TYPES_H
 
+typedef struct _Pakfire* Pakfire;
 typedef struct _PakfireArchive* PakfireArchive;
 typedef struct _PakfireCache* PakfireCache;
 typedef struct _PakfireFile* PakfireFile;

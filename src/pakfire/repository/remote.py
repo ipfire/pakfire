@@ -184,7 +184,7 @@ class RepositoryRemote(base.RepositoryFactory):
 		downloader = self.make_downloader()
 
 		while True:
-			data = downloader.get("%s/repodata/repomd.json" % self.pakfire.arch.name, decode="ascii")
+			data = downloader.get("%s/repodata/repomd.json" % self.pakfire.arch, decode="ascii")
 
 			# Parse new metadata for comparison
 			md = metadata.Metadata(self.pakfire, metadata=data)

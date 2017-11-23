@@ -31,6 +31,7 @@ import time
 import uuid
 
 from . import _pakfire
+from . import arch
 from . import base
 from . import cgroup
 from . import config
@@ -451,6 +452,9 @@ class BuilderContext(object):
 		# Get a reference to Pakfire
 		self.pakfire = self.builder.pakfire
 
+		# Architecture
+		self.arch = arches.Arch(self.pakfire.arch)
+
 		# Get a reference to the logger
 		self.log = self.builder.log
 
@@ -484,11 +488,11 @@ class BuilderContext(object):
 
 		# Fake UTS_MACHINE, when we cannot use the personality syscall and
 		# if the host architecture is not equal to the target architecture.
-		if not self.pakfire.arch.personality and \
-				not system.native_arch == self.pakfire.arch.name:
+		if not self.arch.personality and \
+				not system.native_arch == self.arch.name:
 			env.update({
 				"LD_PRELOAD"  : "/usr/lib/libpakfire_preload.so",
-				"UTS_MACHINE" : self.pakfire.arch.name,
+				"UTS_MACHINE" : self.arch.name,
 			})
 
 		return env

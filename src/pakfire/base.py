@@ -41,16 +41,12 @@ from .system import system
 from .constants import *
 from .i18n import _
 
-class Pakfire(object):
+class Pakfire(_pakfire.Pakfire):
 	__version__ = PAKFIRE_VERSION
 	mode = None
 
 	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None):
-		# The path where we are operating in
-		self.path = path
-
-		# Default to system architecture
-		self.arch = arch or system.arch
+		_pakfire.Pakfire.__init__(self, path, arch or system.native_arch)
 
 		# Default to system distribution
 		self.distro = distro or system.distro
@@ -68,7 +64,7 @@ class Pakfire(object):
 		# Initialize the keyring
 		#self.keyring = keyring.Keyring(self)
 
-		self.pool = _pakfire.Pool(self.arch.name)
+		self.pool = _pakfire.Pool(self.arch)
 		self.pool.cache_path = cache_path or \
 			os.path.join(CACHE_DIR, self.distro.sname, self.distro.release)
 

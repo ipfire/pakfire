@@ -31,6 +31,7 @@
 #include "errors.h"
 #include "key.h"
 #include "package.h"
+#include "pakfire.h"
 #include "pool.h"
 #include "problem.h"
 #include "relation.h"
@@ -122,6 +123,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyExc_DependencyError = PyErr_NewException("_pakfire.DependencyError", NULL, NULL);
 	Py_INCREF(PyExc_DependencyError);
 	PyModule_AddObject(module, "DependencyError", PyExc_DependencyError);
+
+	// Pakfire
+	if (PyType_Ready(&PakfireType) < 0)
+		return NULL;
+
+	Py_INCREF(&PakfireType);
+	PyModule_AddObject(module, "Pakfire", (PyObject *)&PakfireType);
 
 	// Archive
 	if (PyType_Ready(&ArchiveType) < 0)

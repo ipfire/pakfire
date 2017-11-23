@@ -20,6 +20,13 @@
 
 LIBPAKFIRE_0 {
 global:
+	# pakfire
+	pakfire_create;
+	pakfire_get_arch;
+	pakfire_get_path;
+	pakfire_ref;
+	pakfire_unref;
+
 	# archive
 	pakfire_archive_create;
 	pakfire_archive_extract;
