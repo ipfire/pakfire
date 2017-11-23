@@ -61,6 +61,15 @@ global:
 	pakfire_file_sort;
 	pakfire_file_swap;
 
+	# key
+	pakfire_key_create;
+	pakfire_key_export;
+	pakfire_key_free;
+	pakfire_key_generate;
+	pakfire_key_get;
+	pakfire_key_get_fingerprint;
+	pakfire_key_list;
+
 	# package
 	pakfire_package_add_conflicts;
 	pakfire_package_add_obsoletes;

@@ -766,41 +766,37 @@ class CliDaemon(Cli):
 
 
 class CliKey(Cli):
-	pakfire = base.PakfireKey
-
-	def __init__(self):
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire key command line interface."),
+	def parse_cli(self):
+		parser = argparse.ArgumentParser(
+			description = _("Pakfire key command line interface"),
 		)
-		self._add_common_arguments(self.parser, offline_switch=True)
+		subparsers = parser.add_subparsers()
 
-		# Add sub-commands.
-		self.sub_commands = self.parser.add_subparsers()
+		# Add common arguments
+		self._add_common_arguments(parser)
 
-		self.parse_command_generate()
-		self.parse_command_import()
-		self.parse_command_export()
-		self.parse_command_delete()
-		self.parse_command_list()
-		self.parse_command_sign()
-		self.parse_command_verify()
+		# generate
+		generate = subparsers.add_parser("generate", help=_("Import a key from file"))
+		generate.add_argument("--realname", nargs=1,
+			help=_("The real name of the owner of this key"))
+		generate.add_argument("--email", nargs=1,
+			help=_("The email address of the owner of this key"))
+		generate.set_defaults(func=self.handle_generate)
 
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
+		# list
+		list = subparsers.add_parser("list", help=_("List all imported keys"))
+		list.set_defaults(func=self.handle_list)
 
-		self.action2func = {
-			"generate"    : self.handle_generate,
-			"import"      : self.handle_import,
-			"export"      : self.handle_export,
-			"delete"      : self.handle_delete,
-			"list"        : self.handle_list,
-			"sign"        : self.handle_sign,
-			"verify"      : self.handle_verify,
-		}
+		# export
+		export = subparsers.add_parser("export", help=_("Export a key to a file"))
+		export.add_argument("fingerprint", nargs=1,
+			help=_("The fingerprint of the key to export"))
+		export.add_argument("--filename", nargs="*", help=_("Write the key to this file"))
+		export.add_argument("--secret", action="store_true",
+			help=_("Export the secret key"))
+		export.set_defaults(func=self.handle_export)
 
-	@property
-	def pakfire_args(self):
-		return {}
+		return parser.parse_args()
 
 	def parse_command_generate(self):
 		# Parse "generate" command.
@@ -810,7 +806,7 @@ class CliKey(Cli):
 			help=_("The real name of the owner of this key."))
 		sub_gen.add_argument("--email", nargs=1,
 			help=_("The email address of the owner of this key."))
-		sub_gen.add_argument("action", action="store_const", const="generate")
+		sub_gen.set_defaults(func=self.handle_generate)
 
 	def parse_command_import(self):
 		# Parse "import" command.
@@ -820,16 +816,6 @@ class CliKey(Cli):
 			help=_("Filename of that key to import."))
 		sub_import.add_argument("action", action="store_const", const="import")
 
-	def parse_command_export(self):
-		# Parse "export" command.
-		sub_export = self.sub_commands.add_parser("export",
-			help=_("Export a key to a file."))
-		sub_export.add_argument("keyid", nargs=1,
-			help=_("The ID of the key to export."))
-		sub_export.add_argument("filename", nargs=1,
-			help=_("Write the key to this file."))
-		sub_export.add_argument("action", action="store_const", const="export")
-
 	def parse_command_delete(self):
 		# Parse "delete" command.
 		sub_del = self.sub_commands.add_parser("delete",
@@ -837,12 +823,6 @@ class CliKey(Cli):
 		sub_del.add_argument("keyid", nargs=1,
 			help=_("The ID of the key to delete."))
 		sub_del.add_argument("action", action="store_const", const="delete")
-
-	def parse_command_list(self):
-		# Parse "list" command.
-		sub_list = self.sub_commands.add_parser("list",
-			help=_("List all imported keys."))
-		sub_list.add_argument("action", action="store_const", const="list")
 
 	def parse_command_sign(self):
 		# Implement the "sign" command.
@@ -864,16 +844,36 @@ class CliKey(Cli):
 			help=_("Package(s) to verify."))
 		sub_verify.add_argument("action", action="store_const", const="verify")
 
-	def handle_generate(self):
-		realname = self.args.realname[0]
-		email    = self.args.email[0]
+	def handle_generate(self, ns):
+		p = self.pakfire(ns)
 
 		print(_("Generating the key may take a moment..."))
 		print()
 
-		# Generate the key.
-		p = self.create_pakfire()
-		p.keyring.gen_key(realname, email)
+		key = p.pool.generate_key("%s <%s>" % (ns.realname.pop(), ns.email.pop()))
+
+	def handle_list(self, ns):
+		p = self.pakfire(ns)
+
+		for key in p.pool.keys:
+			print(key)
+
+	def handle_export(self, ns):
+		p = self.pakfire(ns)
+
+		for fingerprint in ns.fingerprint:
+			key = p.pool.get_key(fingerprint)
+			if not key:
+				print(_("Could not find key with fingerprint %s") % fingerprint)
+				continue
+
+			data = key.export(ns.secret)
+
+			for file in ns.filename:
+				with open(file, "w") as f:
+					f.write(data)
+			else:
+				print(data)
 
 	def handle_import(self):
 		filename = self.args.filename[0]
@@ -882,23 +882,11 @@ class CliKey(Cli):
 		p = self.create_pakfire()
 		p.keyring.import_key(filename)
 
-	def handle_export(self):
-		keyid    = self.args.keyid[0]
-		filename = self.args.filename[0]
-
-		p = self.create_pakfire()
-		p.keyring.export_key(keyid, filename)
-
 	def handle_delete(self):
 		keyid = self.args.keyid[0]
 
 		p = self.create_pakfire()
 		p.keyring.delete_key(keyid)
-
-	def handle_list(self):
-		p = self.create_pakfire()
-		for line in p.keyring.list_keys():
-			print(line)
 
 	def handle_sign(self):
 		# Get the files from the command line options

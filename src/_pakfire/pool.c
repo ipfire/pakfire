@@ -24,10 +24,12 @@
 #include <solv/solver.h>
 
 #include <pakfire/errno.h>
+#include <pakfire/key.h>
 #include <pakfire/pool.h>
 #include <pakfire/repo.h>
 
 #include "constants.h"
+#include "key.h"
 #include "pool.h"
 #include "relation.h"
 #include "repo.h"
@@ -202,7 +204,61 @@ static PyObject* Pool_search(PoolObject* self, PyObject* args) {
 	return PyList_FromPackageList(self, list);
 }
 
+static PyObject* Pool_get_keys(PoolObject* self) {
+	PyObject* list = PyList_New(0);
+
+	PakfireKey* keys = pakfire_key_list(self->pool);
+	while (keys && *keys) {
+		PakfireKey key = *keys++;
+
+		PyObject* object = new_key(self, key);
+		PyList_Append(list, object);
+		Py_DECREF(object);
+
+		pakfire_key_free(key);
+	}
+
+	return list;
+}
+
+static PyObject* Pool_get_key(PoolObject* self, PyObject* args) {
+	const char* pattern = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &pattern))
+		return NULL;
+
+	PakfireKey key = pakfire_key_get(self->pool, pattern);
+	if (!key)
+		Py_RETURN_NONE;
+
+	return new_key(self, key);
+}
+
+static PyObject* Pool_generate_key(PoolObject* self, PyObject* args) {
+	const char* userid = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &userid))
+		return NULL;
+
+	PakfireKey key = pakfire_key_generate(self->pool, userid);
+	assert(key);
+
+	return new_key(self, key);
+}
+
 static struct PyMethodDef Pool_methods[] = {
+	{
+		"generate_key",
+		(PyCFunction)Pool_generate_key,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"get_key",
+		(PyCFunction)Pool_get_key,
+		METH_VARARGS,
+		NULL
+	},
 	{
 		"search",
 		(PyCFunction)Pool_search,
@@ -243,6 +299,13 @@ static struct PyGetSetDef Pool_getsetters[] = {
 		"installonly",
 		(getter)Pool_get_installonly,
 		(setter)Pool_set_installonly,
+		NULL,
+		NULL
+	},
+	{
+		"keys",
+		(getter)Pool_get_keys,
+		NULL,
 		NULL,
 		NULL
 	},

@@ -29,6 +29,7 @@
 #include "capabilities.h"
 #include "constants.h"
 #include "errors.h"
+#include "key.h"
 #include "package.h"
 #include "pool.h"
 #include "problem.h"
@@ -128,6 +129,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	Py_INCREF(&ArchiveType);
 	PyModule_AddObject(module, "Archive", (PyObject *)&ArchiveType);
+
+	// Key
+	if (PyType_Ready(&KeyType) < 0)
+		return NULL;
+
+	Py_INCREF(&KeyType);
+	PyModule_AddObject(module, "Key", (PyObject *)&KeyType);
 
 	// Package
 	if (PyType_Ready(&PackageType) < 0)

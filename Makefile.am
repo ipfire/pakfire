@@ -181,6 +181,8 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/capabilities.h \
 	src/_pakfire/constants.h \
 	src/_pakfire/errors.h \
+	src/_pakfire/key.c \
+	src/_pakfire/key.h \
 	src/_pakfire/package.c \
 	src/_pakfire/package.h \
 	src/_pakfire/pool.c \
@@ -236,6 +238,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/errno.c \
 	src/libpakfire/file.c \
 	src/libpakfire/filter.c \
+	src/libpakfire/key.c \
 	src/libpakfire/package.c \
 	src/libpakfire/packagelist.c \
 	src/libpakfire/pool.c \
@@ -260,6 +263,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/file.h \
 	src/libpakfire/include/pakfire/filter.h \
 	src/libpakfire/include/pakfire/i18n.h \
+	src/libpakfire/include/pakfire/key.h \
 	src/libpakfire/include/pakfire/package.h \
 	src/libpakfire/include/pakfire/packagecache.h \
 	src/libpakfire/include/pakfire/packagelist.h \

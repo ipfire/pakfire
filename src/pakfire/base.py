@@ -26,7 +26,7 @@ import string
 from . import _pakfire
 from . import distro
 from . import filelist
-from . import keyring
+#from . import keyring
 from . import packages
 from . import repository
 from . import transaction
@@ -66,7 +66,7 @@ class Pakfire(object):
 		self.config = config or Config("general.conf")
 
 		# Initialize the keyring
-		self.keyring = keyring.Keyring(self)
+		#self.keyring = keyring.Keyring(self)
 
 		self.pool = _pakfire.Pool(self.arch.name)
 		self.pool.cache_path = cache_path or \
