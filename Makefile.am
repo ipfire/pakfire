@@ -294,6 +294,7 @@ libpakfire_la_LDFLAGS = \
 
 libpakfire_la_LIBADD = \
 	$(ARCHIVE_LIBS) \
+	$(GPGME_LIBS) \
 	$(LZMA_LIBS) \
 	$(SOLV_LIBS)
 

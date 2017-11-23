@@ -148,6 +148,8 @@ PKG_CHECK_MODULES([ARCHIVE], [libarchive])
 PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}])
 PKG_CHECK_MODULES([LZMA], [liblzma])
 
+AM_PATH_GPGME([1.6.0], [], [AC_MSG_ERROR([*** GPGME not found])])
+
 AC_ARG_WITH([systemdsystemunitdir],
 	AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files]),
 	[], [with_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)])
