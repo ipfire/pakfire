@@ -24,19 +24,20 @@
 #include <pakfire/util.h>
 
 #include "key.h"
+#include "pakfire.h"
 
-static PyObject* Key_new_core(PyTypeObject* type, PoolObject* pool, PakfireKey key) {
+static PyObject* Key_new_core(PyTypeObject* type, PakfireObject* pakfire, PakfireKey key) {
 	KeyObject* self = (KeyObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pool = pool;
+		self->pakfire = pakfire;
 		self->key  = key;
 	}
 
 	return (PyObject *)self;
 }
 
-PyObject* new_key(PoolObject* pool, PakfireKey key) {
-	return Key_new_core(&KeyType, pool, key);
+PyObject* new_key(PakfireObject* pakfire, PakfireKey key) {
+	return Key_new_core(&KeyType, pakfire, key);
 }
 
 static PyObject* Key_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
@@ -47,20 +48,23 @@ static void Key_dealloc(KeyObject* self) {
 	if (self->key)
 		pakfire_key_free(self->key);
 
+	if (self->pakfire)
+		Py_DECREF(self->pakfire);
+
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Key_init(KeyObject* self, PyObject* args, PyObject* kwds) {
-	PyObject* pool;
+	PyObject* pakfire;
 	const char* fingerprint = NULL;
 
-	if (!PyArg_ParseTuple(args, "O!s", &PoolType, &pool, &fingerprint))
+	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &fingerprint))
 		return -1;
 
-	self->pool = (PoolObject *)pool;
-	Py_INCREF(self->pool);
+	self->pakfire = (PakfireObject *)pakfire;
+	Py_INCREF(self->pakfire);
 
-	self->key = pakfire_key_get(self->pool->pool, fingerprint);
+	self->key = pakfire_key_get(self->pakfire->pakfire, fingerprint);
 	if (!self->key)
 		return -1;
 

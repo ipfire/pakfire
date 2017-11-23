@@ -850,19 +850,19 @@ class CliKey(Cli):
 		print(_("Generating the key may take a moment..."))
 		print()
 
-		key = p.pool.generate_key("%s <%s>" % (ns.realname.pop(), ns.email.pop()))
+		key = p.generate_key("%s <%s>" % (ns.realname.pop(), ns.email.pop()))
 
 	def handle_list(self, ns):
 		p = self.pakfire(ns)
 
-		for key in p.pool.keys:
+		for key in p.keys:
 			print(key)
 
 	def handle_export(self, ns):
 		p = self.pakfire(ns)
 
 		for fingerprint in ns.fingerprint:
-			key = p.pool.get_key(fingerprint)
+			key = p.get_key(fingerprint)
 			if not key:
 				print(_("Could not find key with fingerprint %s") % fingerprint)
 				continue

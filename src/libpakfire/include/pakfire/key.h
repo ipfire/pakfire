@@ -30,20 +30,20 @@ typedef enum pakfire_key_export_mode {
 	PAKFIRE_KEY_EXPORT_MODE_SECRET,
 } pakfire_key_export_mode_t;
 
-PakfireKey* pakfire_key_list(PakfirePool pool);
+PakfireKey* pakfire_key_list(Pakfire pakfire);
 
-PakfireKey pakfire_key_create(PakfirePool pool, gpgme_key_t gpgkey);
+PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey);
 void pakfire_key_free(PakfireKey key);
 
-PakfireKey pakfire_key_get(PakfirePool pool, const char* fingerprint);
+PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint);
 const char* pakfire_key_get_fingerprint(PakfireKey key);
-PakfireKey pakfire_key_generate(PakfirePool pool, const char* userid);
+PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid);
 char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode);
 
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireKey {
-	PakfirePool pool;
+	Pakfire pakfire;
 	gpgme_key_t gpgkey;
 	int nrefs;
 };

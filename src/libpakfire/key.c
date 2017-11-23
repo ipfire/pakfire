@@ -22,10 +22,10 @@
 #include <gpgme.h>
 
 #include <pakfire/key.h>
-#include <pakfire/pool.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/util.h>
 
-static gpgme_ctx_t pakfire_get_gpgctx(PakfirePool pool) {
+static gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	static int gpg_initialized = 0;
 	gpgme_error_t error;
 	const char* error_string;
@@ -44,8 +44,9 @@ static gpgme_ctx_t pakfire_get_gpgctx(PakfirePool pool) {
 			goto FAIL;
 
 		// Use GPG
-		error = gpgme_set_engine_info(GPGME_PROTOCOL_OpenPGP,
-			NULL, "/etc/pakfire/gnupg");
+		char* home = pakfire_path_join(pakfire->path, "/etc/pakfire/gnupg");
+		error = gpgme_set_engine_info(GPGME_PROTOCOL_OpenPGP, NULL, home);
+		pakfire_free(home);
 		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
 			goto FAIL;
 
@@ -81,8 +82,8 @@ FAIL:
 	return NULL;
 }
 
-PakfireKey* pakfire_key_list(PakfirePool pool) {
-	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pool);
+PakfireKey* pakfire_key_list(Pakfire pakfire) {
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 	assert(gpgctx);
 
 	PakfireKey* first = pakfire_calloc(1, sizeof(PakfireKey));
@@ -96,7 +97,7 @@ PakfireKey* pakfire_key_list(PakfirePool pool) {
 			break;
 
 		// Add key to the list
-		*list++ = pakfire_key_create(pool, gpgkey);
+		*list++ = pakfire_key_create(pakfire, gpgkey);
 
 		gpgme_key_release(gpgkey);
 	}
@@ -107,11 +108,11 @@ PakfireKey* pakfire_key_list(PakfirePool pool) {
 	return first;
 }
 
-PakfireKey pakfire_key_create(PakfirePool pool, gpgme_key_t gpgkey) {
+PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey) {
 	PakfireKey key = pakfire_calloc(1, sizeof(*key));
 
 	if (key) {
-		key->pool = pool;
+		key->pakfire = pakfire_ref(pakfire);
 
 		key->gpgkey = gpgkey;
 		gpgme_key_ref(key->gpgkey);
@@ -121,13 +122,14 @@ PakfireKey pakfire_key_create(PakfirePool pool, gpgme_key_t gpgkey) {
 }
 
 void pakfire_key_free(PakfireKey key) {
+	pakfire_unref(key->pakfire);
 	gpgme_key_unref(key->gpgkey);
 
 	pakfire_free(key);
 }
 
-PakfireKey pakfire_key_get(PakfirePool pool, const char* fingerprint) {
-	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pool);
+PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 	assert(gpgctx);
 
 	gpgme_key_t gpgkey = NULL;
@@ -135,7 +137,7 @@ PakfireKey pakfire_key_get(PakfirePool pool, const char* fingerprint) {
 	if (error != GPG_ERR_NO_ERROR)
 		return NULL;
 
-	PakfireKey key = pakfire_key_create(pool, gpgkey);
+	PakfireKey key = pakfire_key_create(pakfire, gpgkey);
 	gpgme_key_unref(gpgkey);
 	gpgme_release(gpgctx);
 
@@ -146,8 +148,8 @@ const char* pakfire_key_get_fingerprint(PakfireKey key) {
 	return key->gpgkey->fpr;
 }
 
-PakfireKey pakfire_key_generate(PakfirePool pool, const char* userid) {
-	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pool);
+PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 	assert(gpgctx);
 
 	unsigned int flags = 0;
@@ -175,11 +177,11 @@ PakfireKey pakfire_key_generate(PakfirePool pool, const char* userid) {
 	gpgme_release(gpgctx);
 
 	// Retrieve the key by its fingerprint
-	return pakfire_key_get(pool, result->fpr);
+	return pakfire_key_get(pakfire, result->fpr);
 }
 
 char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
-	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pool);
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pakfire);
 	assert(gpgctx);
 
 	gpgme_export_mode_t gpgmode = 0;

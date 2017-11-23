@@ -25,16 +25,16 @@
 
 #include <pakfire/key.h>
 
-#include "pool.h"
+#include "pakfire.h"
 
 typedef struct {
 	PyObject_HEAD
-	PoolObject* pool;
+	PakfireObject* pakfire;
 	PakfireKey key;
 } KeyObject;
 
 extern PyTypeObject KeyType;
 
-PyObject* new_key(PoolObject* pool, PakfireKey key);
+PyObject* new_key(PakfireObject* pakfire, PakfireKey key);
 
 #endif /* PYTHON_PAKFIRE_KEY_H */
