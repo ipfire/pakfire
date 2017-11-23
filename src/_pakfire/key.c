@@ -81,6 +81,12 @@ static PyObject* Key_str(KeyObject* self) {
 	return NULL;
 }
 
+static PyObject* Key_get_fingerprint(KeyObject* self) {
+	const char* fingerprint = pakfire_key_get_fingerprint(self->key);
+
+	return PyUnicode_FromString(fingerprint);
+}
+
 static PyObject* Key_export(KeyObject* self, PyObject* args) {
 	int secret = 0;
 
@@ -107,6 +113,17 @@ static struct PyMethodDef Key_methods[] = {
 	{ NULL },
 };
 
+static struct PyGetSetDef Key_getsetters[] = {
+	{
+		"fingerprint",
+		(getter)Key_get_fingerprint,
+		NULL,
+		NULL,
+		NULL
+	},
+	{ NULL },
+};
+
 PyTypeObject KeyType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name:            "_pakfire.Key",
@@ -117,7 +134,7 @@ PyTypeObject KeyType = {
 	tp_init:            (initproc)Key_init,
 	tp_doc:             "Key object",
 	tp_methods:         Key_methods,
-	//tp_getset:          Key_getsetters,
+	tp_getset:          Key_getsetters,
 	tp_repr:            (reprfunc)Key_repr,
 	tp_str:             (reprfunc)Key_str,
 };
