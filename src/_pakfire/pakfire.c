@@ -75,21 +75,29 @@ static PyObject* Pakfire_get_arch(PakfireObject* self) {
     return PyUnicode_FromString(arch);
 }
 
-static PyObject* Pakfire_get_keys(PakfireObject* self) {
+static PyObject* _import_keylist(PakfireObject* pakfire, PakfireKey* keys) {
 	PyObject* list = PyList_New(0);
 
-	PakfireKey* keys = pakfire_key_list(self->pakfire);
 	while (keys && *keys) {
 		PakfireKey key = *keys++;
 
-		PyObject* object = new_key(self, key);
+		PyObject* object = new_key(pakfire, key);
 		PyList_Append(list, object);
+
+		// Drop reference to the Python object
 		Py_DECREF(object);
 
-		pakfire_key_free(key);
+		// Drop reference to the key object
+		pakfire_key_unref(key);
 	}
 
 	return list;
+}
+
+static PyObject* Pakfire_get_keys(PakfireObject* self) {
+	PakfireKey* keys = pakfire_key_list(self->pakfire);
+
+	return _import_keylist(self, keys);
 }
 
 static PyObject* Pakfire_get_key(PakfireObject* self, PyObject* args) {
@@ -117,6 +125,19 @@ static PyObject* Pakfire_generate_key(PakfireObject* self, PyObject* args) {
 	return new_key(self, key);
 }
 
+static PyObject* Pakfire_import_key(PakfireObject* self, PyObject* args) {
+	const char* data = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &data))
+		return NULL;
+
+	PakfireKey* keys = pakfire_key_import(self->pakfire, data);
+	if (!keys)
+		return NULL; // TODO Raise error from errno
+
+	return _import_keylist(self, keys);
+}
+
 static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"generate_key",
@@ -127,6 +148,12 @@ static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"get_key",
 		(PyCFunction)Pakfire_get_key,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"import_key",
+		(PyCFunction)Pakfire_import_key,
 		METH_VARARGS,
 		NULL
 	},

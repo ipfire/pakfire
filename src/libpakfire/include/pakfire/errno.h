@@ -33,6 +33,7 @@ enum _pakfire_errors {
 	PAKFIRE_E_SOLV_NOT_SOLV,				// SOLV file in not in SOLV format
 	PAKFIRE_E_SOLV_UNSUPPORTED,				// SOLV file is in an unsupported format
 	PAKFIRE_E_SOLV_CORRUPTED,				// SOLV file is corrupted
+	PAKFIRE_E_INVALID_INPUT,
 };
 
 extern __thread int pakfire_errno;

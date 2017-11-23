@@ -20,7 +20,9 @@
 
 #include <assert.h>
 #include <gpgme.h>
+#include <string.h>
 
+#include <pakfire/errno.h>
 #include <pakfire/key.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/util.h>
@@ -112,6 +114,7 @@ PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey) {
 	PakfireKey key = pakfire_calloc(1, sizeof(*key));
 
 	if (key) {
+		key->nrefs = 1;
 		key->pakfire = pakfire_ref(pakfire);
 
 		key->gpgkey = gpgkey;
@@ -121,11 +124,24 @@ PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey) {
 	return key;
 }
 
-void pakfire_key_free(PakfireKey key) {
+static void pakfire_key_free(PakfireKey key) {
 	pakfire_unref(key->pakfire);
 	gpgme_key_unref(key->gpgkey);
 
 	pakfire_free(key);
+}
+
+PakfireKey pakfire_key_ref(PakfireKey key) {
+	++key->nrefs;
+
+	return key;
+}
+
+void pakfire_key_unref(PakfireKey key) {
+	if (--key->nrefs > 0)
+		return;
+
+	pakfire_key_free(key);
 }
 
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
@@ -224,6 +240,67 @@ char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
 	gpgme_free(mem);
 
 	return buffer;
+
+FAIL:
+	gpgme_data_release(keydata);
+	gpgme_release(gpgctx);
+
+	return NULL;
+}
+
+PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
+	gpgme_error_t error;
+	gpgme_data_t keydata;
+
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
+	assert(gpgctx);
+
+	// Form a data object out of the input without copying data
+	error = gpgme_data_new_from_mem(&keydata, data, strlen(data), 0);
+	if (error != GPG_ERR_NO_ERROR)
+		goto FAIL;
+
+	// Try importing the key(s)
+	error = gpgme_op_import(gpgctx, keydata);
+
+	gpgme_import_result_t result;
+	switch (error) {
+		// Everything went fine
+		case GPG_ERR_NO_ERROR:
+			result = gpgme_op_import_result(gpgctx);
+
+			PakfireKey* head = pakfire_calloc(result->imported + 1, sizeof(*head));
+			PakfireKey* list = head;
+
+			// Retrieve all imported keys
+			gpgme_import_status_t status = result->imports;
+			while (status) {
+				PakfireKey key = pakfire_key_get(pakfire, status->fpr);
+				if (key) {
+					// Append key to list
+					*list++ = key;
+				}
+
+				status = status->next;
+			}
+
+			// Terminate list
+			*list = NULL;
+
+			gpgme_data_release(keydata);
+			gpgme_release(gpgctx);
+
+			return head;
+
+		// Input was invalid
+		case GPG_ERR_INV_VALUE:
+			pakfire_errno = PAKFIRE_E_INVALID_INPUT;
+			break;
+
+		// Fall through for any other errors
+		default:
+			break;
+	}
 
 FAIL:
 	gpgme_data_release(keydata);

@@ -33,12 +33,14 @@ typedef enum pakfire_key_export_mode {
 PakfireKey* pakfire_key_list(Pakfire pakfire);
 
 PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey);
-void pakfire_key_free(PakfireKey key);
+PakfireKey pakfire_key_ref(PakfireKey key);
+void pakfire_key_unref(PakfireKey key);
 
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint);
 const char* pakfire_key_get_fingerprint(PakfireKey key);
 PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid);
 char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode);
+PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data);
 
 #ifdef PAKFIRE_PRIVATE
 

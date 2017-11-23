@@ -775,6 +775,20 @@ class CliKey(Cli):
 		# Add common arguments
 		self._add_common_arguments(parser)
 
+		# export
+		export = subparsers.add_parser("export", help=_("Export a key to a file"))
+		export.add_argument("fingerprint", nargs=1,
+			help=_("The fingerprint of the key to export"))
+		export.add_argument("--filename", nargs="*", help=_("Write the key to this file"))
+		export.add_argument("--secret", action="store_true",
+			help=_("Export the secret key"))
+		export.set_defaults(func=self.handle_export)
+
+		# import 
+		_import = subparsers.add_parser("import", help=_("Import a key from file"))
+		_import.add_argument("filename", nargs="+", help=_("Filename of that key to import"))
+		_import.set_defaults(func=self.handle_import)
+
 		# generate
 		generate = subparsers.add_parser("generate", help=_("Import a key from file"))
 		generate.add_argument("--realname", nargs=1,
@@ -787,34 +801,7 @@ class CliKey(Cli):
 		list = subparsers.add_parser("list", help=_("List all imported keys"))
 		list.set_defaults(func=self.handle_list)
 
-		# export
-		export = subparsers.add_parser("export", help=_("Export a key to a file"))
-		export.add_argument("fingerprint", nargs=1,
-			help=_("The fingerprint of the key to export"))
-		export.add_argument("--filename", nargs="*", help=_("Write the key to this file"))
-		export.add_argument("--secret", action="store_true",
-			help=_("Export the secret key"))
-		export.set_defaults(func=self.handle_export)
-
 		return parser.parse_args()
-
-	def parse_command_generate(self):
-		# Parse "generate" command.
-		sub_gen = self.sub_commands.add_parser("generate",
-			help=_("Import a key from file."))
-		sub_gen.add_argument("--realname", nargs=1,
-			help=_("The real name of the owner of this key."))
-		sub_gen.add_argument("--email", nargs=1,
-			help=_("The email address of the owner of this key."))
-		sub_gen.set_defaults(func=self.handle_generate)
-
-	def parse_command_import(self):
-		# Parse "import" command.
-		sub_import = self.sub_commands.add_parser("import",
-			help=_("Import a key from file."))
-		sub_import.add_argument("filename", nargs=1,
-			help=_("Filename of that key to import."))
-		sub_import.add_argument("action", action="store_const", const="import")
 
 	def parse_command_delete(self):
 		# Parse "delete" command.
@@ -875,12 +862,15 @@ class CliKey(Cli):
 			else:
 				print(data)
 
-	def handle_import(self):
-		filename = self.args.filename[0]
+	def handle_import(self, ns):
+		p = self.pakfire(ns)
 
-		# Simply import the file.
-		p = self.create_pakfire()
-		p.keyring.import_key(filename)
+		for filename in ns.filename:
+			with open(filename) as f:
+				data = f.read()
+
+				key = p.import_key(data)
+				print(key)
 
 	def handle_delete(self):
 		keyid = self.args.keyid[0]

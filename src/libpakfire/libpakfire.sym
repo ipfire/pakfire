@@ -72,11 +72,13 @@ global:
 	# key
 	pakfire_key_create;
 	pakfire_key_export;
-	pakfire_key_free;
 	pakfire_key_generate;
 	pakfire_key_get;
 	pakfire_key_get_fingerprint;
+	pakfire_key_import;
 	pakfire_key_list;
+	pakfire_key_ref;
+	pakfire_key_unref;
 
 	# package
 	pakfire_package_add_conflicts;

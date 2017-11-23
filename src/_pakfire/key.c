@@ -37,7 +37,7 @@ static PyObject* Key_new_core(PyTypeObject* type, PakfireObject* pakfire, Pakfir
 }
 
 PyObject* new_key(PakfireObject* pakfire, PakfireKey key) {
-	return Key_new_core(&KeyType, pakfire, key);
+	return Key_new_core(&KeyType, pakfire, pakfire_key_ref(key));
 }
 
 static PyObject* Key_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
@@ -46,7 +46,7 @@ static PyObject* Key_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 
 static void Key_dealloc(KeyObject* self) {
 	if (self->key)
-		pakfire_key_free(self->key);
+		pakfire_key_unref(self->key);
 
 	if (self->pakfire)
 		Py_DECREF(self->pakfire);
