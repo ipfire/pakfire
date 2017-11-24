@@ -59,6 +59,8 @@ char* pakfire_key_dump(PakfireKey key);
 
 #ifdef PAKFIRE_PRIVATE
 
+gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire);
+
 struct _PakfireKey {
 	Pakfire pakfire;
 	gpgme_key_t gpgkey;

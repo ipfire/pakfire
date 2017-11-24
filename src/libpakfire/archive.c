@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <gpgme.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -33,6 +34,9 @@
 #include <pakfire/archive.h>
 #include <pakfire/errno.h>
 #include <pakfire/file.h>
+#include <pakfire/i18n.h>
+#include <pakfire/key.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/util.h>
 
 static void configure_archive(struct archive* a) {
@@ -146,10 +150,38 @@ static void pakfire_archive_checksum_free(archive_checksum_t* c) {
 	pakfire_free(c);
 }
 
-PakfireArchive pakfire_archive_create() {
+static archive_signature_t* pakfire_archive_signature_create(const char* sigdata) {
+	archive_signature_t* s = pakfire_calloc(1, sizeof(*s));
+	if (s) {
+		s->sigdata = pakfire_strdup(sigdata);
+	}
+
+	return s;
+}
+
+static void pakfire_archive_signature_free(archive_signature_t* s) {
+	pakfire_free(s->sigdata);
+	pakfire_free(s);
+}
+
+size_t pakfire_archive_count_signatures(PakfireArchive archive) {
+	size_t i = 0;
+
+	archive_signature_t** signatures = archive->signatures;
+	while (*signatures++) {
+		i++;
+	}
+
+	return i;
+}
+
+PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	PakfireArchive archive = pakfire_calloc(1, sizeof(*archive));
 	if (archive) {
+		archive->pakfire = pakfire_ref(pakfire);
 		archive->format = -1;
+
+		archive->signatures = NULL;
 	}
 
 	return archive;
@@ -164,6 +196,12 @@ void pakfire_archive_free(PakfireArchive archive) {
 	while (*checksums)
 		pakfire_archive_checksum_free(*checksums++);
 
+	// Free signatures
+	archive_signature_t** signatures = archive->signatures;
+	while (*signatures)
+		pakfire_archive_signature_free(*signatures++);
+
+	pakfire_unref(archive->pakfire);
 	pakfire_free(archive);
 }
 
@@ -284,6 +322,47 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 	return 0;
 }
 
+static int pakfire_archive_parse_entry_signature(PakfireArchive archive,
+		struct archive* a, struct archive_entry* e) {
+	char* data;
+	size_t data_size;
+
+	int r = archive_read(a, (void**)&data, &data_size);
+	if (r)
+		return 1;
+
+	// Terminate string.
+	data[data_size] = '\0';
+
+	archive_signature_t* signature = pakfire_archive_signature_create(data);
+	if (!signature)
+		return 1;
+
+	if (archive->signatures) {
+		// Count signatures
+		size_t num_signatures = pakfire_archive_count_signatures(archive) + 1;
+
+		// Resize the array
+		archive->signatures = pakfire_realloc(archive->signatures, sizeof(*archive->signatures) * num_signatures);
+	} else {
+		archive->signatures = pakfire_calloc(2, sizeof(*archive->signatures));
+	}
+
+	// Look for last element
+	archive_signature_t** signatures = archive->signatures;
+	while (*signatures) {
+		*signatures++;
+	}
+
+	// Append signature
+	*signatures++ = signature;
+
+	// Terminate list
+	*signatures = NULL;
+
+	return 0;
+}
+
 static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive* a) {
 	int ret;
 
@@ -322,6 +401,12 @@ static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive*
 			// Parse the checksums
 			} else if (strcmp(PAKFIRE_ARCHIVE_FN_CHECKSUMS, entry_name) == 0) {
 				ret = pakfire_archive_parse_entry_checksums(archive, a, entry);
+				if (ret)
+					return PAKFIRE_E_PKG_INVALID;
+
+			// Parse signatures
+			} else if (strncmp(PAKFIRE_ARCHIVE_FN_SIGNATURES, entry_name, strlen(PAKFIRE_ARCHIVE_FN_SIGNATURES)) == 0) {
+				ret = pakfire_archive_parse_entry_signature(archive, a, entry);
 				if (ret)
 					return PAKFIRE_E_PKG_INVALID;
 			}
@@ -430,8 +515,8 @@ out:
 }
 
 
-PakfireArchive pakfire_archive_open(const char* path) {
-	PakfireArchive archive = pakfire_archive_create();
+PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path) {
+	PakfireArchive archive = pakfire_archive_create(pakfire);
 	archive->path = pakfire_strdup(path);
 
 	// Open the archive file for reading.
@@ -554,4 +639,152 @@ unsigned int pakfire_archive_get_format(PakfireArchive archive) {
 
 PakfireFile pakfire_archive_get_filelist(PakfireArchive archive) {
 	return archive->filelist;
+}
+
+char** pakfire_archive_get_signatures(PakfireArchive archive) {
+	size_t size = pakfire_archive_count_signatures(archive);
+
+	char** head = pakfire_calloc(size, sizeof(*head));
+	if (!head)
+		return NULL;
+
+	char** list = head;
+	archive_signature_t** signatures = archive->signatures;
+	while (*signatures) {
+		archive_signature_t* signature = *signatures++;
+
+		*list++ = pakfire_strdup(signature->sigdata);
+	}
+
+	// Terminate list
+	*list = NULL;
+
+	return head;
+}
+
+static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireArchive archive) {
+	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
+
+	char* data = NULL;
+	size_t size = 0;
+	gpgme_error_t error;
+
+	// Load the checksums file
+	int r = pakfire_archive_read(archive, PAKFIRE_ARCHIVE_FN_CHECKSUMS,
+		(void *)&data, &size, 0);
+	if (r)
+		return status;
+
+	// Convert into gpgme data object
+	gpgme_data_t signed_text;
+	error = gpgme_data_new_from_mem(&signed_text, data, size, 0);
+	if (error != GPG_ERR_NO_ERROR)
+		return -1;
+
+	// Get GPG context
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(archive->pakfire);
+
+	// Try for each signature
+	archive_signature_t** signatures = archive->signatures;
+	while (*signatures) {
+		archive_signature_t* signature = *signatures++;
+
+		gpgme_data_t sigdata;
+		error = gpgme_data_new_from_mem(&sigdata, signature->sigdata, strlen(signature->sigdata), 0);
+		if (error != GPG_ERR_NO_ERROR)
+			continue;
+
+		// Perform verification
+		error = gpgme_op_verify(gpgctx, sigdata, signed_text, NULL);
+		if (error != GPG_ERR_NO_ERROR)
+			goto CLEANUP;
+
+		// Run the operation
+		gpgme_verify_result_t result = gpgme_op_verify_result(gpgctx);
+
+		// Check if any signatures have been returned
+		if (!result || !result->signatures)
+			goto CLEANUP;
+
+		// Walk through all signatures
+		for (gpgme_signature_t sig = result->signatures; sig; sig = sig->next) {
+			switch (gpg_err_code(sig->status)) {
+				// All good
+				case GPG_ERR_NO_ERROR:
+					status = PAKFIRE_ARCHIVE_VERIFY_OK;
+					break;
+
+				// Key has expired (still good)
+				case GPG_ERR_KEY_EXPIRED:
+					status = PAKFIRE_ARCHIVE_VERIFY_KEY_EXPIRED;
+					break;
+
+				// Signature has expired (bad)
+				case GPG_ERR_SIG_EXPIRED:
+					status = PAKFIRE_ARCHIVE_VERIFY_SIG_EXPIRED;
+					break;
+
+				// We don't have the key
+				case GPG_ERR_NO_PUBKEY:
+					status = PAKFIRE_ARCHIVE_VERIFY_KEY_UNKNOWN;
+					break;
+
+				// Bad signature (or any other errors)
+				case GPG_ERR_BAD_SIGNATURE:
+				default:
+					status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
+					break;
+			}
+		}
+
+CLEANUP:
+		gpgme_data_release(sigdata);
+	}
+
+	gpgme_data_release(signed_text);
+	gpgme_release(gpgctx);
+
+	return status;
+}
+
+static pakfire_archive_verify_status_t pakfire_archive_verify_file(PakfireArchive archive, const archive_checksum_t* checksum) {
+	return PAKFIRE_ARCHIVE_VERIFY_OK; // TODO
+}
+
+pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
+	// TODO Verify that checksums file is signed with a valid key
+	pakfire_archive_verify_status_t r = pakfire_archive_verify_checksums(archive);
+	if (r)
+		return r;
+
+	// TODO Verify checksum of each file
+	archive_checksum_t** checksum = archive->checksums;
+	while (*checksum) {
+		r = pakfire_archive_verify_file(archive, *checksum);
+		if (r)
+			return r;
+	}
+
+	return 0;
+}
+
+const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status) {
+	switch (status) {
+		case PAKFIRE_ARCHIVE_VERIFY_OK:
+			return _("Verify OK");
+
+		case PAKFIRE_ARCHIVE_VERIFY_INVALID:
+			return _("Invalid signature");
+
+		case PAKFIRE_ARCHIVE_VERIFY_SIG_EXPIRED:
+			return _("Signature expired");
+
+		case PAKFIRE_ARCHIVE_VERIFY_KEY_EXPIRED:
+			return _("Key expired");
+
+		case PAKFIRE_ARCHIVE_VERIFY_KEY_UNKNOWN:
+			return _("Key unknown");
+	}
+
+	return NULL;
 }

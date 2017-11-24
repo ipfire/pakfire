@@ -31,7 +31,7 @@
 
 #define DEFAULT_KEY_SIZE "rsa4096"
 
-static gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
+gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	static int gpg_initialized = 0;
 	gpgme_error_t error;
 	const char* error_string;

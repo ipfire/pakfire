@@ -24,6 +24,7 @@
 #include <Python.h>
 
 // Exceptions
+PyObject* PyExc_BadSignatureError;
 PyObject* PyExc_DependencyError;
 
 #endif /* PYTHON_PAKFIRE_ERRORS_H */

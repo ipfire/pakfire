@@ -25,8 +25,11 @@
 
 #include <pakfire/archive.h>
 
+#include "pakfire.h"
+
 typedef struct {
 	PyObject_HEAD
+	PakfireObject* pakfire;
 	PakfireArchive archive;
 } ArchiveObject;
 

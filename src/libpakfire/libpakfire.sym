@@ -29,14 +29,18 @@ global:
 	pakfire_unref;
 
 	# archive
+	pakfire_archive_count_signatures;
 	pakfire_archive_create;
 	pakfire_archive_extract;
 	pakfire_archive_free;
 	pakfire_archive_get_filelist;
 	pakfire_archive_get_format;
 	pakfire_archive_get_path;
+	pakfire_archive_get_signatures;
 	pakfire_archive_open;
 	pakfire_archive_read;
+	pakfire_archive_verify;
+	pakfire_archive_verify_strerror;
 
 	# file
 	pakfire_file_append;

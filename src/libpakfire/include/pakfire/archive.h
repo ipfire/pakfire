@@ -25,10 +25,18 @@
 
 #include <pakfire/types.h>
 
-PakfireArchive pakfire_archive_create();
+typedef enum pakfire_archive_verify_status {
+	PAKFIRE_ARCHIVE_VERIFY_OK = 0,
+	PAKFIRE_ARCHIVE_VERIFY_INVALID,
+	PAKFIRE_ARCHIVE_VERIFY_SIG_EXPIRED,
+	PAKFIRE_ARCHIVE_VERIFY_KEY_EXPIRED,
+	PAKFIRE_ARCHIVE_VERIFY_KEY_UNKNOWN,
+} pakfire_archive_verify_status_t;
+
+PakfireArchive pakfire_archive_create(Pakfire pakfire);
 void pakfire_archive_free(PakfireArchive archive);
 
-PakfireArchive pakfire_archive_open(const char* path);
+PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path);
 
 int pakfire_archive_read(PakfireArchive archive, const char* filename,
 	void** data, size_t* data_size, int flags);
@@ -40,6 +48,12 @@ unsigned int pakfire_archive_get_format(PakfireArchive archive);
 
 PakfireFile pakfire_archive_get_filelist(PakfireArchive archive);
 
+size_t pakfire_archive_count_signatures(PakfireArchive archive);
+char** pakfire_archive_get_signatures(PakfireArchive archive);
+
+pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive);
+const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status);
+
 enum pakfire_archive_flags {
 	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
 };
@@ -49,6 +63,7 @@ enum pakfire_archive_flags {
 #define PAKFIRE_ARCHIVE_FN_FORMAT			"pakfire-format"
 #define PAKFIRE_ARCHIVE_FN_METADATA			"info"
 #define PAKFIRE_ARCHIVE_FN_PAYLOAD			"data.img"
+#define PAKFIRE_ARCHIVE_FN_SIGNATURES		"signatures"
 
 #ifdef PAKFIRE_PRIVATE
 
@@ -66,7 +81,12 @@ typedef struct archive_checksum {
 	archive_checksum_algo_t algo;
 } archive_checksum_t;
 
+typedef struct archive_signature {
+	char* sigdata;
+} archive_signature_t;
+
 struct _PakfireArchive {
+	Pakfire pakfire;
 	char* path;
 
 	// metadata
@@ -74,6 +94,7 @@ struct _PakfireArchive {
 
 	PakfireFile filelist;
 	archive_checksum_t** checksums;
+	archive_signature_t** signatures;
 };
 
 struct payload_archive_data {

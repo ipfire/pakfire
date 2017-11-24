@@ -24,10 +24,12 @@
 #include <pakfire/util.h>
 
 #include "archive.h"
+#include "errors.h"
 
 static PyObject* Archive_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	ArchiveObject* self = (ArchiveObject *)type->tp_alloc(type, 0);
 	if (self) {
+		self->pakfire = NULL;
 		self->archive = NULL;
 	}
 
@@ -38,16 +40,22 @@ static void Archive_dealloc(ArchiveObject* self) {
 	if (self->archive)
 		pakfire_archive_free(self->archive);
 
+	Py_DECREF(self->pakfire);
+
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Archive_init(ArchiveObject* self, PyObject* args, PyObject* kwds) {
+	PakfireObject* pakfire = NULL;
 	const char* filename = NULL;
 
-	if (!PyArg_ParseTuple(args, "s", &filename))
+	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &filename))
 		return -1;
 
-	self->archive = pakfire_archive_open(filename);
+	self->pakfire = pakfire;
+	Py_INCREF(self->pakfire);
+
+	self->archive = pakfire_archive_open(self->pakfire->pakfire, filename);
 
 	return 0;
 }
@@ -92,13 +100,71 @@ static PyObject* Archive_read(ArchiveObject* self, PyObject* args, PyObject* kwd
 	return bytes;
 }
 
+static PyObject* Archive_verify(ArchiveObject* self) {
+	pakfire_archive_verify_status_t status = pakfire_archive_verify(self->archive);
+
+	// Return True if everything is fine
+	if (status == PAKFIRE_ARCHIVE_VERIFY_OK || status == PAKFIRE_ARCHIVE_VERIFY_KEY_EXPIRED)
+		Py_RETURN_TRUE;
+
+	// Raise an exception if not okay
+	PyErr_SetString(PyExc_BadSignatureError, pakfire_archive_verify_strerror(status));
+
+	return NULL;
+}
+
+static PyObject* Archive_get_signatures(ArchiveObject* self) {
+	PyObject* list = PyList_New(0);
+
+	char** head = pakfire_archive_get_signatures(self->archive);
+
+	char** signatures = head;
+	while (*signatures) {
+		char* signature = *signatures++;
+
+		PyObject* object = PyUnicode_FromString(signature);
+		PyList_Append(list, object);
+
+		Py_DECREF(object);
+		pakfire_free(signature);
+	}
+
+	pakfire_free(head);
+
+	return list;
+}
+
 static struct PyMethodDef Archive_methods[] = {
-	{"read", (PyCFunction)Archive_read, METH_VARARGS|METH_KEYWORDS, NULL},
+	{
+		"read",
+		(PyCFunction)Archive_read,
+		METH_VARARGS|METH_KEYWORDS,
+		NULL
+	},
+	{
+		"verify",
+		(PyCFunction)Archive_verify,
+		METH_NOARGS,
+		NULL
+	},
 	{ NULL },
 };
 
 static struct PyGetSetDef Archive_getsetters[] = {
-	{"format", (getter)Archive_get_format, NULL, NULL, NULL},
+	{
+		"format",
+		(getter)Archive_get_format,
+		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"signatures",
+		(getter)Archive_get_signatures,
+		NULL,
+		NULL,
+		NULL
+	},
 	{ NULL },
 };
 
