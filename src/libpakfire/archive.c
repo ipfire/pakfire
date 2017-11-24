@@ -19,6 +19,7 @@
 #############################################################################*/
 
 #include <assert.h>
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -128,6 +129,23 @@ static int payload_archive_open(struct archive** a, struct archive* source_archi
 	return archive_read_open1(*a);
 }
 
+static archive_checksum_t* pakfire_archive_checksum_create(const char* filename, const char* checksum, archive_checksum_algo_t algo) {
+	archive_checksum_t* c = pakfire_calloc(1, sizeof(*c));
+	if (c) {
+		c->filename = pakfire_strdup(filename);
+		c->checksum = pakfire_strdup(checksum);
+		c->algo = algo;
+	}
+
+	return c;
+}
+
+static void pakfire_archive_checksum_free(archive_checksum_t* c) {
+	pakfire_free(c->filename);
+	pakfire_free(c->checksum);
+	pakfire_free(c);
+}
+
 PakfireArchive pakfire_archive_create() {
 	PakfireArchive archive = pakfire_calloc(1, sizeof(*archive));
 	if (archive) {
@@ -140,6 +158,11 @@ PakfireArchive pakfire_archive_create() {
 void pakfire_archive_free(PakfireArchive archive) {
 	if (archive->path)
 		pakfire_free(archive->path);
+
+	// Free checksums
+	archive_checksum_t** checksums = archive->checksums;
+	while (*checksums)
+		pakfire_archive_checksum_free(*checksums++);
 
 	pakfire_free(archive);
 }
@@ -194,6 +217,73 @@ static int pakfire_archive_parse_entry_filelist(PakfireArchive archive,
 	return 0;
 }
 
+static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
+		struct archive* a, struct archive_entry* e) {
+	char* data;
+	size_t data_size;
+
+	int r = archive_read(a, (void**)&data, &data_size);
+	if (r)
+		return 1;
+
+	// Empty file
+	if (data_size <= 0)
+		return 1;
+
+	// Terminate string.
+	data[data_size] = '\0';
+
+	// Allocate some space to save the checksums
+	archive->checksums = pakfire_calloc(10, sizeof(*archive->checksums));
+
+	const char* filename = NULL;
+	const char* checksum = NULL;
+	archive_checksum_algo_t algo = PAKFIRE_CHECKSUM_SHA512;
+
+	char* p = data;
+	while (*p) {
+		// Filename starts here
+		filename = p;
+
+		// Find end of filename
+		while (!isspace(*p))
+			p++;
+
+		// Terminate filename
+		*p++ = '\0';
+
+		// Skip any spaces
+		while (isspace(*p))
+			p++;
+
+		// Checksum starts here
+		checksum = p;
+
+		// Find end of checksum
+		while (!isspace(*p))
+			p++;
+
+		// Terminate the checksum
+		*p++ = '\0';
+
+		// Add new checksum object
+		if (filename && checksum) {
+			*archive->checksums++ = pakfire_archive_checksum_create(filename, checksum, algo);
+		}
+
+		// Eat up any space before next thing starts
+		while (isspace(*p))
+			p++;
+	}
+
+	// Terminate the list
+	*archive->checksums = NULL;
+
+	pakfire_free(data);
+
+	return 0;
+}
+
 static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive* a) {
 	int ret;
 
@@ -226,6 +316,12 @@ static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive*
 			// Parse the filelist
 			} else if (strcmp(PAKFIRE_ARCHIVE_FN_FILELIST, entry_name) == 0) {
 				ret = pakfire_archive_parse_entry_filelist(archive, a, entry);
+				if (ret)
+					return PAKFIRE_E_PKG_INVALID;
+
+			// Parse the checksums
+			} else if (strcmp(PAKFIRE_ARCHIVE_FN_CHECKSUMS, entry_name) == 0) {
+				ret = pakfire_archive_parse_entry_checksums(archive, a, entry);
 				if (ret)
 					return PAKFIRE_E_PKG_INVALID;
 			}

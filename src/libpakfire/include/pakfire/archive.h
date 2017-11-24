@@ -44,6 +44,7 @@ enum pakfire_archive_flags {
 	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
 };
 
+#define PAKFIRE_ARCHIVE_FN_CHECKSUMS		"chksums"
 #define PAKFIRE_ARCHIVE_FN_FILELIST			"filelist"
 #define PAKFIRE_ARCHIVE_FN_FORMAT			"pakfire-format"
 #define PAKFIRE_ARCHIVE_FN_METADATA			"info"
@@ -54,6 +55,17 @@ enum pakfire_archive_flags {
 #define PAKFIRE_ARCHIVE_BLOCKSIZE			10240
 #define PAKFIRE_ARCHIVE_FORMAT_SIZE			5
 
+typedef enum archive_checksum_algo {
+	PAKFIRE_CHECKSUM_UNKNOWN = 0,
+	PAKFIRE_CHECKSUM_SHA512,
+} archive_checksum_algo_t;
+
+typedef struct archive_checksum {
+	char* filename;
+	char* checksum;
+	archive_checksum_algo_t algo;
+} archive_checksum_t;
+
 struct _PakfireArchive {
 	char* path;
 
@@ -61,6 +73,7 @@ struct _PakfireArchive {
 	int format;
 
 	PakfireFile filelist;
+	archive_checksum_t** checksums;
 };
 
 struct payload_archive_data {
