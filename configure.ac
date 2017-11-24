@@ -148,6 +148,7 @@ PKG_CHECK_MODULES([ARCHIVE], [libarchive])
 PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}])
 PKG_CHECK_MODULES([LZMA], [liblzma])
 
+AM_PATH_LIBGCRYPT([1.8.0], [], [AC_MSG_ERROR([*** libgcrypt not found])])
 AM_PATH_GPGME([1.6.0], [], [AC_MSG_ERROR([*** GPGME not found])])
 
 AC_ARG_WITH([systemdsystemunitdir],

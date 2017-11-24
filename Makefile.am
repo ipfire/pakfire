@@ -291,6 +291,7 @@ libpakfire_la_CFLAGS = \
 
 libpakfire_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
+	$(LIBGCRYPT_CFLAGS) \
 	-I$(top_srcdir)/src/libpakfire/include \
 	-include $(top_builddir)/config.h \
 	-DPAKFIRE_PRIVATE
@@ -303,6 +304,7 @@ libpakfire_la_LDFLAGS = \
 libpakfire_la_LIBADD = \
 	$(ARCHIVE_LIBS) \
 	$(GPGME_LIBS) \
+	$(LIBGCRYPT_LIBS) \
 	$(LZMA_LIBS) \
 	$(SOLV_LIBS)
 
