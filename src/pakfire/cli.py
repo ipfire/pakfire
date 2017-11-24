@@ -866,8 +866,9 @@ class CliKey(Cli):
 			with open(filename) as f:
 				data = f.read()
 
-				key = p.import_key(data)
-				print(key)
+				keys = p.import_key(data)
+				for key in keys:
+					print(key)
 
 	def handle_delete(self, ns):
 		p = self.pakfire(ns)
