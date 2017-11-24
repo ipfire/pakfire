@@ -71,6 +71,7 @@ global:
 
 	# key
 	pakfire_key_create;
+	pakfire_key_delete;
 	pakfire_key_dump;
 	pakfire_key_export;
 	pakfire_key_generate;

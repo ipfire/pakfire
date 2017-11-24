@@ -38,6 +38,7 @@ PakfireKey pakfire_key_ref(PakfireKey key);
 void pakfire_key_unref(PakfireKey key);
 
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint);
+int pakfire_key_delete(PakfireKey key);
 
 // Access key properties
 const char* pakfire_key_get_fingerprint(PakfireKey key);

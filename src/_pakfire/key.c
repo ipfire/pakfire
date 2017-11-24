@@ -113,8 +113,27 @@ static PyObject* Key_export(KeyObject* self, PyObject* args) {
 	return object;
 }
 
+static PyObject* Key_delete(KeyObject* self) {
+	int r = pakfire_key_delete(self->key);
+	if (r == 0)
+		Py_RETURN_TRUE;
+
+	return NULL;
+}
+
 static struct PyMethodDef Key_methods[] = {
-	{"export", (PyCFunction)Key_export, METH_VARARGS, NULL},
+	{
+		"delete",
+		(PyCFunction)Key_delete,
+		METH_NOARGS,
+		NULL
+	},
+	{
+		"export",
+		(PyCFunction)Key_export,
+		METH_VARARGS,
+		NULL
+	},
 	{ NULL },
 };
 

@@ -164,6 +164,17 @@ PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	return key;
 }
 
+int pakfire_key_delete(PakfireKey key) {
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pakfire);
+	assert(gpgctx);
+
+	gpgme_error_t error = gpgme_op_delete(gpgctx, key->gpgkey, 1);
+	if (error == GPG_ERR_NO_ERROR)
+		return 0;
+
+	return 1;
+}
+
 const char* pakfire_key_get_fingerprint(PakfireKey key) {
 	return key->gpgkey->fpr;
 }

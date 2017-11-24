@@ -775,6 +775,11 @@ class CliKey(Cli):
 		# Add common arguments
 		self._add_common_arguments(parser)
 
+		# delete
+		delete = subparsers.add_parser("delete", help=_("Delete a key from the local keyring"))
+		delete.add_argument("fingerprint", nargs="+", help=_("The fingerprint of the key to delete"))
+		delete.set_defaults(func=self.handle_delete)
+
 		# export
 		export = subparsers.add_parser("export", help=_("Export a key to a file"))
 		export.add_argument("fingerprint", nargs=1,
@@ -802,14 +807,6 @@ class CliKey(Cli):
 		list.set_defaults(func=self.handle_list)
 
 		return parser.parse_args()
-
-	def parse_command_delete(self):
-		# Parse "delete" command.
-		sub_del = self.sub_commands.add_parser("delete",
-			help=_("Delete a key from the local keyring."))
-		sub_del.add_argument("keyid", nargs=1,
-			help=_("The ID of the key to delete."))
-		sub_del.add_argument("action", action="store_const", const="delete")
 
 	def parse_command_sign(self):
 		# Implement the "sign" command.
@@ -872,11 +869,13 @@ class CliKey(Cli):
 				key = p.import_key(data)
 				print(key)
 
-	def handle_delete(self):
-		keyid = self.args.keyid[0]
+	def handle_delete(self, ns):
+		p = self.pakfire(ns)
 
-		p = self.create_pakfire()
-		p.keyring.delete_key(keyid)
+		for fingerprint in ns.fingerprint:
+			key = p.get_key(fingerprint)
+			if key:
+				key.delete()
 
 	def handle_sign(self):
 		# Get the files from the command line options
