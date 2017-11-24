@@ -29,6 +29,8 @@
 #include <pakfire/pakfire.h>
 #include <pakfire/util.h>
 
+#define DEFAULT_KEY_SIZE "rsa4096"
+
 static gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	static int gpg_initialized = 0;
 	gpgme_error_t error;
@@ -241,7 +243,7 @@ PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
 
 	// Generate the key
 	gpgme_error_t error = gpgme_op_createkey(gpgctx, userid,
-		"rsa512", 0, 0, NULL, flags);
+		DEFAULT_KEY_SIZE, 0, 0, NULL, flags);
 
 	if (error != GPG_ERR_NO_ERROR) {
 		printf("ERROR: %s\n", gpgme_strerror(error));
