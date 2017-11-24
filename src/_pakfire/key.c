@@ -78,7 +78,12 @@ static PyObject* Key_repr(KeyObject* self) {
 }
 
 static PyObject* Key_str(KeyObject* self) {
-	return NULL;
+	char* string = pakfire_key_dump(self->key);
+
+	PyObject* object = PyUnicode_FromString(string);
+	pakfire_free(string);
+
+	return object;
 }
 
 static PyObject* Key_get_fingerprint(KeyObject* self) {

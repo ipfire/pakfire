@@ -22,7 +22,9 @@
 #include <gpgme.h>
 #include <string.h>
 
+#include <pakfire/constants.h>
 #include <pakfire/errno.h>
+#include <pakfire/i18n.h>
 #include <pakfire/key.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/util.h>
@@ -162,6 +164,64 @@ PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 
 const char* pakfire_key_get_fingerprint(PakfireKey key) {
 	return key->gpgkey->fpr;
+}
+
+const char* pakfire_key_get_uid(PakfireKey key) {
+	return key->gpgkey->uids->uid;
+}
+
+const char* pakfire_key_get_name(PakfireKey key) {
+	return key->gpgkey->uids->name;
+}
+
+const char* pakfire_key_get_email(PakfireKey key) {
+	return key->gpgkey->uids->email;
+}
+
+const char* pakfire_key_get_pubkey_algo(PakfireKey key) {
+	switch (key->gpgkey->subkeys->pubkey_algo) {
+		case GPGME_PK_RSA:
+		case GPGME_PK_RSA_E:
+		case GPGME_PK_RSA_S:
+			return "RSA";
+
+		case GPGME_PK_DSA:
+			return "DSA";
+
+		case GPGME_PK_ECDSA:
+			return "ECDSA";
+
+		case GPGME_PK_ECDH:
+			return "ECDH";
+
+		case GPGME_PK_ECC:
+			return "ECC";
+
+		case GPGME_PK_EDDSA:
+			return "EDDSA";
+
+		case GPGME_PK_ELG:
+		case GPGME_PK_ELG_E:
+			return "ELG";
+	}
+
+	return NULL;
+}
+
+size_t pakfire_key_get_pubkey_length(PakfireKey key) {
+	return key->gpgkey->subkeys->length;
+}
+
+time_t pakfire_key_get_created(PakfireKey key) {
+	return key->gpgkey->subkeys->timestamp;
+}
+
+time_t pakfire_key_get_expires(PakfireKey key) {
+	return key->gpgkey->subkeys->expires;
+}
+
+int pakfire_key_is_revoked(PakfireKey key) {
+	return key->gpgkey->subkeys->revoked;
 }
 
 PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
@@ -307,4 +367,33 @@ FAIL:
 	gpgme_release(gpgctx);
 
 	return NULL;
+}
+
+char* pakfire_key_dump(PakfireKey key) {
+	char* s = "";
+
+	time_t created = pakfire_key_get_created(key);
+	char* date_created = pakfire_format_date(created);
+
+	asprintf(&s, "pub %s%zu/%s %s",
+		pakfire_key_get_pubkey_algo(key),
+		pakfire_key_get_pubkey_length(key),
+		pakfire_key_get_fingerprint(key),
+		date_created
+	);
+	pakfire_free(date_created);
+
+	const char* uid = pakfire_key_get_uid(key);
+	if (uid) {
+		asprintf(&s, "%s\n    %s", s, uid);
+	}
+
+	time_t expires = pakfire_key_get_expires(key);
+	if (expires) {
+			char* date_expires = pakfire_format_date(expires);
+			asprintf(&s, "%s\n    %s: %s", s, _("Expires"), date_expires);
+			pakfire_free(date_expires);
+	}
+
+	return s;
 }

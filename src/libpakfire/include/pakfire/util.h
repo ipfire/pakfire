@@ -22,6 +22,7 @@
 #define PAKFIRE_UTIL_H
 
 #include <stddef.h>
+#include <time.h>
 
 void pakfire_oom(size_t num, size_t len);
 
@@ -34,6 +35,7 @@ void* pakfire_free(void* mem);
 char* pakfire_strdup(const char* s);
 
 char* pakfire_format_size(double size);
+char* pakfire_format_date(time_t t);
 
 char* pakfire_path_join(const char* first, const char* second);
 

@@ -71,11 +71,18 @@ global:
 
 	# key
 	pakfire_key_create;
+	pakfire_key_dump;
 	pakfire_key_export;
 	pakfire_key_generate;
 	pakfire_key_get;
+	pakfire_key_get_email;
 	pakfire_key_get_fingerprint;
+	pakfire_key_get_name;
+	pakfire_key_get_pubkey_algo;
+	pakfire_key_get_pubkey_length;
+	pakfire_key_get_uid;
 	pakfire_key_import;
+	pakfire_key_is_revoked;
 	pakfire_key_list;
 	pakfire_key_ref;
 	pakfire_key_unref;

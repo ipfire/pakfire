@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <pakfire/constants.h>
 
@@ -98,6 +99,22 @@ char* pakfire_format_size(double size) {
 	snprintf(string, STRING_SIZE, "%.0f%s", round(size), *unit);
 
 	return pakfire_strdup(string);
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+static char* pakfire_strftime(const char* format, time_t t) {
+	char string[STRING_SIZE];
+	struct tm* tm = gmtime(&t);
+
+	strftime(string, sizeof(string), format, tm);
+
+	return pakfire_strdup(string);
+}
+#pragma GCC diagnostic pop
+
+char* pakfire_format_date(time_t t) {
+	return pakfire_strftime("%Y-%m-%d", t);
 }
 
 char* pakfire_path_join(const char* first, const char* second) {

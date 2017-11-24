@@ -22,6 +22,7 @@
 #define PAKFIRE_KEY_H
 
 #include <gpgme.h>
+#include <time.h>
 
 #include <pakfire/types.h>
 
@@ -37,10 +38,23 @@ PakfireKey pakfire_key_ref(PakfireKey key);
 void pakfire_key_unref(PakfireKey key);
 
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint);
+
+// Access key properties
 const char* pakfire_key_get_fingerprint(PakfireKey key);
+const char* pakfire_key_get_uid(PakfireKey key);
+const char* pakfire_key_get_name(PakfireKey key);
+const char* pakfire_key_get_email(PakfireKey key);
+const char* pakfire_key_get_pubkey_algo(PakfireKey key);
+size_t pakfire_key_get_pubkey_length(PakfireKey key);
+time_t pakfire_key_get_created(PakfireKey key);
+time_t pakfire_key_get_expires(PakfireKey key);
+int pakfire_key_is_revoked(PakfireKey key);
+
 PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid);
 char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode);
 PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data);
+
+char* pakfire_key_dump(PakfireKey key);
 
 #ifdef PAKFIRE_PRIVATE
 
