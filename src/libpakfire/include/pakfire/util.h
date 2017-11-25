@@ -45,4 +45,6 @@ char* pakfire_dirname(const char* path);
 char* pakfire_sgets(char* str, int num, char** input);
 char* pakfire_remove_trailing_newline(char* str);
 
+void init_libgcrypt();
+
 #endif /* PAKFIRE_UTIL_H */
