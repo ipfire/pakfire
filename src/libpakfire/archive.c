@@ -31,6 +31,9 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+// libgcrypt
+#include <gcrypt.h>
+
 #include <pakfire/archive.h>
 #include <pakfire/errno.h>
 #include <pakfire/file.h>
@@ -148,6 +151,20 @@ static void pakfire_archive_checksum_free(archive_checksum_t* c) {
 	pakfire_free(c->filename);
 	pakfire_free(c->checksum);
 	pakfire_free(c);
+}
+
+static archive_checksum_t* pakfire_archive_checksum_find(PakfireArchive archive, const char* filename) {
+	archive_checksum_t** checksums = archive->checksums;
+
+	while (checksums && *checksums) {
+		archive_checksum_t* checksum = *checksums++;
+
+		if (strcmp(checksum->filename, filename) == 0)
+			return checksum;
+	}
+
+	// Nothing found
+	return NULL;
 }
 
 static archive_signature_t* pakfire_archive_signature_create(const char* sigdata) {
@@ -751,31 +768,120 @@ CLEANUP:
 	return status;
 }
 
-static pakfire_archive_verify_status_t pakfire_archive_verify_file(PakfireArchive archive, const archive_checksum_t* checksum) {
-	return PAKFIRE_ARCHIVE_VERIFY_OK; // TODO
+static char* digest_to_hexdigest(const unsigned char* digest, unsigned int len) {
+	char* hexdigest = pakfire_calloc(len * 2, sizeof(*hexdigest));
+
+	char* p = hexdigest;
+	for (unsigned int i = 0; i < len; i++) {
+		snprintf(p, 3, "%02x", digest[i]);
+		p += 2;
+	}
+
+	return hexdigest;
+}
+
+static pakfire_archive_verify_status_t pakfire_archive_verify_file(struct archive* a, const archive_checksum_t* checksum) {
+	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
+
+	// Make sure libgcrypt is initialized
+	init_libgcrypt();
+
+	int algo = 0;
+	switch (checksum->algo) {
+		case PAKFIRE_CHECKSUM_SHA512:
+			algo = GCRY_MD_SHA512;
+			break;
+
+		case PAKFIRE_CHECKSUM_UNKNOWN:
+			break;
+	}
+	assert(algo);
+
+	gcry_md_hd_t hd = NULL;
+	gcry_error_t error = gcry_md_open(&hd, algo, 0);
+	if (error != GPG_ERR_NO_ERROR)
+		return PAKFIRE_ARCHIVE_VERIFY_ERROR;
+
+	const void* buff;
+	size_t size;
+	off_t offset;
+
+	for (;;) {
+		int r = archive_read_data_block(a, &buff, &size, &offset);
+		if (r == ARCHIVE_EOF)
+			break;
+
+		if (r != ARCHIVE_OK) {
+			pakfire_errno = r;
+			status = PAKFIRE_ARCHIVE_VERIFY_ERROR;
+			goto FAIL;
+		}
+
+		// Update hash digest
+		gcry_md_write(hd, buff, size);
+	}
+
+	// Finish computing the hash
+	gcry_md_final(hd);
+
+	// Get the hash digest
+	unsigned int l = gcry_md_get_algo_dlen(algo);
+	unsigned char* digest = gcry_md_read(hd, algo);
+
+	// Convert to hexdigest
+	char* hexdigest = digest_to_hexdigest(digest, l);
+
+	// Compare digests
+	if (strcmp(checksum->checksum, hexdigest) == 0)
+		status = PAKFIRE_ARCHIVE_VERIFY_OK;
+
+	pakfire_free(hexdigest);
+
+FAIL:
+	gcry_md_close(hd);
+
+	return status;
 }
 
 pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
-	// TODO Verify that checksums file is signed with a valid key
-	pakfire_archive_verify_status_t r = pakfire_archive_verify_checksums(archive);
-	if (r)
-		return r;
+	// Verify that checksums file is signed with a valid key
+	pakfire_archive_verify_status_t status = pakfire_archive_verify_checksums(archive);
+	if (status)
+		return status;
 
-	// TODO Verify checksum of each file
-	archive_checksum_t** checksum = archive->checksums;
-	while (*checksum) {
-		r = pakfire_archive_verify_file(archive, *checksum);
-		if (r)
-			return r;
+	// Open the archive file
+	struct archive* a;
+	int r = archive_open(archive, &a);
+	if (r) {
+		pakfire_errno = r;
+		return PAKFIRE_ARCHIVE_VERIFY_ERROR;
 	}
 
-	return 0;
+	struct archive_entry* entry;
+	while ((r = archive_read_next_header(a, &entry)) == ARCHIVE_OK) {
+		const char* entry_name = archive_entry_pathname(entry);
+
+		// See if we have a checksum for this file
+		const archive_checksum_t* checksum = pakfire_archive_checksum_find(archive, entry_name);
+		if (!checksum)
+			continue;
+
+		// Compare the checksums
+		status = pakfire_archive_verify_file(a, checksum);
+		if (status)
+			return status;
+	}
+
+	return PAKFIRE_ARCHIVE_VERIFY_OK;
 }
 
 const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status) {
 	switch (status) {
 		case PAKFIRE_ARCHIVE_VERIFY_OK:
 			return _("Verify OK");
+
+		case PAKFIRE_ARCHIVE_VERIFY_ERROR:
+			return _("Error performing validation");
 
 		case PAKFIRE_ARCHIVE_VERIFY_INVALID:
 			return _("Invalid signature");

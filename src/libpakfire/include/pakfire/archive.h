@@ -31,6 +31,7 @@ typedef enum pakfire_archive_verify_status {
 	PAKFIRE_ARCHIVE_VERIFY_SIG_EXPIRED,
 	PAKFIRE_ARCHIVE_VERIFY_KEY_EXPIRED,
 	PAKFIRE_ARCHIVE_VERIFY_KEY_UNKNOWN,
+	PAKFIRE_ARCHIVE_VERIFY_ERROR,
 } pakfire_archive_verify_status_t;
 
 PakfireArchive pakfire_archive_create(Pakfire pakfire);
