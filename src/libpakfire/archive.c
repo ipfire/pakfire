@@ -869,10 +869,15 @@ pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
 		// Compare the checksums
 		status = pakfire_archive_verify_file(a, checksum);
 		if (status)
-			return status;
+			goto END;
 	}
 
-	return PAKFIRE_ARCHIVE_VERIFY_OK;
+	status = PAKFIRE_ARCHIVE_VERIFY_OK;
+
+END:
+	archive_close(a);
+
+	return status;
 }
 
 const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status) {
