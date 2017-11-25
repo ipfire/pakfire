@@ -168,7 +168,7 @@ size_t pakfire_archive_count_signatures(PakfireArchive archive) {
 	size_t i = 0;
 
 	archive_signature_t** signatures = archive->signatures;
-	while (*signatures++) {
+	while (signatures && *signatures++) {
 		i++;
 	}
 
@@ -193,12 +193,12 @@ void pakfire_archive_free(PakfireArchive archive) {
 
 	// Free checksums
 	archive_checksum_t** checksums = archive->checksums;
-	while (*checksums)
+	while (checksums && *checksums)
 		pakfire_archive_checksum_free(*checksums++);
 
 	// Free signatures
 	archive_signature_t** signatures = archive->signatures;
-	while (*signatures)
+	while (signatures && *signatures)
 		pakfire_archive_signature_free(*signatures++);
 
 	pakfire_unref(archive->pakfire);
@@ -272,7 +272,7 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 	data[data_size] = '\0';
 
 	// Allocate some space to save the checksums
-	archive->checksums = pakfire_calloc(10, sizeof(*archive->checksums));
+	archive_checksum_t** checksums = archive->checksums = pakfire_calloc(10, sizeof(*archive->checksums));
 
 	const char* filename = NULL;
 	const char* checksum = NULL;
@@ -306,7 +306,7 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 
 		// Add new checksum object
 		if (filename && checksum) {
-			*archive->checksums++ = pakfire_archive_checksum_create(filename, checksum, algo);
+			*checksums++ = pakfire_archive_checksum_create(filename, checksum, algo);
 		}
 
 		// Eat up any space before next thing starts
@@ -315,7 +315,7 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 	}
 
 	// Terminate the list
-	*archive->checksums = NULL;
+	*checksums = NULL;
 
 	pakfire_free(data);
 
@@ -650,7 +650,7 @@ char** pakfire_archive_get_signatures(PakfireArchive archive) {
 
 	char** list = head;
 	archive_signature_t** signatures = archive->signatures;
-	while (*signatures) {
+	while (signatures && *signatures) {
 		archive_signature_t* signature = *signatures++;
 
 		*list++ = pakfire_strdup(signature->sigdata);
@@ -685,8 +685,7 @@ static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireA
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(archive->pakfire);
 
 	// Try for each signature
-	archive_signature_t** signatures = archive->signatures;
-	while (*signatures) {
+	while (signatures && *signatures) {
 		archive_signature_t* signature = *signatures++;
 
 		gpgme_data_t sigdata;
