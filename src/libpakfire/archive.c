@@ -665,6 +665,11 @@ char** pakfire_archive_get_signatures(PakfireArchive archive) {
 static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireArchive archive) {
 	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
 
+	// Cannot validate anything if no signatures are available
+	archive_signature_t** signatures = archive->signatures;
+	if (!signatures)
+		return PAKFIRE_ARCHIVE_VERIFY_OK;
+
 	char* data = NULL;
 	size_t size = 0;
 	gpgme_error_t error;
