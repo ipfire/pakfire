@@ -35,7 +35,8 @@ typedef enum pakfire_archive_verify_status {
 } pakfire_archive_verify_status_t;
 
 PakfireArchive pakfire_archive_create(Pakfire pakfire);
-void pakfire_archive_free(PakfireArchive archive);
+PakfireArchive pakfire_archive_ref(PakfireArchive archive);
+void pakfire_archive_unref(PakfireArchive archive);
 
 PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path);
 
@@ -49,11 +50,15 @@ unsigned int pakfire_archive_get_format(PakfireArchive archive);
 
 PakfireFile pakfire_archive_get_filelist(PakfireArchive archive);
 
-size_t pakfire_archive_count_signatures(PakfireArchive archive);
-char** pakfire_archive_get_signatures(PakfireArchive archive);
-
 pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive);
 const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status);
+
+size_t pakfire_archive_count_signatures(PakfireArchive archive);
+PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireArchive archive);
+
+PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature signature);
+void pakfire_archive_signature_unref(PakfireArchiveSignature signature);
+const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature);
 
 enum pakfire_archive_flags {
 	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
@@ -82,10 +87,6 @@ typedef struct archive_checksum {
 	archive_checksum_algo_t algo;
 } archive_checksum_t;
 
-typedef struct archive_signature {
-	char* sigdata;
-} archive_signature_t;
-
 struct _PakfireArchive {
 	Pakfire pakfire;
 	char* path;
@@ -95,7 +96,18 @@ struct _PakfireArchive {
 
 	PakfireFile filelist;
 	archive_checksum_t** checksums;
-	archive_signature_t** signatures;
+
+	// Signatures
+	PakfireArchiveSignature* signatures;
+	int signatures_loaded;
+
+	int nrefs;
+};
+
+struct _PakfireArchiveSignature {
+	PakfireKey key;
+	char* sigdata;
+	int nrefs;
 };
 
 struct payload_archive_data {

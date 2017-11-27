@@ -142,6 +142,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	Py_INCREF(&ArchiveType);
 	PyModule_AddObject(module, "Archive", (PyObject *)&ArchiveType);
 
+	// Archive Signature
+	if (PyType_Ready(&ArchiveSignatureType) < 0)
+		return NULL;
+
+	Py_INCREF(&ArchiveSignatureType);
+	PyModule_AddObject(module, "ArchiveSignature", (PyObject *)&ArchiveSignatureType);
+
 	// Key
 	if (PyType_Ready(&KeyType) < 0)
 		return NULL;

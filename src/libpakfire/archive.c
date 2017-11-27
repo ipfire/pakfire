@@ -167,24 +167,40 @@ static archive_checksum_t* pakfire_archive_checksum_find(PakfireArchive archive,
 	return NULL;
 }
 
-static archive_signature_t* pakfire_archive_signature_create(const char* sigdata) {
-	archive_signature_t* s = pakfire_calloc(1, sizeof(*s));
-	if (s) {
-		s->sigdata = pakfire_strdup(sigdata);
+static PakfireArchiveSignature pakfire_archive_signature_create(PakfireArchive archive, const char* sigdata) {
+	PakfireArchiveSignature signature = pakfire_calloc(1, sizeof(*signature));
+	if (signature) {
+		signature->nrefs = 1;
+		signature->sigdata = pakfire_strdup(sigdata);
 	}
 
-	return s;
+	return signature;
 }
 
-static void pakfire_archive_signature_free(archive_signature_t* s) {
-	pakfire_free(s->sigdata);
-	pakfire_free(s);
+static void pakfire_archive_signature_free(PakfireArchiveSignature signature) {
+	if (signature->key)
+		pakfire_key_unref(signature->key);
+
+	pakfire_free(signature->sigdata);
+	pakfire_free(signature);
 }
 
-size_t pakfire_archive_count_signatures(PakfireArchive archive) {
+PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature signature) {
+	++signature->nrefs;
+
+	return signature;
+}
+
+void pakfire_archive_signature_unref(PakfireArchiveSignature signature) {
+	if (--signature->nrefs > 0)
+		return;
+
+	pakfire_archive_signature_free(signature);
+}
+
+size_t _pakfire_archive_count_signatures(const PakfireArchiveSignature* signatures) {
 	size_t i = 0;
 
-	archive_signature_t** signatures = archive->signatures;
 	while (signatures && *signatures++) {
 		i++;
 	}
@@ -192,9 +208,16 @@ size_t pakfire_archive_count_signatures(PakfireArchive archive) {
 	return i;
 }
 
+size_t pakfire_archive_count_signatures(PakfireArchive archive) {
+	PakfireArchiveSignature* signatures = pakfire_archive_get_signatures(archive);
+
+	return _pakfire_archive_count_signatures(signatures);
+}
+
 PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	PakfireArchive archive = pakfire_calloc(1, sizeof(*archive));
 	if (archive) {
+		archive->nrefs = 1;
 		archive->pakfire = pakfire_ref(pakfire);
 		archive->format = -1;
 
@@ -204,7 +227,13 @@ PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	return archive;
 }
 
-void pakfire_archive_free(PakfireArchive archive) {
+PakfireArchive pakfire_archive_ref(PakfireArchive archive) {
+	++archive->nrefs;
+
+	return archive;
+}
+
+static void pakfire_archive_free(PakfireArchive archive) {
 	if (archive->path)
 		pakfire_free(archive->path);
 
@@ -214,12 +243,23 @@ void pakfire_archive_free(PakfireArchive archive) {
 		pakfire_archive_checksum_free(*checksums++);
 
 	// Free signatures
-	archive_signature_t** signatures = archive->signatures;
-	while (signatures && *signatures)
-		pakfire_archive_signature_free(*signatures++);
+	if (archive->signatures) {
+		PakfireArchiveSignature* signatures = archive->signatures;
+		while (signatures && *signatures)
+			pakfire_archive_signature_unref(*signatures++);
+
+		pakfire_free(archive->signatures);
+	}
 
 	pakfire_unref(archive->pakfire);
 	pakfire_free(archive);
+}
+
+void pakfire_archive_unref(PakfireArchive archive) {
+	if (--archive->nrefs > 0)
+		return;
+
+	pakfire_archive_free(archive);
 }
 
 static int pakfire_archive_parse_entry_format(PakfireArchive archive,
@@ -339,98 +379,78 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 	return 0;
 }
 
-static int pakfire_archive_parse_entry_signature(PakfireArchive archive,
-		struct archive* a, struct archive_entry* e) {
-	char* data;
-	size_t data_size;
+static int pakfire_archive_walk(PakfireArchive archive,
+		int (*callback)(PakfireArchive archive, struct archive* a, struct archive_entry* e, const char* pathname)) {
+	struct archive_entry* e;
+	int r = 0;
 
-	int r = archive_read(a, (void**)&data, &data_size);
+	// Open the archive file
+	struct archive* a;
+	r = archive_open(archive, &a);
 	if (r)
-		return 1;
+		return r;
 
-	// Terminate string.
-	data[data_size] = '\0';
+	// Walk through the archive
+	int ret;
+	while ((ret = archive_read_next_header(a, &e)) == ARCHIVE_OK) {
+		const char* pathname = archive_entry_pathname(e);
 
-	archive_signature_t* signature = pakfire_archive_signature_create(data);
-	if (!signature)
-		return 1;
+		r = callback(archive, a, e, pathname);
+		if (r)
+			break;
+	}
 
-	if (archive->signatures) {
-		// Count signatures
-		size_t num_signatures = pakfire_archive_count_signatures(archive) + 1;
+	// Close the archive again
+	archive_close(a);
 
-		// Resize the array
-		archive->signatures = pakfire_realloc(archive->signatures, sizeof(*archive->signatures) * num_signatures);
+	return r;
+}
+
+static int pakfire_archive_read_metadata_entry(PakfireArchive archive, struct archive* a,
+		struct archive_entry* e, const char* entry_name) {
+	int ret;
+
+	/* The first file in a pakfire package file must be
+		* the pakfire-format file, so we know with what version of
+		* the package format we are dealing with.
+		*/
+	if (archive->format < 0) {
+		if (strcmp(PAKFIRE_ARCHIVE_FN_FORMAT, entry_name) == 0) {
+			ret = pakfire_archive_parse_entry_format(archive, a, e);
+			if (ret)
+				return PAKFIRE_E_PKG_INVALID;
+
+		} else {
+			return PAKFIRE_E_PKG_INVALID;
+		}
+
+	// If the format is set, we can go on...
 	} else {
-		archive->signatures = pakfire_calloc(2, sizeof(*archive->signatures));
+		// Parse the metadata
+		if (strcmp(PAKFIRE_ARCHIVE_FN_METADATA, entry_name) == 0) {
+			ret = pakfire_archive_parse_entry_metadata(archive, a, e);
+			if (ret)
+				return PAKFIRE_E_PKG_INVALID;
+
+		// Parse the filelist
+		} else if (strcmp(PAKFIRE_ARCHIVE_FN_FILELIST, entry_name) == 0) {
+			ret = pakfire_archive_parse_entry_filelist(archive, a, e);
+			if (ret)
+				return PAKFIRE_E_PKG_INVALID;
+
+		// Parse the checksums
+		} else if (strcmp(PAKFIRE_ARCHIVE_FN_CHECKSUMS, entry_name) == 0) {
+			ret = pakfire_archive_parse_entry_checksums(archive, a, e);
+			if (ret)
+				return PAKFIRE_E_PKG_INVALID;
+		}
 	}
-
-	// Look for last element
-	archive_signature_t** signatures = archive->signatures;
-	while (*signatures) {
-		*signatures++;
-	}
-
-	// Append signature
-	*signatures++ = signature;
-
-	// Terminate list
-	*signatures = NULL;
 
 	return 0;
 }
 
 static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive* a) {
-	int ret;
-
-	struct archive_entry* entry;
-	while ((ret = archive_read_next_header(a, &entry)) == ARCHIVE_OK) {
-		const char* entry_name = archive_entry_pathname(entry);
-
-		/* The first file in a pakfire package file must be
-		 * the pakfire-format file, so we know with what version of
-		 * the package format we are dealing with.
-		 */
-		if (archive->format < 0) {
-			if (strcmp(PAKFIRE_ARCHIVE_FN_FORMAT, entry_name) == 0) {
-				ret = pakfire_archive_parse_entry_format(archive, a, entry);
-				if (ret)
-					return PAKFIRE_E_PKG_INVALID;
-
-			} else {
-				return PAKFIRE_E_PKG_INVALID;
-			}
-
-		// If the format is set, we can go on...
-		} else {
-			// Parse the metadata
-			if (strcmp(PAKFIRE_ARCHIVE_FN_METADATA, entry_name) == 0) {
-				ret = pakfire_archive_parse_entry_metadata(archive, a, entry);
-				if (ret)
-					return PAKFIRE_E_PKG_INVALID;
-
-			// Parse the filelist
-			} else if (strcmp(PAKFIRE_ARCHIVE_FN_FILELIST, entry_name) == 0) {
-				ret = pakfire_archive_parse_entry_filelist(archive, a, entry);
-				if (ret)
-					return PAKFIRE_E_PKG_INVALID;
-
-			// Parse the checksums
-			} else if (strcmp(PAKFIRE_ARCHIVE_FN_CHECKSUMS, entry_name) == 0) {
-				ret = pakfire_archive_parse_entry_checksums(archive, a, entry);
-				if (ret)
-					return PAKFIRE_E_PKG_INVALID;
-
-			// Parse signatures
-			} else if (strncmp(PAKFIRE_ARCHIVE_FN_SIGNATURES, entry_name, strlen(PAKFIRE_ARCHIVE_FN_SIGNATURES)) == 0) {
-				ret = pakfire_archive_parse_entry_signature(archive, a, entry);
-				if (ret)
-					return PAKFIRE_E_PKG_INVALID;
-			}
-		}
-	}
-
-	return 0;
+	return pakfire_archive_walk(archive, pakfire_archive_read_metadata_entry);
 }
 
 static int archive_copy_data(struct archive* in, struct archive* out) {
@@ -658,32 +678,77 @@ PakfireFile pakfire_archive_get_filelist(PakfireArchive archive) {
 	return archive->filelist;
 }
 
-char** pakfire_archive_get_signatures(PakfireArchive archive) {
-	size_t size = pakfire_archive_count_signatures(archive);
+const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature) {
+	return signature->sigdata;
+}
 
-	char** head = pakfire_calloc(size, sizeof(*head));
-	if (!head)
-		return NULL;
+static int pakfire_archive_parse_entry_signature(PakfireArchive archive,
+		struct archive* a, struct archive_entry* e) {
+	char* data;
+	size_t data_size;
 
-	char** list = head;
-	archive_signature_t** signatures = archive->signatures;
-	while (signatures && *signatures) {
-		archive_signature_t* signature = *signatures++;
+	int r = archive_read(a, (void**)&data, &data_size);
+	if (r)
+		return 1;
 
-		*list++ = pakfire_strdup(signature->sigdata);
+	// Terminate string.
+	data[data_size] = '\0';
+
+	PakfireArchiveSignature signature = pakfire_archive_signature_create(archive, data);
+	if (!signature)
+		return 1;
+
+	if (archive->signatures) {
+		// Count signatures
+		size_t num_signatures = _pakfire_archive_count_signatures(archive->signatures) + 1;
+
+		// Resize the array
+		archive->signatures = pakfire_realloc(archive->signatures, sizeof(*archive->signatures) * num_signatures);
+	} else {
+		archive->signatures = pakfire_calloc(2, sizeof(*archive->signatures));
 	}
 
-	// Terminate list
-	*list = NULL;
+	// Look for last element
+	PakfireArchiveSignature* signatures = archive->signatures;
+	while (signatures && *signatures) {
+		*signatures++;
+	}
 
-	return head;
+	// Append signature
+	*signatures++ = signature;
+
+	// Terminate list
+	*signatures = NULL;
+
+	return 0;
+}
+
+static int pakfire_archive_read_signature_entry(PakfireArchive archive, struct archive* a, struct archive_entry* e, const char* entry_name) {
+	if (strncmp(PAKFIRE_ARCHIVE_FN_SIGNATURES, entry_name, strlen(PAKFIRE_ARCHIVE_FN_SIGNATURES)) == 0) {
+		int ret = pakfire_archive_parse_entry_signature(archive, a, e);
+		if (ret)
+			return PAKFIRE_E_PKG_INVALID;
+	}
+
+	return 0;
+}
+
+static int pakfire_archive_load_signatures(PakfireArchive archive) {
+	return pakfire_archive_walk(archive, pakfire_archive_read_signature_entry);
+}
+
+PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireArchive archive) {
+	if (!archive->signatures_loaded++)
+		pakfire_archive_load_signatures(archive);
+
+	return archive->signatures;
 }
 
 static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireArchive archive) {
 	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
 
 	// Cannot validate anything if no signatures are available
-	archive_signature_t** signatures = archive->signatures;
+	PakfireArchiveSignature* signatures = pakfire_archive_get_signatures(archive);
 	if (!signatures)
 		return PAKFIRE_ARCHIVE_VERIFY_OK;
 
@@ -708,7 +773,7 @@ static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireA
 
 	// Try for each signature
 	while (signatures && *signatures) {
-		archive_signature_t* signature = *signatures++;
+		PakfireArchiveSignature signature = *signatures++;
 
 		gpgme_data_t sigdata;
 		error = gpgme_data_new_from_mem(&sigdata, signature->sigdata, strlen(signature->sigdata), 0);

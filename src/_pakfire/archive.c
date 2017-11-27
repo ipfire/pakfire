@@ -38,7 +38,7 @@ static PyObject* Archive_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 static void Archive_dealloc(ArchiveObject* self) {
 	if (self->archive)
-		pakfire_archive_free(self->archive);
+		pakfire_archive_unref(self->archive);
 
 	Py_DECREF(self->pakfire);
 
@@ -56,6 +56,7 @@ static int Archive_init(ArchiveObject* self, PyObject* args, PyObject* kwds) {
 	Py_INCREF(self->pakfire);
 
 	self->archive = pakfire_archive_open(self->pakfire->pakfire, filename);
+	assert(self->archive);
 
 	return 0;
 }
@@ -116,20 +117,17 @@ static PyObject* Archive_verify(ArchiveObject* self) {
 static PyObject* Archive_get_signatures(ArchiveObject* self) {
 	PyObject* list = PyList_New(0);
 
-	char** head = pakfire_archive_get_signatures(self->archive);
+	PakfireArchiveSignature* head = pakfire_archive_get_signatures(self->archive);
 
-	char** signatures = head;
-	while (*signatures) {
-		char* signature = *signatures++;
+	PakfireArchiveSignature* signatures = head;
+	while (signatures && *signatures) {
+		PakfireArchiveSignature signature = *signatures++;
 
-		PyObject* object = PyUnicode_FromString(signature);
+		PyObject* object = new_archive_signature(self, signature);
 		PyList_Append(list, object);
 
 		Py_DECREF(object);
-		pakfire_free(signature);
 	}
-
-	pakfire_free(head);
 
 	return list;
 }
@@ -183,4 +181,52 @@ PyTypeObject ArchiveType = {
 	//tp_repr:            (reprfunc)Archive_repr,
 	//tp_str:             (reprfunc)Archive_str,
 	//tp_richcompare:     (richcmpfunc)Archive_richcompare,
+};
+
+// Archive Signature
+
+static PyObject* ArchiveSignature_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
+	ArchiveSignatureObject* self = (ArchiveSignatureObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->signature = NULL;
+	}
+
+	return (PyObject *)self;
+}
+
+PyObject* new_archive_signature(ArchiveObject* archive, PakfireArchiveSignature signature) {
+	ArchiveSignatureObject* s = (ArchiveSignatureObject*)ArchiveSignature_new(&ArchiveSignatureType, NULL, NULL);
+	if (s)
+		s->signature = pakfire_archive_signature_ref(signature);
+
+	return (PyObject *)s;
+}
+
+static void ArchiveSignature_dealloc(ArchiveSignatureObject* self) {
+	if (self->signature)
+		pakfire_archive_signature_unref(self->signature);
+
+	Py_TYPE(self)->tp_free((PyObject *)self);
+}
+
+static PyObject* ArchiveSignature_str(ArchiveSignatureObject* self) {
+	const char* data = pakfire_archive_signature_get_data(self->signature);
+
+	return PyUnicode_FromString(data);
+}
+
+static struct PyGetSetDef ArchiveSignature_getsetters[] = {
+	{ NULL },
+};
+
+PyTypeObject ArchiveSignatureType = {
+	PyVarObject_HEAD_INIT(NULL, 0)
+	tp_name:            "_pakfire.ArchiveSignature",
+	tp_basicsize:       sizeof(ArchiveSignatureObject),
+	tp_flags:           Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,
+	tp_new:             ArchiveSignature_new,
+	tp_dealloc:         (destructor)ArchiveSignature_dealloc,
+	tp_doc:             "ArchiveSignature object",
+	tp_getset:          ArchiveSignature_getsetters,
+	tp_str:             (reprfunc)ArchiveSignature_str,
 };

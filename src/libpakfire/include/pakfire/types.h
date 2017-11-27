@@ -23,6 +23,7 @@
 
 typedef struct _Pakfire* Pakfire;
 typedef struct _PakfireArchive* PakfireArchive;
+typedef struct _PakfireArchiveSignature* PakfireArchiveSignature;
 typedef struct _PakfireCache* PakfireCache;
 typedef struct _PakfireFile* PakfireFile;
 typedef struct _PakfireFilter* PakfireFilter;

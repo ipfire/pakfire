@@ -35,4 +35,13 @@ typedef struct {
 
 extern PyTypeObject ArchiveType;
 
+typedef struct {
+	PyObject_HEAD
+	PakfireArchiveSignature signature;
+} ArchiveSignatureObject;
+
+extern PyTypeObject ArchiveSignatureType;
+
+PyObject* new_archive_signature(ArchiveObject* archive, PakfireArchiveSignature signature);
+
 #endif /* PYTHON_PAKFIRE_ARCHIVE_H */
