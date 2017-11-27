@@ -1,3 +1,5 @@
+src/libpakfire/archive.c
+src/libpakfire/key.c
 src/libpakfire/package.c
 src/libpakfire/problem.c
 src/libpakfire/solution.c
