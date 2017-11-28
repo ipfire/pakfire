@@ -18,32 +18,15 @@
 #                                                                             #
 #############################################################################*/
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <syslog.h>
-
 #include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/system.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-static int log_priority(const char* priority) {
-	char* end;
-
-	int prio = strtol(priority, &end, 10);
-	if (*end == '\0' || isspace(*end))
-		return prio;
-
-	if (strncmp(priority, "error", strlen("error")) == 0)
-		return LOG_ERR;
-
-	if (strncmp(priority, "info", strlen("info")) == 0)
-		return LOG_INFO;
-
-	if (strncmp(priority, "debug", strlen("debug")) == 0)
-		return LOG_DEBUG;
+int pakfire_init() {
+	// Setup logging
+	pakfire_setup_logging();
 
 	return 0;
 }
@@ -59,17 +42,9 @@ Pakfire pakfire_create(const char* path, const char* arch) {
 		}
 		pakfire->arch = pakfire_strdup(arch);
 
-		// Setup logging
-		pakfire->log_function = pakfire_log_syslog;
-		pakfire->log_priority = LOG_ERR;
-
-		const char* priority = secure_getenv("PAKFIRE_LOG");
-		if (priority)
-			pakfire_set_log_priority(pakfire, log_priority(priority));
-
-		DEBUG(pakfire, "Pakfire initialized at %p\n", pakfire);
-		DEBUG(pakfire, "  arch = %s\n", pakfire->arch);
-		DEBUG(pakfire, "  path = %s\n", pakfire->path);
+		DEBUG("Pakfire initialized at %p\n", pakfire);
+		DEBUG("  arch = %s\n", pakfire->arch);
+		DEBUG("  path = %s\n", pakfire->path);
 
 		// Initialize the pool
 		pakfire->pool = pakfire_pool_create(pakfire);
@@ -93,24 +68,8 @@ void pakfire_unref(Pakfire pakfire) {
 	pakfire_free(pakfire->path);
 	pakfire_free(pakfire->arch);
 
-	DEBUG(pakfire, "Pakfire released at %p\n", pakfire);
+	DEBUG("Pakfire released at %p\n", pakfire);
 	pakfire_free(pakfire);
-}
-
-pakfire_log_function_t pakfire_get_log_function(Pakfire pakfire) {
-	return pakfire->log_function;
-}
-
-void pakfire_set_log_function(Pakfire pakfire, pakfire_log_function_t func) {
-	pakfire->log_function = func;
-}
-
-int pakfire_get_log_priority(Pakfire pakfire) {
-	return pakfire->log_priority;
-}
-
-void pakfire_set_log_priority(Pakfire pakfire, int priority) {
-	pakfire->log_priority = priority;
 }
 
 const char* pakfire_get_path(Pakfire pakfire) {

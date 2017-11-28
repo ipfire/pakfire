@@ -24,15 +24,12 @@
 #include <pakfire/logging.h>
 #include <pakfire/types.h>
 
+int pakfire_init();
+
 Pakfire pakfire_create(const char* path, const char* arch);
 
 Pakfire pakfire_ref(Pakfire pakfire);
 void pakfire_unref(Pakfire pakfire);
-
-pakfire_log_function_t pakfire_get_log_function(Pakfire pakfire);
-void pakfire_set_log_function(Pakfire pakfire, pakfire_log_function_t func);
-int pakfire_get_log_priority(Pakfire pakfire);
-void pakfire_set_log_priority(Pakfire pakfire, int priority);
 
 const char* pakfire_get_path(Pakfire pakfire);
 const char* pakfire_get_arch(Pakfire pakfire);

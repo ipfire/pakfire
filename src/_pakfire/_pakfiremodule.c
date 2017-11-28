@@ -115,6 +115,11 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	bindtextdomain(PACKAGE_TARNAME, "/usr/share/locale");
 	textdomain(PACKAGE_TARNAME);
 
+	// Initialize the pakfire library
+	int r = pakfire_init();
+	if (r)
+		return NULL;
+
 	// Create the module
 	PyObject* module = PyModule_Create(&moduledef);
 	if (!module)

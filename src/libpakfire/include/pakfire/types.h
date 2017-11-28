@@ -45,7 +45,7 @@ typedef struct _PakfireSolution* PakfireSolution;
 typedef struct _PakfireStep* PakfireStep;
 typedef struct _PakfireTransaction* PakfireTransaction;
 
-typedef void (*pakfire_log_function_t)(Pakfire pakfire, int priority,
+typedef void (*pakfire_log_function_t)(int priority,
 		const char* file, int line, const char* fn,
 		const char* format, va_list args);
 
