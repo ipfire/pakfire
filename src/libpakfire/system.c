@@ -18,55 +18,25 @@
 #                                                                             #
 #############################################################################*/
 
-#include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
+#include <string.h>
+#include <sys/utsname.h>
+
+#include <pakfire/constants.h>
 #include <pakfire/system.h>
-#include <pakfire/types.h>
 #include <pakfire/util.h>
 
-Pakfire pakfire_create(const char* path, const char* arch) {
-	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
-	if (pakfire) {
-		pakfire->nrefs = 1;
+const char* system_machine() {
+    static char __system_machine[STRING_SIZE] = "";
 
-		pakfire->path = pakfire_strdup(path);
-		if (!arch) {
-			arch = system_machine();
-		}
-		pakfire->arch = pakfire_strdup(arch);
+    if (!*__system_machine) {
+        struct utsname buf;
 
-		// Initialize the pool
-		pakfire->pool = pakfire_pool_create(pakfire);
-	}
+        int r = uname(&buf);
+        if (!r)
+            return NULL;
 
-	return pakfire;
-}
+        strncpy(__system_machine, buf.machine, sizeof(*__system_machine));
+    }
 
-Pakfire pakfire_ref(Pakfire pakfire) {
-	++pakfire->nrefs;
-
-	return pakfire;
-}
-
-void pakfire_unref(Pakfire pakfire) {
-	if (--pakfire->nrefs > 0)
-		return;
-
-	pakfire_pool_unref(pakfire->pool);
-
-	pakfire_free(pakfire->path);
-	pakfire_free(pakfire->arch);
-	pakfire_free(pakfire);
-}
-
-const char* pakfire_get_path(Pakfire pakfire) {
-	return pakfire->path;
-}
-
-const char* pakfire_get_arch(Pakfire pakfire) {
-	return pakfire->arch;
-}
-
-PakfirePool pakfire_get_pool(Pakfire pakfire) {
-	return pakfire_pool_ref(pakfire->pool);
+    return __system_machine;
 }

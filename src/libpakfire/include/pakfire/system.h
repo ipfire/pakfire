@@ -18,55 +18,9 @@
 #                                                                             #
 #############################################################################*/
 
-#include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
-#include <pakfire/system.h>
-#include <pakfire/types.h>
-#include <pakfire/util.h>
+#ifndef PAKFIRE_SYSTEM_H
+#define PAKFIRE_SYSTEM_H
 
-Pakfire pakfire_create(const char* path, const char* arch) {
-	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
-	if (pakfire) {
-		pakfire->nrefs = 1;
+const char* system_machine();
 
-		pakfire->path = pakfire_strdup(path);
-		if (!arch) {
-			arch = system_machine();
-		}
-		pakfire->arch = pakfire_strdup(arch);
-
-		// Initialize the pool
-		pakfire->pool = pakfire_pool_create(pakfire);
-	}
-
-	return pakfire;
-}
-
-Pakfire pakfire_ref(Pakfire pakfire) {
-	++pakfire->nrefs;
-
-	return pakfire;
-}
-
-void pakfire_unref(Pakfire pakfire) {
-	if (--pakfire->nrefs > 0)
-		return;
-
-	pakfire_pool_unref(pakfire->pool);
-
-	pakfire_free(pakfire->path);
-	pakfire_free(pakfire->arch);
-	pakfire_free(pakfire);
-}
-
-const char* pakfire_get_path(Pakfire pakfire) {
-	return pakfire->path;
-}
-
-const char* pakfire_get_arch(Pakfire pakfire) {
-	return pakfire->arch;
-}
-
-PakfirePool pakfire_get_pool(Pakfire pakfire) {
-	return pakfire_pool_ref(pakfire->pool);
-}
+#endif /* PAKFIRE_SYSTEM_H */
