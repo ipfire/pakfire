@@ -65,7 +65,8 @@ pkgpyexec_LTLIBRARIES =
 pkginclude_HEADERS =
 
 DISTCHECK_CONFIGURE_FLAGS = \
-        --with-systemdsystemunitdir=$$dc_install_base/$(systemdsystemunitdir)
+        --with-systemdsystemunitdir=$$dc_install_base/$(systemdsystemunitdir) \
+	--enable-debug
 
 @INTLTOOL_POLICY_RULE@
 
