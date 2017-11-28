@@ -35,6 +35,11 @@ void pakfire_log_set_function(pakfire_log_function_t func);
 int pakfire_log_get_priority();
 void pakfire_log_set_priority(int priority);
 
+void pakfire_log_stderr(int priority, const char* file,
+	int line, const char* fn, const char* format, va_list args);
+void pakfire_log_syslog(int priority, const char* file,
+	int line, const char* fn, const char* format, va_list args);
+
 #ifdef PAKFIRE_PRIVATE
 
 typedef struct pakfire_logging_config {

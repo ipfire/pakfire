@@ -104,6 +104,8 @@ global:
 	pakfire_log_get_priority;
 	pakfire_log_set_function;
 	pakfire_log_set_priority;
+	pakfire_log_stderr;
+	pakfire_log_syslog;
 
 	# package
 	pakfire_package_add_conflicts;

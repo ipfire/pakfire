@@ -20,6 +20,19 @@
 
 #include "testsuite.h"
 
+#include <pakfire/logging.h>
+#include <pakfire/pakfire.h>
+
+int testsuite_init() {
+	// Initialize the pakfire library
+	int r = pakfire_init();
+	if (r)
+		return r;
+
+	// Log to stderr
+	pakfire_log_set_function(pakfire_log_stderr);
+}
+
 int test_run(const test_t* t) {
 	LOG("running %s\n", t->name);
 
