@@ -37,7 +37,7 @@ typedef struct testsuite {
 } testsuite_t;
 
 testsuite_t* testsuite_create(size_t n);
-int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t* func);
+int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func);
 int testsuite_run(testsuite_t* ts);
 
 int test_run(const test_t* t);
