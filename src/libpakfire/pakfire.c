@@ -67,6 +67,8 @@ Pakfire pakfire_create(const char* path, const char* arch) {
 		if (priority)
 			pakfire_set_log_priority(pakfire, log_priority(priority));
 
+		DEBUG(pakfire, "Pakfire initialized at %p\n", pakfire);
+
 		// Initialize the pool
 		pakfire->pool = pakfire_pool_create(pakfire);
 	}
@@ -88,6 +90,8 @@ void pakfire_unref(Pakfire pakfire) {
 
 	pakfire_free(pakfire->path);
 	pakfire_free(pakfire->arch);
+
+	DEBUG(pakfire, "Pakfire released at %p\n", pakfire);
 	pakfire_free(pakfire);
 }
 
