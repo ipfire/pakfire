@@ -18,28 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
-#include <pakfire/pakfire.h>
+static Pakfire init_pakfire() {
+    const char* path = "/";
 
-#include "../testsuite.h"
-
-#include "pakfire.h"
-
-static int test_init(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
-	LOG("Allocated at %p\n", pakfire);
-
-	pakfire_unref(pakfire);
-
-	return EXIT_SUCCESS;
-}
-
-int main(int argc, char** argv) {
-	testsuite_t* ts = testsuite_create(1);
-
-	testsuite_add_test(ts, "test_init", test_init);
-
-	return testsuite_run(ts);
+    return pakfire_create(path, NULL);
 }
