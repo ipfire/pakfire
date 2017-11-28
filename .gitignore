@@ -9,6 +9,7 @@
 /src/scripts/quality-agent
 /src/scripts/extract-debuginfo
 /src/systemd/*.service
+/tests/libpakfire/main
 /tmp
 *.py[co]
 /*.tar.bz2

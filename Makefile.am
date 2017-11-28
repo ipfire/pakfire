@@ -55,9 +55,10 @@ AM_CPPFLAGS = \
 AM_CFLAGS = $(OUR_CFLAGS)
 AM_LDFLAGS = $(OUR_LDFLAGS)
 
-PAKFIRE_CFLAGS = -I$(top_srcdir)/src/libpakfire/include
-PAKFIRE_LIBS   = libpakfire.la
+PAKFIRE_CPPFLAGS = -I$(top_srcdir)/src/libpakfire/include
+PAKFIRE_LIBS     = libpakfire.la
 
+check_PROGRAMS =
 lib_LTLIBRARIES =
 libexec_PROGRAMS =
 pkgpyexec_LTLIBRARIES =
@@ -210,10 +211,12 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/util.c \
 	src/_pakfire/util.h
 
+_pakfire_la_CPPFLAGS = \
+	$(PAKFIRE_CPPFLAGS)
+
 _pakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(PYTHON_DEVEL_CFLAGS) \
-	$(PAKFIRE_CFLAGS) \
 	$(CAP_CFLAGS) \
 	$(SOLV_CFLAGS)
 
@@ -287,11 +290,11 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/util.h
 
 libpakfire_la_CFLAGS = \
-	$(AM_CFLAGS)
+	$(AM_CFLAGS) \
+	$(LIBGCRYPT_CFLAGS)
 
 libpakfire_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	$(LIBGCRYPT_CFLAGS) \
 	-I$(top_srcdir)/src/libpakfire/include \
 	-include $(top_builddir)/config.h \
 	-DPAKFIRE_PRIVATE
@@ -313,6 +316,19 @@ libpakfire_la_DEPENDENCIES = \
 
 EXTRA_DIST += \
 	src/libpakfire/libpakfire.sym
+
+check_PROGRAMS += \
+	tests/libpakfire/main
+
+dist_tests_libpakfire_main_SOURCES = \
+	tests/libpakfire/main.c
+
+tests_libpakfire_main_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_main_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
 
 # ------------------------------------------------------------------------------
 
@@ -449,12 +465,27 @@ src/systemd/%: src/systemd/%.in Makefile
 
 # - testsuite ------------------------------------------------------------------
 
+check_LTLIBRARIES = \
+	tests/libtestsuite.la
+
+tests_libtestsuite_la_SOURCES = \
+	tests/testsuite.c \
+	tests/testsuite.h
+
+TESTSUITE_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	$(PAKFIRE_CPPFLAGS)
+
+TESTSUITE_LDADD = \
+	tests/libtestsuite.la
+
 TESTS_ENVIRONMENT = \
 	PYTHONPATH="$(top_srcdir)/.libs:$(top_srcdir)/src" \
 	topdir="$(shell pwd)"
 
-dist_check_SCRIPTS = \
-	tests/module-load.py
+#dist_check_SCRIPTS = \
+#	tests/module-load.py
 
 TESTS = \
-	$(dist_check_SCRTIPS)
+	$(check_PROGRAMS) \
+	$(dist_check_SCRIPTS)
