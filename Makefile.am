@@ -474,9 +474,11 @@ check_LTLIBRARIES = \
 	tests/libtestsuite.la
 
 tests_libtestsuite_la_SOURCES = \
-	tests/pakfire.h \
 	tests/testsuite.c \
 	tests/testsuite.h
+
+EXTRA_DIST += \
+	tests/libpakfire/pakfire.h
 
 TESTSUITE_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
