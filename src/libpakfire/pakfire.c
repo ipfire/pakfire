@@ -68,6 +68,8 @@ Pakfire pakfire_create(const char* path, const char* arch) {
 			pakfire_set_log_priority(pakfire, log_priority(priority));
 
 		DEBUG(pakfire, "Pakfire initialized at %p\n", pakfire);
+		DEBUG(pakfire, "  arch = %s\n", pakfire->arch);
+		DEBUG(pakfire, "  path = %s\n", pakfire->path);
 
 		// Initialize the pool
 		pakfire->pool = pakfire_pool_create(pakfire);
