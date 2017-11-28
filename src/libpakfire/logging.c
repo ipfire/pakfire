@@ -51,6 +51,6 @@ void pakfire_log_stderr(Pakfire pakfire, int priority, const char* file,
 
 void pakfire_log_syslog(Pakfire pakfire, int priority, const char* file,
 		int line, const char* fn, const char* format, va_list args) {
-	openlog("UNKNOWN", LOG_PID, LOG_DAEMON);
+	openlog("pakfire", LOG_PID, LOG_DAEMON);
 	vsyslog(priority | LOG_DAEMON, format, args);
 }
