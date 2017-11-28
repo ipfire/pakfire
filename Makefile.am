@@ -212,6 +212,7 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/util.h
 
 _pakfire_la_CPPFLAGS = \
+	-include $(top_builddir)/config.h \
 	$(PAKFIRE_CPPFLAGS)
 
 _pakfire_la_CFLAGS = \
@@ -244,6 +245,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/file.c \
 	src/libpakfire/filter.c \
 	src/libpakfire/key.c \
+	src/libpakfire/logging.c \
 	src/libpakfire/package.c \
 	src/libpakfire/packagelist.c \
 	src/libpakfire/pakfire.c \
@@ -271,6 +273,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/filter.h \
 	src/libpakfire/include/pakfire/i18n.h \
 	src/libpakfire/include/pakfire/key.h \
+	src/libpakfire/include/pakfire/logging.h \
 	src/libpakfire/include/pakfire/package.h \
 	src/libpakfire/include/pakfire/packagecache.h \
 	src/libpakfire/include/pakfire/packagelist.h \
@@ -483,6 +486,7 @@ TESTSUITE_LDADD = \
 	tests/libtestsuite.la
 
 TESTS_ENVIRONMENT = \
+	PAKFIRE_LOG=debug \
 	PYTHONPATH="$(top_srcdir)/.libs:$(top_srcdir)/src" \
 	topdir="$(shell pwd)"
 

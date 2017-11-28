@@ -21,6 +21,8 @@
 #ifndef PAKFIRE_TYPES_H
 #define PAKFIRE_TYPES_H
 
+#include <stdarg.h>
+
 typedef struct _Pakfire* Pakfire;
 typedef struct _PakfireArchive* PakfireArchive;
 typedef struct _PakfireArchiveSignature* PakfireArchiveSignature;
@@ -42,6 +44,10 @@ typedef struct _PakfireSelector* PakfireSelector;
 typedef struct _PakfireSolution* PakfireSolution;
 typedef struct _PakfireStep* PakfireStep;
 typedef struct _PakfireTransaction* PakfireTransaction;
+
+typedef void (*pakfire_log_function_t)(Pakfire pakfire, int priority,
+		const char* file, int line, const char* fn,
+		const char* format, va_list args);
 
 enum _pakfire_comparison_types {
 	PAKFIRE_ICASE     = 1 << 0,

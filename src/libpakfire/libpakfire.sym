@@ -23,9 +23,13 @@ global:
 	# pakfire
 	pakfire_create;
 	pakfire_get_arch;
+	pakfire_get_log_function;
+	pakfire_get_log_priority;
 	pakfire_get_path;
 	pakfire_get_pool;
 	pakfire_ref;
+	pakfire_set_log_function;
+	pakfire_set_log_priority;
 	pakfire_unref;
 
 	# archive

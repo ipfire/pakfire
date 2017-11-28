@@ -18,41 +18,39 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_PAKFIRE_H
-#define PAKFIRE_PAKFIRE_H
+#include <errno.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <syslog.h>
 
 #include <pakfire/logging.h>
-#include <pakfire/types.h>
+#include <pakfire/pakfire.h>
 
-Pakfire pakfire_create(const char* path, const char* arch);
+void pakfire_log(Pakfire pakfire, int priority, const char* file, int line,
+		const char* fn, const char* format, ...) {
+	va_list args;
 
-Pakfire pakfire_ref(Pakfire pakfire);
-void pakfire_unref(Pakfire pakfire);
+	pakfire_log_function_t log_function = pakfire_get_log_function(pakfire);
 
-pakfire_log_function_t pakfire_get_log_function(Pakfire pakfire);
-void pakfire_set_log_function(Pakfire pakfire, pakfire_log_function_t func);
-int pakfire_get_log_priority(Pakfire pakfire);
-void pakfire_set_log_priority(Pakfire pakfire, int priority);
+	// Save errno
+	int saved_errno = errno;
 
-const char* pakfire_get_path(Pakfire pakfire);
-const char* pakfire_get_arch(Pakfire pakfire);
+	va_start(args, format);
+	log_function(pakfire, priority, file, line, fn, format, args);
+	va_end(args);
 
-PakfirePool pakfire_get_pool(Pakfire pakfire);
+	// Restore errno
+	errno = saved_errno;
+}
 
-#ifdef PAKFIRE_PRIVATE
+void pakfire_log_stderr(Pakfire pakfire, int priority, const char* file,
+		int line, const char* fn, const char* format, va_list args) {
+	fprintf(stderr, "pakfire: %s: ", fn);
+	vfprintf(stderr, format, args);
+}
 
-struct _Pakfire {
-	char* path;
-	char* arch;
-	PakfirePool pool;
-
-	// Logging
-	pakfire_log_function_t log_function;
-	int log_priority;
-
-	int nrefs;
-};
-
-#endif
-
-#endif /* PAKFIRE_PAKFIRE_H */
+void pakfire_log_syslog(Pakfire pakfire, int priority, const char* file,
+		int line, const char* fn, const char* format, va_list args) {
+	openlog("UNKNOWN", LOG_PID, LOG_DAEMON);
+	vsyslog(priority | LOG_DAEMON, format, args);
+}

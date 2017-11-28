@@ -18,41 +18,40 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_PAKFIRE_H
-#define PAKFIRE_PAKFIRE_H
+#ifndef PAKFIRE_LOGGING_H
+#define PAKFIRE_LOGGING_H
 
-#include <pakfire/logging.h>
 #include <pakfire/types.h>
 
-Pakfire pakfire_create(const char* path, const char* arch);
-
-Pakfire pakfire_ref(Pakfire pakfire);
-void pakfire_unref(Pakfire pakfire);
-
-pakfire_log_function_t pakfire_get_log_function(Pakfire pakfire);
-void pakfire_set_log_function(Pakfire pakfire, pakfire_log_function_t func);
-int pakfire_get_log_priority(Pakfire pakfire);
-void pakfire_set_log_priority(Pakfire pakfire, int priority);
-
-const char* pakfire_get_path(Pakfire pakfire);
-const char* pakfire_get_arch(Pakfire pakfire);
-
-PakfirePool pakfire_get_pool(Pakfire pakfire);
+void pakfire_log_stderr(Pakfire pakfire, int priority, const char* file,
+		int line, const char* fn, const char* format, va_list args);
+void pakfire_log_syslog(Pakfire pakfire, int priority, const char* file,
+		int line, const char* fn, const char* format, va_list args);
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _Pakfire {
-	char* path;
-	char* arch;
-	PakfirePool pool;
+void pakfire_log(Pakfire pakfire, int priority, const char *file,
+	int line, const char *fn, const char *format, ...)
+	__attribute__((format(printf, 6, 7)));
 
-	// Logging
-	pakfire_log_function_t log_function;
-	int log_priority;
+// This function does absolutely nothing
+static inline void __attribute__((always_inline, format(printf, 2, 3)))
+	pakfire_log_null(Pakfire pakfire, const char *format, ...) {}
 
-	int nrefs;
-};
+#define pakfire_log_condition(pakfire, prio, arg...) \
+	do { \
+		if (pakfire_get_log_priority(pakfire) >= prio) \
+			pakfire_log(pakfire, prio, __FILE__, __LINE__, __FUNCTION__, ## arg); \
+	} while (0)
 
+#define INFO(pakfire, arg...) pakfire_log_condition(pakfire, LOG_INFO, ## arg)
+#define ERROR(pakfire, arg...) pakfire_log_condition(pakfire, LOG_ERR, ## arg)
+
+#ifdef ENABLE_DEBUG
+#	define DEBUG(pakfire, arg...) pakfire_log_condition(pakfire, LOG_DEBUG, ## arg)
+#else
+#	define DEBUG(pakfire, arg...) pakfire_log_null(pakfire, ## arg)
 #endif
 
-#endif /* PAKFIRE_PAKFIRE_H */
+#endif /* PAKFIRE_PRIVATE */
+#endif /* PAKFIRE_LOGGING_H */
