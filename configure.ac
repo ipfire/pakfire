@@ -56,6 +56,13 @@ AC_PROG_LN_S
 AC_PROG_MKDIR_P
 AC_PROG_SED
 
+AC_ARG_ENABLE([debug],
+	AS_HELP_STRING([--enable-debug], [enable debug messages @<:@default=disabled@:>@]),
+	[], [enable_debug=no])
+AS_IF([test "x$enable_debug" = "xyes"], [
+	AC_DEFINE(ENABLE_DEBUG, [1], [Debug messages.])
+])
+
 # pkg-config
 PKG_PROG_PKG_CONFIG
 # This makes sure pkg.m4 is available.
@@ -166,6 +173,8 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 AC_MSG_RESULT([
 	$PACKAGE_NAME $VERSION
+
+	Debug:                  ${enable_debug}
 
 	CFLAGS:                 ${OUR_CFLAGS} ${CFLAGS}
 	CPPFLAGS:               ${OUR_CPPFLAGS} ${CPPFLAGS}
