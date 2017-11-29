@@ -49,35 +49,6 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
 			goto FAIL;
 
-		// Use GPG
-		const char* path = pakfire_get_path(pakfire);
-		char* home = pakfire_path_join(path, "etc/pakfire/gnupg");
-
-		// Check if gpg directories exist
-		if (pakfire_access(home, NULL, R_OK) != 0) {
-			DEBUG("Creating GPG database at %s\n", home);
-
-			int r = pakfire_mkdir(home, S_IRUSR|S_IWUSR|S_IXUSR);
-			if (r) {
-				ERROR("Could not initialize the GPG database at %s\n", home);
-				return NULL;
-			}
-		}
-
-		// Setup engine
-		error = gpgme_set_engine_info(GPGME_PROTOCOL_OpenPGP, NULL, home);
-		pakfire_free(home);
-		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
-			goto FAIL;
-
-		gpgme_engine_info_t engine_info;
-		error = gpgme_get_engine_info(&engine_info);
-		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
-			goto FAIL;
-
-		DEBUG("GPGME engine info: %s, home = %s\n",
-			engine_info->file_name, engine_info->home_dir);
-
 		// GPG has been initialized
 		gpg_initialized++;
 	}
@@ -91,9 +62,36 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	// Set output to be ASCII armoured
 	gpgme_set_armor(ctx, 1);
 
+	// Use GPG
+	const char* path = pakfire_get_path(pakfire);
+	char* home = pakfire_path_join(path, "etc/pakfire/gnupg");
+
+	// Check if gpg directories exist
+	if (pakfire_access(home, NULL, R_OK) != 0) {
+		DEBUG("Creating GPG database at %s\n", home);
+
+		int r = pakfire_mkdir(home, S_IRUSR|S_IWUSR|S_IXUSR);
+		if (r) {
+			ERROR("Could not initialize the GPG database at %s\n", home);
+			goto FAIL;
+		}
+	}
+
+	// Setup engine
+	error = gpgme_ctx_set_engine_info(ctx, GPGME_PROTOCOL_OpenPGP, NULL, home);
+	pakfire_free(home);
+	if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
+		goto FAIL;
+
+	gpgme_engine_info_t engine_info = gpgme_ctx_get_engine_info(ctx);
+	DEBUG("GPGME engine info: %s, home = %s\n",
+		engine_info->file_name, engine_info->home_dir);
+
 	return ctx;
 
 FAIL:
+	gpgme_release(ctx);
+
 	error_string = gpgme_strerror(error);
 	ERROR("%s\n", error_string);
 
