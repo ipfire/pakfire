@@ -26,6 +26,7 @@
 #include <pakfire/errno.h>
 #include <pakfire/i18n.h>
 #include <pakfire/key.h>
+#include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/util.h>
 
@@ -39,10 +40,7 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	if (!gpg_initialized) {
 		// Initialise gpgme
 		const char* version = gpgme_check_version(NULL);
-		assert(version);
-#if 0
-		printf("version = %s\n", version);
-#endif
+		DEBUG("Loaded gpgme %s\n", version);
 
 		// Check if we support GPG
 		error = gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
@@ -61,13 +59,11 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
 			goto FAIL;
 
-#if 0
-		printf("GPGME engine info: %s, %s\n",
+		DEBUG("GPGME engine info: %s, home = %s\n",
 			engine_info->file_name, engine_info->home_dir);
-#endif
 
 		// GPG has been initialized
-		gpg_initialized++;		
+		gpg_initialized++;
 	}
 
 	// Create a new context
