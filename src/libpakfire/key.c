@@ -48,7 +48,8 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 			goto FAIL;
 
 		// Use GPG
-		char* home = pakfire_path_join(pakfire->path, "/etc/pakfire/gnupg");
+		const char* path = pakfire_get_path(pakfire);
+		char* home = pakfire_path_join(path, "etc/pakfire/gnupg");
 		error = gpgme_set_engine_info(GPGME_PROTOCOL_OpenPGP, NULL, home);
 		pakfire_free(home);
 		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
