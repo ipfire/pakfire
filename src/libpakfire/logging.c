@@ -30,7 +30,7 @@
 #include <pakfire/pakfire.h>
 
 static pakfire_logging_config_t conf = {
-	.function = pakfire_log_stderr,
+	.function = pakfire_log_syslog,
 	.priority = LOG_ERR,
 };
 
