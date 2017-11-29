@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <gpgme.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <pakfire/constants.h>
 #include <pakfire/errno.h>
@@ -50,6 +52,19 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 		// Use GPG
 		const char* path = pakfire_get_path(pakfire);
 		char* home = pakfire_path_join(path, "etc/pakfire/gnupg");
+
+		// Check if gpg directories exist
+		if (pakfire_access(home, NULL, R_OK) != 0) {
+			DEBUG("Creating GPG database at %s\n", home);
+
+			int r = pakfire_mkdir(home, S_IRUSR|S_IWUSR|S_IXUSR);
+			if (r) {
+				ERROR("Could not initialize the GPG database at %s\n", home);
+				return NULL;
+			}
+		}
+
+		// Setup engine
 		error = gpgme_set_engine_info(GPGME_PROTOCOL_OpenPGP, NULL, home);
 		pakfire_free(home);
 		if (gpg_err_code(error) != GPG_ERR_NO_ERROR)
