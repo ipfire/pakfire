@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#include <string.h>
+
 #include <pakfire/pakfire.h>
 
 #include "../testsuite.h"
@@ -36,12 +38,26 @@ static int test_init(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
+static int test_path(const test_t* t) {
+	Pakfire pakfire = init_pakfire();
+	if (!pakfire)
+		return EXIT_FAILURE;
+
+	const char* path = pakfire_get_path(pakfire);
+	assert_return(strcmp(path, TEST_PATH) == 0, EXIT_FAILURE);
+
+	pakfire_unref(pakfire);
+
+	return EXIT_SUCCESS;
+}
+
 int main(int argc, char** argv) {
 	testsuite_init();
 
-	testsuite_t* ts = testsuite_create(1);
+	testsuite_t* ts = testsuite_create(2);
 
 	testsuite_add_test(ts, "test_init", test_init);
+	testsuite_add_test(ts, "test_path", test_path);
 
 	return testsuite_run(ts);
 }
