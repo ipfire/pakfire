@@ -211,7 +211,6 @@ static PakfireKey __pakfire_get_key(Pakfire pakfire, gpgme_ctx_t gpgctx, const c
 	return key;
 }
 
-
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 
