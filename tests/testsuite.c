@@ -33,10 +33,12 @@ int testsuite_init() {
 	pakfire_log_set_function(pakfire_log_stderr);
 }
 
-int test_run(const test_t* t) {
+static int test_run(const test_t* t) {
 	LOG("running %s\n", t->name);
 
 	int r = t->func(t);
+	if (r)
+		LOG("Test failed with error code: %d\n", r);
 
 	return r;
 }
