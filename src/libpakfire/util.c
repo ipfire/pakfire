@@ -18,17 +18,22 @@
 #                                                                             #
 #############################################################################*/
 
+#include <errno.h>
 #include <libgen.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <gcrypt.h>
 
 #include <pakfire/constants.h>
+#include <pakfire/logging.h>
 
 void pakfire_oom(size_t num, size_t len) {
 	if (num)
@@ -143,6 +148,59 @@ char* pakfire_dirname(const char* path) {
 	char* parent = pakfire_strdup(path);
 
 	return dirname(parent);
+}
+
+int pakfire_access(const char* dir, const char* file, int mode) {
+	char* path = pakfire_path_join(dir, file);
+
+	int r = access(path, mode);
+
+	if (r) {
+		if (mode & R_OK)
+			DEBUG("%s is not readable\n", path);
+
+		if (mode & W_OK)
+			DEBUG("%s is not writable\n", path);
+
+		if (mode & X_OK)
+			DEBUG("%s is not executable\n", path);
+
+		if (mode & F_OK)
+			DEBUG("%s does not exist\n", path);
+	}
+
+	return r;
+}
+
+int pakfire_mkdir(const char* path, mode_t mode) {
+	int r = 0;
+
+	if ((strcmp(path, "/") == 0) || (strcmp(path, ".") == 0))
+		return 0;
+
+	// If parent does not exists, we try to create it.
+	char* parent = pakfire_dirname(path);
+	r = pakfire_access(parent, NULL, F_OK);
+	if (r)
+		r = pakfire_mkdir(parent, 0);
+
+	pakfire_free(parent);
+
+	if (r)
+		return r;
+
+	// Finally, create the directory we want.
+	r = mkdir(path, mode);
+	if (r) {
+		switch (errno) {
+			// If the directory already exists, this is fine.
+			case EEXIST:
+				r = 0;
+				break;
+		}
+	}
+
+	return r;
 }
 
 char* pakfire_sgets(char* str, int num, char** input) {
