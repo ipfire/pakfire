@@ -174,7 +174,6 @@ void pakfire_key_unref(PakfireKey key) {
 
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
-	assert(gpgctx);
 
 	gpgme_key_t gpgkey = NULL;
 	gpgme_error_t error = gpgme_get_key(gpgctx, fingerprint, &gpgkey, 1);
@@ -265,7 +264,6 @@ int pakfire_key_is_revoked(PakfireKey key) {
 
 PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
-	assert(gpgctx);
 
 	unsigned int flags = 0;
 
@@ -297,7 +295,6 @@ PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
 
 char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pakfire);
-	assert(gpgctx);
 
 	gpgme_export_mode_t gpgmode = 0;
 	switch (mode) {
@@ -352,7 +349,6 @@ PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
 	gpgme_data_t keydata;
 
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
-	assert(gpgctx);
 
 	// Form a data object out of the input without copying data
 	error = gpgme_data_new_from_mem(&keydata, data, strlen(data), 0);
