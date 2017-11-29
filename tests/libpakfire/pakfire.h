@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#include <pakfire/pakfire.h>
+
 static Pakfire init_pakfire() {
     const char* path = "/";
 
