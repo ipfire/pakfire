@@ -79,7 +79,7 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 
 FAIL:
 	error_string = gpgme_strerror(error);
-	printf("ERROR: %s\n", error_string);
+	ERROR("%s\n", error_string);
 
 	return NULL;
 }
