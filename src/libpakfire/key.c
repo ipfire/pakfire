@@ -84,11 +84,37 @@ FAIL:
 	return NULL;
 }
 
-PakfireKey* pakfire_key_list(Pakfire pakfire) {
+static size_t pakfire_count_keys(Pakfire pakfire) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
-	assert(gpgctx);
 
-	PakfireKey* first = pakfire_calloc(1, sizeof(PakfireKey));
+	size_t count = 0;
+
+	gpgme_key_t key = NULL;
+	gpgme_error_t error = gpgme_op_keylist_start(gpgctx, NULL, 0);
+	while (!error) {
+		error = gpgme_op_keylist_next(gpgctx, &key);
+		if (error)
+			break;
+
+		count++;
+
+		gpgme_key_release(key);
+	}
+
+	DEBUG("%zu key(s) in keystore\n", count);
+	gpgme_release(gpgctx);
+
+	return count;
+}
+
+PakfireKey* pakfire_key_list(Pakfire pakfire) {
+	size_t count = pakfire_count_keys(pakfire);
+	if (count == 0)
+		return NULL;
+
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
+
+	PakfireKey* first = pakfire_calloc(count + 1, sizeof(PakfireKey));
 	PakfireKey* list = first;
 
 	gpgme_key_t gpgkey = NULL;
@@ -106,6 +132,8 @@ PakfireKey* pakfire_key_list(Pakfire pakfire) {
 
 	// Last list item must be NULL
 	*list = NULL;
+
+	gpgme_release(gpgctx);
 
 	return first;
 }
