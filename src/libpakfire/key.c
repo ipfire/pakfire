@@ -186,16 +186,36 @@ void pakfire_key_unref(PakfireKey key) {
 	pakfire_key_free(key);
 }
 
+static PakfireKey __pakfire_get_key(Pakfire pakfire, gpgme_ctx_t gpgctx, const char* fingerprint) {
+	DEBUG("Seaching for key with fingerprint %s\n", fingerprint);
+
+	PakfireKey key = NULL;
+	gpgme_key_t gpgkey = NULL;
+
+	gpgme_error_t error = gpgme_get_key(gpgctx, fingerprint, &gpgkey, 0);
+	switch (gpg_error(error)) {
+		case GPG_ERR_NO_ERROR:
+			key = pakfire_key_create(pakfire, gpgkey);
+			gpgme_key_unref(gpgkey);
+			break;
+
+		case GPG_ERR_EOF:
+			DEBUG("Nothing found\n");
+			break;
+
+		default:
+			DEBUG("Could not find key: %s\n", gpgme_strerror(error));
+			break;
+	}
+
+	return key;
+}
+
+
 PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 
-	gpgme_key_t gpgkey = NULL;
-	gpgme_error_t error = gpgme_get_key(gpgctx, fingerprint, &gpgkey, 1);
-	if (error != GPG_ERR_NO_ERROR)
-		return NULL;
-
-	PakfireKey key = pakfire_key_create(pakfire, gpgkey);
-	gpgme_key_unref(gpgkey);
+	PakfireKey key = __pakfire_get_key(pakfire, gpgctx, fingerprint);
 	gpgme_release(gpgctx);
 
 	return key;
@@ -392,7 +412,7 @@ PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
 
 			// Retrieve all imported keys
 			while (status) {
-				PakfireKey key = pakfire_key_get(pakfire, status->fpr);
+				PakfireKey key = __pakfire_get_key(pakfire, gpgctx, status->fpr);
 				if (key) {
 					const char* fingerprint = pakfire_key_get_fingerprint(key);
 					INFO("Imported key %s\n", fingerprint);
