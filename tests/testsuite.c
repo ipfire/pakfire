@@ -31,6 +31,8 @@ int testsuite_init() {
 
 	// Log to stderr
 	pakfire_log_set_function(pakfire_log_stderr);
+
+	return 0;
 }
 
 static int test_run(const test_t* t) {
