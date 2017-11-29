@@ -380,14 +380,25 @@ PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
 		case GPG_ERR_NO_ERROR:
 			result = gpgme_op_import_result(gpgctx);
 
+			DEBUG("Keys considered   = %d\n", result->considered);
+			DEBUG("Keys imported     = %d\n", result->imported);
+			DEBUG("Keys not imported = %d\n", result->not_imported);
+
+			// Did we import any keys?
+			gpgme_import_status_t status = result->imports;
+			if (!status)
+				return NULL;
+
 			PakfireKey* head = pakfire_calloc(result->imported + 1, sizeof(*head));
 			PakfireKey* list = head;
 
 			// Retrieve all imported keys
-			gpgme_import_status_t status = result->imports;
 			while (status) {
 				PakfireKey key = pakfire_key_get(pakfire, status->fpr);
 				if (key) {
+					const char* fingerprint = pakfire_key_get_fingerprint(key);
+					INFO("Imported key %s\n", fingerprint);
+
 					// Append key to list
 					*list++ = key;
 				}
@@ -410,6 +421,7 @@ PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
 
 		// Fall through for any other errors
 		default:
+			ERROR("Failed with gpgme error: %s\n", gpgme_strerror(error));
 			break;
 	}
 
