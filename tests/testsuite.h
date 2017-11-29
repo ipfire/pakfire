@@ -51,7 +51,7 @@ int test_run(const test_t* t);
 #define assert_return(expr, r) \
 	do { \
 		if ((!(expr))) { \
-			ERR_("Failed assertion: " #expr " %s:%d %s\n", \
+			LOG_ERROR("Failed assertion: " #expr " %s:%d %s\n", \
 				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
 			return r; \
 		} \
