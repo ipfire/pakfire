@@ -322,7 +322,8 @@ EXTRA_DIST += \
 	src/libpakfire/libpakfire.sym
 
 check_PROGRAMS += \
-	tests/libpakfire/main
+	tests/libpakfire/main \
+	tests/libpakfire/key
 
 dist_tests_libpakfire_main_SOURCES = \
 	tests/libpakfire/main.c
@@ -331,6 +332,17 @@ tests_libpakfire_main_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS)
 
 tests_libpakfire_main_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+tests_libpakfire_key_SOURCES = \
+	tests/libpakfire/key.c \
+	tests/libpakfire/key.h
+
+tests_libpakfire_key_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_key_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 

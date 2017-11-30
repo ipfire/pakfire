@@ -10,6 +10,7 @@
 /src/scripts/extract-debuginfo
 /src/systemd/*.service
 /tests/.data
+/tests/libpakfire/key
 /tests/libpakfire/main
 /tmp
 *.py[co]
