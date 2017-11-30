@@ -23,6 +23,7 @@
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
 
+const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
 const char* TEST_PATH = ABS_TOP_BUILDDIR "/tests/.data";
 
 int testsuite_init() {

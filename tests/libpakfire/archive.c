@@ -18,50 +18,34 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_TESTSUITE_H
-#define PAKFIRE_TESTSUITE_H
+#include <pakfire/archive.h>
+#include <pakfire/util.h>
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "../testsuite.h"
 
-#include <pakfire/pakfire.h>
+static const char* TEST_PKG1_PATH = "data/beep-1.3-2.ip3.x86_64.pfm";
 
-extern const char* TEST_SRC_PATH;
-extern const char* TEST_PATH;
+int test_open(const test_t* t) {
+    char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
+    LOG("Trying to open %s\n", path);
 
-// Forward declaration
-struct test;
+    // Open the archive
+    PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
+    assert_return(archive, EXIT_FAILURE);
 
-typedef int (*test_function_t)(const struct test* t);
+    pakfire_archive_unref(archive);
 
-typedef struct test {
-	const char* name;
-	test_function_t func;
-	Pakfire pakfire;
-} test_t;
+    pakfire_free(path);
 
-typedef struct testsuite {
-	test_t** tests;
-	size_t left;
-} testsuite_t;
+    return EXIT_SUCCESS;
+}
 
-int testsuite_init();
-testsuite_t* testsuite_create(size_t n);
-int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func);
-int testsuite_run(testsuite_t* ts);
+int main(int argc, char** argv) {
+	testsuite_init();
 
-#define _LOG(prefix, fmt, ...) printf("TESTS: " prefix fmt, ## __VA_ARGS__);
-#define LOG(fmt, ...) _LOG("", fmt, ## __VA_ARGS__);
-#define LOG_WARN(fmt, ...) _LOG("WARN: ", fmt, ## __VA_ARGS__);
-#define LOG_ERROR(fmt, ...) _LOG("ERROR: ", fmt, ## __VA_ARGS__);
+	testsuite_t* ts = testsuite_create(1);
 
-#define assert_return(expr, r) \
-	do { \
-		if ((!(expr))) { \
-			LOG_ERROR("Failed assertion: " #expr " %s:%d %s\n", \
-				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
-			return r; \
-		} \
-	} while (0)
+	testsuite_add_test(ts, "test_open", test_open);
 
-#endif /* PAKFIRE_TESTSUITE_H */
+	return testsuite_run(ts);
+}

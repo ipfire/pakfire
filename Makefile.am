@@ -323,6 +323,7 @@ EXTRA_DIST += \
 
 check_PROGRAMS += \
 	tests/libpakfire/main \
+	tests/libpakfire/archive \
 	tests/libpakfire/key
 
 dist_tests_libpakfire_main_SOURCES = \
@@ -332,6 +333,16 @@ tests_libpakfire_main_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS)
 
 tests_libpakfire_main_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+tests_libpakfire_archive_SOURCES = \
+	tests/libpakfire/archive.c
+
+tests_libpakfire_archive_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_archive_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 
@@ -490,7 +501,8 @@ tests_libtestsuite_la_SOURCES = \
 
 tests_libtestsuite_la_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS) \
-	-DABS_TOP_BUILDDIR=\"$(abs_top_builddir)\"
+	-DABS_TOP_BUILDDIR=\"$(abs_top_builddir)\" \
+	-DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"
 
 TESTSUITE_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
@@ -510,3 +522,8 @@ TESTS_ENVIRONMENT = \
 TESTS = \
 	$(check_PROGRAMS) \
 	$(dist_check_SCRIPTS)
+
+# Some test data to run tests
+EXTRA_DIST += \
+	tests/data/726D8B0B0889B04E.key \
+	tests/data/beep-1.3-2.ip3.x86_64.pfm

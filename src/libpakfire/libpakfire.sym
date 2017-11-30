@@ -322,6 +322,7 @@ global:
 	# util
 	pakfire_free;
 	pakfire_get_errno;
+	pakfire_path_join;
 
 local:
 	*;
