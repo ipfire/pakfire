@@ -44,6 +44,42 @@
 #include <pakfire/private.h>
 #include <pakfire/util.h>
 
+#define BLOCKSIZE	1024 * 1024 // 1MB
+
+typedef struct archive_checksum {
+	char* filename;
+	char* checksum;
+	archive_checksum_algo_t algo;
+} archive_checksum_t;
+
+struct _PakfireArchive {
+	Pakfire pakfire;
+	char* path;
+
+	// metadata
+	int format;
+
+	PakfireFile filelist;
+	archive_checksum_t** checksums;
+
+	// Signatures
+	PakfireArchiveSignature* signatures;
+	int signatures_loaded;
+
+	int nrefs;
+};
+
+struct _PakfireArchiveSignature {
+	PakfireKey key;
+	char* sigdata;
+	int nrefs;
+};
+
+struct payload_archive_data {
+	struct archive* archive;
+	char buffer[BLOCKSIZE];
+};
+
 static void configure_archive(struct archive* a) {
 	archive_read_support_filter_all(a);
 	archive_read_support_format_all(a);	
@@ -53,7 +89,7 @@ static int archive_open(PakfireArchive archive, struct archive** a) {
 	*a = archive_read_new();
 	configure_archive(*a);
 
-	if (archive_read_open_filename(*a, archive->path, PAKFIRE_ARCHIVE_BLOCKSIZE) == ARCHIVE_OK) {
+	if (archive_read_open_filename(*a, archive->path, BLOCKSIZE) == ARCHIVE_OK) {
 		return 0;
 	}
 
@@ -73,11 +109,9 @@ static int archive_read(struct archive* a, void** data, size_t* data_size) {
 	*data_size = 0;
 
 	for (;;) {
-		*data = pakfire_realloc(*data, *data_size + PAKFIRE_ARCHIVE_BLOCKSIZE);
+		*data = pakfire_realloc(*data, *data_size + BLOCKSIZE);
 
-		ssize_t size = archive_read_data(a, *data + *data_size,
-			PAKFIRE_ARCHIVE_BLOCKSIZE);
-
+		ssize_t size = archive_read_data(a, *data + *data_size, BLOCKSIZE);
 		if (size == 0)
 			break;
 
@@ -291,10 +325,10 @@ PAKFIRE_EXPORT void pakfire_archive_unref(PakfireArchive archive) {
 
 static int pakfire_archive_parse_entry_format(PakfireArchive archive,
 		struct archive* a, struct archive_entry* e) {
-	char format[PAKFIRE_ARCHIVE_FORMAT_SIZE + 1];
-	format[PAKFIRE_ARCHIVE_FORMAT_SIZE] = '\0';
+	char format[10];
+	format[sizeof(*format)] = '\0';
 
-	archive_read_data(a, &format, PAKFIRE_ARCHIVE_FORMAT_SIZE);
+	archive_read_data(a, &format, sizeof(*format));
 	archive->format = atoi(format);
 
 	DEBUG("Archive at %p format is %d\n", archive, archive->format);

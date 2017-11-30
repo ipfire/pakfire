@@ -21,7 +21,7 @@
 #ifndef PAKFIRE_ARCHIVE_H
 #define PAKFIRE_ARCHIVE_H
 
-#include <archive.h>
+#include <stddef.h>
 
 #include <pakfire/types.h>
 
@@ -33,6 +33,10 @@ typedef enum pakfire_archive_verify_status {
 	PAKFIRE_ARCHIVE_VERIFY_KEY_UNKNOWN,
 	PAKFIRE_ARCHIVE_VERIFY_ERROR,
 } pakfire_archive_verify_status_t;
+
+typedef enum pakfire_archive_flags {
+	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
+} pakfire_archive_flags_t;
 
 PakfireArchive pakfire_archive_create(Pakfire pakfire);
 PakfireArchive pakfire_archive_ref(PakfireArchive archive);
@@ -60,10 +64,6 @@ PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature si
 void pakfire_archive_signature_unref(PakfireArchiveSignature signature);
 const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature);
 
-enum pakfire_archive_flags {
-	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
-};
-
 #define PAKFIRE_ARCHIVE_FN_CHECKSUMS		"chksums"
 #define PAKFIRE_ARCHIVE_FN_FILELIST			"filelist"
 #define PAKFIRE_ARCHIVE_FN_FORMAT			"pakfire-format"
@@ -73,47 +73,10 @@ enum pakfire_archive_flags {
 
 #ifdef PAKFIRE_PRIVATE
 
-#define PAKFIRE_ARCHIVE_BLOCKSIZE			10240
-#define PAKFIRE_ARCHIVE_FORMAT_SIZE			5
-
 typedef enum archive_checksum_algo {
 	PAKFIRE_CHECKSUM_UNKNOWN = 0,
 	PAKFIRE_CHECKSUM_SHA512,
 } archive_checksum_algo_t;
-
-typedef struct archive_checksum {
-	char* filename;
-	char* checksum;
-	archive_checksum_algo_t algo;
-} archive_checksum_t;
-
-struct _PakfireArchive {
-	Pakfire pakfire;
-	char* path;
-
-	// metadata
-	int format;
-
-	PakfireFile filelist;
-	archive_checksum_t** checksums;
-
-	// Signatures
-	PakfireArchiveSignature* signatures;
-	int signatures_loaded;
-
-	int nrefs;
-};
-
-struct _PakfireArchiveSignature {
-	PakfireKey key;
-	char* sigdata;
-	int nrefs;
-};
-
-struct payload_archive_data {
-	struct archive* archive;
-	char buffer[PAKFIRE_ARCHIVE_BLOCKSIZE];
-};
 
 #endif
 

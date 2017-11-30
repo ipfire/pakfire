@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#include <unistd.h>
+
 #include <pakfire/archive.h>
 #include <pakfire/util.h>
 
