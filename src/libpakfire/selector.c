@@ -29,11 +29,12 @@
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pool.h>
+#include <pakfire/private.h>
 #include <pakfire/selector.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfireSelector pakfire_selector_create(PakfirePool pool) {
+PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(PakfirePool pool) {
 	PakfireSelector selector = pakfire_calloc(1, sizeof(*selector));
 	selector->pool = pool;
 
@@ -45,7 +46,7 @@ PakfireSelector pakfire_selector_create(PakfirePool pool) {
 	return selector;
 }
 
-void pakfire_selector_free(PakfireSelector selector) {
+PAKFIRE_EXPORT void pakfire_selector_free(PakfireSelector selector) {
 	pakfire_free(selector);
 }
 
@@ -78,7 +79,7 @@ static void pakfire_selector_replace_filter(PakfireFilter* filter, int keyname, 
 	*filter = f;
 }
 
-int pakfire_selector_set(PakfireSelector selector, int keyname, int cmp_type, const char* match) {
+PAKFIRE_EXPORT int pakfire_selector_set(PakfireSelector selector, int keyname, int cmp_type, const char* match) {
 	if (!pakfire_selector_valid_setting(keyname, cmp_type))
 		return PAKFIRE_E_SELECTOR;
 
@@ -119,7 +120,7 @@ int pakfire_selector_set(PakfireSelector selector, int keyname, int cmp_type, co
 	return 0;
 }
 
-PakfirePackageList pakfire_selector_providers(PakfireSelector selector) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_selector_providers(PakfireSelector selector) {
 	Queue q;
 	queue_init(&q);
 
@@ -257,7 +258,7 @@ static int filter_provides2queue(PakfirePool pool, const PakfireFilter f, Queue*
 	return 0;
 }
 
-int pakfire_selector2queue(const PakfireSelector selector, Queue* queue, int solver_action) {
+PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue* queue, int solver_action) {
 	PakfirePool pool = selector->pool;
 	int ret = 0;
 

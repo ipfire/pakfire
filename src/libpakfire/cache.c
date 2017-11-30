@@ -29,10 +29,11 @@
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/package.h>
+#include <pakfire/private.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfireCache pakfire_cache_create(PakfirePool pool, const char* path) {
+PAKFIRE_EXPORT PakfireCache pakfire_cache_create(PakfirePool pool, const char* path) {
 	PakfireCache cache = pakfire_calloc(1, sizeof(*cache));
 
 	cache->pool = pool;
@@ -41,16 +42,16 @@ PakfireCache pakfire_cache_create(PakfirePool pool, const char* path) {
 	return cache;
 }
 
-void pakfire_cache_free(PakfireCache cache) {
+PAKFIRE_EXPORT void pakfire_cache_free(PakfireCache cache) {
 	pakfire_free(cache->path);
 	pakfire_free(cache);
 }
 
-const char* pakfire_cache_get_path(PakfireCache cache) {
+PAKFIRE_EXPORT const char* pakfire_cache_get_path(PakfireCache cache) {
 	return cache->path;
 }
 
-char* pakfire_cache_get_full_path(PakfireCache cache, const char* path) {
+PAKFIRE_EXPORT char* pakfire_cache_get_full_path(PakfireCache cache, const char* path) {
 	const char* cache_path = pakfire_cache_get_path(cache);
 
 	return pakfire_path_join(cache_path, path);
@@ -65,7 +66,7 @@ static int pakfire_cache_stat(PakfireCache cache, const char* filename, struct s
 	return r;
 }
 
-int pakfire_cache_has_file(PakfireCache cache, const char* filename) {
+PAKFIRE_EXPORT int pakfire_cache_has_file(PakfireCache cache, const char* filename) {
 	struct stat buf;
 	int r = pakfire_cache_stat(cache, filename, &buf);
 
@@ -73,7 +74,7 @@ int pakfire_cache_has_file(PakfireCache cache, const char* filename) {
 	return (r == 0);
 }
 
-char* pakfire_cache_get_package_path(PakfireCache cache, PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_cache_get_package_path(PakfireCache cache, PakfirePackage pkg) {
 	char buffer[STRING_SIZE] = "";
 
 	const char* filename = pakfire_package_get_filename(pkg);
@@ -88,7 +89,7 @@ char* pakfire_cache_get_package_path(PakfireCache cache, PakfirePackage pkg) {
 	return pakfire_strdup(buffer);
 }
 
-int pakfire_cache_has_package(PakfireCache cache, PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_cache_has_package(PakfireCache cache, PakfirePackage pkg) {
 	char* filename = pakfire_cache_get_package_path(cache, pkg);
 
 	int r = pakfire_cache_has_file(cache, filename);
@@ -97,7 +98,7 @@ int pakfire_cache_has_package(PakfireCache cache, PakfirePackage pkg) {
 	return r;
 }
 
-int pakfire_cache_age(PakfireCache cache, const char* filename) {
+PAKFIRE_EXPORT int pakfire_cache_age(PakfireCache cache, const char* filename) {
 	struct stat buf;
 	int r = pakfire_cache_stat(cache, filename, &buf);
 
@@ -146,7 +147,7 @@ static int pakfire_cache_mkdir(PakfireCache cache, const char* path, mode_t mode
 	return r;
 }
 
-FILE* pakfire_cache_open(PakfireCache cache, const char* filename, const char* flags) {
+PAKFIRE_EXPORT FILE* pakfire_cache_open(PakfireCache cache, const char* filename, const char* flags) {
 	assert(filename);
 
 	char* cache_filename = pakfire_cache_get_full_path(cache, filename);

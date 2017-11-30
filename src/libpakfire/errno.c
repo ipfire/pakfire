@@ -20,8 +20,10 @@
 
 #include "errno.h"
 
+#include <pakfire/private.h>
+
 __thread int pakfire_errno = 0;
 
-int pakfire_get_errno(void) {
+PAKFIRE_EXPORT int pakfire_get_errno(void) {
 	return pakfire_errno;
 }

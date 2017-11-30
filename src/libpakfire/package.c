@@ -36,6 +36,7 @@
 #include <pakfire/package.h>
 #include <pakfire/packagecache.h>
 #include <pakfire/pool.h>
+#include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>
 #include <pakfire/repo.h>
@@ -63,7 +64,7 @@ static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage p
 #endif
 }
 
-PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
+PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
 	PakfirePackage pkg = pakfire_calloc(1, sizeof(*pkg));
 
 	if (pkg) {
@@ -77,7 +78,7 @@ PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
 	return pkg;
 }
 
-PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const char* name, const char* evr, const char* arch) {
+PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const char* name, const char* evr, const char* arch) {
 	PakfirePackage pkg = pakfire_repo_add_package(repo);
 
 	pakfire_package_set_name(pkg, name);
@@ -89,7 +90,7 @@ PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const
 	return pkg;
 }
 
-void pakfire_package_free(PakfirePackage pkg) {
+PAKFIRE_EXPORT void pakfire_package_free(PakfirePackage pkg) {
 	if (--pkg->nrefs > 0)
 		return;
 
@@ -116,11 +117,11 @@ static Id pakfire_package_get_handle(PakfirePackage pkg) {
 	return s - pool->solvables;
 }
 
-int pakfire_package_identical(PakfirePackage pkg1, PakfirePackage pkg2) {
+PAKFIRE_EXPORT int pakfire_package_identical(PakfirePackage pkg1, PakfirePackage pkg2) {
 	return pkg1->id == pkg2->id;
 }
 
-int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
+PAKFIRE_EXPORT int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
 	Pool* pool = pakfire_package_solv_pool(pkg1);
 
 	Solvable* s1 = get_solvable(pkg1);
@@ -160,7 +161,7 @@ int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
 	return strcmp(str1, str2);
 }
 
-int pakfire_package_evr_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
+PAKFIRE_EXPORT int pakfire_package_evr_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
 	Pool* pool = pakfire_package_solv_pool(pkg1);
 
 	Solvable* s1 = get_solvable(pkg1);
@@ -169,11 +170,11 @@ int pakfire_package_evr_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
 	return pool_evrcmp(pool, s1->evr, s2->evr, EVRCMP_COMPARE);
 }
 
-Id pakfire_package_id(PakfirePackage pkg) {
+PAKFIRE_EXPORT Id pakfire_package_id(PakfirePackage pkg) {
 	return pkg->id;
 }
 
-char* pakfire_package_get_nevra(PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_package_get_nevra(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
@@ -182,28 +183,28 @@ char* pakfire_package_get_nevra(PakfirePackage pkg) {
 	return pakfire_strdup(nevra);
 }
 
-const char* pakfire_package_get_name(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_name(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->name);
 }
 
-void pakfire_package_set_name(PakfirePackage pkg, const char* name) {
+PAKFIRE_EXPORT void pakfire_package_set_name(PakfirePackage pkg, const char* name) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	s->name = pool_str2id(pool, name, 1);
 }
 
-const char* pakfire_package_get_evr(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_evr(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->evr);
 }
 
-void pakfire_package_set_evr(PakfirePackage pkg, const char* evr) {
+PAKFIRE_EXPORT void pakfire_package_set_evr(PakfirePackage pkg, const char* evr) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
@@ -237,7 +238,7 @@ static void split_evr(Pool* pool, const char* evr_c, char** epoch, char** versio
     *release = r;
 }
 
-unsigned long pakfire_package_get_epoch(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long pakfire_package_get_epoch(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	char *e, *v, *r, *endptr;
 
@@ -255,7 +256,7 @@ unsigned long pakfire_package_get_epoch(PakfirePackage pkg) {
 	return epoch;
 }
 
-const char* pakfire_package_get_version(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_version(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	char *e, *v, *r;
 
@@ -263,7 +264,7 @@ const char* pakfire_package_get_version(PakfirePackage pkg) {
 	return pakfire_strdup(v);
 }
 
-const char* pakfire_package_get_release(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_release(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	char *e, *v, *r;
 
@@ -271,14 +272,14 @@ const char* pakfire_package_get_release(PakfirePackage pkg) {
 	return pakfire_strdup(r);
 }
 
-const char* pakfire_package_get_arch(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_arch(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->arch);
 }
 
-void pakfire_package_set_arch(PakfirePackage pkg, const char* arch) {
+PAKFIRE_EXPORT void pakfire_package_set_arch(PakfirePackage pkg, const char* arch) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
@@ -317,57 +318,57 @@ static void pakfire_package_set_string(PakfirePackage pkg, int key, const char* 
 	solvable_set_str(s, key, value);
 }
 
-const char* pakfire_package_get_uuid(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_uuid(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_PKGID);
 }
 
-void pakfire_package_set_uuid(PakfirePackage pkg, const char* uuid) {
+PAKFIRE_EXPORT void pakfire_package_set_uuid(PakfirePackage pkg, const char* uuid) {
 	pakfire_package_set_string(pkg, SOLVABLE_PKGID, uuid);
 }
 
-const char* pakfire_package_get_checksum(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_checksum(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_CHECKSUM);
 }
 
-void pakfire_package_set_checksum(PakfirePackage pkg, const char* checksum) {
+PAKFIRE_EXPORT void pakfire_package_set_checksum(PakfirePackage pkg, const char* checksum) {
 	pakfire_package_set_string(pkg, SOLVABLE_CHECKSUM, checksum);
 }
 
-const char* pakfire_package_get_summary(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_summary(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_SUMMARY);
 }
 
-void pakfire_package_set_summary(PakfirePackage pkg, const char* summary) {
+PAKFIRE_EXPORT void pakfire_package_set_summary(PakfirePackage pkg, const char* summary) {
 	pakfire_package_set_string(pkg, SOLVABLE_SUMMARY, summary);
 }
 
-const char* pakfire_package_get_description(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_description(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_DESCRIPTION);
 }
 
-void pakfire_package_set_description(PakfirePackage pkg, const char* description) {
+PAKFIRE_EXPORT void pakfire_package_set_description(PakfirePackage pkg, const char* description) {
 	pakfire_package_set_string(pkg, SOLVABLE_DESCRIPTION, description);
 }
 
-const char* pakfire_package_get_license(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_license(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_LICENSE);
 }
 
-void pakfire_package_set_license(PakfirePackage pkg, const char* license) {
+PAKFIRE_EXPORT void pakfire_package_set_license(PakfirePackage pkg, const char* license) {
 	pakfire_package_set_string(pkg, SOLVABLE_LICENSE, license);
 }
 
-const char* pakfire_package_get_url(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_url(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_URL);
 }
 
-void pakfire_package_set_url(PakfirePackage pkg, const char* url) {
+PAKFIRE_EXPORT void pakfire_package_set_url(PakfirePackage pkg, const char* url) {
 	pakfire_package_set_string(pkg, SOLVABLE_URL, url);
 }
 
 #warning the groups functions need to be refactored
 
-const char** pakfire_package_get_groups(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char** pakfire_package_get_groups(PakfirePackage pkg) {
 	const char* groups = pakfire_package_get_string(pkg, SOLVABLE_GROUP);
 
 	const char** grouplist = NULL;
@@ -386,7 +387,7 @@ const char** pakfire_package_get_groups(PakfirePackage pkg) {
 	return grouplist;
 }
 
-void pakfire_package_set_groups(PakfirePackage pkg, const char** grouplist) {
+PAKFIRE_EXPORT void pakfire_package_set_groups(PakfirePackage pkg, const char** grouplist) {
 	char groups[2048] = "";
 
 	if (grouplist) {
@@ -404,31 +405,31 @@ void pakfire_package_set_groups(PakfirePackage pkg, const char** grouplist) {
 	pakfire_package_set_string(pkg, SOLVABLE_GROUP, (const char *)&groups);
 }
 
-const char* pakfire_package_get_vendor(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_vendor(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_VENDOR);
 }
 
-void pakfire_package_set_vendor(PakfirePackage pkg, const char* vendor) {
+PAKFIRE_EXPORT void pakfire_package_set_vendor(PakfirePackage pkg, const char* vendor) {
 	pakfire_package_set_string(pkg, SOLVABLE_VENDOR, vendor);
 }
 
-const char* pakfire_package_get_maintainer(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_maintainer(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_PACKAGER);
 }
 
-void pakfire_package_set_maintainer(PakfirePackage pkg, const char* maintainer) {
+PAKFIRE_EXPORT void pakfire_package_set_maintainer(PakfirePackage pkg, const char* maintainer) {
 	pakfire_package_set_string(pkg, SOLVABLE_PACKAGER, maintainer);
 }
 
-const char* pakfire_package_get_filename(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_filename(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_MEDIAFILE);
 }
 
-void pakfire_package_set_filename(PakfirePackage pkg, const char* filename) {
+PAKFIRE_EXPORT void pakfire_package_set_filename(PakfirePackage pkg, const char* filename) {
 	pakfire_package_set_string(pkg, SOLVABLE_MEDIAFILE, filename);
 }
 
-int pakfire_package_is_installed(PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_package_is_installed(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
@@ -448,46 +449,46 @@ static void pakfire_package_set_num(PakfirePackage pkg, Id type, unsigned long l
 	solvable_set_num(s, type, value);
 }
 
-unsigned long long pakfire_package_get_downloadsize(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long long pakfire_package_get_downloadsize(PakfirePackage pkg) {
 	return pakfire_package_get_num(pkg, SOLVABLE_DOWNLOADSIZE);
 }
 
-void pakfire_package_set_downloadsize(PakfirePackage pkg, unsigned long long downloadsize) {
+PAKFIRE_EXPORT void pakfire_package_set_downloadsize(PakfirePackage pkg, unsigned long long downloadsize) {
 	return pakfire_package_set_num(pkg, SOLVABLE_DOWNLOADSIZE, downloadsize);
 }
 
-unsigned long long pakfire_package_get_installsize(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long long pakfire_package_get_installsize(PakfirePackage pkg) {
 	return pakfire_package_get_num(pkg, SOLVABLE_INSTALLSIZE);
 }
 
-void pakfire_package_set_installsize(PakfirePackage pkg, unsigned long long installsize) {
+PAKFIRE_EXPORT void pakfire_package_set_installsize(PakfirePackage pkg, unsigned long long installsize) {
 	return pakfire_package_set_num(pkg, SOLVABLE_INSTALLSIZE, installsize);
 }
 
-unsigned long long pakfire_package_get_size(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long long pakfire_package_get_size(PakfirePackage pkg) {
 	if (pakfire_package_is_installed(pkg))
 		return pakfire_package_get_installsize(pkg);
 
 	return pakfire_package_get_downloadsize(pkg);
 }
 
-const char* pakfire_package_get_buildhost(PakfirePackage pkg) {
+PAKFIRE_EXPORT const char* pakfire_package_get_buildhost(PakfirePackage pkg) {
 	return pakfire_package_get_string(pkg, SOLVABLE_BUILDHOST);
 }
 
-void pakfire_package_set_buildhost(PakfirePackage pkg, const char* buildhost) {
+PAKFIRE_EXPORT void pakfire_package_set_buildhost(PakfirePackage pkg, const char* buildhost) {
 	pakfire_package_set_string(pkg, SOLVABLE_BUILDHOST, buildhost);
 }
 
-unsigned long long pakfire_package_get_buildtime(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long long pakfire_package_get_buildtime(PakfirePackage pkg) {
 	return pakfire_package_get_num(pkg, SOLVABLE_BUILDTIME);
 }
 
-void pakfire_package_set_buildtime(PakfirePackage pkg, unsigned long long buildtime) {
+PAKFIRE_EXPORT void pakfire_package_set_buildtime(PakfirePackage pkg, unsigned long long buildtime) {
 	pakfire_package_set_num(pkg, SOLVABLE_BUILDTIME, buildtime);
 }
 
-unsigned long long pakfire_package_get_installtime(PakfirePackage pkg) {
+PAKFIRE_EXPORT unsigned long long pakfire_package_get_installtime(PakfirePackage pkg) {
 	return pakfire_package_get_num(pkg, SOLVABLE_INSTALLTIME);
 }
 
@@ -536,96 +537,96 @@ static void pakfire_package_add_relation(PakfirePackage pkg, Id type, PakfireRel
 	solvable_add_idarray(s, type, relation->id);
 }
 
-PakfireRelationList pakfire_package_get_provides(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_provides(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_PROVIDES);
 }
 
-void pakfire_package_set_provides(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_provides(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_PROVIDES, relationlist);
 }
 
-void pakfire_package_add_provides(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_provides(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_PROVIDES, relation);
 }
 
-PakfireRelationList pakfire_package_get_prerequires(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_prerequires(PakfirePackage pkg) {
 	#warning TODO
 	return NULL;
 }
 
-PakfireRelationList pakfire_package_get_requires(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_requires(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_REQUIRES);
 }
 
-void pakfire_package_set_requires(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_requires(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_REQUIRES, relationlist);
 }
 
-void pakfire_package_add_requires(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_requires(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_REQUIRES, relation);
 }
 
-PakfireRelationList pakfire_package_get_conflicts(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_conflicts(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_CONFLICTS);
 }
 
-void pakfire_package_set_conflicts(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_conflicts(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_CONFLICTS, relationlist);
 }
 
-void pakfire_package_add_conflicts(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_conflicts(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_CONFLICTS, relation);
 }
 
-PakfireRelationList pakfire_package_get_obsoletes(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_obsoletes(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_OBSOLETES);
 }
 
-void pakfire_package_set_obsoletes(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_obsoletes(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_OBSOLETES, relationlist);
 }
 
-void pakfire_package_add_obsoletes(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_obsoletes(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_OBSOLETES, relation);
 }
 
-PakfireRelationList pakfire_package_get_recommends(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_recommends(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_RECOMMENDS);
 }
 
-void pakfire_package_set_recommends(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_recommends(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_RECOMMENDS, relationlist);
 }
 
-void pakfire_package_add_recommends(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_recommends(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_RECOMMENDS, relation);
 }
 
-PakfireRelationList pakfire_package_get_suggests(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_suggests(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_SUGGESTS);
 }
 
-void pakfire_package_set_suggests(PakfirePackage pkg, PakfireRelationList relationlist) {
+PAKFIRE_EXPORT void pakfire_package_set_suggests(PakfirePackage pkg, PakfireRelationList relationlist) {
 	pakfire_package_set_relationlist(pkg, SOLVABLE_SUGGESTS, relationlist);
 }
 
-void pakfire_package_add_suggests(PakfirePackage pkg, PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_package_add_suggests(PakfirePackage pkg, PakfireRelation relation) {
 	pakfire_package_add_relation(pkg, SOLVABLE_SUGGESTS, relation);
 }
 
-PakfireRepo pakfire_package_get_repo(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireRepo pakfire_package_get_repo(PakfirePackage pkg) {
 	Solvable* s = get_solvable(pkg);
 
 	return pakfire_repo_create_from_repo(pkg->pool, s->repo);
 }
 
-void pakfire_package_set_repo(PakfirePackage pkg, PakfireRepo repo) {
+PAKFIRE_EXPORT void pakfire_package_set_repo(PakfirePackage pkg, PakfireRepo repo) {
 	Solvable* s = get_solvable(pkg);
 
 	s->repo = pakfire_repo_get_solv_repo(repo);
 }
 
-char* pakfire_package_get_location(PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_package_get_location(PakfirePackage pkg) {
 	pakfire_package_internalize_repo(pkg);
 
 	Solvable* s = get_solvable(pkg);
@@ -703,7 +704,7 @@ static void pakfire_package_dump_add_line_size(char** str, const char* key, unsi
 	}
 }
 
-char* pakfire_package_dump(PakfirePackage pkg, int flags) {
+PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 	char* string = "";
 
 	// Name
@@ -836,7 +837,7 @@ char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 	return string;
 }
 
-int pakfire_package_is_cached(PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
 	PakfireCache cache = pakfire_pool_get_cache(pkg->pool);
 	if (!cache)
 		return 1;
@@ -844,7 +845,7 @@ int pakfire_package_is_cached(PakfirePackage pkg) {
 	return pakfire_cache_has_package(cache, pkg);
 }
 
-char* pakfire_package_get_cache_path(PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_package_get_cache_path(PakfirePackage pkg) {
 	PakfireCache cache = pakfire_pool_get_cache(pkg->pool);
 	if (!cache)
 		return NULL;
@@ -852,7 +853,7 @@ char* pakfire_package_get_cache_path(PakfirePackage pkg) {
 	return pakfire_cache_get_package_path(cache, pkg);
 }
 
-char* pakfire_package_get_cache_full_path(PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_package_get_cache_full_path(PakfirePackage pkg) {
 	char* cache_path = NULL;
 
 	char* pkg_cache_path = pakfire_package_get_cache_path(pkg);
@@ -955,7 +956,7 @@ static PakfireFile pakfire_package_fetch_filelist(PakfirePackage pkg) {
 	return file;
 }
 
-PakfireFile pakfire_package_get_filelist(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireFile pakfire_package_get_filelist(PakfirePackage pkg) {
 	if (!pkg->filelist) {
 		pkg->filelist = pakfire_package_fetch_filelist(pkg);
 	}
@@ -963,7 +964,7 @@ PakfireFile pakfire_package_get_filelist(PakfirePackage pkg) {
 	return pkg->filelist;
 }
 
-PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, const char* filename) {
+PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, const char* filename) {
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 
 	Id handle = pakfire_package_get_handle(pkg);
@@ -994,7 +995,7 @@ PakfireFile pakfire_package_filelist_append(PakfirePackage pkg) {
 }
 #endif
 
-void pakfire_package_filelist_remove(PakfirePackage pkg) {
+PAKFIRE_EXPORT void pakfire_package_filelist_remove(PakfirePackage pkg) {
 	if (pkg->filelist)
 		pakfire_file_free_all(pkg->filelist);
 }

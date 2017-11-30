@@ -18,18 +18,11 @@
 #                                                                             #
 #############################################################################*/
 
-#include <pakfire/filter.h>
-#include <pakfire/private.h>
-#include <pakfire/types.h>
-#include <pakfire/util.h>
+#ifndef PAKFIRE_PRIVATE_H
+#define PAKFIRE_PRIVATE_H
 
-PAKFIRE_EXPORT PakfireFilter pakfire_filter_create(void) {
-	PakfireFilter filter = pakfire_calloc(1, sizeof(*filter));
+#ifdef PAKFIRE_PRIVATE
+#define PAKFIRE_EXPORT __attribute__ ((visibility("default")))
+#endif
 
-	return filter;
-}
-
-PAKFIRE_EXPORT void pakfire_filter_free(PakfireFilter filter) {
-	pakfire_free(filter->match);
-	pakfire_free(filter);
-}
+#endif /* PAKFIRE_PRIVATE_H */

@@ -26,13 +26,14 @@
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/package.h>
+#include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/step.h>
 #include <pakfire/transaction.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
+PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
 
 	step->pool = pakfire_transaction_pool(transaction);
@@ -42,15 +43,15 @@ PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
 	return step;
 }
 
-void pakfire_step_free(PakfireStep step) {
+PAKFIRE_EXPORT void pakfire_step_free(PakfireStep step) {
 	pakfire_free(step);
 }
 
-PakfirePackage pakfire_step_get_package(PakfireStep step) {
+PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {
 	return pakfire_package_create(step->pool, step->id);
 }
 
-pakfire_step_type pakfire_step_get_type(PakfireStep step) {
+PAKFIRE_EXPORT pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 	Transaction* trans = step->transaction->transaction;
 
 	int type = transaction_type(trans, step->id,
@@ -87,7 +88,7 @@ pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 	}
 }
 
-const char* pakfire_step_get_type_string(PakfireStep step) {
+PAKFIRE_EXPORT const char* pakfire_step_get_type_string(PakfireStep step) {
 	pakfire_step_type type = pakfire_step_get_type(step);
 
 	switch(type) {
@@ -132,7 +133,7 @@ static int pakfire_step_get_downloadtype(PakfireStep step) {
 	return 0;
 }
 
-unsigned long long pakfire_step_get_downloadsize(PakfireStep step) {
+PAKFIRE_EXPORT unsigned long long pakfire_step_get_downloadsize(PakfireStep step) {
 	PakfirePackage pkg = NULL;
 	int downloadsize = 0;
 
@@ -147,7 +148,7 @@ unsigned long long pakfire_step_get_downloadsize(PakfireStep step) {
 	return downloadsize;
 }
 
-long pakfire_step_get_installsizechange(PakfireStep step) {
+PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
 	PakfirePackage pkg = pakfire_step_get_package(step);
 	int installsize = pakfire_package_get_installsize(pkg);
 
@@ -168,7 +169,7 @@ long pakfire_step_get_installsizechange(PakfireStep step) {
 	return installsize;
 }
 
-int pakfire_step_needs_download(PakfireStep step) {
+PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 	PakfirePackage pkg = NULL;
 	int ret = true;
 
@@ -220,7 +221,7 @@ static int pakfire_step_erase(PakfireStep step) {
 	return 0; // TODO
 }
 
-int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
+PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
 	pakfire_step_type type = pakfire_step_get_type(step);
 
 	// Get the package

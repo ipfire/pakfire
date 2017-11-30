@@ -20,9 +20,10 @@
 
 #include <pakfire/file.h>
 #include <pakfire/filelist.h>
+#include <pakfire/private.h>
 #include <pakfire/util.h>
 
-PakfireFilelist pakfire_filelist_create(PakfirePackage pkg) {
+PAKFIRE_EXPORT PakfireFilelist pakfire_filelist_create(PakfirePackage pkg) {
 	PakfireFilelist list = pakfire_calloc(1, sizeof(*list));
 	if (list) {
 		list->pkg = pkg;
@@ -34,7 +35,7 @@ PakfireFilelist pakfire_filelist_create(PakfirePackage pkg) {
 	return list;
 }
 
-void pakfire_filelist_free(PakfireFilelist list) {
+PAKFIRE_EXPORT void pakfire_filelist_free(PakfireFilelist list) {
 	pakfire_filelist_remove_all();
 	pakfire_free(list);
 }
@@ -51,13 +52,13 @@ static void pakfire_filelist_remove_first(PakfireFilelist list) {
 	pakfire_file_free(file);
 }
 
-void pakfire_filelist_remove_all(PakfireFilelist list) {
+PAKFIRE_EXPORT void pakfire_filelist_remove_all(PakfireFilelist list) {
 	while (list->first) {
 		pakfire_filelist_remove_first(list);
 	}
 }
 
-void pakfire_filelist_append(PakfireFilelist list, PakfireFile file) {
+PAKFIRE_EXPORT void pakfire_filelist_append(PakfireFilelist list, PakfireFile file) {
 	if (list->first && list->last) {
 		list->last->next = file;
 		list->last = file;

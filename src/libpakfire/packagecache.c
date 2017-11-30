@@ -23,10 +23,11 @@
 #include <pakfire/constants.h>
 #include <pakfire/package.h>
 #include <pakfire/packagecache.h>
+#include <pakfire/private.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfirePackageCache pakfire_packagecache_create(PakfirePool pool, const char* path) {
+PAKFIRE_EXPORT PakfirePackageCache pakfire_packagecache_create(PakfirePool pool, const char* path) {
 	PakfirePackageCache cache = pakfire_calloc(1, sizeof(*cache));
 
 	cache->pool = pool;
@@ -35,16 +36,16 @@ PakfirePackageCache pakfire_packagecache_create(PakfirePool pool, const char* pa
 	return cache;
 }
 
-void pakfire_packagecache_free(PakfirePackageCache cache) {
+PAKFIRE_EXPORT void pakfire_packagecache_free(PakfirePackageCache cache) {
 	pakfire_free(cache->path);
 	pakfire_free(cache);
 }
 
-const char* pakfire_packagecache_get_path(PakfirePackageCache cache) {
+PAKFIRE_EXPORT const char* pakfire_packagecache_get_path(PakfirePackageCache cache) {
 	return cache->path;
 }
 
-char* pakfire_packagecache_get_package_path(PakfirePackageCache cache, PakfirePackage pkg) {
+PAKFIRE_EXPORT char* pakfire_packagecache_get_package_path(PakfirePackageCache cache, PakfirePackage pkg) {
 	char buffer[STRING_SIZE] = "";
 
 	const char* filename = pakfire_package_get_filename(pkg);
@@ -59,7 +60,7 @@ char* pakfire_packagecache_get_package_path(PakfirePackageCache cache, PakfirePa
 	return pakfire_strdup(buffer);
 }
 
-int pakfire_packagecache_has_package(PakfirePackageCache cache, PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_packagecache_has_package(PakfirePackageCache cache, PakfirePackage pkg) {
 	char* filename = pakfire_packagecache_get_package_path(cache, pkg);
 
 	// Check if stat() is successful.

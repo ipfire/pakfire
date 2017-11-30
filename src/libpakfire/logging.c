@@ -28,6 +28,7 @@
 
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
+#include <pakfire/private.h>
 
 static pakfire_logging_config_t conf = {
 	.function = pakfire_log_syslog,
@@ -59,23 +60,23 @@ void pakfire_setup_logging() {
 		pakfire_log_set_priority(log_priority(priority));
 }
 
-pakfire_log_function_t pakfire_log_get_function() {
+PAKFIRE_EXPORT pakfire_log_function_t pakfire_log_get_function() {
 	return conf.function;
 }
 
-void pakfire_log_set_function(pakfire_log_function_t func) {
+PAKFIRE_EXPORT void pakfire_log_set_function(pakfire_log_function_t func) {
 	conf.function = func;
 }
 
-int pakfire_log_get_priority() {
+PAKFIRE_EXPORT int pakfire_log_get_priority() {
 	return conf.priority;
 }
 
-void pakfire_log_set_priority(int priority) {
+PAKFIRE_EXPORT void pakfire_log_set_priority(int priority) {
 	conf.priority = priority;
 }
 
-void pakfire_log(int priority, const char* file, int line,
+PAKFIRE_EXPORT void pakfire_log(int priority, const char* file, int line,
 		const char* fn, const char* format, ...) {
 	va_list args;
 
@@ -90,13 +91,13 @@ void pakfire_log(int priority, const char* file, int line,
 	errno = saved_errno;
 }
 
-void pakfire_log_stderr(int priority, const char* file,
+PAKFIRE_EXPORT void pakfire_log_stderr(int priority, const char* file,
 		int line, const char* fn, const char* format, va_list args) {
 	fprintf(stderr, "pakfire: %s: ", fn);
 	vfprintf(stderr, format, args);
 }
 
-void pakfire_log_syslog(int priority, const char* file,
+PAKFIRE_EXPORT void pakfire_log_syslog(int priority, const char* file,
 		int line, const char* fn, const char* format, va_list args) {
 	openlog("pakfire", LOG_PID, LOG_DAEMON);
 	vsyslog(priority | LOG_DAEMON, format, args);

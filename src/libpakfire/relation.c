@@ -26,6 +26,7 @@
 
 #include <pakfire/packagelist.h>
 #include <pakfire/pool.h>
+#include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
@@ -43,7 +44,7 @@ static int cmptype2relflags(int type) {
 	return flags;
 }
 
-PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int cmp_type, const char* evr) {
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int cmp_type, const char* evr) {
 	Pool* p = pool->pool;
 
 	Id id = pool_str2id(p, name, 1);
@@ -62,7 +63,7 @@ PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int 
 	return pakfire_relation_create_from_id(pool, id);
 }
 
-PakfireRelation pakfire_relation_create_from_id(PakfirePool pool, Id id) {
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_id(PakfirePool pool, Id id) {
 	PakfireRelation relation = pakfire_calloc(1, sizeof(*relation));
 
 	relation->pool = pool;
@@ -71,15 +72,15 @@ PakfireRelation pakfire_relation_create_from_id(PakfirePool pool, Id id) {
 	return relation;
 }
 
-void pakfire_relation_free(PakfireRelation relation) {
+PAKFIRE_EXPORT void pakfire_relation_free(PakfireRelation relation) {
 	pakfire_free(relation);
 }
 
-Id pakfire_relation_id(PakfireRelation relation) {
+PAKFIRE_EXPORT Id pakfire_relation_id(PakfireRelation relation) {
 	return relation->id;
 }
 
-char* pakfire_relation_str(PakfireRelation relation) {
+PAKFIRE_EXPORT char* pakfire_relation_str(PakfireRelation relation) {
 	Pool* pool = pakfire_relation_solv_pool(relation);
 
 	const char* str = pool_dep2str(pool, relation->id);
@@ -87,13 +88,13 @@ char* pakfire_relation_str(PakfireRelation relation) {
 	return pakfire_strdup(str);
 }
 
-int pakfire_relation2queue(const PakfireRelation relation, Queue* queue, int solver_action) {
+PAKFIRE_EXPORT int pakfire_relation2queue(const PakfireRelation relation, Queue* queue, int solver_action) {
 	queue_push2(queue, SOLVER_SOLVABLE_PROVIDES|solver_action, relation->id);
 
 	return 0;
 }
 
-PakfirePackageList pakfire_relation_providers(PakfireRelation relation) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_relation_providers(PakfireRelation relation) {
 	Queue q;
 	queue_init(&q);
 

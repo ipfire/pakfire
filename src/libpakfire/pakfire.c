@@ -20,18 +20,19 @@
 
 #include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
+#include <pakfire/private.h>
 #include <pakfire/system.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-int pakfire_init() {
+PAKFIRE_EXPORT int pakfire_init() {
 	// Setup logging
 	pakfire_setup_logging();
 
 	return 0;
 }
 
-Pakfire pakfire_create(const char* path, const char* arch) {
+PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
 	if (pakfire) {
 		pakfire->nrefs = 1;
@@ -52,13 +53,13 @@ Pakfire pakfire_create(const char* path, const char* arch) {
 	return pakfire;
 }
 
-Pakfire pakfire_ref(Pakfire pakfire) {
+PAKFIRE_EXPORT Pakfire pakfire_ref(Pakfire pakfire) {
 	++pakfire->nrefs;
 
 	return pakfire;
 }
 
-void pakfire_unref(Pakfire pakfire) {
+PAKFIRE_EXPORT void pakfire_unref(Pakfire pakfire) {
 	if (--pakfire->nrefs > 0)
 		return;
 
@@ -71,14 +72,14 @@ void pakfire_unref(Pakfire pakfire) {
 	pakfire_free(pakfire);
 }
 
-const char* pakfire_get_path(Pakfire pakfire) {
+PAKFIRE_EXPORT const char* pakfire_get_path(Pakfire pakfire) {
 	return pakfire->path;
 }
 
-const char* pakfire_get_arch(Pakfire pakfire) {
+PAKFIRE_EXPORT const char* pakfire_get_arch(Pakfire pakfire) {
 	return pakfire->arch;
 }
 
-PakfirePool pakfire_get_pool(Pakfire pakfire) {
+PAKFIRE_EXPORT PakfirePool pakfire_get_pool(Pakfire pakfire) {
 	return pakfire_pool_ref(pakfire->pool);
 }

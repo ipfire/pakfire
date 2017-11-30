@@ -26,6 +26,7 @@
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/package.h>
+#include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/repocache.h>
 #include <pakfire/types.h>
@@ -40,7 +41,7 @@ static char* pakfire_repocache_prefix(PakfireRepoCache repo_cache) {
 	return pakfire_strdup(buffer);
 }
 
-PakfireRepoCache pakfire_repocache_create(PakfireRepo repo) {
+PAKFIRE_EXPORT PakfireRepoCache pakfire_repocache_create(PakfireRepo repo) {
 	PakfireRepoCache repo_cache = pakfire_calloc(1, sizeof(*repo_cache));
 
 	repo_cache->repo = repo;
@@ -49,16 +50,16 @@ PakfireRepoCache pakfire_repocache_create(PakfireRepo repo) {
 	return repo_cache;
 }
 
-void pakfire_repocache_free(PakfireRepoCache repo_cache) {
+PAKFIRE_EXPORT void pakfire_repocache_free(PakfireRepoCache repo_cache) {
 	pakfire_free(repo_cache->prefix);
 	pakfire_free(repo_cache);
 }
 
-char* pakfire_repocache_get_cache_path(PakfireRepoCache repo_cache, const char* path) {
+PAKFIRE_EXPORT char* pakfire_repocache_get_cache_path(PakfireRepoCache repo_cache, const char* path) {
 	return pakfire_path_join(repo_cache->prefix, path);
 }
 
-char* pakfire_repocache_get_full_path(PakfireRepoCache repo_cache, const char* path) {
+PAKFIRE_EXPORT char* pakfire_repocache_get_full_path(PakfireRepoCache repo_cache, const char* path) {
 	char* cache_path = pakfire_repocache_get_cache_path(repo_cache, path);
 
 	PakfireCache cache = pakfire_repocache_cache(repo_cache);
@@ -69,7 +70,7 @@ char* pakfire_repocache_get_full_path(PakfireRepoCache repo_cache, const char* p
 	return full_path;
 }
 
-int pakfire_repocache_has_file(PakfireRepoCache repo_cache, const char* filename) {
+PAKFIRE_EXPORT int pakfire_repocache_has_file(PakfireRepoCache repo_cache, const char* filename) {
 	char* cache_filename = pakfire_repocache_get_cache_path(repo_cache, filename);
 
 	PakfireCache cache = pakfire_repocache_cache(repo_cache);
@@ -79,7 +80,7 @@ int pakfire_repocache_has_file(PakfireRepoCache repo_cache, const char* filename
 	return r;
 }
 
-int pakfire_repocache_age(PakfireRepoCache repo_cache, const char* filename) {
+PAKFIRE_EXPORT int pakfire_repocache_age(PakfireRepoCache repo_cache, const char* filename) {
 	char* cache_filename = pakfire_repocache_get_cache_path(repo_cache, filename);
 
 	PakfireCache cache = pakfire_repocache_cache(repo_cache);
@@ -89,7 +90,7 @@ int pakfire_repocache_age(PakfireRepoCache repo_cache, const char* filename) {
 	return age;
 }
 
-FILE* pakfire_repocache_open(PakfireRepoCache repo_cache, const char* filename, const char* flags) {
+PAKFIRE_EXPORT FILE* pakfire_repocache_open(PakfireRepoCache repo_cache, const char* filename, const char* flags) {
 	char* cache_filename = pakfire_repocache_get_cache_path(repo_cache, filename);
 
 	PakfireCache cache = pakfire_repocache_cache(repo_cache);
@@ -103,7 +104,7 @@ static int _unlink(const char* path, const struct stat* stat, int typeflag, stru
 	return remove(path);
 }
 
-int pakfire_repocache_destroy(PakfireRepoCache repo_cache) {
+PAKFIRE_EXPORT int pakfire_repocache_destroy(PakfireRepoCache repo_cache) {
 	// Completely delete the tree of files
 	return nftw(repo_cache->prefix, _unlink, 64, FTW_DEPTH|FTW_PHYS);
 }

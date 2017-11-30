@@ -33,6 +33,7 @@
 #include <pakfire/errno.h>
 #include <pakfire/package.h>
 #include <pakfire/pool.h>
+#include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/repocache.h>
 #include <pakfire/types.h>
@@ -62,7 +63,7 @@ static PakfireRepo get_pakfire_repo_by_name(PakfirePool pool, const char* name) 
 	return NULL;
 }
 
-PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name) {
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name) {
 	PakfireRepo repo = get_pakfire_repo_by_name(pool, name);
 	if (repo) {
 		repo->nrefs++;
@@ -76,7 +77,7 @@ PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name) {
 	return pakfire_repo_create_from_repo(pool, r);
 }
 
-PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r) {
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r) {
 	PakfireRepo repo;
 
 	if (r->appdata) {
@@ -102,7 +103,7 @@ PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r) {
 	return repo;
 }
 
-void pakfire_repo_free(PakfireRepo repo) {
+PAKFIRE_EXPORT void pakfire_repo_free(PakfireRepo repo) {
 	if (--repo->nrefs > 0)
 		return;
 
@@ -115,18 +116,18 @@ void pakfire_repo_free(PakfireRepo repo) {
 	pakfire_free(repo);
 }
 
-PakfirePool pakfire_repo_pool(PakfireRepo repo) {
+PAKFIRE_EXPORT PakfirePool pakfire_repo_pool(PakfireRepo repo) {
 	return repo->pool;
 }
 
-int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2) {
+PAKFIRE_EXPORT int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2) {
 	Repo* r1 = repo1->repo;
 	Repo* r2 = repo2->repo;
 
 	return strcmp(r1->name, r2->name);
 }
 
-int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
+PAKFIRE_EXPORT int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
 	Repo* r1 = repo1->repo;
 	Repo* r2 = repo2->repo;
 
@@ -139,7 +140,7 @@ int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
 	return strcmp(r1->name, r2->name);
 }
 
-int pakfire_repo_count(PakfireRepo repo) {
+PAKFIRE_EXPORT int pakfire_repo_count(PakfireRepo repo) {
 	Pool* pool = pakfire_repo_solv_pool(repo);
 	int cnt = 0;
 
@@ -152,38 +153,38 @@ int pakfire_repo_count(PakfireRepo repo) {
 	return cnt;
 }
 
-void pakfire_repo_internalize(PakfireRepo repo) {
+PAKFIRE_EXPORT void pakfire_repo_internalize(PakfireRepo repo) {
 	repo_internalize(repo->repo);
 }
 
-const char* pakfire_repo_get_name(PakfireRepo repo) {
+PAKFIRE_EXPORT const char* pakfire_repo_get_name(PakfireRepo repo) {
 	return repo->repo->name;
 }
 
-void pakfire_repo_set_name(PakfireRepo repo, const char* name) {
+PAKFIRE_EXPORT void pakfire_repo_set_name(PakfireRepo repo, const char* name) {
 	repo->repo->name = pakfire_strdup(name);
 }
 
-int pakfire_repo_get_enabled(PakfireRepo repo) {
+PAKFIRE_EXPORT int pakfire_repo_get_enabled(PakfireRepo repo) {
 	return !repo->repo->disabled;
 }
 
-void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
+PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
 	repo->repo->disabled = !enabled;
 
 	PakfirePool pool = pakfire_repo_pool(repo);
 	pool->provides_ready = 0;
 }
 
-int pakfire_repo_get_priority(PakfireRepo repo) {
+PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
 	return repo->repo->priority;
 }
 
-void pakfire_repo_set_priority(PakfireRepo repo, int priority) {
+PAKFIRE_EXPORT void pakfire_repo_set_priority(PakfireRepo repo, int priority) {
 	repo->repo->priority = priority;
 }
 
-int pakfire_repo_is_installed_repo(PakfireRepo repo) {
+PAKFIRE_EXPORT int pakfire_repo_is_installed_repo(PakfireRepo repo) {
 	PakfirePool pool = pakfire_repo_pool(repo);
 
 	PakfireRepo installed_repo = pakfire_pool_get_installed_repo(pool);
@@ -191,7 +192,7 @@ int pakfire_repo_is_installed_repo(PakfireRepo repo) {
 	return pakfire_repo_identical(repo, installed_repo);
 }
 
-int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags) {
+PAKFIRE_EXPORT int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags) {
 	FILE* f = fopen(filename, "rb");
 	if (!f) {
 		return PAKFIRE_E_IO;
@@ -320,7 +321,7 @@ UNCOMPRESSED:
 	return f;
 }
 
-int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags) {
+PAKFIRE_EXPORT int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags) {
 	f = decompression_proxy(f);
 
 	int ret = repo_add_solv(repo->repo, f, flags);
@@ -355,7 +356,7 @@ int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags) {
 	return ret;
 }
 
-int pakfire_repo_write_solv(PakfireRepo repo, const char* filename, int flags) {
+PAKFIRE_EXPORT int pakfire_repo_write_solv(PakfireRepo repo, const char* filename, int flags) {
 	FILE* f = fopen(filename, "wb");
 	if (!f) {
 		return PAKFIRE_E_IO;
@@ -367,25 +368,25 @@ int pakfire_repo_write_solv(PakfireRepo repo, const char* filename, int flags) {
 	return ret;
 }
 
-int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int flags) {
+PAKFIRE_EXPORT int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int flags) {
 	pakfire_repo_internalize(repo);
 
 	return repo_write(repo->repo, f);
 }
 
-PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
+PAKFIRE_EXPORT PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
 	Id id = repo_add_solvable(repo->repo);
 
 	return pakfire_package_create(repo->pool, id);
 }
 
-PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {
+PAKFIRE_EXPORT PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {
 	assert(repo);
 
 	return repo->cache;
 }
 
-int pakfire_repo_clean(PakfireRepo repo) {
+PAKFIRE_EXPORT int pakfire_repo_clean(PakfireRepo repo) {
 	PakfireRepoCache cache = pakfire_repo_get_cache(repo);
 
 	if (cache)

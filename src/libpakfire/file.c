@@ -29,9 +29,10 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/file.h>
+#include <pakfire/private.h>
 #include <pakfire/util.h>
 
-PakfireFile pakfire_file_create() {
+PAKFIRE_EXPORT PakfireFile pakfire_file_create() {
 	PakfireFile file = pakfire_calloc(1, sizeof(*file));
 	if (file) {
 		file->name = NULL;
@@ -43,7 +44,7 @@ PakfireFile pakfire_file_create() {
 	return file;
 }
 
-void pakfire_file_free(PakfireFile file) {
+PAKFIRE_EXPORT void pakfire_file_free(PakfireFile file) {
 	if (file->name)
 		pakfire_free(file->name);
 
@@ -61,7 +62,7 @@ void pakfire_file_free(PakfireFile file) {
 	pakfire_free(file);
 }
 
-void pakfire_file_free_all(PakfireFile file) {
+PAKFIRE_EXPORT void pakfire_file_free_all(PakfireFile file) {
 	file = pakfire_file_get_first(file);
 
 	while (file) {
@@ -72,14 +73,14 @@ void pakfire_file_free_all(PakfireFile file) {
 	}
 }
 
-int pakfire_file_cmp(PakfireFile file1, PakfireFile file2) {
+PAKFIRE_EXPORT int pakfire_file_cmp(PakfireFile file1, PakfireFile file2) {
 	const char* name1 = pakfire_file_get_name(file1);
 	const char* name2 = pakfire_file_get_name(file2);
 
 	return strcmp(name1, name2);
 }
 
-void pakfire_file_swap(PakfireFile file1, PakfireFile file2) {
+PAKFIRE_EXPORT void pakfire_file_swap(PakfireFile file1, PakfireFile file2) {
 	PakfireFile file_prev = file1->prev;
 	PakfireFile file_next = file2->next;
 
@@ -95,7 +96,7 @@ void pakfire_file_swap(PakfireFile file1, PakfireFile file2) {
 	file1->prev = file2;
 }
 
-PakfireFile pakfire_file_sort(PakfireFile head) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_sort(PakfireFile head) {
 	unsigned int count = pakfire_file_count(head);
 
 	for (unsigned int i = 0; i < count; i++) {
@@ -118,22 +119,22 @@ PakfireFile pakfire_file_sort(PakfireFile head) {
 	return head;
 }
 
-PakfireFile pakfire_file_get_prev(PakfireFile file) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_get_prev(PakfireFile file) {
 	return file->prev;
 }
 
-PakfireFile pakfire_file_get_next(PakfireFile file) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_get_next(PakfireFile file) {
 	return file->next;
 }
 
-PakfireFile pakfire_file_get_first(PakfireFile file) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_get_first(PakfireFile file) {
 	if (file->prev)
 		return pakfire_file_get_first(file->prev);
 
 	return file;
 }
 
-PakfireFile pakfire_file_get_last(PakfireFile file) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_get_last(PakfireFile file) {
 	if (file->next)
 		return pakfire_file_get_last(file->next);
 
@@ -151,14 +152,14 @@ static PakfireFile __pakfire_file_append(PakfireFile file, PakfireFile appended_
 	return appended_file;
 }
 
-PakfireFile pakfire_file_append(PakfireFile file) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_append(PakfireFile file) {
 	// Create a new file object.
 	PakfireFile appended_file = pakfire_file_create();
 
 	return __pakfire_file_append(file, appended_file);
 }
 
-unsigned int pakfire_file_count(PakfireFile file) {
+PAKFIRE_EXPORT unsigned int pakfire_file_count(PakfireFile file) {
 	unsigned int counter = 0;
 
 	while (file) {
@@ -213,7 +214,7 @@ static char* pakfire_file_format_mtime(PakfireFile file) {
 	return pakfire_strdup(buffer);
 }
 
-void pakfire_file_sprintf(PakfireFile file, char* str, size_t len) {
+PAKFIRE_EXPORT void pakfire_file_sprintf(PakfireFile file, char* str, size_t len) {
 	const char* name = pakfire_file_get_name(file);
 	ssize_t size = pakfire_file_get_size(file);
 
@@ -230,11 +231,11 @@ void pakfire_file_sprintf(PakfireFile file, char* str, size_t len) {
 	pakfire_free(mtime);
 }
 
-const char* pakfire_file_get_name(PakfireFile file) {
+PAKFIRE_EXPORT const char* pakfire_file_get_name(PakfireFile file) {
 	return file->name;
 }
 
-void pakfire_file_set_name(PakfireFile file, const char* name) {
+PAKFIRE_EXPORT void pakfire_file_set_name(PakfireFile file, const char* name) {
 	if (file->name)
 		pakfire_free(file->name);
 
@@ -245,83 +246,83 @@ void pakfire_file_set_name(PakfireFile file, const char* name) {
 	}
 }
 
-char pakfire_file_get_type(PakfireFile file) {
+PAKFIRE_EXPORT char pakfire_file_get_type(PakfireFile file) {
 	return file->type;
 }
 
-void pakfire_file_set_type(PakfireFile file, char type) {
+PAKFIRE_EXPORT void pakfire_file_set_type(PakfireFile file, char type) {
 	file->type = type;
 }
 
-int pakfire_file_is_file(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_file(PakfireFile file) {
 	return (file->type == REGTYPE) || (file->type == AREGTYPE);
 }
 
-int pakfire_file_is_link(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_link(PakfireFile file) {
 	return (file->type == LNKTYPE);
 }
 
-int pakfire_file_is_symlink(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_symlink(PakfireFile file) {
 	return (file->type == SYMTYPE);
 }
 
-int pakfire_file_is_char(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_char(PakfireFile file) {
 	return (file->type == CHRTYPE);
 }
 
-int pakfire_file_is_block(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_block(PakfireFile file) {
 	return (file->type == BLKTYPE);
 }
 
-int pakfire_file_is_dir(PakfireFile file) {
+PAKFIRE_EXPORT int pakfire_file_is_dir(PakfireFile file) {
 	return (file->type == DIRTYPE);
 }
 
-ssize_t pakfire_file_get_size(PakfireFile file) {
+PAKFIRE_EXPORT ssize_t pakfire_file_get_size(PakfireFile file) {
 	return file->size;
 }
 
-void pakfire_file_set_size(PakfireFile file, ssize_t size) {
+PAKFIRE_EXPORT void pakfire_file_set_size(PakfireFile file, ssize_t size) {
 	file->size = size;
 }
 
-const char* pakfire_file_get_user(PakfireFile file) {
+PAKFIRE_EXPORT const char* pakfire_file_get_user(PakfireFile file) {
 	return file->user;
 }
 
-void pakfire_file_set_user(PakfireFile file, const char* user) {
+PAKFIRE_EXPORT void pakfire_file_set_user(PakfireFile file, const char* user) {
 	file->user = pakfire_strdup(user);
 }
 
-const char* pakfire_file_get_group(PakfireFile file) {
+PAKFIRE_EXPORT const char* pakfire_file_get_group(PakfireFile file) {
 	return file->group;
 }
 
-void pakfire_file_set_group(PakfireFile file, const char* group) {
+PAKFIRE_EXPORT void pakfire_file_set_group(PakfireFile file, const char* group) {
 	file->group = pakfire_strdup(group);
 }
 
-mode_t pakfire_file_get_mode(PakfireFile file) {
+PAKFIRE_EXPORT mode_t pakfire_file_get_mode(PakfireFile file) {
 	return file->mode;
 }
 
-void pakfire_file_set_mode(PakfireFile file, mode_t mode) {
+PAKFIRE_EXPORT void pakfire_file_set_mode(PakfireFile file, mode_t mode) {
 	file->mode = mode;
 }
 
-time_t pakfire_file_get_time(PakfireFile file) {
+PAKFIRE_EXPORT time_t pakfire_file_get_time(PakfireFile file) {
 	return file->time;
 }
 
-void pakfire_file_set_time(PakfireFile file, time_t time) {
+PAKFIRE_EXPORT void pakfire_file_set_time(PakfireFile file, time_t time) {
 	file->time = time;
 }
 
-const char* pakfire_file_get_chksum(PakfireFile file) {
+PAKFIRE_EXPORT const char* pakfire_file_get_chksum(PakfireFile file) {
 	return file->chksum;
 }
 
-void pakfire_file_set_chksum(PakfireFile file, const char* chksum) {
+PAKFIRE_EXPORT void pakfire_file_set_chksum(PakfireFile file, const char* chksum) {
 	file->chksum = pakfire_strdup(chksum);
 }
 
@@ -444,7 +445,7 @@ static PakfireFile pakfire_file_parse_line(char* line, unsigned int format) {
 	return file;
 }
 
-PakfireFile pakfire_file_parse_from_file(const char* list, unsigned int format) {
+PAKFIRE_EXPORT PakfireFile pakfire_file_parse_from_file(const char* list, unsigned int format) {
 	PakfireFile head = NULL;
 
 	char* plist = (char *)list;

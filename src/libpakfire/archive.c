@@ -41,6 +41,7 @@
 #include <pakfire/key.h>
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
+#include <pakfire/private.h>
 #include <pakfire/util.h>
 
 static void configure_archive(struct archive* a) {
@@ -207,20 +208,20 @@ static void pakfire_archive_signature_free(PakfireArchiveSignature signature) {
 	pakfire_free(signature);
 }
 
-PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature signature) {
+PAKFIRE_EXPORT PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature signature) {
 	++signature->nrefs;
 
 	return signature;
 }
 
-void pakfire_archive_signature_unref(PakfireArchiveSignature signature) {
+PAKFIRE_EXPORT void pakfire_archive_signature_unref(PakfireArchiveSignature signature) {
 	if (--signature->nrefs > 0)
 		return;
 
 	pakfire_archive_signature_free(signature);
 }
 
-size_t _pakfire_archive_count_signatures(const PakfireArchiveSignature* signatures) {
+static size_t _pakfire_archive_count_signatures(const PakfireArchiveSignature* signatures) {
 	size_t i = 0;
 
 	while (signatures && *signatures++) {
@@ -230,13 +231,13 @@ size_t _pakfire_archive_count_signatures(const PakfireArchiveSignature* signatur
 	return i;
 }
 
-size_t pakfire_archive_count_signatures(PakfireArchive archive) {
+PAKFIRE_EXPORT size_t pakfire_archive_count_signatures(PakfireArchive archive) {
 	PakfireArchiveSignature* signatures = pakfire_archive_get_signatures(archive);
 
 	return _pakfire_archive_count_signatures(signatures);
 }
 
-PakfireArchive pakfire_archive_create(Pakfire pakfire) {
+PAKFIRE_EXPORT PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	PakfireArchive archive = pakfire_calloc(1, sizeof(*archive));
 	if (archive) {
 		DEBUG("Allocated new archive at %p\n", archive);
@@ -251,7 +252,7 @@ PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	return archive;
 }
 
-PakfireArchive pakfire_archive_ref(PakfireArchive archive) {
+PAKFIRE_EXPORT PakfireArchive pakfire_archive_ref(PakfireArchive archive) {
 	++archive->nrefs;
 
 	return archive;
@@ -281,7 +282,7 @@ static void pakfire_archive_free(PakfireArchive archive) {
 	pakfire_free(archive);
 }
 
-void pakfire_archive_unref(PakfireArchive archive) {
+PAKFIRE_EXPORT void pakfire_archive_unref(PakfireArchive archive) {
 	if (--archive->nrefs > 0)
 		return;
 
@@ -577,8 +578,7 @@ out:
 	return r;
 }
 
-
-PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path) {
+PAKFIRE_EXPORT PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path) {
 	PakfireArchive archive = pakfire_archive_create(pakfire);
 	archive->path = pakfire_strdup(path);
 
@@ -628,7 +628,7 @@ static struct archive* archive_open_payload(struct archive* a) {
 	return payload_archive;
 }
 
-int pakfire_archive_read(PakfireArchive archive, const char* filename,
+PAKFIRE_EXPORT int pakfire_archive_read(PakfireArchive archive, const char* filename,
 		void** data, size_t* data_size, int flags) {
 	struct archive* a;
 	struct archive* pa = NULL;
@@ -667,7 +667,7 @@ out:
 	return r;
 }
 
-int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flags) {
+PAKFIRE_EXPORT int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flags) {
 	struct archive* a;
 	struct archive* pa = NULL;
 
@@ -693,19 +693,19 @@ int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flag
 	return r;
 }
 
-const char* pakfire_archive_get_path(PakfireArchive archive) {
+PAKFIRE_EXPORT const char* pakfire_archive_get_path(PakfireArchive archive) {
 	return archive->path;
 }
 
-unsigned int pakfire_archive_get_format(PakfireArchive archive) {
+PAKFIRE_EXPORT unsigned int pakfire_archive_get_format(PakfireArchive archive) {
 	return archive->format;
 }
 
-PakfireFile pakfire_archive_get_filelist(PakfireArchive archive) {
+PAKFIRE_EXPORT PakfireFile pakfire_archive_get_filelist(PakfireArchive archive) {
 	return archive->filelist;
 }
 
-const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature) {
+PAKFIRE_EXPORT const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature) {
 	return signature->sigdata;
 }
 
@@ -766,7 +766,7 @@ static int pakfire_archive_load_signatures(PakfireArchive archive) {
 	return pakfire_archive_walk(archive, pakfire_archive_read_signature_entry);
 }
 
-PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireArchive archive) {
+PAKFIRE_EXPORT PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireArchive archive) {
 	if (!archive->signatures_loaded++)
 		pakfire_archive_load_signatures(archive);
 
@@ -947,7 +947,7 @@ FAIL:
 	return status;
 }
 
-pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
+PAKFIRE_EXPORT pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
 	// Verify that checksums file is signed with a valid key
 	pakfire_archive_verify_status_t status = pakfire_archive_verify_checksums(archive);
 	if (status)
@@ -985,7 +985,7 @@ END:
 	return status;
 }
 
-const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status) {
+PAKFIRE_EXPORT const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status) {
 	switch (status) {
 		case PAKFIRE_ARCHIVE_VERIFY_OK:
 			return _("Verify OK");

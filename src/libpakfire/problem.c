@@ -20,6 +20,7 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/i18n.h>
+#include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
 #include <pakfire/solution.h>
@@ -188,7 +189,7 @@ static char* to_string(PakfireProblem problem) {
 	return pakfire_strdup(s);
 }
 
-PakfireProblem pakfire_problem_create(PakfireRequest request, Id id) {
+PAKFIRE_EXPORT PakfireProblem pakfire_problem_create(PakfireRequest request, Id id) {
 	PakfireProblem problem = pakfire_calloc(1, sizeof(*problem));
 
 	problem->request = pakfire_request_ref(request);
@@ -204,13 +205,13 @@ PakfireProblem pakfire_problem_create(PakfireRequest request, Id id) {
 	return problem;
 }
 
-PakfireProblem pakfire_problem_ref(PakfireProblem problem) {
+PAKFIRE_EXPORT PakfireProblem pakfire_problem_ref(PakfireProblem problem) {
 	problem->nrefs++;
 
 	return problem;
 }
 
-void pakfire_problem_free(PakfireProblem problem) {
+PAKFIRE_EXPORT void pakfire_problem_free(PakfireProblem problem) {
 	if (--problem->nrefs > 0)
 		return;
 
@@ -225,11 +226,11 @@ void pakfire_problem_free(PakfireProblem problem) {
 	pakfire_free(problem);
 }
 
-PakfireProblem pakfire_problem_next(PakfireProblem problem) {
+PAKFIRE_EXPORT PakfireProblem pakfire_problem_next(PakfireProblem problem) {
 	return problem->next;
 }
 
-void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem) {
+PAKFIRE_EXPORT void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem) {
 	PakfireProblem next;
 
 	// Go to last problem in list
@@ -240,11 +241,11 @@ void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem) 
 	problem->next = pakfire_problem_ref(new_problem);
 }
 
-const char* pakfire_problem_to_string(PakfireProblem problem) {
+PAKFIRE_EXPORT const char* pakfire_problem_to_string(PakfireProblem problem) {
 	return problem->string;
 }
 
-PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem) {
+PAKFIRE_EXPORT PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem) {
 	PakfireSolution ret = NULL;
 
 	Id solution = 0;

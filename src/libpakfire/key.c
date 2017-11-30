@@ -30,6 +30,7 @@
 #include <pakfire/key.h>
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
+#include <pakfire/private.h>
 #include <pakfire/util.h>
 
 #define DEFAULT_KEY_SIZE "rsa4096"
@@ -121,7 +122,7 @@ static size_t pakfire_count_keys(Pakfire pakfire) {
 	return count;
 }
 
-PakfireKey* pakfire_key_list(Pakfire pakfire) {
+PAKFIRE_EXPORT PakfireKey* pakfire_key_list(Pakfire pakfire) {
 	size_t count = pakfire_count_keys(pakfire);
 	if (count == 0)
 		return NULL;
@@ -152,7 +153,7 @@ PakfireKey* pakfire_key_list(Pakfire pakfire) {
 	return first;
 }
 
-PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey) {
+PAKFIRE_EXPORT PakfireKey pakfire_key_create(Pakfire pakfire, gpgme_key_t gpgkey) {
 	PakfireKey key = pakfire_calloc(1, sizeof(*key));
 
 	if (key) {
@@ -173,13 +174,13 @@ static void pakfire_key_free(PakfireKey key) {
 	pakfire_free(key);
 }
 
-PakfireKey pakfire_key_ref(PakfireKey key) {
+PAKFIRE_EXPORT PakfireKey pakfire_key_ref(PakfireKey key) {
 	++key->nrefs;
 
 	return key;
 }
 
-void pakfire_key_unref(PakfireKey key) {
+PAKFIRE_EXPORT void pakfire_key_unref(PakfireKey key) {
 	if (--key->nrefs > 0)
 		return;
 
@@ -211,7 +212,7 @@ static PakfireKey __pakfire_get_key(Pakfire pakfire, gpgme_ctx_t gpgctx, const c
 	return key;
 }
 
-PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
+PAKFIRE_EXPORT PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 
 	PakfireKey key = __pakfire_get_key(pakfire, gpgctx, fingerprint);
@@ -220,7 +221,7 @@ PakfireKey pakfire_key_get(Pakfire pakfire, const char* fingerprint) {
 	return key;
 }
 
-int pakfire_key_delete(PakfireKey key) {
+PAKFIRE_EXPORT int pakfire_key_delete(PakfireKey key) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pakfire);
 
 	int r = 0;
@@ -233,23 +234,23 @@ int pakfire_key_delete(PakfireKey key) {
 	return r;
 }
 
-const char* pakfire_key_get_fingerprint(PakfireKey key) {
+PAKFIRE_EXPORT const char* pakfire_key_get_fingerprint(PakfireKey key) {
 	return key->gpgkey->fpr;
 }
 
-const char* pakfire_key_get_uid(PakfireKey key) {
+PAKFIRE_EXPORT const char* pakfire_key_get_uid(PakfireKey key) {
 	return key->gpgkey->uids->uid;
 }
 
-const char* pakfire_key_get_name(PakfireKey key) {
+PAKFIRE_EXPORT const char* pakfire_key_get_name(PakfireKey key) {
 	return key->gpgkey->uids->name;
 }
 
-const char* pakfire_key_get_email(PakfireKey key) {
+PAKFIRE_EXPORT const char* pakfire_key_get_email(PakfireKey key) {
 	return key->gpgkey->uids->email;
 }
 
-const char* pakfire_key_get_pubkey_algo(PakfireKey key) {
+PAKFIRE_EXPORT const char* pakfire_key_get_pubkey_algo(PakfireKey key) {
 	switch (key->gpgkey->subkeys->pubkey_algo) {
 		case GPGME_PK_RSA:
 		case GPGME_PK_RSA_E:
@@ -279,23 +280,23 @@ const char* pakfire_key_get_pubkey_algo(PakfireKey key) {
 	return NULL;
 }
 
-size_t pakfire_key_get_pubkey_length(PakfireKey key) {
+PAKFIRE_EXPORT size_t pakfire_key_get_pubkey_length(PakfireKey key) {
 	return key->gpgkey->subkeys->length;
 }
 
-time_t pakfire_key_get_created(PakfireKey key) {
+PAKFIRE_EXPORT time_t pakfire_key_get_created(PakfireKey key) {
 	return key->gpgkey->subkeys->timestamp;
 }
 
-time_t pakfire_key_get_expires(PakfireKey key) {
+PAKFIRE_EXPORT time_t pakfire_key_get_expires(PakfireKey key) {
 	return key->gpgkey->subkeys->expires;
 }
 
-int pakfire_key_is_revoked(PakfireKey key) {
+PAKFIRE_EXPORT int pakfire_key_is_revoked(PakfireKey key) {
 	return key->gpgkey->subkeys->revoked;
 }
 
-PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
+PAKFIRE_EXPORT PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(pakfire);
 
 	unsigned int flags = 0;
@@ -326,7 +327,7 @@ PakfireKey pakfire_key_generate(Pakfire pakfire, const char* userid) {
 	return pakfire_key_get(pakfire, result->fpr);
 }
 
-char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
+PAKFIRE_EXPORT char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
 	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(key->pakfire);
 
 	gpgme_export_mode_t gpgmode = 0;
@@ -380,7 +381,7 @@ FAIL:
 	return NULL;
 }
 
-PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
+PAKFIRE_EXPORT PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data) {
 	gpgme_error_t error;
 	gpgme_data_t keydata;
 
@@ -452,7 +453,7 @@ FAIL:
 	return NULL;
 }
 
-char* pakfire_key_dump(PakfireKey key) {
+PAKFIRE_EXPORT char* pakfire_key_dump(PakfireKey key) {
 	char* s = "";
 
 	time_t created = pakfire_key_get_created(key);

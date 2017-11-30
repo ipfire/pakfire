@@ -24,6 +24,7 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/i18n.h>
+#include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/solution.h>
 #include <pakfire/util.h>
@@ -102,7 +103,7 @@ static void import_elements(PakfireSolution solution) {
 	*elements = NULL;
 }
 
-PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
+PAKFIRE_EXPORT PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
 	PakfireSolution solution = pakfire_calloc(1, sizeof(*solution));
 
 	solution->problem = pakfire_problem_ref(problem);
@@ -118,13 +119,13 @@ PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
 	return solution;
 }
 
-PakfireSolution pakfire_solution_ref(PakfireSolution solution) {
+PAKFIRE_EXPORT PakfireSolution pakfire_solution_ref(PakfireSolution solution) {
 	solution->nrefs++;
 
 	return solution;
 }
 
-void pakfire_solution_free(PakfireSolution solution) {
+PAKFIRE_EXPORT void pakfire_solution_free(PakfireSolution solution) {
 	if (--solution->nrefs > 0)
 		return;
 
@@ -140,11 +141,11 @@ void pakfire_solution_free(PakfireSolution solution) {
 	pakfire_free(solution);
 }
 
-PakfireSolution pakfire_solution_next(PakfireSolution solution) {
+PAKFIRE_EXPORT PakfireSolution pakfire_solution_next(PakfireSolution solution) {
 	return solution->next;
 }
 
-void pakfire_solution_append(PakfireSolution solution, PakfireSolution new_solution) {
+PAKFIRE_EXPORT void pakfire_solution_append(PakfireSolution solution, PakfireSolution new_solution) {
 	PakfireSolution next;
 
 	// Go to last problem in list
@@ -166,7 +167,7 @@ static size_t count_elements_length(PakfireSolution solution) {
 	return length;
 }
 
-char* pakfire_solution_to_string(PakfireSolution solution) {
+PAKFIRE_EXPORT char* pakfire_solution_to_string(PakfireSolution solution) {
 	// Determine length of output string
 	size_t length = count_elements_length(solution);
 

@@ -34,6 +34,7 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
+#include <pakfire/private.h>
 
 void pakfire_oom(size_t num, size_t len) {
 	if (num)
@@ -75,7 +76,7 @@ void* pakfire_realloc(void* ptr, size_t size) {
 	return ptr;
 }
 
-void* pakfire_free(void* mem) {
+PAKFIRE_EXPORT void* pakfire_free(void* mem) {
 	if (mem)
 		free(mem);
 
@@ -124,7 +125,7 @@ char* pakfire_format_date(time_t t) {
 	return pakfire_strftime("%Y-%m-%d", t);
 }
 
-char* pakfire_path_join(const char* first, const char* second) {
+PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 	char* buffer;
 
 	if (!second)
@@ -150,7 +151,7 @@ char* pakfire_dirname(const char* path) {
 	return dirname(parent);
 }
 
-int pakfire_access(const char* dir, const char* file, int mode) {
+PAKFIRE_EXPORT int pakfire_access(const char* dir, const char* file, int mode) {
 	char* path = pakfire_path_join(dir, file);
 
 	int r = access(path, mode);

@@ -54,8 +54,13 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/include \
 	$(OUR_CPPFLAGS)
 
-AM_CFLAGS = $(OUR_CFLAGS)
-AM_LDFLAGS = $(OUR_LDFLAGS)
+AM_CFLAGS = $(OUR_CFLAGS) \
+	-ffunction-sections \
+	-fdata-sections
+
+AM_LDFLAGS = $(OUR_LDFLAGS) \
+	-Wl,--gc-sections \
+	-Wl,--as-needed
 
 PAKFIRE_CPPFLAGS = -I$(top_srcdir)/src/libpakfire/include
 PAKFIRE_LIBS     = libpakfire.la
@@ -283,6 +288,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/packagelist.h \
 	src/libpakfire/include/pakfire/pakfire.h \
 	src/libpakfire/include/pakfire/pool.h \
+	src/libpakfire/include/pakfire/private.h \
 	src/libpakfire/include/pakfire/problem.h \
 	src/libpakfire/include/pakfire/relation.h \
 	src/libpakfire/include/pakfire/relationlist.h \
@@ -299,6 +305,7 @@ pkginclude_HEADERS += \
 
 libpakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
+	-fvisibility=hidden \
 	$(LIBGCRYPT_CFLAGS)
 
 libpakfire_la_CPPFLAGS = \

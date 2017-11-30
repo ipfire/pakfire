@@ -24,13 +24,14 @@
 #include <pakfire/i18n.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/step.h>
 #include <pakfire/transaction.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans) {
+PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
 	transaction->pool = pool;
 
@@ -45,23 +46,23 @@ PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* tra
 	return transaction;
 }
 
-void pakfire_transaction_free(PakfireTransaction transaction) {
+PAKFIRE_EXPORT void pakfire_transaction_free(PakfireTransaction transaction) {
 	transaction_free(transaction->transaction);
 	pakfire_free(transaction);
 }
 
-size_t pakfire_transaction_count(PakfireTransaction transaction) {
+PAKFIRE_EXPORT size_t pakfire_transaction_count(PakfireTransaction transaction) {
 	return transaction->transaction->steps.count;
 }
 
-ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction) {
+PAKFIRE_EXPORT ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction) {
 	ssize_t sizechange = transaction_calc_installsizechange(transaction->transaction);
 
 	// Convert from kbytes to bytes
 	return sizechange * 1024;
 }
 
-ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
+PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
 	PakfirePool pool = pakfire_transaction_pool(transaction);
 	ssize_t size = 0;
 
@@ -89,7 +90,7 @@ ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
 	return size;
 }
 
-PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index) {
+PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index) {
 	Transaction* trans = transaction->transaction;
 
 	if (index >= trans->steps.count)
@@ -98,7 +99,7 @@ PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int ind
 	return pakfire_step_create(transaction, trans->steps.elements[index]);
 }
 
-PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type) {
 	PakfirePool pool = pakfire_transaction_pool(transaction);
 
 	PakfirePackageList packagelist = pakfire_packagelist_create();
@@ -205,7 +206,7 @@ static void pakfire_transaction_add_usage_line(char** str, size_t width, const c
 	pakfire_free(s);
 }
 
-char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width) {
+PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width) {
 	char* string = "";
 
 	// Header
@@ -287,7 +288,7 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 	return r;
 }
 
-int pakfire_transaction_run(PakfireTransaction transaction) {
+PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	int r = 0;
 
 	// Verify steps

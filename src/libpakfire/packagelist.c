@@ -27,18 +27,19 @@
 
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/private.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
 #define BLOCK_SIZE 31
 
-PakfirePackageList pakfire_packagelist_create(void) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_create(void) {
 	PakfirePackageList list = pakfire_calloc(1, sizeof(*list));
 
 	return list;
 }
 
-void pakfire_packagelist_free(PakfirePackageList list) {
+PAKFIRE_EXPORT void pakfire_packagelist_free(PakfirePackageList list) {
 	for (int i = 0; i < list->count; i++) {
 		PakfirePackage pkg = list->elements[i];
 		pakfire_package_free(pkg);
@@ -48,26 +49,26 @@ void pakfire_packagelist_free(PakfirePackageList list) {
 	pakfire_free(list);
 }
 
-int pakfire_packagelist_count(PakfirePackageList list) {
+PAKFIRE_EXPORT int pakfire_packagelist_count(PakfirePackageList list) {
 	return list->count;
 }
 
-int _packagelist_cmp(const void* pkg1, const void* pkg2) {
+PAKFIRE_EXPORT int _packagelist_cmp(const void* pkg1, const void* pkg2) {
 	return pakfire_package_cmp(*(PakfirePackage*)pkg1, *(PakfirePackage*)pkg2);
 }
 
-void pakfire_packagelist_sort(PakfirePackageList list) {
+PAKFIRE_EXPORT void pakfire_packagelist_sort(PakfirePackageList list) {
 	qsort(list->elements, list->count, sizeof(*list->elements), _packagelist_cmp);
 }
 
-PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index) {
+PAKFIRE_EXPORT PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index) {
 	if (index < list->count)
 		return list->elements[index];
 
 	return NULL;
 }
 
-int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg) {
 	for (int i = 0; i < list->count; i++) {
 		PakfirePackage _pkg = list->elements[i];
 
@@ -78,19 +79,19 @@ int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg) {
 	return 0;
 }
 
-void pakfire_packagelist_push(PakfirePackageList list, PakfirePackage pkg) {
+PAKFIRE_EXPORT void pakfire_packagelist_push(PakfirePackageList list, PakfirePackage pkg) {
 	list->elements = solv_extend(list->elements, list->count, 1, sizeof(pkg), BLOCK_SIZE);
 	list->elements[list->count++] = pkg;
 }
 
-void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePackage pkg) {
+PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePackage pkg) {
 	if (pakfire_packagelist_has(list, pkg))
 		return;
 
 	pakfire_packagelist_push(list, pkg);
 }
 
-PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {
 	PakfirePackageList list = pakfire_packagelist_create();
 
 	Pool* pool = _pool->pool;

@@ -27,6 +27,7 @@
 #endif
 
 #include <pakfire/package.h>
+#include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
 #include <pakfire/selector.h>
@@ -34,7 +35,7 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PakfireRequest pakfire_request_create(PakfirePool pool) {
+PAKFIRE_EXPORT PakfireRequest pakfire_request_create(PakfirePool pool) {
 	PakfireRequest request = pakfire_calloc(1, sizeof(*request));
 	request->pool = pool;
 
@@ -46,13 +47,13 @@ PakfireRequest pakfire_request_create(PakfirePool pool) {
 	return request;
 }
 
-PakfireRequest pakfire_request_ref(PakfireRequest request) {
+PAKFIRE_EXPORT PakfireRequest pakfire_request_ref(PakfireRequest request) {
 	request->nrefs++;
 
 	return request;
 }
 
-void pakfire_request_free(PakfireRequest request) {
+PAKFIRE_EXPORT void pakfire_request_free(PakfireRequest request) {
 	if (--request->nrefs > 0)
 		return;
 
@@ -67,7 +68,7 @@ void pakfire_request_free(PakfireRequest request) {
 	pakfire_free(request);
 }
 
-PakfirePool pakfire_request_pool(PakfireRequest request) {
+PAKFIRE_EXPORT PakfirePool pakfire_request_pool(PakfireRequest request) {
 	return request->pool;
 }
 
@@ -128,7 +129,7 @@ static int solve(PakfireRequest request, Queue* queue) {
 	return 0;
 }
 
-int pakfire_request_solve(PakfireRequest request, int flags) {
+PAKFIRE_EXPORT int pakfire_request_solve(PakfireRequest request, int flags) {
 	init_solver(request, flags);
 
 	Queue queue;
@@ -156,7 +157,7 @@ int pakfire_request_solve(PakfireRequest request, int flags) {
 	return ret;
 }
 
-PakfireProblem pakfire_request_get_problems(PakfireRequest request) {
+PAKFIRE_EXPORT PakfireProblem pakfire_request_get_problems(PakfireRequest request) {
 	Id problem = 0;
 	PakfireProblem ret = NULL;
 
@@ -172,24 +173,24 @@ PakfireProblem pakfire_request_get_problems(PakfireRequest request) {
 	return ret;
 }
 
-PakfireTransaction pakfire_request_get_transaction(PakfireRequest request) {
+PAKFIRE_EXPORT PakfireTransaction pakfire_request_get_transaction(PakfireRequest request) {
 	if (!request->transaction)
 		return NULL;
 
 	return pakfire_transaction_create(request->pool, request->transaction);
 }
 
-int pakfire_request_install(PakfireRequest request, PakfirePackage package) {
+PAKFIRE_EXPORT int pakfire_request_install(PakfireRequest request, PakfirePackage package) {
 	queue_push2(&request->queue, SOLVER_SOLVABLE|SOLVER_INSTALL, pakfire_package_id(package));
 
 	return 0;
 }
 
-int pakfire_request_install_relation(PakfireRequest request, PakfireRelation relation) {
+PAKFIRE_EXPORT int pakfire_request_install_relation(PakfireRequest request, PakfireRelation relation) {
 	return pakfire_relation2queue(relation, &request->queue, SOLVER_INSTALL);
 }
 
-int pakfire_request_install_selector(PakfireRequest request, PakfireSelector selector) {
+PAKFIRE_EXPORT int pakfire_request_install_selector(PakfireRequest request, PakfireSelector selector) {
 	return pakfire_selector2queue(selector, &request->queue, SOLVER_INSTALL);
 }
 
@@ -202,64 +203,64 @@ static int erase_flags(int flags) {
 	return additional;
 }
 
-int pakfire_request_erase(PakfireRequest request, PakfirePackage package, int flags) {
+PAKFIRE_EXPORT int pakfire_request_erase(PakfireRequest request, PakfirePackage package, int flags) {
 	int additional = erase_flags(flags);
 	queue_push2(&request->queue, SOLVER_SOLVABLE|SOLVER_ERASE|additional, pakfire_package_id(package));
 
 	return 0;
 }
 
-int pakfire_request_erase_relation(PakfireRequest request, PakfireRelation relation, int flags) {
+PAKFIRE_EXPORT int pakfire_request_erase_relation(PakfireRequest request, PakfireRelation relation, int flags) {
 	int additional = erase_flags(flags);
 
 	return pakfire_relation2queue(relation, &request->queue, SOLVER_ERASE|additional);
 }
 
-int pakfire_request_erase_selector(PakfireRequest request, PakfireSelector selector, int flags) {
+PAKFIRE_EXPORT int pakfire_request_erase_selector(PakfireRequest request, PakfireSelector selector, int flags) {
 	int additional = erase_flags(flags);
 
 	return pakfire_selector2queue(selector, &request->queue, SOLVER_ERASE|additional);
 }
 
-int pakfire_request_upgrade(PakfireRequest request, PakfirePackage package) {
+PAKFIRE_EXPORT int pakfire_request_upgrade(PakfireRequest request, PakfirePackage package) {
 	return pakfire_request_install(request, package);
 }
 
-int pakfire_request_upgrade_relation(PakfireRequest request, PakfireRelation relation) {
+PAKFIRE_EXPORT int pakfire_request_upgrade_relation(PakfireRequest request, PakfireRelation relation) {
 	return pakfire_relation2queue(relation, &request->queue, SOLVER_UPDATE);
 }
 
-int pakfire_request_upgrade_selector(PakfireRequest request, PakfireSelector selector) {
+PAKFIRE_EXPORT int pakfire_request_upgrade_selector(PakfireRequest request, PakfireSelector selector) {
 	return pakfire_selector2queue(selector, &request->queue, SOLVER_UPDATE);
 }
 
-int pakfire_request_upgrade_all(PakfireRequest request) {
+PAKFIRE_EXPORT int pakfire_request_upgrade_all(PakfireRequest request) {
 	queue_push2(&request->queue, SOLVER_UPDATE|SOLVER_SOLVABLE_ALL, 0);
 
 	return 0;
 }
 
-int pakfire_request_distupgrade(PakfireRequest request) {
+PAKFIRE_EXPORT int pakfire_request_distupgrade(PakfireRequest request) {
 	queue_push2(&request->queue, SOLVER_DISTUPGRADE|SOLVER_SOLVABLE_ALL, 0);
 
 	return 0;
 }
 
-int pakfire_request_lock(PakfireRequest request, PakfirePackage package) {
+PAKFIRE_EXPORT int pakfire_request_lock(PakfireRequest request, PakfirePackage package) {
 	queue_push2(&request->queue, SOLVER_SOLVABLE|SOLVER_LOCK, pakfire_package_id(package));
 
 	return 0;
 }
 
-int pakfire_request_lock_relation(PakfireRequest request, PakfireRelation relation) {
+PAKFIRE_EXPORT int pakfire_request_lock_relation(PakfireRequest request, PakfireRelation relation) {
 	return pakfire_relation2queue(relation, &request->queue, SOLVER_LOCK);
 }
 
-int pakfire_request_lock_selector(PakfireRequest request, PakfireSelector selector) {
+PAKFIRE_EXPORT int pakfire_request_lock_selector(PakfireRequest request, PakfireSelector selector) {
 	return pakfire_selector2queue(selector, &request->queue, SOLVER_LOCK);
 }
 
-int pakfire_request_verify(PakfireRequest request) {
+PAKFIRE_EXPORT int pakfire_request_verify(PakfireRequest request) {
 	queue_push2(&request->queue, SOLVER_VERIFY|SOLVER_SOLVABLE_ALL, 0);
 
 	return 0;
