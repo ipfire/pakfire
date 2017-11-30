@@ -49,7 +49,7 @@ testsuite_t* testsuite_create(size_t n);
 int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func);
 int testsuite_run(testsuite_t* ts);
 
-#define _LOG(prefix, fmt, ...) printf("TESTS: " prefix fmt, ## __VA_ARGS__);
+#define _LOG(prefix, fmt, ...) fprintf(stderr, "TESTS: " prefix fmt, ## __VA_ARGS__);
 #define LOG(fmt, ...) _LOG("", fmt, ## __VA_ARGS__);
 #define LOG_WARN(fmt, ...) _LOG("WARN: ", fmt, ## __VA_ARGS__);
 #define LOG_ERROR(fmt, ...) _LOG("ERROR: ", fmt, ## __VA_ARGS__);
