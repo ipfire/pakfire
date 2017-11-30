@@ -76,6 +76,12 @@ int test_export(const test_t* t) {
 	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
 	assert_return(key, EXIT_FAILURE);
 
+	// Dump key description
+	char* dump = pakfire_key_dump(key);
+	assert_return(dump, EXIT_FAILURE);
+	LOG("%s\n", dump);
+	pakfire_free(dump);
+
 	char* data = pakfire_key_export(key, 0);
 	assert_return(data, EXIT_FAILURE);
 
