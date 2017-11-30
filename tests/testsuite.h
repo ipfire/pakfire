@@ -18,6 +18,9 @@
 #                                                                             #
 #############################################################################*/
 
+#ifndef PAKFIRE_TESTSUITE_H
+#define PAKFIRE_TESTSUITE_H
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -54,3 +57,5 @@ int testsuite_run(testsuite_t* ts);
 			return r; \
 		} \
 	} while (0)
+
+#endif /* PAKFIRE_TESTSUITE_H */
