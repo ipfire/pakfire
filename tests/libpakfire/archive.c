@@ -24,28 +24,52 @@
 #include "../testsuite.h"
 
 static const char* TEST_PKG1_PATH = "data/beep-1.3-2.ip3.x86_64.pfm";
+static const char* TEST_PKG1_FILE = "usr/bin/beep";
 
 int test_open(const test_t* t) {
-    char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
-    LOG("Trying to open %s\n", path);
+	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
+	LOG("Trying to open %s\n", path);
 
-    // Open the archive
-    PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
-    assert_return(archive, EXIT_FAILURE);
+	// Open the archive
+	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
+	assert_return(archive, EXIT_FAILURE);
 
-    pakfire_archive_unref(archive);
+	// Verify the archive
+	pakfire_archive_verify_status_t verify = pakfire_archive_verify(archive);
+	assert_return(verify == PAKFIRE_ARCHIVE_VERIFY_OK, EXIT_FAILURE);
 
-    pakfire_free(path);
+	pakfire_archive_unref(archive);
+	pakfire_free(path);
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
+}
+
+int test_extract(const test_t* t) {
+	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
+
+	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
+	pakfire_free(path);
+
+	// Extract the archive payload
+	int r = pakfire_archive_extract(archive, NULL, PAKFIRE_ARCHIVE_USE_PAYLOAD);
+	assert_return(r == 0, EXIT_FAILURE);
+
+	// Check if test file from the archive exists
+	assert_return(pakfire_access(pakfire_get_path(t->pakfire),
+		TEST_PKG1_FILE, F_OK) == 0, EXIT_FAILURE);
+
+	pakfire_archive_unref(archive);
+
+	return EXIT_SUCCESS;
 }
 
 int main(int argc, char** argv) {
 	testsuite_init();
 
-	testsuite_t* ts = testsuite_create(1);
+	testsuite_t* ts = testsuite_create(2);
 
 	testsuite_add_test(ts, "test_open", test_open);
+	testsuite_add_test(ts, "test_extract", test_extract);
 
 	return testsuite_run(ts);
 }
