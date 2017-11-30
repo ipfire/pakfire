@@ -39,6 +39,7 @@
 #include <pakfire/file.h>
 #include <pakfire/i18n.h>
 #include <pakfire/key.h>
+#include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/util.h>
 
@@ -136,12 +137,27 @@ static int payload_archive_open(struct archive** a, struct archive* source_archi
 	return archive_read_open1(*a);
 }
 
+static const char* checksum_algo_string(archive_checksum_algo_t algo) {
+	switch (algo) {
+		case PAKFIRE_CHECKSUM_SHA512:
+			return "SHA512";
+
+		case PAKFIRE_CHECKSUM_UNKNOWN:
+			return "UNKNOWN";
+	}
+
+	return NULL;
+}
+
 static archive_checksum_t* pakfire_archive_checksum_create(const char* filename, const char* checksum, archive_checksum_algo_t algo) {
 	archive_checksum_t* c = pakfire_calloc(1, sizeof(*c));
 	if (c) {
 		c->filename = pakfire_strdup(filename);
 		c->checksum = pakfire_strdup(checksum);
 		c->algo = algo;
+
+		DEBUG("Allocated archive checksum for %s (%s:%s)\n",
+			c->filename, checksum_algo_string(c->algo), c->checksum);
 	}
 
 	return c;
@@ -150,6 +166,8 @@ static archive_checksum_t* pakfire_archive_checksum_create(const char* filename,
 static void pakfire_archive_checksum_free(archive_checksum_t* c) {
 	pakfire_free(c->filename);
 	pakfire_free(c->checksum);
+
+	DEBUG("Released archive checksum at %p\n", c);
 	pakfire_free(c);
 }
 
@@ -172,6 +190,8 @@ static PakfireArchiveSignature pakfire_archive_signature_create(PakfireArchive a
 	if (signature) {
 		signature->nrefs = 1;
 		signature->sigdata = pakfire_strdup(sigdata);
+
+		DEBUG("Allocated archive signature at %p\n%s\n", signature, signature->sigdata);
 	}
 
 	return signature;
@@ -182,6 +202,8 @@ static void pakfire_archive_signature_free(PakfireArchiveSignature signature) {
 		pakfire_key_unref(signature->key);
 
 	pakfire_free(signature->sigdata);
+
+	DEBUG("Released archive signature at %p\n", signature);
 	pakfire_free(signature);
 }
 
@@ -217,6 +239,8 @@ size_t pakfire_archive_count_signatures(PakfireArchive archive) {
 PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 	PakfireArchive archive = pakfire_calloc(1, sizeof(*archive));
 	if (archive) {
+		DEBUG("Allocated new archive at %p\n", archive);
+
 		archive->nrefs = 1;
 		archive->pakfire = pakfire_ref(pakfire);
 		archive->format = -1;
@@ -252,6 +276,8 @@ static void pakfire_archive_free(PakfireArchive archive) {
 	}
 
 	pakfire_unref(archive->pakfire);
+
+	DEBUG("Released archive at %p\n", archive);
 	pakfire_free(archive);
 }
 
@@ -269,6 +295,8 @@ static int pakfire_archive_parse_entry_format(PakfireArchive archive,
 
 	archive_read_data(a, &format, PAKFIRE_ARCHIVE_FORMAT_SIZE);
 	archive->format = atoi(format);
+
+	DEBUG("Archive at %p format is %d\n", archive, archive->format);
 
 	return (archive->format < 0);
 }
@@ -484,6 +512,8 @@ static int archive_extract(struct archive* a, const char* prefix) {
 	if (!prefix)
 		prefix = "/";
 
+	DEBUG("Extracting archive to %s\n", prefix);
+
 	struct archive* ext = archive_write_disk_new();
 
 	// Set flags for extracting contents.
@@ -509,18 +539,20 @@ static int archive_extract(struct archive* a, const char* prefix) {
 			break;
 
 		// Prepend the prefix to the path the file is extracted to.
+		const char* archive_pathname = archive_entry_pathname(entry);
 		if (prefix) {
-			const char* archive_pathname = archive_entry_pathname(entry);
 			pathname = pakfire_path_join(prefix, archive_pathname);
 
 			archive_entry_set_pathname(entry, pathname);
 		}
 
+		size_t size = archive_entry_size(entry);
+		DEBUG("Extracting /%s (%zu bytes)\n", archive_pathname, size);
+
 		r = archive_write_header(ext, entry);
 		if (r != ARCHIVE_OK)
 			goto out;
 
-		size_t size = archive_entry_size(entry);
 		if (size > 0) {
 			r = archive_copy_data(a, ext);
 
@@ -734,6 +766,8 @@ static int pakfire_archive_read_signature_entry(PakfireArchive archive, struct a
 }
 
 static int pakfire_archive_load_signatures(PakfireArchive archive) {
+	DEBUG("Loading all signatures for archive at %p\n", archive);
+
 	return pakfire_archive_walk(archive, pakfire_archive_read_signature_entry);
 }
 
@@ -749,8 +783,10 @@ static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireA
 
 	// Cannot validate anything if no signatures are available
 	PakfireArchiveSignature* signatures = pakfire_archive_get_signatures(archive);
-	if (!signatures)
+	if (!signatures) {
+		DEBUG("Archive %p does not have any signatures\n", archive);
 		return PAKFIRE_ARCHIVE_VERIFY_OK;
+	}
 
 	char* data = NULL;
 	size_t size = 0;
@@ -830,6 +866,8 @@ CLEANUP:
 	gpgme_data_release(signed_text);
 	gpgme_release(gpgctx);
 
+	DEBUG("Checksum verification status: %s\n", pakfire_archive_verify_strerror(status));
+
 	return status;
 }
 
@@ -897,8 +935,14 @@ static pakfire_archive_verify_status_t pakfire_archive_verify_file(struct archiv
 	char* hexdigest = digest_to_hexdigest(digest, l);
 
 	// Compare digests
-	if (strcmp(checksum->checksum, hexdigest) == 0)
+	if (strcmp(checksum->checksum, hexdigest) == 0) {
+		DEBUG("Checksum of %s is OK\n", checksum->filename);
 		status = PAKFIRE_ARCHIVE_VERIFY_OK;
+	} else {
+		DEBUG("Checksum of %s did not match\n", checksum->filename);
+		DEBUG("Expected %s:%s, got %s\n",
+			checksum_algo_string(checksum->algo), checksum->checksum, hexdigest);
+	}
 
 	pakfire_free(hexdigest);
 
@@ -938,6 +982,7 @@ pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive) {
 	}
 
 	status = PAKFIRE_ARCHIVE_VERIFY_OK;
+	DEBUG("Archive %p has been successfully verified\n", archive);
 
 END:
 	archive_close(a);
