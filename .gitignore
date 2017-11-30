@@ -9,7 +9,7 @@
 /src/scripts/quality-agent
 /src/scripts/extract-debuginfo
 /src/systemd/*.service
-/tests/.data
+/tests/.root
 /tests/libpakfire/archive
 /tests/libpakfire/key
 /tests/libpakfire/main
