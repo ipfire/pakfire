@@ -37,14 +37,13 @@ Pakfire pakfire_create(const char* path, const char* arch) {
 		pakfire->nrefs = 1;
 
 		pakfire->path = pakfire_strdup(path);
-		if (!arch) {
+		if (!arch)
 			arch = system_machine();
-		}
 		pakfire->arch = pakfire_strdup(arch);
 
 		DEBUG("Pakfire initialized at %p\n", pakfire);
-		DEBUG("  arch = %s\n", pakfire->arch);
-		DEBUG("  path = %s\n", pakfire->path);
+		DEBUG("  arch = %s\n", pakfire_get_arch(pakfire));
+		DEBUG("  path = %s\n", pakfire_get_path(pakfire));
 
 		// Initialize the pool
 		pakfire->pool = pakfire_pool_create(pakfire);

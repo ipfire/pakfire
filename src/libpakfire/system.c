@@ -26,16 +26,16 @@
 #include <pakfire/util.h>
 
 const char* system_machine() {
-    static char __system_machine[STRING_SIZE] = "";
+    static const char* __system_machine = NULL;
 
-    if (!*__system_machine) {
+    if (!__system_machine) {
         struct utsname buf;
 
         int r = uname(&buf);
-        if (!r)
+        if (r)
             return NULL;
 
-        strncpy(__system_machine, buf.machine, sizeof(*__system_machine));
+        __system_machine = pakfire_strdup(buf.machine);
     }
 
     return __system_machine;
