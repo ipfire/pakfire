@@ -18,12 +18,25 @@
 #                                                                             #
 #############################################################################*/
 
+#include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/system.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
+
+struct _Pakfire {
+	char* path;
+	char* arch;
+	PakfirePool pool;
+
+	// Logging
+	pakfire_log_function_t log_function;
+	int log_priority;
+
+	int nrefs;
+};
 
 PAKFIRE_EXPORT int pakfire_init() {
 	// Setup logging

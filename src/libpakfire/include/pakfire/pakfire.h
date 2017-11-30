@@ -21,7 +21,6 @@
 #ifndef PAKFIRE_PAKFIRE_H
 #define PAKFIRE_PAKFIRE_H
 
-#include <pakfire/logging.h>
 #include <pakfire/types.h>
 
 int pakfire_init();
@@ -35,21 +34,5 @@ const char* pakfire_get_path(Pakfire pakfire);
 const char* pakfire_get_arch(Pakfire pakfire);
 
 PakfirePool pakfire_get_pool(Pakfire pakfire);
-
-#ifdef PAKFIRE_PRIVATE
-
-struct _Pakfire {
-	char* path;
-	char* arch;
-	PakfirePool pool;
-
-	// Logging
-	pakfire_log_function_t log_function;
-	int log_priority;
-
-	int nrefs;
-};
-
-#endif
 
 #endif /* PAKFIRE_PAKFIRE_H */
