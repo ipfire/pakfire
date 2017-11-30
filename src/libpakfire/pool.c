@@ -39,14 +39,15 @@ PakfirePool pakfire_pool_create(Pakfire pakfire) {
 	PakfirePool pool = pakfire_calloc(1, sizeof(*pool));
 	if (pool) {
 		pool->nrefs = 1;
+
+		// Initialize pool
+		pool->pool = pool_create();
+		queue_init(&pool->installonly);
+
+		// Set architecture
+		const char* arch = pakfire_get_arch(pakfire);
+		pool_setarch(pool->pool, arch);
 	}
-	pool->pool = pool_create();
-
-	queue_init(&pool->installonly);
-
-	// Set architecture
-	const char* arch = pakfire_get_arch(pakfire);
-	pool_setarch(pool->pool, arch);
 
 	return pool;
 }
