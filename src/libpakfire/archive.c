@@ -508,10 +508,6 @@ static int archive_extract(struct archive* a, const char* prefix) {
 	struct archive_entry* entry;
 	int r;
 
-	// Unpack to the root filesystem if no prefix is given.
-	if (!prefix)
-		prefix = "/";
-
 	DEBUG("Extracting archive to %s\n", prefix);
 
 	struct archive* ext = archive_write_disk_new();
@@ -530,7 +526,6 @@ static int archive_extract(struct archive* a, const char* prefix) {
 	archive_write_disk_set_options(ext, flags);
 	archive_write_disk_set_standard_lookup(ext);
 
-	char* pathname = NULL;
 	for (;;) {
 		r = archive_read_next_header(a, &entry);
 
@@ -540,16 +535,15 @@ static int archive_extract(struct archive* a, const char* prefix) {
 			break;
 		}
 
-		// Prepend the prefix to the path the file is extracted to.
 		const char* archive_pathname = archive_entry_pathname(entry);
-		if (prefix) {
-			pathname = pakfire_path_join(prefix, archive_pathname);
-
-			archive_entry_set_pathname(entry, pathname);
-		}
-
 		size_t size = archive_entry_size(entry);
-		DEBUG("Extracting /%s (%zu bytes)\n", archive_pathname, size);
+
+		// Prepend the prefix to the path the file is extracted to.
+		char* pathname = pakfire_path_join(prefix, archive_pathname);
+		archive_entry_set_pathname(entry, pathname);
+
+		DEBUG("Extracting /%s (%zu bytes)\n", pathname, size);
+		pakfire_free(pathname);
 
 		r = archive_write_header(ext, entry);
 		if (r != ARCHIVE_OK)
@@ -574,8 +568,6 @@ static int archive_extract(struct archive* a, const char* prefix) {
 #endif
 
 		r = archive_write_finish_entry(ext);
-
-		pakfire_free(pathname);
 	}
 
 out:
@@ -690,7 +682,8 @@ int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flag
 	if (use_payload)
 		pa = archive_open_payload(a);
 
-	r = archive_extract(use_payload ? pa : a, prefix);
+	r = archive_extract(use_payload ? pa : a,
+		prefix ? prefix : pakfire_get_path(archive->pakfire));
 
 	if (pa)
 		archive_close(pa);
