@@ -24,7 +24,6 @@
 #include <pakfire/pakfire.h>
 
 const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
-const char* TEST_PATH = ABS_TOP_BUILDDIR "/tests/.data";
 
 int testsuite_init() {
 	// Initialize the pakfire library
@@ -41,7 +40,7 @@ int testsuite_init() {
 static int test_run(test_t* t) {
 	LOG("running %s\n", t->name);
 
-	t->pakfire = pakfire_create(TEST_PATH, NULL);
+	t->pakfire = pakfire_create(TEST_ROOTFS, NULL);
 	assert_return(t->pakfire, EXIT_FAILURE);
 
 	int r = t->func(t);

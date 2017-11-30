@@ -43,6 +43,8 @@ macrosdir = $(prefix)/lib/pakfire/macros
 qualityagentdir = $(prefix)/lib/quality-agent
 scriptsdir = $(prefix)/lib/$(PACKAGE_NAME)
 
+TEST_ROOTFS = $(abs_top_builddir)/.root
+
 CLEANFILES =
 DISTCLEANFILES =
 EXTRA_DIST =
@@ -69,6 +71,8 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--enable-debug
 
 @INTLTOOL_POLICY_RULE@
+
+clean-local: clean-local-check
 
 .PHONY: update-po
 update-po:
@@ -330,7 +334,8 @@ dist_tests_libpakfire_main_SOURCES = \
 	tests/libpakfire/main.c
 
 tests_libpakfire_main_CPPFLAGS = \
-	$(TESTSUITE_CPPFLAGS)
+	$(TESTSUITE_CPPFLAGS) \
+	-DTEST_ROOTFS=\"$(TEST_ROOTFS)\"
 
 tests_libpakfire_main_LDADD = \
 	$(TESTSUITE_LDADD) \
@@ -501,8 +506,8 @@ tests_libtestsuite_la_SOURCES = \
 
 tests_libtestsuite_la_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS) \
-	-DABS_TOP_BUILDDIR=\"$(abs_top_builddir)\" \
-	-DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"
+	-DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\" \
+	-DTEST_ROOTFS=\"$(TEST_ROOTFS)\"
 
 TESTSUITE_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
@@ -527,3 +532,7 @@ TESTS = \
 EXTRA_DIST += \
 	tests/data/726D8B0B0889B04E.key \
 	tests/data/beep-1.3-2.ip3.x86_64.pfm
+
+.PHONY: clean-local-check
+clean-local-check:
+	-rm -rf $(TEST_ROOTFS)

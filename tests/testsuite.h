@@ -27,7 +27,6 @@
 #include <pakfire/pakfire.h>
 
 extern const char* TEST_SRC_PATH;
-extern const char* TEST_PATH;
 
 // Forward declaration
 struct test;

@@ -32,7 +32,7 @@ static int test_init(const test_t* t) {
 
 static int test_path(const test_t* t) {
 	const char* path = pakfire_get_path(t->pakfire);
-	assert_return(strcmp(path, TEST_PATH) == 0, EXIT_FAILURE);
+	assert_return(strcmp(path, TEST_ROOTFS) == 0, EXIT_FAILURE);
 
 	return EXIT_SUCCESS;
 }
