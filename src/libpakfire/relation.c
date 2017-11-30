@@ -45,7 +45,7 @@ static int cmptype2relflags(int type) {
 }
 
 PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int cmp_type, const char* evr) {
-	Pool* p = pool->pool;
+	Pool* p = pakfire_pool_get_solv_pool(pool);
 
 	Id id = pool_str2id(p, name, 1);
 

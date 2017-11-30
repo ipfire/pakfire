@@ -36,6 +36,15 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+struct _PakfirePool {
+	Pool* pool;
+	int provides_ready;
+	Queue installonly;
+
+	PakfireCache cache;
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfirePool pakfire_pool_create(Pakfire pakfire) {
 	PakfirePool pool = pakfire_calloc(1, sizeof(*pool));
 	if (pool) {
@@ -88,6 +97,10 @@ PAKFIRE_EXPORT void pakfire_pool_unref(PakfirePool pool) {
 	pakfire_pool_free(pool);
 }
 
+Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
+	return pool->pool;
+}
+
 PAKFIRE_EXPORT int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2) {
 	return pool_evrcmp_str(pool->pool, evr1, evr2, EVRCMP_COMPARE);
 }
@@ -104,7 +117,11 @@ PAKFIRE_EXPORT int pakfire_pool_count(PakfirePool pool) {
 	return cnt;
 }
 
-PAKFIRE_EXPORT void pakfire_pool_make_provides_ready(PakfirePool pool) {
+void pakfire_pool_has_changed(PakfirePool pool) {
+	pool->provides_ready = 0;
+}
+
+void pakfire_pool_apply_changes(PakfirePool pool) {
 	if (!pool->provides_ready) {
 		pool_addfileprovides(pool->pool);
 		pool_createwhatprovides(pool->pool);
@@ -148,6 +165,10 @@ PAKFIRE_EXPORT const char** pakfire_pool_get_installonly(PakfirePool pool) {
 	return installonly;
 }
 
+Queue* pakfire_pool_get_installonly_queue(PakfirePool pool) {
+	return &pool->installonly;
+}
+
 PAKFIRE_EXPORT void pakfire_pool_set_installonly(PakfirePool pool, const char** installonly) {
 	queue_empty(&pool->installonly);
 
@@ -182,7 +203,7 @@ PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
 
 static PakfirePackageList pakfire_pool_dataiterator(PakfirePool pool, const char* what, int key, int flags) {
 	PakfirePackageList list = pakfire_packagelist_create();
-	pakfire_pool_make_provides_ready(pool);
+	pakfire_pool_apply_changes(pool);
 
 	int di_flags = 0;
 	if (flags & PAKFIRE_SUBSTRING)
@@ -209,7 +230,7 @@ static PakfirePackageList pakfire_pool_dataiterator(PakfirePool pool, const char
 static PakfirePackageList pakfire_pool_search_name(PakfirePool _pool, const char* name, int flags) {
 	if (!flags) {
 		PakfirePackageList list = pakfire_packagelist_create();
-		pakfire_pool_make_provides_ready(_pool);
+		pakfire_pool_apply_changes(_pool);
 
 		Pool* pool = _pool->pool;
 		Id id = pool_str2id(pool, name, 0);
@@ -235,7 +256,7 @@ static PakfirePackageList pakfire_pool_search_name(PakfirePool _pool, const char
 static PakfirePackageList pakfire_pool_search_provides(PakfirePool _pool, const char* provides, int flags) {
 	if (!flags) {
 		PakfirePackageList list = pakfire_packagelist_create();
-		pakfire_pool_make_provides_ready(_pool);
+		pakfire_pool_apply_changes(_pool);
 
 		Pool* pool = _pool->pool;
 		Id id = pool_str2id(pool, provides, 0);

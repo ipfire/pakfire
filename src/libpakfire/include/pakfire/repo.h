@@ -72,7 +72,7 @@ struct _PakfireRepo {
 PakfirePackage pakfire_repo_add_package(PakfireRepo repo);
 
 static inline Pool* pakfire_repo_solv_pool(PakfireRepo repo) {
-	return pakfire_repo_pool(repo)->pool;
+	return pakfire_pool_get_solv_pool(repo->pool);
 }
 
 static inline Repo* pakfire_repo_get_solv_repo(PakfireRepo repo) {

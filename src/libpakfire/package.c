@@ -43,6 +43,10 @@
 #include <pakfire/repocache.h>
 #include <pakfire/util.h>
 
+static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
+    return pakfire_pool_get_solv_pool(pkg->pool);
+}
+
 static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage pkg, const char* name, const char* evr) {
 #if 1
 	PakfireRelation relation = pakfire_relation_create(pool, name, PAKFIRE_EQ, evr);
@@ -99,9 +103,9 @@ PAKFIRE_EXPORT void pakfire_package_free(PakfirePackage pkg) {
 }
 
 static Solvable* get_solvable(PakfirePackage pkg) {
-	PakfirePool pool = pakfire_package_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 
-	return pool_id2solvable(pool->pool, pkg->id);
+	return pool_id2solvable(pool, pkg->id);
 }
 
 static Repo* pakfire_package_solv_repo(PakfirePackage pkg) {
@@ -111,7 +115,7 @@ static Repo* pakfire_package_solv_repo(PakfirePackage pkg) {
 }
 
 static Id pakfire_package_get_handle(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return s - pool->solvables;
@@ -122,7 +126,7 @@ PAKFIRE_EXPORT int pakfire_package_identical(PakfirePackage pkg1, PakfirePackage
 }
 
 PAKFIRE_EXPORT int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
-	Pool* pool = pakfire_package_solv_pool(pkg1);
+	Pool* pool = pakfire_package_get_solv_pool(pkg1);
 
 	Solvable* s1 = get_solvable(pkg1);
 	Solvable* s2 = get_solvable(pkg2);
@@ -162,7 +166,7 @@ PAKFIRE_EXPORT int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2)
 }
 
 PAKFIRE_EXPORT int pakfire_package_evr_cmp(PakfirePackage pkg1, PakfirePackage pkg2) {
-	Pool* pool = pakfire_package_solv_pool(pkg1);
+	Pool* pool = pakfire_package_get_solv_pool(pkg1);
 
 	Solvable* s1 = get_solvable(pkg1);
 	Solvable* s2 = get_solvable(pkg2);
@@ -175,7 +179,7 @@ PAKFIRE_EXPORT Id pakfire_package_id(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT char* pakfire_package_get_nevra(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	const char* nevra = pool_solvable2str(pool, s);
@@ -184,28 +188,28 @@ PAKFIRE_EXPORT char* pakfire_package_get_nevra(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_name(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->name);
 }
 
 PAKFIRE_EXPORT void pakfire_package_set_name(PakfirePackage pkg, const char* name) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	s->name = pool_str2id(pool, name, 1);
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_evr(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->evr);
 }
 
 PAKFIRE_EXPORT void pakfire_package_set_evr(PakfirePackage pkg, const char* evr) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	s->evr = pool_str2id(pool, evr, 1);
@@ -239,7 +243,7 @@ static void split_evr(Pool* pool, const char* evr_c, char** epoch, char** versio
 }
 
 PAKFIRE_EXPORT unsigned long pakfire_package_get_epoch(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	char *e, *v, *r, *endptr;
 
     unsigned long epoch = 0;
@@ -257,7 +261,7 @@ PAKFIRE_EXPORT unsigned long pakfire_package_get_epoch(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_version(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	char *e, *v, *r;
 
 	split_evr(pool, pakfire_package_get_evr(pkg), &e, &v, &r);
@@ -265,7 +269,7 @@ PAKFIRE_EXPORT const char* pakfire_package_get_version(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_release(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	char *e, *v, *r;
 
 	split_evr(pool, pakfire_package_get_evr(pkg), &e, &v, &r);
@@ -273,14 +277,14 @@ PAKFIRE_EXPORT const char* pakfire_package_get_release(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_arch(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool_id2str(pool, s->arch);
 }
 
 PAKFIRE_EXPORT void pakfire_package_set_arch(PakfirePackage pkg, const char* arch) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	s->arch = pool_str2id(pool, arch, 1);
@@ -430,7 +434,7 @@ PAKFIRE_EXPORT void pakfire_package_set_filename(PakfirePackage pkg, const char*
 }
 
 PAKFIRE_EXPORT int pakfire_package_is_installed(PakfirePackage pkg) {
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Solvable* s = get_solvable(pkg);
 
 	return pool->installed == s->repo;
@@ -499,8 +503,7 @@ static PakfireRelationList pakfire_package_get_relationlist(PakfirePackage pkg, 
 	Solvable* s = get_solvable(pkg);
 	solvable_lookup_idarray(s, type, &q);
 
-	PakfirePool pool = pakfire_package_pool(pkg);
-	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pool, q);
+	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pkg->pool, q);
 
 	queue_free(&q);
 
@@ -884,7 +887,7 @@ static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 	PakfireFile file = NULL;
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 	Solvable* s = get_solvable(pkg);
-	Pool* p = pakfire_package_solv_pool(pkg);
+	Pool* p = pakfire_package_get_solv_pool(pkg);
 	Repo* r = pakfire_repo_get_solv_repo(repo);
 
 	int found_marker = 0;
@@ -923,7 +926,7 @@ static PakfireFile pakfire_package_fetch_filelist(PakfirePackage pkg) {
 	pakfire_package_internalize_repo(pkg);
 
 	PakfireFile file = NULL;
-	Pool* pool = pakfire_package_solv_pool(pkg);
+	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Repo* repo = pakfire_package_solv_repo(pkg);
 	Id handle = pakfire_package_get_handle(pkg);
 

@@ -47,12 +47,8 @@ struct _PakfireSelector {
 	PakfireFilter f_arch;
 };
 
-static inline PakfirePool pakfire_selector_pool(PakfireSelector selector) {
-	return selector->pool;
-}
-
 static inline Pool* pakfire_selector_solv_pool(PakfireSelector selector) {
-	return pakfire_selector_pool(selector)->pool;
+	return pakfire_pool_get_solv_pool(selector->pool);
 }
 
 #endif

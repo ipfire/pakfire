@@ -94,7 +94,7 @@ PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList li
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {
 	PakfirePackageList list = pakfire_packagelist_create();
 
-	Pool* pool = _pool->pool;
+	Pool* pool = pakfire_pool_get_solv_pool(_pool);
 	Id p, pp;
 	for (int i = 0; i < q->count; i += 2) {
 		FOR_JOB_SELECT(p, pp, q->elements[i], q->elements[i + 1]) {

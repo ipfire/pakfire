@@ -46,12 +46,8 @@ struct _PakfireRelation {
 	Id id;
 };
 
-static inline PakfirePool pakfire_relation_pool(PakfireRelation relation) {
-	return relation->pool;
-}
-
 static inline Pool* pakfire_relation_solv_pool(PakfireRelation relation) {
-	return pakfire_relation_pool(relation)->pool;
+	return pakfire_pool_get_solv_pool(relation->pool);
 }
 
 #endif

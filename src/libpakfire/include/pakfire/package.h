@@ -154,14 +154,6 @@ struct _PakfirePackage {
 	PakfireFile filelist;
 };
 
-static inline PakfirePool pakfire_package_pool(PakfirePackage pkg) {
-	return pkg->pool;
-}
-
-static inline Pool* pakfire_package_solv_pool(PakfirePackage pkg) {
-	return pakfire_package_pool(pkg)->pool;
-}
-
 #endif
 
 #endif /* PAKFIRE_PACKAGE_H */

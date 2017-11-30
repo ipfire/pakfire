@@ -74,8 +74,9 @@ PAKFIRE_EXPORT PakfirePool pakfire_request_pool(PakfireRequest request) {
 
 static void init_solver(PakfireRequest request, int flags) {
 	PakfirePool pool = pakfire_request_pool(request);
+	Pool* p = pakfire_pool_get_solv_pool(pool);
 
-	Solver* solver = solver_create(pool->pool);
+	Solver* solver = solver_create(p);
 
 	/* Free older solver */
 	if (request->solver) {
@@ -111,7 +112,7 @@ static int solve(PakfireRequest request, Queue* queue) {
 		request->transaction = NULL;
 	}
 
-	pakfire_pool_make_provides_ready(request->pool);
+	pakfire_pool_apply_changes(request->pool);
 
 	if (solver_solve(request->solver, queue)) {
 #ifdef DEBUG
@@ -143,10 +144,10 @@ PAKFIRE_EXPORT int pakfire_request_solve(PakfireRequest request, int flags) {
 	}
 
 	/* turn off implicit obsoletes for installonly packages */
-	PakfirePool pool = request->pool;
-	for (int i = 0; i < pool->installonly.count; i++)
+	Queue* installonly = pakfire_pool_get_installonly_queue(request->pool);
+	for (int i = 0; i < installonly->count; i++)
 		queue_push2(&queue, SOLVER_MULTIVERSION|SOLVER_SOLVABLE_PROVIDES,
-			pool->installonly.elements[i]);
+			installonly->elements[i]);
 
 	// XXX EXCLUDES
 

@@ -21,8 +21,6 @@
 #ifndef PAKFIRE_POOL_H
 #define PAKFIRE_POOL_H
 
-#include <solv/pool.h>
-
 #include <pakfire/types.h>
 
 PakfirePool pakfire_pool_create(Pakfire pakfire);
@@ -47,17 +45,15 @@ PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int f
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _PakfirePool {
-	Pool* pool;
-	int provides_ready;
-	Queue installonly;
+#include <solv/pool.h>
 
-	PakfireCache cache;
-	int nrefs;
-};
-
-void pakfire_pool_make_provides_ready(PakfirePool pool);
+Pool* pakfire_pool_get_solv_pool(PakfirePool pool);
 char* pakfire_pool_tmpdup(Pool* pool, const char* s);
+
+void pakfire_pool_has_changed(PakfirePool pool);
+void pakfire_pool_apply_changes(PakfirePool pool);
+
+Queue* pakfire_pool_get_installonly_queue(PakfirePool pool);
 
 #endif
 

@@ -55,7 +55,9 @@ static Repo* get_repo_by_name(Pool* pool, const char* name) {
 }
 
 static PakfireRepo get_pakfire_repo_by_name(PakfirePool pool, const char* name) {
-	Repo* repo = get_repo_by_name(pool->pool, name);
+	Pool* p = pakfire_pool_get_solv_pool(pool);
+
+	Repo* repo = get_repo_by_name(p, name);
 
 	if (repo)
 		return repo->appdata;
@@ -70,9 +72,11 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(PakfirePool pool, const char* nam
 		return repo;
 	}
 
-	Repo* r = get_repo_by_name(pool->pool, name);
+	Pool* p = pakfire_pool_get_solv_pool(pool);
+
+	Repo* r = get_repo_by_name(p, name);
 	if (!r)
-		r = repo_create(pool->pool, name);
+		r = repo_create(p, name);
 
 	return pakfire_repo_create_from_repo(pool, r);
 }
@@ -173,7 +177,7 @@ PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
 	repo->repo->disabled = !enabled;
 
 	PakfirePool pool = pakfire_repo_pool(repo);
-	pool->provides_ready = 0;
+	pakfire_pool_has_changed(pool);
 }
 
 PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
@@ -351,7 +355,7 @@ PAKFIRE_EXPORT int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flag
 			return PAKFIRE_E_SOLV_CORRUPTED;
 	}
 
-	repo->pool->provides_ready = 0;
+	pakfire_pool_has_changed(repo->pool);
 
 	return ret;
 }
