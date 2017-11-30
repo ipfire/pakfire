@@ -43,7 +43,7 @@ macrosdir = $(prefix)/lib/pakfire/macros
 qualityagentdir = $(prefix)/lib/quality-agent
 scriptsdir = $(prefix)/lib/$(PACKAGE_NAME)
 
-TEST_ROOTFS = $(abs_top_builddir)/.root
+TEST_ROOTFS = $(abs_top_builddir)/tests/.root
 
 CLEANFILES =
 DISTCLEANFILES =
