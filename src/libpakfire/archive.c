@@ -535,8 +535,10 @@ static int archive_extract(struct archive* a, const char* prefix) {
 		r = archive_read_next_header(a, &entry);
 
 		// Reached the end of the archive.
-		if (r == ARCHIVE_EOF)
+		if (r == ARCHIVE_EOF) {
+			r = 0;
 			break;
+		}
 
 		// Prepend the prefix to the path the file is extracted to.
 		const char* archive_pathname = archive_entry_pathname(entry);
