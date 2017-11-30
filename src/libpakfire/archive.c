@@ -594,7 +594,7 @@ PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path) {
 	r = pakfire_archive_read_metadata(archive, a);
 	if (r) {
 		pakfire_errno = r;
-		return NULL;
+		goto error;
 	}
 
 	return archive;
@@ -603,7 +603,7 @@ error:
 	if (a)
 		archive_read_free(a);
 
-	pakfire_archive_free(archive);
+	pakfire_archive_unref(archive);
 
 	return NULL;
 }
