@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+extern const char* TEST_PATH;
+
 // Forward declaration
 struct test;
 

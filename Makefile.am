@@ -476,6 +476,10 @@ tests_libtestsuite_la_SOURCES = \
 	tests/testsuite.c \
 	tests/testsuite.h
 
+tests_libtestsuite_la_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS) \
+	-DABS_TOP_BUILDDIR=\"$(abs_top_builddir)\"
+
 EXTRA_DIST += \
 	tests/libpakfire/pakfire.h
 

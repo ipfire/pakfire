@@ -20,8 +20,10 @@
 
 #include <pakfire/pakfire.h>
 
+#include "../testsuite.h"
+
 static Pakfire init_pakfire() {
-    const char* path = "/";
+    const char* path = TEST_PATH;
 
     return pakfire_create(path, NULL);
 }
