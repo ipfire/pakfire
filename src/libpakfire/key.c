@@ -362,6 +362,9 @@ char* pakfire_key_export(PakfireKey key, pakfire_key_export_mode_t mode) {
 	char* mem = gpgme_data_release_and_get_mem(keydata, &length);
 	gpgme_release(gpgctx);
 
+	// Terminate the string
+	mem[length] = '\0';
+
 	// Copy to our own string buffer
 	char* buffer = pakfire_strdup(mem);
 
