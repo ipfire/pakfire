@@ -24,29 +24,15 @@
 
 #include "../testsuite.h"
 
-#include "pakfire.h"
-
 static int test_init(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
-	LOG("Allocated at %p\n", pakfire);
-
-	pakfire_unref(pakfire);
+	LOG("Allocated at %p\n", t->pakfire);
 
 	return EXIT_SUCCESS;
 }
 
 static int test_path(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
-	const char* path = pakfire_get_path(pakfire);
+	const char* path = pakfire_get_path(t->pakfire);
 	assert_return(strcmp(path, TEST_PATH) == 0, EXIT_FAILURE);
-
-	pakfire_unref(pakfire);
 
 	return EXIT_SUCCESS;
 }

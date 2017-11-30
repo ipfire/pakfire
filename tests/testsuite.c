@@ -37,12 +37,18 @@ int testsuite_init() {
 	return 0;
 }
 
-static int test_run(const test_t* t) {
+static int test_run(test_t* t) {
 	LOG("running %s\n", t->name);
+
+	t->pakfire = pakfire_create(TEST_PATH, NULL);
+	assert_return(t->pakfire, EXIT_FAILURE);
 
 	int r = t->func(t);
 	if (r)
 		LOG("Test failed with error code: %d\n", r);
+
+	// Release pakfire
+	pakfire_unref(t->pakfire);
 
 	return r;
 }

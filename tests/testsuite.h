@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <pakfire/pakfire.h>
+
 extern const char* TEST_PATH;
 
 // Forward declaration
@@ -34,6 +36,7 @@ typedef int (*test_function_t)(const struct test* t);
 typedef struct test {
 	const char* name;
 	test_function_t func;
+	Pakfire pakfire;
 } test_t;
 
 typedef struct testsuite {

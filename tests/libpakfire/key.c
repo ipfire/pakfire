@@ -25,15 +25,10 @@
 
 #include "../testsuite.h"
 #include "key.h"
-#include "pakfire.h"
 
 int test_init(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
 	// Try loading any keys & delete them all
-	PakfireKey* keys = pakfire_key_list(pakfire);
+	PakfireKey* keys = pakfire_key_list(t->pakfire);
 	while (keys && *keys) {
 		PakfireKey key = *keys++;
 
@@ -42,7 +37,7 @@ int test_init(const test_t* t) {
 	}
 
 	// Load list of keys again
-	keys = pakfire_key_list(pakfire);
+	keys = pakfire_key_list(t->pakfire);
 
 	// Must be empty now
 	assert_return(keys == NULL, EXIT_FAILURE);
@@ -51,20 +46,16 @@ int test_init(const test_t* t) {
 }
 
 int test_import(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
 	// Try to delete the key just in case it
 	// has been imported before
-	PakfireKey key = pakfire_key_get(pakfire, TEST_KEY_FINGERPRINT);
+	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
 	if (key) {
 		pakfire_key_delete(key);
 		pakfire_key_unref(key);
 	}
 
 	// Import a key
-	PakfireKey* keys = pakfire_key_import(pakfire, TEST_KEY_DATA);
+	PakfireKey* keys = pakfire_key_import(t->pakfire, TEST_KEY_DATA);
 
 	// We should have a list with precisely one key object
 	assert_return(keys, EXIT_FAILURE);
@@ -78,24 +69,19 @@ int test_import(const test_t* t) {
 	const char* fingerprint = pakfire_key_get_fingerprint(key);
 	assert_return(strcmp(fingerprint, TEST_KEY_FINGERPRINT) == 0, EXIT_FAILURE);
 
-	pakfire_unref(pakfire);
-
 	return EXIT_SUCCESS;
 }
 
 int test_export(const test_t* t) {
-	Pakfire pakfire = init_pakfire();
-	if (!pakfire)
-		return EXIT_FAILURE;
-
-	PakfireKey key = pakfire_key_get(pakfire, TEST_KEY_FINGERPRINT);
+	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
 	assert_return(key, EXIT_FAILURE);
 
 	char* data = pakfire_key_export(key, 0);
 	assert_return(data, EXIT_FAILURE);
-	pakfire_free(data);
 
-	pakfire_unref(pakfire);
+	LOG("Exported key:\n%s\n", data);
+
+	pakfire_free(data);
 
 	return EXIT_SUCCESS;
 }
