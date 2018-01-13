@@ -904,6 +904,8 @@ class CliKey(Cli):
 			pkg.sign(key)
 
 	def handle_verify(self):
+		# TODO needs to use new key code from libpakfire
+
 		# Get the files from the command line options
 		files = []
 

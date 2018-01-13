@@ -129,7 +129,6 @@ pakfire_PYTHON = \
 	src/pakfire/http.py \
 	src/pakfire/hub.py \
 	src/pakfire/i18n.py \
-	src/pakfire/keyring.py \
 	src/pakfire/logger.py \
 	src/pakfire/progressbar.py \
 	src/pakfire/shell.py \

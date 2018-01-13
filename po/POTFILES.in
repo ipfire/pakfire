@@ -19,7 +19,6 @@ src/pakfire/daemon.py
 src/pakfire/errors.py
 src/pakfire/http.py
 src/pakfire/i18n.py
-src/pakfire/keyring.py
 src/pakfire/packages/base.py
 src/pakfire/packages/file.py
 src/pakfire/packages/lexer.py

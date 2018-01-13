@@ -646,6 +646,7 @@ class FilePackage(base.Package):
 			If not key is given, only the checksums are compared to
 			the actual data.
 		"""
+		# TODO use new key code from libpakfire
 
 		# XXX replace Exception
 

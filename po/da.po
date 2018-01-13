@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Henrik Simonsen <cybermaze@gmail.com>, 2014
 # Danskmand <hbrolarsen@gmx.de>, 2011
@@ -9,185 +9,375 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-26 21:51+0200\n"
+"POT-Creation-Date: 2018-01-13 15:10+0100\n"
 "PO-Revision-Date: 2014-01-03 22:37+0000\n"
 "Last-Translator: Henrik Simonsen <cybermaze@gmail.com>\n"
-"Language-Team: Danish (http://www.transifex.com/mstremer/ipfire/language/da/)\n"
+"Language-Team: Danish (http://www.transifex.com/mstremer/ipfire/language/"
+"da/)\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/_pakfire/problem.c:159
+#: ../src/libpakfire/archive.c:1025
+msgid "Verify OK"
+msgstr ""
+
+#: ../src/libpakfire/archive.c:1028
+msgid "Error performing validation"
+msgstr ""
+
+#: ../src/libpakfire/archive.c:1031
+#, fuzzy
+msgid "Invalid signature"
+msgstr "%s har ingen gyldige signaturer"
+
+#: ../src/libpakfire/archive.c:1034
+#, fuzzy
+msgid "Signature expired"
+msgstr "Signaturer"
+
+#: ../src/libpakfire/archive.c:1037
+#, fuzzy
+msgid "Key expired"
+msgstr "Nøglen er udløbet!"
+
+#: ../src/libpakfire/archive.c:1040
+msgid "Key unknown"
+msgstr ""
+
+#: ../src/libpakfire/key.c:478
+#, fuzzy
+msgid "Expires"
+msgstr "Udløber: %s"
+
+#: ../src/libpakfire/package.c:715 ../src/pakfire/packages/base.py:99
+msgid "Name"
+msgstr "Navn"
+
+#: ../src/libpakfire/package.c:719 ../src/libpakfire/transaction.c:217
+#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:426
+msgid "Version"
+msgstr "Version"
+
+#: ../src/libpakfire/package.c:723 ../src/pakfire/packages/base.py:111
+msgid "Release"
+msgstr "Udgivelse"
+
+#: ../src/libpakfire/package.c:727 ../src/libpakfire/transaction.c:219
+#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:425
+msgid "Size"
+msgstr "Størrelse"
+
+#: ../src/libpakfire/package.c:732 ../src/pakfire/packages/base.py:119
+msgid "Installed size"
+msgstr "Installeret størrelse"
+
+#: ../src/libpakfire/package.c:737
+#, fuzzy
+msgid "Download size"
+msgstr "Samlet download størrelse: %s"
+
+#: ../src/libpakfire/package.c:743 ../src/pakfire/packages/base.py:125
+msgid "Repo"
+msgstr "Repo"
+
+#: ../src/libpakfire/package.c:750 ../src/pakfire/packages/base.py:128
+msgid "Summary"
+msgstr "Resumé"
+
+#: ../src/libpakfire/package.c:754 ../src/pakfire/packages/base.py:134
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: ../src/libpakfire/package.c:761 ../src/pakfire/packages/base.py:130
+msgid "URL"
+msgstr "URL"
+
+#: ../src/libpakfire/package.c:765 ../src/pakfire/packages/base.py:131
+msgid "License"
+msgstr "Licens"
+
+#: ../src/libpakfire/package.c:770 ../src/pakfire/packages/base.py:141
+msgid "Maintainer"
+msgstr "Vedligeholder"
+
+#: ../src/libpakfire/package.c:774 ../src/pakfire/packages/base.py:143
+msgid "Vendor"
+msgstr "Leverandør"
+
+#: ../src/libpakfire/package.c:778 ../src/pakfire/packages/base.py:145
+msgid "UUID"
+msgstr "UUID"
+
+#: ../src/libpakfire/package.c:782 ../src/pakfire/packages/base.py:147
+msgid "Build date"
+msgstr "Bygge dato"
+
+#: ../src/libpakfire/package.c:786 ../src/pakfire/packages/base.py:148
+msgid "Build host"
+msgstr "Bygge vært"
+
+#: ../src/libpakfire/package.c:790 ../src/pakfire/packages/base.py:155
+msgid "Provides"
+msgstr "Leverer"
+
+#: ../src/libpakfire/package.c:796 ../src/pakfire/packages/base.py:165
+msgid "Requires"
+msgstr "Kræver"
+
+#: ../src/libpakfire/package.c:802 ../src/pakfire/packages/base.py:170
+msgid "Conflicts"
+msgstr "Konflikter"
+
+#: ../src/libpakfire/package.c:808 ../src/pakfire/packages/base.py:175
+msgid "Obsoletes"
+msgstr "Forældede"
+
+#: ../src/libpakfire/package.c:814 ../src/pakfire/packages/base.py:180
+msgid "Recommends"
+msgstr "Anbefaler"
+
+#: ../src/libpakfire/package.c:820 ../src/pakfire/packages/base.py:185
+msgid "Suggests"
+msgstr "Foreslår"
+
+#: ../src/libpakfire/package.c:828
+#, fuzzy
+msgid "Filelist"
+msgstr "Fil"
+
+#: ../src/libpakfire/problem.c:47
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
 msgstr "%s tilhører ikke et distupgrade projektarkiv"
 
-#: ../src/_pakfire/problem.c:166
+#: ../src/libpakfire/problem.c:54
 #, c-format
 msgid "%s has inferior architecture"
 msgstr "%s har ringere arkitektur"
 
-#: ../src/_pakfire/problem.c:173
+#: ../src/libpakfire/problem.c:61
 #, c-format
 msgid "problem with installed package %s"
 msgstr "problem med installeret pakke %s"
 
-#: ../src/_pakfire/problem.c:179
+#: ../src/libpakfire/problem.c:67
 #, c-format
 msgid "conflicting requests"
 msgstr "konfliktfyldte anmodninger"
 
-#: ../src/_pakfire/problem.c:184
+#: ../src/libpakfire/problem.c:71
+#, fuzzy, c-format
+msgid "unsupported request"
+msgstr "Understøttede arches"
+
+#: ../src/libpakfire/problem.c:75
 #, c-format
 msgid "nothing provides requested %s"
 msgstr "intet tilbyder det anmodede %s"
 
-#: ../src/_pakfire/problem.c:190
+#: ../src/libpakfire/problem.c:81
+#, fuzzy, c-format
+msgid "package %s does not exist"
+msgstr "pakken %s kan ikke installeres"
+
+#: ../src/libpakfire/problem.c:87
+#, c-format
+msgid "%s is provided by the system"
+msgstr ""
+
+#: ../src/libpakfire/problem.c:93
 #, c-format
 msgid "some dependency problem"
 msgstr "nogle afhængighedsproblemer"
 
-#: ../src/_pakfire/problem.c:195
+#: ../src/libpakfire/problem.c:99
+#, fuzzy, c-format
+msgid "cannot install the best update candidate for package %s"
+msgstr "kan ikke installere både %s og %s"
+
+#: ../src/libpakfire/problem.c:103
+#, fuzzy, c-format
+msgid "cannot install the best candidate for the job"
+msgstr "kan ikke installere både %s og %s"
+
+#: ../src/libpakfire/problem.c:108
 #, c-format
 msgid "package %s is not installable"
 msgstr "pakken %s kan ikke installeres"
 
-#: ../src/_pakfire/problem.c:202
+#: ../src/libpakfire/problem.c:115
 #, c-format
 msgid "nothing provides %s needed by %s"
 msgstr "intet tilbyder %s som krævet af %s"
 
-#: ../src/_pakfire/problem.c:209
+#: ../src/libpakfire/problem.c:122
 #, c-format
 msgid "cannot install both %s and %s"
 msgstr "kan ikke installere både %s og %s"
 
-#: ../src/_pakfire/problem.c:216
+#: ../src/libpakfire/problem.c:129
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
 msgstr "pakken %s er i konflikt med %s leveret af %s"
 
-#: ../src/_pakfire/problem.c:224
+#: ../src/libpakfire/problem.c:137
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
 msgstr "pakken %s erstatter %s leveret af %s"
 
-#: ../src/_pakfire/problem.c:232
+#: ../src/libpakfire/problem.c:145
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
 msgstr "den installerede pakke %s erstatter %s leveret af %s"
 
-#: ../src/_pakfire/problem.c:240
+#: ../src/libpakfire/problem.c:153
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
 msgstr "pakken %s erstatter implicit %s leveret af %s"
 
-#: ../src/_pakfire/problem.c:248
+#: ../src/libpakfire/problem.c:161
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
 msgstr "pakken %s kræver %s, men ingen af ​​udbyderne kan blive installeret"
 
-#: ../src/_pakfire/problem.c:255
+#: ../src/libpakfire/problem.c:168
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
 msgstr "pakken %s er i konflikt med %s som er leveret af sig selv"
 
-#: ../src/_pakfire/problem.c:264
+#: ../src/libpakfire/problem.c:175
+#, fuzzy, c-format
+msgid "both package %s and %s obsolete %s"
+msgstr "pakken %s erstatter %s leveret af %s"
+
+#: ../src/libpakfire/problem.c:184
 #, c-format
 msgid "bad rule type"
 msgstr "ugyldig regel type"
 
-#: ../src/_pakfire/solution.c:86
-#, c-format
-msgid "do not keep %s installed"
-msgstr "behold ikke %s installeret"
-
-#: ../src/_pakfire/solution.c:89
-#, c-format
-msgid "do not install a solvable %s"
-msgstr "installér ikke pakke %s"
-
-#: ../src/_pakfire/solution.c:92
-#, c-format
-msgid "do not install %s"
-msgstr "installér ikke %s"
-
-#: ../src/_pakfire/solution.c:98
-#, c-format
-msgid "do not forbid installation of %s"
-msgstr "forbyd ikke installation af %s"
-
-#: ../src/_pakfire/solution.c:101
-#, c-format
-msgid "do not deinstall all solvables %s"
-msgstr "afinstallér ikke alle pakker %s"
-
-#: ../src/_pakfire/solution.c:104
-#, c-format
-msgid "do not deinstall %s"
-msgstr "afinstallér ikke %s"
-
-#: ../src/_pakfire/solution.c:109
-#, c-format
-msgid "do not install most recent version of %s"
-msgstr "installér ikke den nyeste version af %s"
-
-#: ../src/_pakfire/solution.c:114
-#, c-format
-msgid "do not lock %s"
+#. XXX pool_job2str must be localised
+#: ../src/libpakfire/solution.c:54
+#, fuzzy, c-format
+msgid "do not ask to %s"
 msgstr "lås ikke %s"
 
-#: ../src/_pakfire/solution.c:119
-#, c-format
-msgid "do something different"
-msgstr "gør noget andet"
-
-#: ../src/_pakfire/solution.c:126
+#: ../src/libpakfire/solution.c:61
 #, c-format
 msgid "keep %s despite the inferior architecture"
 msgstr "behold %s på trods af ringere arkitektur"
 
-#: ../src/_pakfire/solution.c:129
+#: ../src/libpakfire/solution.c:64
 #, c-format
 msgid "install %s despite the inferior architecture"
 msgstr "installér %s på trods af ringere arkitektur"
 
-#: ../src/_pakfire/solution.c:135
+#: ../src/libpakfire/solution.c:71
 #, c-format
 msgid "keep obsolete %s"
 msgstr "behold forældet %s"
 
-#: ../src/_pakfire/solution.c:138
-#, c-format
-msgid "install %s from excluded repository"
-msgstr "installér %s fra udelukket projektarkiv"
+#: ../src/libpakfire/solution.c:74
+#, fuzzy, c-format
+msgid "install %s"
+msgstr "installér ikke %s"
 
-#: ../src/_pakfire/solution.c:150
-#, c-format
-msgid "allow downgrade of %s to %s"
-msgstr "tillad nedgradering af %s til %s"
+#: ../src/libpakfire/solution.c:81
+#, fuzzy, c-format
+msgid "keep old %s"
+msgstr "behold forældet %s"
 
-#: ../src/_pakfire/solution.c:154
-#, c-format
-msgid "allow architecture change of %s to %s"
-msgstr "tillad arkitekturskifte fra %s til %s"
+#: ../src/libpakfire/solution.c:84
+#, fuzzy, c-format
+msgid "install %s despite the old version"
+msgstr "installér %s på trods af ringere arkitektur"
 
-#: ../src/_pakfire/solution.c:159
-#, c-format
-msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr "tillad leverandørskifte fra '%s' (%s) til '%s' (%s)"
+#: ../src/libpakfire/solution.c:88
+#, fuzzy, c-format
+msgid "allow deinstallation of %s"
+msgstr "forbyd ikke installation af %s"
 
-#: ../src/_pakfire/solution.c:163
-#, c-format
-msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr "tillad leverandørskifte fra '%s' (%s) til ingen leverandør (%s)"
-
-#: ../src/_pakfire/solution.c:169
+#: ../src/libpakfire/solution.c:92
 #, c-format
 msgid "allow replacement of %s with %s"
 msgstr "tillad udskiftning af %s med %s"
+
+#: ../src/libpakfire/solution.c:96
+#, c-format
+msgid "bad solution element"
+msgstr ""
+
+#: ../src/libpakfire/transaction.c:198
+#, fuzzy
+msgid "package(s)"
+msgstr "pakke"
+
+#: ../src/libpakfire/transaction.c:215 ../src/pakfire/transaction.py:423
+msgid "Package"
+msgstr "Pakke"
+
+#: ../src/libpakfire/transaction.c:216 ../src/pakfire/packages/base.py:107
+#: ../src/pakfire/transaction.py:422
+msgid "Arch"
+msgstr "Arch"
+
+#: ../src/libpakfire/transaction.c:218 ../src/pakfire/cli.py:355
+#: ../src/pakfire/transaction.py:424
+msgid "Repository"
+msgstr "Projektarkiv"
+
+#: ../src/libpakfire/transaction.c:225 ../src/libpakfire/transaction.c:241
+#: ../src/pakfire/transaction.py:440
+msgid "Installing:"
+msgstr "Installerer:"
+
+#: ../src/libpakfire/transaction.c:227 ../src/libpakfire/transaction.c:242
+#: ../src/pakfire/transaction.py:441
+msgid "Reinstalling:"
+msgstr "Geninstallerer:"
+
+#: ../src/libpakfire/transaction.c:229 ../src/libpakfire/transaction.c:243
+#: ../src/pakfire/transaction.py:442
+msgid "Updating:"
+msgstr "Opdaterer:"
+
+#: ../src/libpakfire/transaction.c:231 ../src/libpakfire/transaction.c:244
+#: ../src/pakfire/transaction.py:443
+msgid "Downgrading:"
+msgstr "Nedgradering:"
+
+#: ../src/libpakfire/transaction.c:233 ../src/libpakfire/transaction.c:245
+#: ../src/pakfire/transaction.py:444
+msgid "Removing:"
+msgstr "Fjerner:"
+
+#: ../src/libpakfire/transaction.c:235 ../src/libpakfire/transaction.c:246
+#, fuzzy
+msgid "Obsoleting:"
+msgstr "Forældede"
+
+#. Summary
+#. Append the transaction summary
+#: ../src/libpakfire/transaction.c:238 ../src/pakfire/transaction.py:454
+msgid "Transaction Summary"
+msgstr "Transaktionsresumé"
+
+#: ../src/libpakfire/transaction.c:252
+#, fuzzy
+msgid "Total Download Size"
+msgstr "Samlet download størrelse: %s"
+
+#: ../src/libpakfire/transaction.c:258
+#, fuzzy
+msgid "Installed Size"
+msgstr "Installeret størrelse"
+
+#: ../src/libpakfire/transaction.c:258
+#, fuzzy
+msgid "Freed Size"
+msgstr "Frigjort størrelse: %s"
 
 #: ../src/pakfire/actions.py:69
 #, python-format
@@ -199,1138 +389,914 @@ msgstr "%s har ingen signaturer"
 msgid "%s has got no valid signatures"
 msgstr "%s har ingen gyldige signaturer"
 
-#: ../src/pakfire/actions.py:234
+#: ../src/pakfire/actions.py:235
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr "Kunne ikke håndtere scriptlet af ukendt type. Springer over."
 
-#: ../src/pakfire/actions.py:237
+#: ../src/pakfire/actions.py:238
 msgid "Executing scriptlet..."
 msgstr "Eksekverer scriptlet..."
 
-#: ../src/pakfire/actions.py:243
+#: ../src/pakfire/actions.py:244
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr "Kan ikke køre scriptlet fordi ingen oversætter er tilgængelig: %s"
 
-#: ../src/pakfire/actions.py:247
+#: ../src/pakfire/actions.py:248
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr "Kan ikke køre scriptlet fordi oversætteren ikke er eksekverbar: %s"
 
-#: ../src/pakfire/actions.py:286
+#: ../src/pakfire/actions.py:287
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr "Scriptlet returnerede en fejl:\n%s"
+msgstr ""
+"Scriptlet returnerede en fejl:\n"
+"%s"
 
-#: ../src/pakfire/actions.py:289
+#: ../src/pakfire/actions.py:290
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr "Scriptlet kørte i mere end %s sekunder og blev lukket."
 
-#: ../src/pakfire/actions.py:293
+#: ../src/pakfire/actions.py:294
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr "Scriptlet returnerede med en ubehandlet fejl:\n%s"
+msgstr ""
+"Scriptlet returnerede med en ubehandlet fejl:\n"
+"%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:307
+#: ../src/pakfire/actions.py:308
 msgid "Executing python scriptlet..."
 msgstr "Eksekverer python scriptlet..."
 
-#: ../src/pakfire/actions.py:332
+#: ../src/pakfire/actions.py:333
 #, python-format
 msgid "Exception occured: %s"
 msgstr "Undtagelse opstod: %s"
 
-#: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
-#: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
+#: ../src/pakfire/actions.py:406 ../src/pakfire/actions.py:453
+#: ../src/pakfire/actions.py:463 ../src/pakfire/actions.py:484
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Kører transaktionstest for %s"
 
-#: ../src/pakfire/actions.py:415
+#: ../src/pakfire/actions.py:416
 msgid "Reinstalling"
 msgstr "Geninstallerer"
 
-#: ../src/pakfire/actions.py:417
+#: ../src/pakfire/actions.py:418
 msgid "Updating"
 msgstr "Opdaterer"
 
-#: ../src/pakfire/actions.py:419
+#: ../src/pakfire/actions.py:420
 msgid "Downgrading"
 msgstr "Nedgraderer"
 
-#: ../src/pakfire/actions.py:421
+#: ../src/pakfire/actions.py:422
 msgid "Installing"
 msgstr "Installerer"
 
-#: ../src/pakfire/actions.py:469
+#: ../src/pakfire/actions.py:470
 msgid "Cleanup"
 msgstr "Oprydning"
 
-#: ../src/pakfire/actions.py:471
+#: ../src/pakfire/actions.py:472
 msgid "Removing"
 msgstr "Fjerner"
 
-#: ../src/pakfire/base.py:197
-msgid "Local install repository"
-msgstr "Lokalt installations projektarkiv"
+#: ../src/pakfire/base.py:130
+msgid "Build command has failed."
+msgstr "Bygge kommandoen fejlede."
 
-#: ../src/pakfire/base.py:261
-#, python-format
-msgid "Could not find any installed package providing \"%s\"."
-msgstr "Kunne ikke finde nogle installerede pakker der tilbyder \"%s\"."
-
-#: ../src/pakfire/base.py:267
-#, python-format
-msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
-msgstr "Flere kandidater til reinstallation af \"%(pattern)s\": %(pkgs)s"
-
-#: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
-#: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
-#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:414
-msgid "Nothing to do"
-msgstr "Intet at gøre"
-
-#: ../src/pakfire/base.py:296
-#, python-format
-msgid "Could not find package %s in a remote repository."
-msgstr "Kunne ikke finde pakken %s i et eksternt projektarkiv."
-
-#: ../src/pakfire/base.py:368
-#, python-format
-msgid "Excluding %s."
-msgstr "Ekskluderer %s."
-
-#: ../src/pakfire/base.py:434
+#: ../src/pakfire/base.py:274
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" pakken ser ikke ud til at være installeret."
 
-#: ../src/pakfire/base.py:598
-msgid "Everything is fine."
-msgstr "Alt er fint."
+#: ../src/pakfire/base.py:288 ../src/pakfire/cli.py:259
+#: ../src/pakfire/transaction.py:413
+msgid "Nothing to do"
+msgstr "Intet at gøre"
 
-#: ../src/pakfire/base.py:619
-msgid "Build command has failed."
-msgstr "Bygge kommandoen fejlede."
-
-#: ../src/pakfire/base.py:656
+#: ../src/pakfire/base.py:322
 msgid "You have not set the distribution for which you want to build."
 msgstr "Du har ikke angivet den distribution du ønsker at bygge."
 
-#: ../src/pakfire/base.py:657
+#: ../src/pakfire/base.py:323
 msgid "Please do so in builder.conf or on the CLI."
 msgstr "Gør venligst dette i builder.conf eller i CLI."
 
-#: ../src/pakfire/base.py:658
+#: ../src/pakfire/base.py:324
 msgid "Distribution configuration is missing."
 msgstr "Distribution konfiguration mangler."
 
-#: ../src/pakfire/base.py:739
+#: ../src/pakfire/base.py:401
 msgid "New repository"
 msgstr "Nyt projektarkiv"
 
-#: ../src/pakfire/builder.py:80
-#, python-format
-msgid "Cannot build for %s on this host."
+#: ../src/pakfire/builder.py:106
+#, fuzzy, python-format
+msgid "Cannot build for %s on this host"
 msgstr "Kan ikke bygge til %s på denne vært."
 
-#. Log the package information.
-#: ../src/pakfire/builder.py:148
-msgid "Package information:"
-msgstr "Pakke information:"
-
 #. Install all packages.
-#: ../src/pakfire/builder.py:444
+#: ../src/pakfire/builder.py:501 ../src/pakfire/builder.py:724
 msgid "Install packages needed for build..."
 msgstr "Installeringspakker nødvendige for at bygge..."
 
-#: ../src/pakfire/builder.py:449 ../src/pakfire/cli.py:464
+#. Logging
+#: ../src/pakfire/builder.py:518
+#, python-format
+msgid "Installing build requirements: %s"
+msgstr ""
+
+#. Log the package information.
+#: ../src/pakfire/builder.py:601
+msgid "Package information:"
+msgstr "Pakke information:"
+
+#: ../src/pakfire/builder.py:729 ../src/pakfire/cli.py:407
 msgid "Extracting"
 msgstr "Udpakker"
 
-#: ../src/pakfire/builder.py:781
+#: ../src/pakfire/builder.py:847
 msgid "You cannot run a build when no package was given."
 msgstr "Du kan ikke køre en bygning når ingen pakker er angivet."
 
-#: ../src/pakfire/builder.py:785
+#: ../src/pakfire/builder.py:851
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr "Kunne ikke finde makefile i bygge roden: %s"
 
-#: ../src/pakfire/builder.py:815
+#: ../src/pakfire/builder.py:881
 msgid "Build failed"
 msgstr "Bygning fejlede"
 
-#: ../src/pakfire/builder.py:818
+#: ../src/pakfire/builder.py:884
 msgid "Build interrupted"
 msgstr "Bygning forstyrret"
 
-#: ../src/pakfire/builder.py:824
+#: ../src/pakfire/builder.py:890
 msgid "Build failed."
 msgstr "Bygning fejlede."
 
 #. End here in case of an error.
-#: ../src/pakfire/builder.py:840
+#: ../src/pakfire/builder.py:906
 msgid "The build command failed. See logfile for details."
 msgstr "Bygge kommandoen fejlede. Se logfilen for detaljer."
 
-#: ../src/pakfire/builder.py:843
+#: ../src/pakfire/builder.py:909
 msgid "Running installation test..."
 msgstr "Kører installationstest..."
 
-#: ../src/pakfire/builder.py:849
+#: ../src/pakfire/builder.py:915
 msgid "Installation test succeeded."
 msgstr "Installationstest succesfuld."
 
 #. Create a progressbar.
-#: ../src/pakfire/builder.py:892
+#: ../src/pakfire/builder.py:934
 msgid "Signing packages..."
 msgstr "Signerer pakker..."
 
-#: ../src/pakfire/builder.py:926
+#: ../src/pakfire/builder.py:968
 msgid "Dumping package information:"
 msgstr "Viser pakke information:"
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../src/pakfire/builder.py:1078
+#: ../src/pakfire/builder.py:1101
 msgid "Creating packages:"
 msgstr "Opretter pakker:"
 
 #. Execute the buildscript of this stage.
-#: ../src/pakfire/builder.py:1092
+#: ../src/pakfire/builder.py:1115
 #, python-format
 msgid "Running stage %s:"
 msgstr "Kører %s:"
 
-#: ../src/pakfire/builder.py:1110
+#: ../src/pakfire/builder.py:1133
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr "Kunne ikke fjerne statiske biblioteker: %s"
 
-#: ../src/pakfire/builder.py:1116
+#: ../src/pakfire/builder.py:1139
 msgid "Compressing man pages did not complete successfully."
 msgstr "Komprimering af man sider lykkedes ikke."
 
-#: ../src/pakfire/builder.py:1136
+#: ../src/pakfire/builder.py:1159
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr "Udpakning af debuginfo mislykkedes. Annullerer bygning."
 
-#: ../src/pakfire/cli.py:53
-msgid "Pakfire command line interface."
+#: ../src/pakfire/cli.py:54
+#, fuzzy
+msgid "Pakfire command line interface"
 msgstr "Pakfire kommandolinje."
 
-#: ../src/pakfire/cli.py:60
-msgid "The path where pakfire should operate in."
+#: ../src/pakfire/cli.py:62
+#, fuzzy
+msgid "The path where pakfire should operate in"
 msgstr "Stien som pakfire skal operere i."
 
-#: ../src/pakfire/cli.py:149
+#. check
+#: ../src/pakfire/cli.py:65
+#, fuzzy
+msgid "Check the system for any errors"
+msgstr "Kontrollér systemet for fejl."
+
+#: ../src/pakfire/cli.py:70
+#, fuzzy
+msgid "Check, if there are any updates available"
+msgstr "Kontrollér om der er opdateringer tilgængelige."
+
+#: ../src/pakfire/cli.py:73 ../src/pakfire/cli.py:161
+#, fuzzy
+msgid "Exclude package from update"
+msgstr "Ekskludér pakke fra opdatering."
+
+#: ../src/pakfire/cli.py:75 ../src/pakfire/cli.py:163
+#, fuzzy
+msgid "Allow changing the architecture of packages"
+msgstr "Tillad ikke at skifte pakkens arkitektur."
+
+#: ../src/pakfire/cli.py:77 ../src/pakfire/cli.py:165
+#, fuzzy
+msgid "Allow downgrading of packages"
+msgstr "Tillad skifte af leverandør af pakken."
+
+#: ../src/pakfire/cli.py:79 ../src/pakfire/cli.py:90 ../src/pakfire/cli.py:167
+#, fuzzy
+msgid "Allow changing the vendor of packages"
+msgstr "Tillad skifte af leverandør af pakken."
+
+#. clean
+#: ../src/pakfire/cli.py:82 ../src/pakfire/cli.py:452
+#, fuzzy
+msgid "Cleanup all temporary files"
+msgstr "Oprydning af alle midlertidige filer."
+
+#. downgrade
+#: ../src/pakfire/cli.py:86
+#, fuzzy
+msgid "Downgrade one or more packages"
+msgstr "Nedgradér en eller flere pakker."
+
+#: ../src/pakfire/cli.py:88
+#, fuzzy
+msgid "Give a name of a package to downgrade"
+msgstr "Angiv navn på pakke der skal nedgraderes."
+
+#: ../src/pakfire/cli.py:92
+#, fuzzy
+msgid "Disallow changing the architecture of packages"
+msgstr "Tillad ikke at skifte pakkens arkitektur."
+
+#. extract
+#: ../src/pakfire/cli.py:97 ../src/pakfire/cli.py:464
+#, fuzzy
+msgid "Extract a package to a directory"
+msgstr "Udpak en pakke til en mappe."
+
+#: ../src/pakfire/cli.py:99 ../src/pakfire/cli.py:466
+#, fuzzy
+msgid "Give name of the file to extract"
+msgstr "Angiv navnet på filen der skal udpakkes."
+
+#: ../src/pakfire/cli.py:101 ../src/pakfire/cli.py:468
+#, fuzzy
+msgid "Target directory where to extract to"
+msgstr "Mappen der skal udpakkes til."
+
+#: ../src/pakfire/cli.py:106 ../src/pakfire/cli.py:473
+#, fuzzy
+msgid "Print some information about the given package(s)"
+msgstr "Vis oplysninger om de(n) angivne pakke(r)."
+
+#: ../src/pakfire/cli.py:108
+#, fuzzy
+msgid "Give at least the name of one package"
+msgstr "Angiv mindst navnet på én pakke."
+
+#: ../src/pakfire/cli.py:113
+#, fuzzy
+msgid "Install one or more packages to the system"
+msgstr "Installér en eller flere pakker på systemet."
+
+#: ../src/pakfire/cli.py:115
+#, fuzzy
+msgid "Give name of at least one package to install"
+msgstr "Angiv navnet på mindst én pakke som skal installeres."
+
+#: ../src/pakfire/cli.py:117
+#, fuzzy
+msgid "Don't install recommended packages"
+msgstr "Installér ikke anbefalede pakker."
+
+#: ../src/pakfire/cli.py:122 ../src/pakfire/cli.py:480
+#, fuzzy
+msgid "Get a list of packages that provide a given file or feature"
+msgstr "Få en liste over pakker der tilbyder en bestemt fil eller funktion."
+
+#: ../src/pakfire/cli.py:123 ../src/pakfire/cli.py:482
+#, fuzzy
+msgid "File or feature to search for"
+msgstr "Fil eller funktion som søges efter."
+
+#: ../src/pakfire/cli.py:128
+#, fuzzy
+msgid "Reinstall one or more packages"
+msgstr "Geninstallér en eller flere pakker."
+
+#: ../src/pakfire/cli.py:130
+#, fuzzy
+msgid "Give name of at least one package to reinstall"
+msgstr "Angiv navnet på mindst én pakke der skal geninstalleres."
+
+#: ../src/pakfire/cli.py:135
+#, fuzzy
+msgid "Remove one or more packages from the system"
+msgstr "Fjerner en eller flere pakker fra systemet."
+
+#: ../src/pakfire/cli.py:137
+#, fuzzy
+msgid "Give name of at least one package to remove"
+msgstr "Angiv navnet på mindst én pakke som skal fjernes."
+
+#: ../src/pakfire/cli.py:142 ../src/pakfire/cli.py:487
+#, fuzzy
+msgid "List all currently enabled repositories"
+msgstr "Vis alle aktive projektarkiver."
+
+#. search
+#: ../src/pakfire/cli.py:146 ../src/pakfire/cli.py:491
+#, fuzzy
+msgid "Search for a given pattern"
+msgstr "Søg efter et givent mønster."
+
+#: ../src/pakfire/cli.py:147 ../src/pakfire/cli.py:492
+#, fuzzy
+msgid "A pattern to search for"
+msgstr "Et mønster at søge efter."
+
+#: ../src/pakfire/cli.py:152
+#, fuzzy
+msgid "Sync all installed with the latest one in the distribution"
+msgstr "Synkronisér alle installerede med den nyeste i distributionen."
+
+#: ../src/pakfire/cli.py:157
+#, fuzzy
+msgid "Update the whole system or one specific package"
+msgstr "Opdatér hele systemet eller én specifik pakke."
+
+#: ../src/pakfire/cli.py:159
+#, fuzzy
+msgid "Give a name of a package to update or leave emtpy for all"
+msgstr ""
+"Angiv navnet på én pakke som skal opdateres eller efterlad tom for alle."
+
+#: ../src/pakfire/cli.py:177
 msgid "Enable verbose output."
 msgstr "Aktivér udvidet output."
 
-#: ../src/pakfire/cli.py:152
+#: ../src/pakfire/cli.py:180
 msgid "Path to a configuration file to load."
 msgstr "Stien til en konfigurationsfil der skal indlæses."
 
-#: ../src/pakfire/cli.py:155
+#: ../src/pakfire/cli.py:183
 msgid "Disable a repository temporarily."
 msgstr "Deaktivér midlertidigt et projektarkiv."
 
-#: ../src/pakfire/cli.py:158
+#: ../src/pakfire/cli.py:186
 msgid "Enable a repository temporarily."
 msgstr "Aktivér midlertidigt projektarkiv."
 
-#: ../src/pakfire/cli.py:162
+#: ../src/pakfire/cli.py:190
 msgid "Run pakfire in offline mode."
 msgstr "Kør pakfire i offline tilstand."
 
-#: ../src/pakfire/cli.py:167
-msgid "Install one or more packages to the system."
-msgstr "Installér en eller flere pakker på systemet."
-
-#: ../src/pakfire/cli.py:169
-msgid "Give name of at least one package to install."
-msgstr "Angiv navnet på mindst én pakke som skal installeres."
-
-#: ../src/pakfire/cli.py:171
-msgid "Don't install recommended packages."
-msgstr "Installér ikke anbefalede pakker."
-
-#: ../src/pakfire/cli.py:177
-msgid "Reinstall one or more packages."
-msgstr "Geninstallér en eller flere pakker."
-
-#: ../src/pakfire/cli.py:179
-msgid "Give name of at least one package to reinstall."
-msgstr "Angiv navnet på mindst én pakke der skal geninstalleres."
-
-#: ../src/pakfire/cli.py:185
-msgid "Remove one or more packages from the system."
-msgstr "Fjerner en eller flere pakker fra systemet."
-
-#: ../src/pakfire/cli.py:187
-msgid "Give name of at least one package to remove."
-msgstr "Angiv navnet på mindst én pakke som skal fjernes."
-
-#: ../src/pakfire/cli.py:194
-msgid "Give a name of a package to update or leave emtpy for all."
-msgstr "Angiv navnet på én pakke som skal opdateres eller efterlad tom for alle."
-
-#: ../src/pakfire/cli.py:197
-msgid "Exclude package from update."
-msgstr "Ekskludér pakke fra opdatering."
-
-#: ../src/pakfire/cli.py:199 ../src/pakfire/cli.py:231
-msgid "Allow changing the vendor of packages."
-msgstr "Tillad skifte af leverandør af pakken."
-
-#: ../src/pakfire/cli.py:201 ../src/pakfire/cli.py:233
-msgid "Disallow changing the architecture of packages."
-msgstr "Tillad ikke at skifte pakkens arkitektur."
-
-#: ../src/pakfire/cli.py:206
-msgid "Update the whole system or one specific package."
-msgstr "Opdatér hele systemet eller én specifik pakke."
-
 #: ../src/pakfire/cli.py:213
-msgid "Sync all installed with the latest one in the distribution."
-msgstr "Synkronisér alle installerede med den nyeste i distributionen."
+msgid "Received keyboard interupt (Ctrl-C). Exiting."
+msgstr ""
 
-#: ../src/pakfire/cli.py:220
-msgid "Check, if there are any updates available."
-msgstr "Kontrollér om der er opdateringer tilgængelige."
-
-#: ../src/pakfire/cli.py:227
-msgid "Downgrade one or more packages."
-msgstr "Nedgradér en eller flere pakker."
+#: ../src/pakfire/cli.py:219
+#, fuzzy
+msgid "One or more dependencies could not been resolved"
+msgstr "En eller flere afhængigheder kunne ikke blive løst."
 
 #: ../src/pakfire/cli.py:229
-msgid "Give a name of a package to downgrade."
-msgstr "Angiv navn på pakke der skal nedgraderes."
+msgid "Possible solutions are:"
+msgstr ""
 
-#: ../src/pakfire/cli.py:239
-msgid "Print some information about the given package(s)."
-msgstr "Vis oplysninger om de(n) angivne pakke(r)."
+#: ../src/pakfire/cli.py:240
+#, fuzzy
+msgid "An error has occured when running Pakfire"
+msgstr "Der opstod en fejl da pakfire forsøgte at hente filer."
 
-#: ../src/pakfire/cli.py:241
-msgid "Give at least the name of one package."
-msgstr "Angiv mindst navnet på én pakke."
+#: ../src/pakfire/cli.py:242
+#, python-format
+msgid "%s: %s"
+msgstr ""
 
-#: ../src/pakfire/cli.py:247
-msgid "Search for a given pattern."
-msgstr "Søg efter et givent mønster."
+#: ../src/pakfire/cli.py:267
+msgid "Aborted by user"
+msgstr ""
 
-#: ../src/pakfire/cli.py:249
-msgid "A pattern to search for."
-msgstr "Et mønster at søge efter."
-
-#: ../src/pakfire/cli.py:255
-msgid "Get a list of packages that provide a given file or feature."
-msgstr "Få en liste over pakker der tilbyder en bestemt fil eller funktion."
-
-#: ../src/pakfire/cli.py:257
-msgid "File or feature to search for."
-msgstr "Fil eller funktion som søges efter."
-
-#: ../src/pakfire/cli.py:263
-msgid "Get list of packages that belong to the given group."
-msgstr "Få liste over pakker der tilhører den angivne gruppe."
-
-#: ../src/pakfire/cli.py:265
-msgid "Group name to search for."
-msgstr "Gruppens navn som søges efter."
-
-#: ../src/pakfire/cli.py:271
-msgid "Install all packages that belong to the given group."
-msgstr "Installér alle pakker der tilhører den angivne gruppe."
-
-#: ../src/pakfire/cli.py:273
-msgid "Group name."
-msgstr "Gruppenavn."
-
-#: ../src/pakfire/cli.py:279
-msgid "List all currently enabled repositories."
-msgstr "Vis alle aktive projektarkiver."
-
-#: ../src/pakfire/cli.py:283
-msgid "Cleanup commands."
-msgstr "Oprydningskommandoer."
-
-#: ../src/pakfire/cli.py:291
-msgid "Cleanup all temporary files."
-msgstr "Oprydning af alle midlertidige filer."
-
-#: ../src/pakfire/cli.py:297
-msgid "Check the system for any errors."
-msgstr "Kontrollér systemet for fejl."
-
-#: ../src/pakfire/cli.py:303
-msgid "Check the dependencies for a particular package."
-msgstr "Kontrollér afhængighederne for en bestemt pakke."
-
-#: ../src/pakfire/cli.py:305
-msgid "Give name of at least one package to check."
-msgstr "Angiv navnet på mindst én pakke som skal kontrolleres."
-
-#: ../src/pakfire/cli.py:311
-msgid "Extract a package to a directory."
-msgstr "Udpak en pakke til en mappe."
-
-#: ../src/pakfire/cli.py:313
-msgid "Give name of the file to extract."
-msgstr "Angiv navnet på filen der skal udpakkes."
-
-#: ../src/pakfire/cli.py:315
-msgid "Target directory where to extract to."
-msgstr "Mappen der skal udpakkes til."
-
-#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:425
-msgid "Repository"
-msgstr "Projektarkiv"
-
-#: ../src/pakfire/cli.py:403
+#: ../src/pakfire/cli.py:355
 msgid "Enabled"
 msgstr "Aktiveret"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1144
+#: ../src/pakfire/cli.py:355
 msgid "Priority"
 msgstr "Prioritet"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1189
+#: ../src/pakfire/cli.py:355
 msgid "Packages"
 msgstr "Pakker"
 
-#: ../src/pakfire/cli.py:411
+#: ../src/pakfire/cli.py:363
 msgid "Cleaning up everything..."
 msgstr "Oprydning af alt..."
 
-#: ../src/pakfire/cli.py:447
+#: ../src/pakfire/cli.py:373
+#, fuzzy
+msgid "Everything okay"
+msgstr "Alt er fint."
+
+#: ../src/pakfire/cli.py:390
 msgid "Cannot extract mixed package types"
 msgstr "Kan ikke udpakke blandede pakke typer"
 
-#: ../src/pakfire/cli.py:450
+#: ../src/pakfire/cli.py:393
 msgid "You must provide an install directory with --target=..."
 msgstr "Du skal angive en installationsmappe med --target=..."
 
-#: ../src/pakfire/cli.py:456
+#: ../src/pakfire/cli.py:399
 msgid "Cannot extract to /."
 msgstr "Kan ikke udpakke til /."
 
-#: ../src/pakfire/cli.py:474
-msgid "You cannot run pakfire-builder in a pakfire chroot."
+#: ../src/pakfire/cli.py:417
+#, fuzzy
+msgid "You cannot run pakfire-builder in a pakfire chroot"
 msgstr "Du kan ikke køre pakfire-bygger i en pakfire chroot."
 
-#: ../src/pakfire/cli.py:477 ../src/pakfire/cli.py:819
-msgid "Pakfire builder command line interface."
+#: ../src/pakfire/cli.py:421
+#, fuzzy
+msgid "Pakfire builder command line interface"
 msgstr "Pakfire builder kommandolinje."
 
-#: ../src/pakfire/cli.py:536
+#: ../src/pakfire/cli.py:430
+#, fuzzy
+msgid "Run pakfire for the given architecture"
+msgstr "Kør pakfire for den angivne arkitektur."
+
+#: ../src/pakfire/cli.py:432
 msgid "Choose the distribution configuration to use for build"
 msgstr "Vælg distributions konfigurationen til at bygge efter"
 
-#: ../src/pakfire/cli.py:539
-msgid "Run pakfire for the given architecture."
-msgstr "Kør pakfire for den angivne arkitektur."
-
-#: ../src/pakfire/cli.py:544
-msgid "Update the package indexes."
-msgstr "Opdatér pakke indekser."
-
-#: ../src/pakfire/cli.py:550 ../src/pakfire/cli.py:839
-msgid "Build one or more packages."
+#. build
+#: ../src/pakfire/cli.py:435
+#, fuzzy
+msgid "Build one or more packages"
 msgstr "Byg én eller flere pakker."
 
-#: ../src/pakfire/cli.py:552 ../src/pakfire/cli.py:728
-#: ../src/pakfire/cli.py:841
-msgid "Give name of at least one package to build."
+#: ../src/pakfire/cli.py:437
+#, fuzzy
+msgid "Give name of at least one package to build"
 msgstr "Angiv navnet på mindst én pakke der skal bygges."
 
-#: ../src/pakfire/cli.py:556 ../src/pakfire/cli.py:588
-#: ../src/pakfire/cli.py:847
-msgid "Path were the output files should be copied to."
+#: ../src/pakfire/cli.py:441 ../src/pakfire/cli.py:461
+#, fuzzy
+msgid "Path were the output files should be copied to"
 msgstr "Sti hvor output filerne skal kopieres til."
 
-#: ../src/pakfire/cli.py:558 ../src/pakfire/cli.py:575
-#: ../src/pakfire/cli.py:849
+#: ../src/pakfire/cli.py:443
+#, fuzzy
+msgid "Mode to run in. Is either 'release' or 'development' (default)"
+msgstr "Tilstand at køre i. Enten 'release' eller 'udvikling' (standard)."
+
+#: ../src/pakfire/cli.py:445
+#, fuzzy
+msgid "Run a shell after a successful build"
+msgstr "Kør en shell efter succesfuld bygning."
+
+#: ../src/pakfire/cli.py:447
+#, fuzzy
+msgid "Do not perform the install test"
+msgstr "Udfør ikke installationstest."
+
+#: ../src/pakfire/cli.py:449 ../src/pakfire/cli.py:503
+#, fuzzy
+msgid "Disable network in container"
+msgstr "Deaktivér netværk i container."
+
+#. dist
+#: ../src/pakfire/cli.py:456
+#, fuzzy
+msgid "Generate a source package"
+msgstr "Generér en kildekode pakke."
+
+#: ../src/pakfire/cli.py:457
+#, fuzzy
+msgid "Give name(s) of a package(s)"
+msgstr "Angiv navn(e) på pakke(r)."
+
+#: ../src/pakfire/cli.py:475
+msgid "Give at least the name of one package."
+msgstr "Angiv mindst navnet på én pakke."
+
+#. shell
+#: ../src/pakfire/cli.py:496
+#, fuzzy
+msgid "Go into a build shell"
+msgstr "Åbn en Shell."
+
+#: ../src/pakfire/cli.py:497
+#, fuzzy
+msgid "Give name of a package"
+msgstr "Angiv navnet på en pakke."
+
+#: ../src/pakfire/cli.py:501 ../src/pakfire/cli.py:586
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr "Tilstand at køre i. Enten 'release' eller 'udvikling' (standard)."
 
-#: ../src/pakfire/cli.py:560
-msgid "Run a shell after a successful build."
-msgstr "Kør en shell efter succesfuld bygning."
+#. update
+#: ../src/pakfire/cli.py:506
+#, fuzzy
+msgid "Update the package indexes"
+msgstr "Opdatér pakke indekser."
 
-#: ../src/pakfire/cli.py:562
-msgid "Do not perform the install test."
-msgstr "Udfør ikke installationstest."
+#: ../src/pakfire/cli.py:557
+msgid "Pakfire builder command line interface."
+msgstr "Pakfire builder kommandolinje."
 
-#: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
-msgid "Disable network in container."
-msgstr "Deaktivér netværk i container."
+#: ../src/pakfire/cli.py:576
+msgid "Build one or more packages."
+msgstr "Byg én eller flere pakker."
 
-#: ../src/pakfire/cli.py:569
-msgid "Go into a shell."
-msgstr "Åbn en Shell."
-
-#: ../src/pakfire/cli.py:571
-msgid "Give name of a package."
-msgstr "Angiv navnet på en pakke."
+#: ../src/pakfire/cli.py:578
+msgid "Give name of at least one package to build."
+msgstr "Angiv navnet på mindst én pakke der skal bygges."
 
 #: ../src/pakfire/cli.py:582
-msgid "Generate a source package."
-msgstr "Generér en kildekode pakke."
-
-#: ../src/pakfire/cli.py:584
-msgid "Give name(s) of a package(s)."
-msgstr "Angiv navn(e) på pakke(r)."
-
-#: ../src/pakfire/cli.py:685
-msgid "Pakfire server command line interface."
-msgstr "Pakfire server kommandolinje."
-
-#: ../src/pakfire/cli.py:726
-msgid "Send a scrach build job to the server."
-msgstr "Send et scratch bygge job til serveren."
-
-#: ../src/pakfire/cli.py:730
-msgid "Limit build to only these architecture(s)."
-msgstr "Begræns bygning til kun disse arkitekturer."
-
-#: ../src/pakfire/cli.py:736
-msgid "Send a keepalive to the server."
-msgstr "Send en keepalive til serveren."
-
-#: ../src/pakfire/cli.py:743
-msgid "Update all repositories."
-msgstr "Opdatér alle projektarkiver."
-
-#: ../src/pakfire/cli.py:749
-msgid "Repository management commands."
-msgstr "Styringskommandoer til projektarkivet."
-
-#: ../src/pakfire/cli.py:757
-msgid "Create a new repository index."
-msgstr "Opret nyt projektarkiv indeks."
-
-#: ../src/pakfire/cli.py:759
-msgid "Path to the packages."
-msgstr "Sti til pakker."
-
-#: ../src/pakfire/cli.py:761
-msgid "Path to input packages."
-msgstr "Sti til input pakker."
-
-#: ../src/pakfire/cli.py:763
-msgid "Key to sign the repository with."
-msgstr "Nøgle at signere projektarkivet med."
-
-#: ../src/pakfire/cli.py:768
-msgid "Dump some information about this machine."
-msgstr "Vis information om denne computer."
-
-#: ../src/pakfire/cli.py:845 ../src/pakfire/cli.py:937
 msgid "Build the package for the given architecture."
 msgstr "Byg pakken for den angivne arkitektur."
 
-#: ../src/pakfire/cli.py:851
+#: ../src/pakfire/cli.py:584
+msgid "Path were the output files should be copied to."
+msgstr "Sti hvor output filerne skal kopieres til."
+
+#: ../src/pakfire/cli.py:588
 msgid "Do not verify build dependencies."
 msgstr "Bekræft ikke bygge afhængigheder."
 
-#: ../src/pakfire/cli.py:853
+#: ../src/pakfire/cli.py:590
 msgid "Only run the prepare stage."
 msgstr "Kør kun forberedelse."
 
-#: ../src/pakfire/cli.py:887
-msgid "Pakfire client command line interface."
+#: ../src/pakfire/cli.py:626
+#, fuzzy
+msgid "Pakfire client command line interface"
 msgstr "Pakfire klient kommandolinje."
 
-#: ../src/pakfire/cli.py:931
-msgid "Build a package remotely."
+#: ../src/pakfire/cli.py:628
+msgid "sub-command help"
+msgstr ""
+
+#. build
+#: ../src/pakfire/cli.py:634
+#, fuzzy
+msgid "Build a package remote"
 msgstr "Byg en pakke eksternt."
 
-#: ../src/pakfire/cli.py:933
-msgid "Give name of a package to build."
-msgstr "Angiv et navn på en pakke der skal bygges."
+#: ../src/pakfire/cli.py:635
+#, fuzzy
+msgid "Package(s) to build"
+msgstr "Pakken/pakkerne der skal signeres."
 
-#: ../src/pakfire/cli.py:942
-msgid "Print some information about this host."
-msgstr "Vis information om denne vært."
+#: ../src/pakfire/cli.py:639
+#, fuzzy
+msgid "Build the package(s) for the given architecture only"
+msgstr "Byg pakken for den angivne arkitektur."
 
-#: ../src/pakfire/cli.py:948
-msgid "Check the connection to the hub."
+#: ../src/pakfire/cli.py:643
+#, fuzzy
+msgid "Check the connection to the hub"
 msgstr "Tjek forbindelsen til hub."
 
-#: ../src/pakfire/cli.py:953
-msgid "Show information about build jobs."
-msgstr "Vis information om bygge jobs."
-
-#: ../src/pakfire/cli.py:963
-msgid "Show a list of all active jobs."
-msgstr "Vis liste over alle aktive job."
-
-#: ../src/pakfire/cli.py:968
-msgid "Show a list of all recently finished of failed build jobs."
-msgstr "Vis liste over nyligt færdiggjort og fejlede bygge job."
-
-#: ../src/pakfire/cli.py:973
-msgid "Show details about given build job."
-msgstr "Vis detaljer om et bestemt bygge job."
-
-#: ../src/pakfire/cli.py:974
-msgid "The ID of the build job."
-msgstr "Bygge job ID."
-
-#: ../src/pakfire/cli.py:979
-msgid "Show information about builds."
-msgstr "Vis information om bygninger."
-
-#: ../src/pakfire/cli.py:987
-msgid "Show details about the given build."
-msgstr "Vis detaljer om det valgte bygge job."
-
-#: ../src/pakfire/cli.py:988
-msgid "The ID of the build."
-msgstr "Bygge ID."
-
-#: ../src/pakfire/cli.py:993
-msgid "Test the connection to the hub."
-msgstr "Test forbindelsen til hub."
-
-#: ../src/pakfire/cli.py:994
-msgid "Error code to test."
-msgstr "Test fejlkode."
-
-#: ../src/pakfire/cli.py:1045 ../src/pakfire/server.py:303
-msgid "Hostname"
-msgstr "Værtsnavn"
-
-#: ../src/pakfire/cli.py:1046
-msgid "Pakfire hub"
-msgstr "Pakfire hub"
-
-#: ../src/pakfire/cli.py:1049
-msgid "Username"
-msgstr "Brugernavn"
-
-#. Hardware information
-#: ../src/pakfire/cli.py:1053 ../src/pakfire/server.py:307
-msgid "Hardware information"
-msgstr "Hardware information"
-
-#: ../src/pakfire/cli.py:1054 ../src/pakfire/server.py:308
-msgid "CPU model"
-msgstr "CPU model"
-
-#: ../src/pakfire/cli.py:1055 ../src/pakfire/server.py:309
-msgid "Memory"
-msgstr "Hukommelse"
-
-#: ../src/pakfire/cli.py:1056
-msgid "Parallelism"
-msgstr "Parallelitet"
-
-#: ../src/pakfire/cli.py:1058 ../src/pakfire/server.py:311
-msgid "Native arch"
-msgstr "Native arch"
-
-#: ../src/pakfire/cli.py:1060
-msgid "Default arch"
-msgstr "Standard arch"
-
-#: ../src/pakfire/cli.py:1062 ../src/pakfire/server.py:313
-msgid "Supported arches"
-msgstr "Understøttede arches"
-
-#: ../src/pakfire/cli.py:1075
-msgid "Your IP address"
-msgstr "Din IP adresse"
-
-#: ../src/pakfire/cli.py:1080
-msgid "You are authenticated to the build service:"
+#. upload
+#: ../src/pakfire/cli.py:647
+#, fuzzy
+msgid "Upload a file to the build service"
 msgstr "Du er autentificeret til bygge servicen:"
 
-#: ../src/pakfire/cli.py:1086
-msgid "User name"
-msgstr "Brugernavn"
+#: ../src/pakfire/cli.py:648
+#, fuzzy
+msgid "Filename"
+msgstr "Filnavn: %s"
 
-#: ../src/pakfire/cli.py:1087
-msgid "Real name"
-msgstr "Fulde navn"
+#. watch-build
+#: ../src/pakfire/cli.py:652
+msgid "Watch the status of a build"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1088
-msgid "Email address"
-msgstr "Email adresse"
+#: ../src/pakfire/cli.py:653 ../src/pakfire/packages/base.py:146
+msgid "Build ID"
+msgstr "Bygge ID"
 
-#: ../src/pakfire/cli.py:1089
-msgid "Registered"
-msgstr "Registreret"
+#. watch-job
+#: ../src/pakfire/cli.py:657
+msgid "Watch the status of a job"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1096
-msgid "You could not be authenticated to the build service."
-msgstr "Du kunne ikke blive autentificeret til bygge servicen."
+#: ../src/pakfire/cli.py:658
+msgid "Job ID"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1117
-msgid "No ongoing jobs found."
-msgstr "Ingen kørende job fundet."
+#: ../src/pakfire/cli.py:710
+msgid "Connection OK"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1120
-msgid "Active build jobs"
-msgstr "Aktive bygge job."
-
-#: ../src/pakfire/cli.py:1126
-msgid "No jobs found."
-msgstr "Ingen job fundet."
-
-#: ../src/pakfire/cli.py:1129
-msgid "Recently processed build jobs"
-msgstr "Nyligt behandlede bygge job"
-
-#: ../src/pakfire/cli.py:1136
-#, python-format
-msgid "A build with ID %s could not be found."
-msgstr "Bygge ID %s kunne ikke findes."
-
-#: ../src/pakfire/cli.py:1139
-#, python-format
-msgid "Build: %(name)s"
-msgstr "Bygning: %(name)s"
-
-#: ../src/pakfire/cli.py:1143 ../src/pakfire/cli.py:1171
-msgid "State"
-msgstr "Status"
-
-#: ../src/pakfire/cli.py:1147
-msgid "Jobs"
-msgstr "Job"
-
-#: ../src/pakfire/cli.py:1160
-#, python-format
-msgid "A job with ID %s could not be found."
-msgstr "Job ID %s kunne ikke findes."
-
-#: ../src/pakfire/cli.py:1167
-#, python-format
-msgid "Job: %(name)s"
-msgstr "Job: %(name)s"
-
-#: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:423
-msgid "Arch"
-msgstr "Arch"
-
-#: ../src/pakfire/cli.py:1177 ../src/pakfire/packages/base.py:148
-msgid "Build host"
-msgstr "Bygge vært"
-
-#: ../src/pakfire/cli.py:1182
-msgid "Time created"
-msgstr "Oprettet"
-
-#: ../src/pakfire/cli.py:1183
-msgid "Time started"
-msgstr "Startet"
-
-#: ../src/pakfire/cli.py:1184
-msgid "Time finished"
-msgstr "Færdiggjort"
-
-#: ../src/pakfire/cli.py:1185
-msgid "Duration"
-msgstr "Varighed"
-
-#: ../src/pakfire/cli.py:1213
-msgid "Invalid error code given."
-msgstr "Ugyldig fejlkode angivet."
-
-#: ../src/pakfire/cli.py:1216
-#, python-format
-msgid "Reponse from the server: %s"
-msgstr "Svar fra serveren: %s"
-
-#: ../src/pakfire/cli.py:1227
-msgid "Pakfire daemon command line interface."
+#: ../src/pakfire/cli.py:745
+#, fuzzy
+msgid "Pakfire daemon command line interface"
 msgstr "Pakfire daemon kommandolinje."
 
-#: ../src/pakfire/cli.py:1258
-msgid "Pakfire key command line interface."
+#: ../src/pakfire/cli.py:771
+#, fuzzy
+msgid "Pakfire key command line interface"
 msgstr "Pakfire nøgle kommandolinje."
 
-#: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
-msgid "Import a key from file."
-msgstr "Importér en nøgle fra fil."
-
-#: ../src/pakfire/cli.py:1296
-msgid "The real name of the owner of this key."
-msgstr "The fulde navn på ejeren af denne nøgle."
-
-#: ../src/pakfire/cli.py:1298
-msgid "The email address of the owner of this key."
-msgstr "Email adressen på ejeren af denne nøgle."
-
-#: ../src/pakfire/cli.py:1306
-msgid "Filename of that key to import."
-msgstr "Filnavn på nøglen der skal importeres."
-
-#: ../src/pakfire/cli.py:1312
-msgid "Export a key to a file."
-msgstr "Eksportér nøgle til en fil."
-
-#: ../src/pakfire/cli.py:1314
-msgid "The ID of the key to export."
-msgstr "ID på nøglen der skal eksporteres."
-
-#: ../src/pakfire/cli.py:1316
-msgid "Write the key to this file."
-msgstr "Skriv nøgle til denne fil."
-
-#: ../src/pakfire/cli.py:1322
-msgid "Delete a key from the local keyring."
+#. delete
+#: ../src/pakfire/cli.py:779
+#, fuzzy
+msgid "Delete a key from the local keyring"
 msgstr "Slet en nøgle fra den lokale nøglering."
 
-#: ../src/pakfire/cli.py:1324
-msgid "The ID of the key to delete."
+#: ../src/pakfire/cli.py:780
+#, fuzzy
+msgid "The fingerprint of the key to delete"
 msgstr "ID på nøglen der skal slette."
 
-#: ../src/pakfire/cli.py:1330
-msgid "List all imported keys."
+#. export
+#: ../src/pakfire/cli.py:784
+#, fuzzy
+msgid "Export a key to a file"
+msgstr "Eksportér nøgle til en fil."
+
+#: ../src/pakfire/cli.py:786
+#, fuzzy
+msgid "The fingerprint of the key to export"
+msgstr "ID på nøglen der skal eksporteres."
+
+#: ../src/pakfire/cli.py:787
+#, fuzzy
+msgid "Write the key to this file"
+msgstr "Skriv nøgle til denne fil."
+
+#: ../src/pakfire/cli.py:789
+msgid "Export the secret key"
+msgstr ""
+
+#. import
+#. generate
+#: ../src/pakfire/cli.py:793 ../src/pakfire/cli.py:798
+#, fuzzy
+msgid "Import a key from file"
+msgstr "Importér en nøgle fra fil."
+
+#: ../src/pakfire/cli.py:794
+#, fuzzy
+msgid "Filename of that key to import"
+msgstr "Filnavn på nøglen der skal importeres."
+
+#: ../src/pakfire/cli.py:800
+#, fuzzy
+msgid "The real name of the owner of this key"
+msgstr "The fulde navn på ejeren af denne nøgle."
+
+#: ../src/pakfire/cli.py:802
+#, fuzzy
+msgid "The email address of the owner of this key"
+msgstr "Email adressen på ejeren af denne nøgle."
+
+#. list
+#: ../src/pakfire/cli.py:806
+#, fuzzy
+msgid "List all imported keys"
 msgstr "Vis alle importerede nøgler."
 
-#: ../src/pakfire/cli.py:1336
+#: ../src/pakfire/cli.py:814
 msgid "Sign one or more packages."
 msgstr "Signér en eller flere pakker."
 
-#: ../src/pakfire/cli.py:1338
+#: ../src/pakfire/cli.py:816
 msgid "Key that is used sign the package(s)."
 msgstr "Nøgle der skal bruges til at signere pakken/pakkerne."
 
-#: ../src/pakfire/cli.py:1340
+#: ../src/pakfire/cli.py:818
 msgid "Package(s) to sign."
 msgstr "Pakken/pakkerne der skal signeres."
 
-#: ../src/pakfire/cli.py:1346
+#: ../src/pakfire/cli.py:824
 msgid "Verify one or more packages."
 msgstr "Verificér en eller flere pakker."
 
-#: ../src/pakfire/cli.py:1350
+#: ../src/pakfire/cli.py:828
 msgid "Package(s) to verify."
 msgstr "Pakken/pakkerne der skal verificeres."
 
-#: ../src/pakfire/cli.py:1357
+#: ../src/pakfire/cli.py:834
 msgid "Generating the key may take a moment..."
 msgstr "Det kan tage et øjeblik at generere nøglen..."
 
-#: ../src/pakfire/cli.py:1411
+#: ../src/pakfire/cli.py:851
+#, fuzzy, python-format
+msgid "Could not find key with fingerprint %s"
+msgstr "Kunne ikke finde makefile i bygge roden: %s"
+
+#: ../src/pakfire/cli.py:903
 #, python-format
 msgid "Signing %s..."
 msgstr "Signerer %s..."
 
-#: ../src/pakfire/cli.py:1431
+#: ../src/pakfire/cli.py:925
 #, python-format
 msgid "Verifying %s..."
 msgstr "Verificerer %s..."
 
-#: ../src/pakfire/cli.py:1441
+#: ../src/pakfire/cli.py:935
 msgid "This signature is valid."
 msgstr "Signaturen er gyldig."
 
-#: ../src/pakfire/cli.py:1444
+#: ../src/pakfire/cli.py:938
 msgid "Unknown key"
 msgstr "Ukendt nøgle"
 
-#: ../src/pakfire/cli.py:1445
+#: ../src/pakfire/cli.py:939
 msgid "Could not check if this signature is valid."
 msgstr "Kunne ikke tjekke om signaturen er gyldig."
 
-#: ../src/pakfire/cli.py:1448 ../src/pakfire/keyring.py:98
+#: ../src/pakfire/cli.py:942
 #, python-format
 msgid "Created: %s"
 msgstr "Oprettet: %s"
 
-#: ../src/pakfire/cli.py:1452 ../src/pakfire/keyring.py:101
+#: ../src/pakfire/cli.py:946
 #, python-format
 msgid "Expires: %s"
 msgstr "Udløber: %s"
+
+#: ../src/pakfire/client.py:189
+#, fuzzy, python-format
+msgid "Score: %s"
+msgstr "Sektion: %s"
+
+#: ../src/pakfire/client.py:190
+#, fuzzy, python-format
+msgid "Priority: %s"
+msgstr "Prioritet"
+
+#: ../src/pakfire/client.py:277
+#, python-format
+msgid "on %s"
+msgstr ""
+
+#: ../src/pakfire/client.py:280
+#, python-format
+msgid "in %s"
+msgstr ""
+
+#: ../src/pakfire/client.py:299
+#, fuzzy, python-format
+msgid "Builder: %s"
+msgstr "Bygning: %(name)s"
 
 #: ../src/pakfire/compress.py:85 ../src/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
 msgstr "Angivne algoritme '%s' er ikke understøttet."
 
-#: ../src/pakfire/config.py:191
-#, python-format
-msgid "Unhandled configuration update: %s = %s"
-msgstr "Ubehandlet konfigurationsopdatering: %s = %s"
-
-#: ../src/pakfire/config.py:205
+#: ../src/pakfire/config.py:88
 msgid "Configuration:"
 msgstr "Konfiguration:"
 
-#: ../src/pakfire/config.py:207
+#: ../src/pakfire/config.py:91
 #, python-format
 msgid "Section: %s"
 msgstr "Sektion: %s"
 
-#: ../src/pakfire/config.py:212
-msgid "No settings in this section."
-msgstr "Ingen indstillinger i denne sektion."
-
-#: ../src/pakfire/config.py:214
-msgid "Loaded from files:"
-msgstr "Indlæst fra filer:"
-
-#: ../src/pakfire/daemon.py:100
+#: ../src/pakfire/daemon.py:116
 msgid "Shutting down..."
 msgstr "Afslutter..."
 
-#: ../src/pakfire/daemon.py:104
+#: ../src/pakfire/daemon.py:120
 msgid "Restarting keepalive process"
 msgstr "Genstart keepalive proces"
 
-#: ../src/pakfire/daemon.py:166
+#: ../src/pakfire/daemon.py:182
 #, python-format
 msgid "Terminating worker process: %s"
 msgstr "Afslutter arbejdende proces: %s"
 
-#: ../src/pakfire/daemon.py:315
+#: ../src/pakfire/daemon.py:326
 msgid "Sending builder information to hub..."
 msgstr "Sender bygge information til hub..."
 
-#: ../src/pakfire/downloader.py:165
-msgid "Downloading source files:"
-msgstr "Henter kildekode filer:"
-
-#: ../src/pakfire/downloader.py:168
-msgid "Cannot download source code in offline mode."
-msgstr "Kan ikke hente kildekode i offline tilstand."
-
-#: ../src/pakfire/downloader.py:191
-#, python-format
-msgid "Downloaded empty file: %s"
-msgstr "Hentet tom fil: %s"
-
-#: ../src/pakfire/errors.py:30
+#: ../src/pakfire/errors.py:32
 msgid "An unhandled error occured."
 msgstr "En ubehandlet fejl opstod."
 
-#: ../src/pakfire/errors.py:46
+#: ../src/pakfire/errors.py:48
 msgid "Could not compress/decompress data."
 msgstr "Kunne ikke komprimere/dekomprimere data."
 
-#: ../src/pakfire/errors.py:58
-msgid "One or more dependencies could not been resolved."
-msgstr "En eller flere afhængigheder kunne ikke blive løst."
-
-#: ../src/pakfire/errors.py:61
+#: ../src/pakfire/errors.py:59
 msgid "An error occured when pakfire tried to download files."
 msgstr "Der opstod en fejl da pakfire forsøgte at hente filer."
 
-#: ../src/pakfire/errors.py:74
+#: ../src/pakfire/errors.py:72
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command line and try again."
-msgstr "Den ønskede handling kan ikke udføres i offline tilstand.\nTilslut venligst dit system til et netværk, fjern --offline fra kommandolinjen og prøv igen."
+"Please connect your system to the network, remove --offline from the command "
+"line and try again."
+msgstr ""
+"Den ønskede handling kan ikke udføres i offline tilstand.\n"
+"Tilslut venligst dit system til et netværk, fjern --offline fra "
+"kommandolinjen og prøv igen."
 
-#: ../src/pakfire/errors.py:86
+#: ../src/pakfire/errors.py:84
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Kør pakfire-bygger i en pakfire container?"
 
-#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
+#: ../src/pakfire/errors.py:96 ../src/pakfire/transaction.py:509
 msgid "Transaction test was not successful"
 msgstr "Transaktionstest var ikke succesfuld"
 
-#: ../src/pakfire/errors.py:162
+#: ../src/pakfire/errors.py:160
 msgid "Generic XMLRPC error."
 msgstr "Generel XMLRPC fejl."
 
-#: ../src/pakfire/errors.py:166
+#: ../src/pakfire/errors.py:164
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr "Du har ikke tilladelse til at foretage denne handling. Måske skal du tjekke dine rettigheder."
+msgstr ""
+"Du har ikke tilladelse til at foretage denne handling. Måske skal du tjekke "
+"dine rettigheder."
 
-#: ../src/pakfire/errors.py:170
+#: ../src/pakfire/errors.py:168
 msgid "A request could not be fulfilled by the server."
 msgstr "En forespørgsel kunne ikke blive opfyldt af serveren."
 
-#: ../src/pakfire/errors.py:174
+#: ../src/pakfire/errors.py:172
 msgid "Could not find the requested URL."
 msgstr "Kunne ikke finde den forespurgte URL."
 
-#: ../src/pakfire/errors.py:178
+#: ../src/pakfire/errors.py:176
 msgid "An unforseable problem on the XML-RPC transport connection occured."
 msgstr "Der opstod en uventet fejl på XML-RPC transport forbindelsen."
+
+#: ../src/pakfire/http.py:138
+#, fuzzy, python-format
+msgid "Selected mirror: %s"
+msgstr "Sektion: %s"
+
+#: ../src/pakfire/http.py:142 ../src/pakfire/http.py:156
+msgid "No more mirrors to try"
+msgstr ""
+
+#: ../src/pakfire/http.py:158
+#, python-format
+msgid "Skipping mirror %s"
+msgstr ""
+
+#: ../src/pakfire/http.py:359
+msgid "Invalid checksum"
+msgstr ""
 
 #: ../src/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
 msgstr "%(commas)s og %(last)s"
 
-#: ../src/pakfire/keyring.py:76
-#, python-format
-msgid "Not in key store: %s"
-msgstr "Ikke i nøglelageret: %s"
-
-#: ../src/pakfire/keyring.py:82
-#, python-format
-msgid "Fingerprint: %s"
-msgstr "Fingeraftryk: %s"
-
-#: ../src/pakfire/keyring.py:86
-msgid "Private key available!"
-msgstr "Privat nøgle tilgængelig!"
-
-#: ../src/pakfire/keyring.py:90
-#, python-format
-msgid "Subkey: %s"
-msgstr "Undernøgle: %s"
-
-#: ../src/pakfire/keyring.py:92
-msgid "This key has expired!"
-msgstr "Nøglen er udløbet!"
-
-#: ../src/pakfire/keyring.py:95
-msgid "This is a secret key."
-msgstr "Dette er en hemmelig nøgle."
-
-#: ../src/pakfire/keyring.py:103
-msgid "This key does not expire."
-msgstr "Denne nøgle udløber ikke."
-
-#: ../src/pakfire/keyring.py:151
-#, python-format
-msgid "Generating new key for %(realname)s <%(email)s>..."
-msgstr "Genererer ny nøgle for %(realname)s <%(email)s>..."
-
-#: ../src/pakfire/keyring.py:152
-msgid "This may take a while..."
-msgstr "Dette kan tage et øjeblik..."
-
-#: ../src/pakfire/keyring.py:171
-#, python-format
-msgid "Successfully imported %s."
-msgstr "Importerede succesfuldt %s."
-
-#: ../src/pakfire/keyring.py:191
-msgid "Host key:"
-msgstr "Værtsnøgle:"
-
-#: ../src/pakfire/keyring.py:198
-#, python-format
-msgid ""
-"WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr "ADVARSEL! Værtsnøgle med ID %s konfigureret, men den hemmelige nøgle mangler!"
-
-#: ../src/pakfire/keyring.py:201
-#, python-format
-msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr "ADVARSEL! Værtsnøgle med ID %s konfigureret, men ikke fundet!"
-
-#: ../src/pakfire/keyring.py:203
-msgid "No host key available or configured."
-msgstr "Ingen værtsnøgle tilgængelig eller konfigureret."
-
-#: ../src/pakfire/packages/base.py:99
-msgid "Name"
-msgstr "Navn"
-
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:427
-msgid "Version"
-msgstr "Version"
-
-#: ../src/pakfire/packages/base.py:111
-msgid "Release"
-msgstr "Udgivelse"
-
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:426
-msgid "Size"
-msgstr "Størrelse"
-
-#: ../src/pakfire/packages/base.py:119
-msgid "Installed size"
-msgstr "Installeret størrelse"
-
-#: ../src/pakfire/packages/base.py:125
-msgid "Repo"
-msgstr "Repo"
-
-#: ../src/pakfire/packages/base.py:128
-msgid "Summary"
-msgstr "Resumé"
-
 #: ../src/pakfire/packages/base.py:129
 msgid "Groups"
 msgstr "Grupper"
-
-#: ../src/pakfire/packages/base.py:130
-msgid "URL"
-msgstr "URL"
-
-#: ../src/pakfire/packages/base.py:131
-msgid "License"
-msgstr "Licens"
-
-#: ../src/pakfire/packages/base.py:134
-msgid "Description"
-msgstr "Beskrivelse"
-
-#: ../src/pakfire/packages/base.py:141
-msgid "Maintainer"
-msgstr "Vedligeholder"
-
-#: ../src/pakfire/packages/base.py:143
-msgid "Vendor"
-msgstr "Leverandør"
-
-#: ../src/pakfire/packages/base.py:145
-msgid "UUID"
-msgstr "UUID"
-
-#: ../src/pakfire/packages/base.py:146
-msgid "Build ID"
-msgstr "Bygge ID"
-
-#: ../src/pakfire/packages/base.py:147
-msgid "Build date"
-msgstr "Bygge dato"
 
 #: ../src/pakfire/packages/base.py:150
 msgid "Signatures"
 msgstr "Signaturer"
 
-#: ../src/pakfire/packages/base.py:155
-msgid "Provides"
-msgstr "Leverer"
-
 #: ../src/pakfire/packages/base.py:160
 msgid "Pre-requires"
 msgstr "Påkrævet"
-
-#: ../src/pakfire/packages/base.py:165
-msgid "Requires"
-msgstr "Kræver"
-
-#: ../src/pakfire/packages/base.py:170
-msgid "Conflicts"
-msgstr "Konflikter"
-
-#: ../src/pakfire/packages/base.py:175
-msgid "Obsoletes"
-msgstr "Forældede"
-
-#: ../src/pakfire/packages/base.py:180
-msgid "Recommends"
-msgstr "Anbefaler"
-
-#: ../src/pakfire/packages/base.py:185
-msgid "Suggests"
-msgstr "Foreslår"
 
 #: ../src/pakfire/packages/base.py:193
 msgid "File"
@@ -1340,12 +1306,12 @@ msgstr "Fil"
 msgid "Not set"
 msgstr "Udefineret"
 
-#: ../src/pakfire/packages/base.py:570
+#: ../src/pakfire/packages/base.py:573
 #, python-format
 msgid "Config file saved as %s."
 msgstr "Konfigurationsfil gemt som %s."
 
-#: ../src/pakfire/packages/base.py:575
+#: ../src/pakfire/packages/base.py:578
 #, python-format
 msgid "Preserving datafile '/%s'"
 msgstr "Bevarer datafil '/%s'"
@@ -1355,22 +1321,22 @@ msgstr "Bevarer datafil '/%s'"
 msgid "Filename: %s"
 msgstr "Filnavn: %s"
 
-#: ../src/pakfire/packages/file.py:184
+#: ../src/pakfire/packages/file.py:186
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
 msgstr "Filen i arkivet mangler i fil metadata: %s. Springer over."
 
-#: ../src/pakfire/packages/file.py:240
+#: ../src/pakfire/packages/file.py:242
 #, python-format
 msgid "Config file created as %s"
 msgstr "Konfigurationsfil oprettet som %s"
 
-#: ../src/pakfire/packages/file.py:245
+#: ../src/pakfire/packages/file.py:247
 #, python-format
 msgid "Don't overwrite already existing datafile '/%s'"
 msgstr "Overskriv ikke eksisterende datafil '/%s'"
 
-#: ../src/pakfire/packages/file.py:259
+#: ../src/pakfire/packages/file.py:261
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr "Kunne ikke slette fil: /%s"
@@ -1380,37 +1346,37 @@ msgstr "Kunne ikke slette fil: /%s"
 msgid "Template does not exist: %s"
 msgstr "Skabelon eksisterer ikke: %s"
 
-#: ../src/pakfire/packages/make.py:83
+#: ../src/pakfire/packages/make.py:80
 msgid "Package name is undefined."
 msgstr "Pakkenavn er udefineret."
 
-#: ../src/pakfire/packages/make.py:86
+#: ../src/pakfire/packages/make.py:83
 msgid "Package version is undefined."
 msgstr "Pakke version er udefineret."
 
-#: ../src/pakfire/packages/make.py:443
+#: ../src/pakfire/packages/make.py:461
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
 msgstr "Søger efter automatiske afhængigheder for %s..."
 
-#: ../src/pakfire/packages/make.py:497
+#: ../src/pakfire/packages/make.py:515
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
 msgstr "Regulært udtryk er ugyldigt og er blevet sprunget over: %s"
 
 #. Let the user know what has been done.
-#: ../src/pakfire/packages/make.py:513
+#: ../src/pakfire/packages/make.py:531
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr "Filter '%(pattern)s' filtrerede %(dep)s."
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:399
-#: ../src/pakfire/packages/packager.py:713
+#: ../src/pakfire/packages/packager.py:397
+#: ../src/pakfire/packages/packager.py:714
 msgid "Packaging"
 msgstr "Indpakning"
 
-#: ../src/pakfire/packages/packager.py:741
+#: ../src/pakfire/packages/packager.py:742
 #, python-format
 msgid "Building source package %s:"
 msgstr "Bygger kildekode pakke %s:"
@@ -1420,26 +1386,8 @@ msgstr "Bygger kildekode pakke %s:"
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Kunne ikke udpakke filen: /%(src)s - %(dst)s"
 
-#: ../src/pakfire/progressbar.py:206
-#, python-format
-msgid "Elapsed Time: %s"
-msgstr "Forløbet tid: %s"
-
-#: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
-msgid "ETA"
-msgstr "ETA"
-
-#: ../src/pakfire/progressbar.py:231
-msgid "Time"
-msgstr "Tid"
-
-#: ../src/pakfire/repository/__init__.py:93
-msgid "Initializing repositories..."
-msgstr "Initialiserer projektarkiver..."
-
 #: ../src/pakfire/repository/database.py:120
-msgid ""
-"The format of the database is not supported by this version of pakfire."
+msgid "The format of the database is not supported by this version of pakfire."
 msgstr "Databasens format er ikke understøttet af denne version af pakfire."
 
 #: ../src/pakfire/repository/database.py:229
@@ -1453,112 +1401,63 @@ msgid "Migrating database from format %(old)s to %(new)s."
 msgstr "Migrerer database fra format %(old)s til %(new)s."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:123
+#: ../src/pakfire/repository/local.py:121
 #, python-format
 msgid "%s: Adding packages..."
 msgstr "%s: Tilføjer pakker..."
 
 #. Make a nice progress bar.
-#: ../src/pakfire/repository/local.py:229
+#: ../src/pakfire/repository/local.py:227
 msgid "Compressing database..."
 msgstr "Komprimerer database..."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:287
+#: ../src/pakfire/repository/local.py:285
 #, python-format
 msgid "%s: Reading packages..."
 msgstr "%s: Læser pakker..."
 
-#: ../src/pakfire/repository/remote.py:151
-#, python-format
-msgid "No metadata available for repository %s. Cannot download any."
-msgstr "Ingen metadata tilgængelig for projektarkiv %s. Kan ikke hente nogen."
+#: ../src/pakfire/repository/remote.py:107
+#, fuzzy, python-format
+msgid "Skipping refreshing %s since we are running in offline mode"
+msgstr "Forsætter fordi vi kører i tilgivende tilstand."
 
-#: ../src/pakfire/repository/remote.py:176
-#, python-format
-msgid "Could not update metadata for %s from any mirror server"
-msgstr "Kunne ikke opdatere metadato for %s fra nogen spejl server"
-
-#: ../src/pakfire/repository/remote.py:185
+#: ../src/pakfire/repository/remote.py:193
 msgid "The downloaded metadata was less recent than the current one."
 msgstr "Den hentede metadata fra ældre end den nuværende."
 
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
-msgid "Cannot download package database for %s in offline mode."
-msgstr "Kan ikke hente pakke database for %s i offline tilstand."
-
-#: ../src/pakfire/repository/remote.py:235
-#, python-format
 msgid "%s: package database"
 msgstr "%s: pakke database"
 
-#: ../src/pakfire/repository/remote.py:309
+#: ../src/pakfire/repository/remote.py:267
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
 msgstr "Kan ikke hente denne fil i offline tilstand: %s"
 
-#: ../src/pakfire/repository/remote.py:315
+#: ../src/pakfire/repository/remote.py:273
 #, python-format
 msgid "Could not download %s: %s"
 msgstr "Kunne ikke hente %s: %s"
 
-#: ../src/pakfire/repository/remote.py:340
+#: ../src/pakfire/repository/remote.py:298
 msgid "The checksum of the downloaded file did not match."
 msgstr "Den hentede fils checksum matchede ikke."
 
-#: ../src/pakfire/repository/remote.py:341
+#: ../src/pakfire/repository/remote.py:299
 #, python-format
 msgid "Expected %(good)s but got %(bad)s."
 msgstr "Forventede %(good)s men fik %(bad)s."
 
-#: ../src/pakfire/repository/remote.py:342
+#: ../src/pakfire/repository/remote.py:300
 msgid "Trying an other mirror."
 msgstr "Prøver et andet spejl."
 
 #. Create a progressbar.
-#: ../src/pakfire/repository/system.py:59
+#: ../src/pakfire/repository/system.py:56
 msgid "Loading installed packages"
 msgstr "Indlæste installerede pakker"
-
-#: ../src/pakfire/satsolver.py:329
-#, python-format
-msgid "Dependency solving finished in %.2f ms"
-msgstr "Løste afhængigheder på %.2f ms"
-
-#: ../src/pakfire/satsolver.py:344 ../src/pakfire/satsolver.py:370
-msgid "The solver returned one problem:"
-msgstr "Problemløseren returnerede ét problem:"
-
-#. Ask the user if he or she want to modify the request. If not, just exit.
-#: ../src/pakfire/satsolver.py:386
-msgid "Do you want to manually alter the request?"
-msgstr "Vil du manuelt ændre anmodningen?"
-
-#: ../src/pakfire/satsolver.py:389
-msgid "You can now try to satisfy the solver by modifying your request."
-msgstr "Du kan nu prøve at tilfredsstille problemløseren ved at ændre din anmodning."
-
-#: ../src/pakfire/satsolver.py:394
-msgid "Which problem to you want to resolve?"
-msgstr "Hvilket problem ønsker du at løse?"
-
-#: ../src/pakfire/satsolver.py:396
-msgid "Press enter to try to re-solve the request."
-msgstr "Tryk enter for at forsøge at løse anmodningen igen."
-
-#: ../src/pakfire/satsolver.py:427
-#, python-format
-msgid "    Solution: %s"
-msgstr "Løsning: %s"
-
-#: ../src/pakfire/satsolver.py:436
-msgid "    Solutions:"
-msgstr "Løsninger:"
-
-#: ../src/pakfire/server.py:279 ../src/pakfire/system.py:149
-msgid "Could not be determined"
-msgstr "Kunne ikke defineres"
 
 #: ../src/pakfire/shell.py:84
 #, python-format
@@ -1580,133 +1479,459 @@ msgstr "Barnets returkode var: %s"
 msgid "Command failed: %s"
 msgstr "Kommando fejlede: %s"
 
-#: ../src/pakfire/transaction.py:91
+#: ../src/pakfire/system.py:122
+msgid "Could not be determined"
+msgstr "Kunne ikke defineres"
+
+#: ../src/pakfire/transaction.py:90
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
 msgstr "fil %(name)s fra %(pkg1)s er i konflikt med fil fra pakke %(pkg2)s"
 
-#: ../src/pakfire/transaction.py:97
+#: ../src/pakfire/transaction.py:96
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
 msgstr "fil %(name)s fra %(pkg)s er i konflikt med filer fra %(pkgs)s"
 
-#: ../src/pakfire/transaction.py:103
+#: ../src/pakfire/transaction.py:102
 #, python-format
-msgid ""
-"file %(name)s causes the transaction test to fail for an unknown reason"
+msgid "file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr "fil %(name)s får transaktionstesten til at fejle af ukendte årsager"
 
-#: ../src/pakfire/transaction.py:111
+#: ../src/pakfire/transaction.py:110
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr "Der er ikke nok ledig plads på %(name)s. Behøver mindst %(size)s for at udføre transaktion."
+msgstr ""
+"Der er ikke nok ledig plads på %(name)s. Behøver mindst %(size)s for at "
+"udføre transaktion."
 
-#: ../src/pakfire/transaction.py:355
+#: ../src/pakfire/transaction.py:354
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr "Ikke nok ledig plads til at hente %s pakker."
 
-#: ../src/pakfire/transaction.py:358
+#: ../src/pakfire/transaction.py:357
 msgid "Downloading packages:"
 msgstr "Henter pakker:"
 
-#: ../src/pakfire/transaction.py:424
-msgid "Package"
-msgstr "Pakke"
-
-#: ../src/pakfire/transaction.py:441
-msgid "Installing:"
-msgstr "Installerer:"
-
-#: ../src/pakfire/transaction.py:442
-msgid "Reinstalling:"
-msgstr "Geninstallerer:"
-
-#: ../src/pakfire/transaction.py:443
-msgid "Updating:"
-msgstr "Opdaterer:"
-
-#: ../src/pakfire/transaction.py:444
-msgid "Downgrading:"
-msgstr "Nedgradering:"
-
-#: ../src/pakfire/transaction.py:445
-msgid "Removing:"
-msgstr "Fjerner:"
-
-#. Append the transaction summary
-#: ../src/pakfire/transaction.py:455
-msgid "Transaction Summary"
-msgstr "Transaktionsresumé"
-
-#: ../src/pakfire/transaction.py:463
+#: ../src/pakfire/transaction.py:462
 msgid "package"
 msgstr "pakke"
 
-#: ../src/pakfire/transaction.py:468
+#: ../src/pakfire/transaction.py:467
 #, python-format
 msgid "Total download size: %s"
 msgstr "Samlet download størrelse: %s"
 
-#: ../src/pakfire/transaction.py:472
+#: ../src/pakfire/transaction.py:471
 #, python-format
 msgid "Installed size: %s"
 msgstr "Installeret størrelse: %s"
 
-#: ../src/pakfire/transaction.py:474
+#: ../src/pakfire/transaction.py:473
 #, python-format
 msgid "Freed size: %s"
 msgstr "Frigjort størrelse: %s"
 
-#: ../src/pakfire/transaction.py:485
+#: ../src/pakfire/transaction.py:484
 msgid "Is this okay?"
 msgstr "Er dette ok ?"
 
-#: ../src/pakfire/transaction.py:491
+#: ../src/pakfire/transaction.py:490
 msgid "Running Transaction Test"
 msgstr "Kører transaktionstest"
 
-#: ../src/pakfire/transaction.py:503
+#: ../src/pakfire/transaction.py:502
 msgid "Transaction Test Succeeded"
 msgstr "Transaktionstest var succesfuld"
 
-#: ../src/pakfire/transaction.py:536
+#: ../src/pakfire/transaction.py:535
 msgid "Verifying signatures..."
 msgstr "Verificerer signaturer..."
 
-#: ../src/pakfire/transaction.py:572
+#: ../src/pakfire/transaction.py:571
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr "Fandt %s signatur fejl!"
 
-#: ../src/pakfire/transaction.py:577
+#: ../src/pakfire/transaction.py:576
 msgid "Going on because we are running in permissive mode."
 msgstr "Forsætter fordi vi kører i tilgivende tilstand."
 
-#: ../src/pakfire/transaction.py:578
+#: ../src/pakfire/transaction.py:577
 msgid "This is dangerous!"
 msgstr "Dette er farligt!"
 
-#: ../src/pakfire/transaction.py:618
+#: ../src/pakfire/transaction.py:617
 msgid "Running transaction"
 msgstr "Kørende transaktion"
 
-#: ../src/pakfire/util.py:68
+#: ../src/pakfire/ui/progressbar.py:221
+#, fuzzy, python-format
+msgid "Error: %s"
+msgstr "Udløber: %s"
+
+#: ../src/pakfire/ui/progressbar.py:236
+#, python-format
+msgid "Elapsed Time: %s"
+msgstr "Forløbet tid: %s"
+
+#: ../src/pakfire/ui/progressbar.py:258 ../src/pakfire/ui/progressbar.py:265
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/pakfire/ui/progressbar.py:261
+msgid "Time"
+msgstr "Tid"
+
+#: ../src/pakfire/util.py:64
 #, python-format
 msgid "%s [y/N]"
 msgstr "%s [j/N]"
 
-#: ../src/pakfire/util.py:242
+#: ../src/pakfire/util.py:193
 msgid "Killing orphans..."
 msgstr "Lukker forældreløse..."
 
-#: ../src/pakfire/util.py:249
+#: ../src/pakfire/util.py:200
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "Proces ID %s kører stadig i chroot. Lukker..."
 
-#: ../src/pakfire/util.py:261
+#: ../src/pakfire/util.py:212
 msgid "Waiting for processes to terminate..."
 msgstr "Venter på at processer lukkes..."
+
+#: ../src/pakfire/ui/cli.py:51
+#, fuzzy
+msgid "Is this okay? [y/N]"
+msgstr "Er dette ok ?"
+
+#~ msgid "do not keep %s installed"
+#~ msgstr "behold ikke %s installeret"
+
+#~ msgid "do not install a solvable %s"
+#~ msgstr "installér ikke pakke %s"
+
+#~ msgid "do not deinstall all solvables %s"
+#~ msgstr "afinstallér ikke alle pakker %s"
+
+#~ msgid "do not deinstall %s"
+#~ msgstr "afinstallér ikke %s"
+
+#~ msgid "do not install most recent version of %s"
+#~ msgstr "installér ikke den nyeste version af %s"
+
+#~ msgid "do something different"
+#~ msgstr "gør noget andet"
+
+#~ msgid "install %s from excluded repository"
+#~ msgstr "installér %s fra udelukket projektarkiv"
+
+#~ msgid "allow downgrade of %s to %s"
+#~ msgstr "tillad nedgradering af %s til %s"
+
+#~ msgid "allow architecture change of %s to %s"
+#~ msgstr "tillad arkitekturskifte fra %s til %s"
+
+#~ msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
+#~ msgstr "tillad leverandørskifte fra '%s' (%s) til '%s' (%s)"
+
+#~ msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
+#~ msgstr "tillad leverandørskifte fra '%s' (%s) til ingen leverandør (%s)"
+
+#~ msgid "Local install repository"
+#~ msgstr "Lokalt installations projektarkiv"
+
+#~ msgid "Could not find any installed package providing \"%s\"."
+#~ msgstr "Kunne ikke finde nogle installerede pakker der tilbyder \"%s\"."
+
+#~ msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
+#~ msgstr "Flere kandidater til reinstallation af \"%(pattern)s\": %(pkgs)s"
+
+#~ msgid "Could not find package %s in a remote repository."
+#~ msgstr "Kunne ikke finde pakken %s i et eksternt projektarkiv."
+
+#~ msgid "Excluding %s."
+#~ msgstr "Ekskluderer %s."
+
+#~ msgid "Get list of packages that belong to the given group."
+#~ msgstr "Få liste over pakker der tilhører den angivne gruppe."
+
+#~ msgid "Group name to search for."
+#~ msgstr "Gruppens navn som søges efter."
+
+#~ msgid "Install all packages that belong to the given group."
+#~ msgstr "Installér alle pakker der tilhører den angivne gruppe."
+
+#~ msgid "Group name."
+#~ msgstr "Gruppenavn."
+
+#~ msgid "Cleanup commands."
+#~ msgstr "Oprydningskommandoer."
+
+#~ msgid "Check the dependencies for a particular package."
+#~ msgstr "Kontrollér afhængighederne for en bestemt pakke."
+
+#~ msgid "Give name of at least one package to check."
+#~ msgstr "Angiv navnet på mindst én pakke som skal kontrolleres."
+
+#~ msgid "Pakfire server command line interface."
+#~ msgstr "Pakfire server kommandolinje."
+
+#~ msgid "Send a scrach build job to the server."
+#~ msgstr "Send et scratch bygge job til serveren."
+
+#~ msgid "Limit build to only these architecture(s)."
+#~ msgstr "Begræns bygning til kun disse arkitekturer."
+
+#~ msgid "Send a keepalive to the server."
+#~ msgstr "Send en keepalive til serveren."
+
+#~ msgid "Update all repositories."
+#~ msgstr "Opdatér alle projektarkiver."
+
+#~ msgid "Repository management commands."
+#~ msgstr "Styringskommandoer til projektarkivet."
+
+#~ msgid "Create a new repository index."
+#~ msgstr "Opret nyt projektarkiv indeks."
+
+#~ msgid "Path to the packages."
+#~ msgstr "Sti til pakker."
+
+#~ msgid "Path to input packages."
+#~ msgstr "Sti til input pakker."
+
+#~ msgid "Key to sign the repository with."
+#~ msgstr "Nøgle at signere projektarkivet med."
+
+#~ msgid "Dump some information about this machine."
+#~ msgstr "Vis information om denne computer."
+
+#~ msgid "Give name of a package to build."
+#~ msgstr "Angiv et navn på en pakke der skal bygges."
+
+#~ msgid "Print some information about this host."
+#~ msgstr "Vis information om denne vært."
+
+#~ msgid "Show information about build jobs."
+#~ msgstr "Vis information om bygge jobs."
+
+#~ msgid "Show a list of all active jobs."
+#~ msgstr "Vis liste over alle aktive job."
+
+#~ msgid "Show a list of all recently finished of failed build jobs."
+#~ msgstr "Vis liste over nyligt færdiggjort og fejlede bygge job."
+
+#~ msgid "Show details about given build job."
+#~ msgstr "Vis detaljer om et bestemt bygge job."
+
+#~ msgid "The ID of the build job."
+#~ msgstr "Bygge job ID."
+
+#~ msgid "Show information about builds."
+#~ msgstr "Vis information om bygninger."
+
+#~ msgid "Show details about the given build."
+#~ msgstr "Vis detaljer om det valgte bygge job."
+
+#~ msgid "The ID of the build."
+#~ msgstr "Bygge ID."
+
+#~ msgid "Test the connection to the hub."
+#~ msgstr "Test forbindelsen til hub."
+
+#~ msgid "Error code to test."
+#~ msgstr "Test fejlkode."
+
+#~ msgid "Hostname"
+#~ msgstr "Værtsnavn"
+
+#~ msgid "Pakfire hub"
+#~ msgstr "Pakfire hub"
+
+#~ msgid "Username"
+#~ msgstr "Brugernavn"
+
+#~ msgid "Hardware information"
+#~ msgstr "Hardware information"
+
+#~ msgid "CPU model"
+#~ msgstr "CPU model"
+
+#~ msgid "Memory"
+#~ msgstr "Hukommelse"
+
+#~ msgid "Parallelism"
+#~ msgstr "Parallelitet"
+
+#~ msgid "Native arch"
+#~ msgstr "Native arch"
+
+#~ msgid "Default arch"
+#~ msgstr "Standard arch"
+
+#~ msgid "Your IP address"
+#~ msgstr "Din IP adresse"
+
+#~ msgid "User name"
+#~ msgstr "Brugernavn"
+
+#~ msgid "Real name"
+#~ msgstr "Fulde navn"
+
+#~ msgid "Email address"
+#~ msgstr "Email adresse"
+
+#~ msgid "Registered"
+#~ msgstr "Registreret"
+
+#~ msgid "You could not be authenticated to the build service."
+#~ msgstr "Du kunne ikke blive autentificeret til bygge servicen."
+
+#~ msgid "No ongoing jobs found."
+#~ msgstr "Ingen kørende job fundet."
+
+#~ msgid "Active build jobs"
+#~ msgstr "Aktive bygge job."
+
+#~ msgid "No jobs found."
+#~ msgstr "Ingen job fundet."
+
+#~ msgid "Recently processed build jobs"
+#~ msgstr "Nyligt behandlede bygge job"
+
+#~ msgid "A build with ID %s could not be found."
+#~ msgstr "Bygge ID %s kunne ikke findes."
+
+#~ msgid "State"
+#~ msgstr "Status"
+
+#~ msgid "Jobs"
+#~ msgstr "Job"
+
+#~ msgid "A job with ID %s could not be found."
+#~ msgstr "Job ID %s kunne ikke findes."
+
+#~ msgid "Job: %(name)s"
+#~ msgstr "Job: %(name)s"
+
+#~ msgid "Time created"
+#~ msgstr "Oprettet"
+
+#~ msgid "Time started"
+#~ msgstr "Startet"
+
+#~ msgid "Time finished"
+#~ msgstr "Færdiggjort"
+
+#~ msgid "Duration"
+#~ msgstr "Varighed"
+
+#~ msgid "Invalid error code given."
+#~ msgstr "Ugyldig fejlkode angivet."
+
+#~ msgid "Reponse from the server: %s"
+#~ msgstr "Svar fra serveren: %s"
+
+#~ msgid "Unhandled configuration update: %s = %s"
+#~ msgstr "Ubehandlet konfigurationsopdatering: %s = %s"
+
+#~ msgid "No settings in this section."
+#~ msgstr "Ingen indstillinger i denne sektion."
+
+#~ msgid "Loaded from files:"
+#~ msgstr "Indlæst fra filer:"
+
+#~ msgid "Downloading source files:"
+#~ msgstr "Henter kildekode filer:"
+
+#~ msgid "Cannot download source code in offline mode."
+#~ msgstr "Kan ikke hente kildekode i offline tilstand."
+
+#~ msgid "Downloaded empty file: %s"
+#~ msgstr "Hentet tom fil: %s"
+
+#~ msgid "Not in key store: %s"
+#~ msgstr "Ikke i nøglelageret: %s"
+
+#~ msgid "Fingerprint: %s"
+#~ msgstr "Fingeraftryk: %s"
+
+#~ msgid "Private key available!"
+#~ msgstr "Privat nøgle tilgængelig!"
+
+#~ msgid "Subkey: %s"
+#~ msgstr "Undernøgle: %s"
+
+#~ msgid "This is a secret key."
+#~ msgstr "Dette er en hemmelig nøgle."
+
+#~ msgid "This key does not expire."
+#~ msgstr "Denne nøgle udløber ikke."
+
+#~ msgid "Generating new key for %(realname)s <%(email)s>..."
+#~ msgstr "Genererer ny nøgle for %(realname)s <%(email)s>..."
+
+#~ msgid "This may take a while..."
+#~ msgstr "Dette kan tage et øjeblik..."
+
+#~ msgid "Successfully imported %s."
+#~ msgstr "Importerede succesfuldt %s."
+
+#~ msgid "Host key:"
+#~ msgstr "Værtsnøgle:"
+
+#~ msgid ""
+#~ "WARNING! Host key with ID %s configured, but the secret key is missing!"
+#~ msgstr ""
+#~ "ADVARSEL! Værtsnøgle med ID %s konfigureret, men den hemmelige nøgle "
+#~ "mangler!"
+
+#~ msgid "WARNING! Host key with ID %s configured, but not found!"
+#~ msgstr "ADVARSEL! Værtsnøgle med ID %s konfigureret, men ikke fundet!"
+
+#~ msgid "No host key available or configured."
+#~ msgstr "Ingen værtsnøgle tilgængelig eller konfigureret."
+
+#~ msgid "Initializing repositories..."
+#~ msgstr "Initialiserer projektarkiver..."
+
+#~ msgid "No metadata available for repository %s. Cannot download any."
+#~ msgstr ""
+#~ "Ingen metadata tilgængelig for projektarkiv %s. Kan ikke hente nogen."
+
+#~ msgid "Could not update metadata for %s from any mirror server"
+#~ msgstr "Kunne ikke opdatere metadato for %s fra nogen spejl server"
+
+#~ msgid "Cannot download package database for %s in offline mode."
+#~ msgstr "Kan ikke hente pakke database for %s i offline tilstand."
+
+#~ msgid "Dependency solving finished in %.2f ms"
+#~ msgstr "Løste afhængigheder på %.2f ms"
+
+#~ msgid "The solver returned one problem:"
+#~ msgstr "Problemløseren returnerede ét problem:"
+
+#~ msgid "Do you want to manually alter the request?"
+#~ msgstr "Vil du manuelt ændre anmodningen?"
+
+#~ msgid "You can now try to satisfy the solver by modifying your request."
+#~ msgstr ""
+#~ "Du kan nu prøve at tilfredsstille problemløseren ved at ændre din "
+#~ "anmodning."
+
+#~ msgid "Which problem to you want to resolve?"
+#~ msgstr "Hvilket problem ønsker du at løse?"
+
+#~ msgid "Press enter to try to re-solve the request."
+#~ msgstr "Tryk enter for at forsøge at løse anmodningen igen."
+
+#~ msgid "    Solution: %s"
+#~ msgstr "Løsning: %s"
+
+#~ msgid "    Solutions:"
+#~ msgstr "Løsninger:"

@@ -667,13 +667,6 @@ class BuildEnviron(object):
 			"build_time" : self.build_time,
 		}
 
-	@property
-	def keyring(self):
-		"""
-			Shortcut to access the pakfire keyring.
-		"""
-		return self.pakfire.keyring
-
 	def copy_result(self, resultdir):
 		# XXX should use find_result_packages
 
@@ -924,6 +917,8 @@ class BuildEnviron(object):
 
 
 	def sign_packages(self, keyfp=None):
+		# TODO needs to use new key code from libpakfire
+
 		# Do nothing if signing is not requested.
 		if not self.settings.get("sign_packages"):
 			return

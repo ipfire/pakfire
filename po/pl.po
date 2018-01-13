@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # fujyn <adamczak@gmx.com>, 2014
 # btelega <btelega@gmail.com>, 2014
@@ -13,185 +13,376 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-26 21:51+0200\n"
+"POT-Creation-Date: 2018-01-13 15:10+0100\n"
 "PO-Revision-Date: 2015-01-26 09:41+0000\n"
 "Last-Translator: Przemyslaw Zdroik <zdroyer@gmail.com>\n"
-"Language-Team: Polish (http://www.transifex.com/mstremer/ipfire/language/pl/)\n"
+"Language-Team: Polish (http://www.transifex.com/mstremer/ipfire/language/"
+"pl/)\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 
-#: ../src/_pakfire/problem.c:159
+#: ../src/libpakfire/archive.c:1025
+msgid "Verify OK"
+msgstr ""
+
+#: ../src/libpakfire/archive.c:1028
+msgid "Error performing validation"
+msgstr ""
+
+#: ../src/libpakfire/archive.c:1031
+#, fuzzy
+msgid "Invalid signature"
+msgstr "%s nie posiada ważnego podpisu"
+
+#: ../src/libpakfire/archive.c:1034
+#, fuzzy
+msgid "Signature expired"
+msgstr "Podpisy"
+
+#: ../src/libpakfire/archive.c:1037
+#, fuzzy
+msgid "Key expired"
+msgstr "Upłynęła ważność klucza!"
+
+#: ../src/libpakfire/archive.c:1040
+msgid "Key unknown"
+msgstr ""
+
+#: ../src/libpakfire/key.c:478
+#, fuzzy
+msgid "Expires"
+msgstr "Wygasa: %s"
+
+#: ../src/libpakfire/package.c:715 ../src/pakfire/packages/base.py:99
+msgid "Name"
+msgstr "Nazwa"
+
+#: ../src/libpakfire/package.c:719 ../src/libpakfire/transaction.c:217
+#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:426
+msgid "Version"
+msgstr "Wersja"
+
+#: ../src/libpakfire/package.c:723 ../src/pakfire/packages/base.py:111
+msgid "Release"
+msgstr "Wydanie"
+
+#: ../src/libpakfire/package.c:727 ../src/libpakfire/transaction.c:219
+#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:425
+msgid "Size"
+msgstr "Rozmiar"
+
+#: ../src/libpakfire/package.c:732 ../src/pakfire/packages/base.py:119
+msgid "Installed size"
+msgstr "Rozmiar po instalacji"
+
+#: ../src/libpakfire/package.c:737
+#, fuzzy
+msgid "Download size"
+msgstr "Całkowity rozmiar pobierania: %s"
+
+#: ../src/libpakfire/package.c:743 ../src/pakfire/packages/base.py:125
+msgid "Repo"
+msgstr "Repo"
+
+#: ../src/libpakfire/package.c:750 ../src/pakfire/packages/base.py:128
+msgid "Summary"
+msgstr "Podsumowanie"
+
+#: ../src/libpakfire/package.c:754 ../src/pakfire/packages/base.py:134
+msgid "Description"
+msgstr "Opis"
+
+#: ../src/libpakfire/package.c:761 ../src/pakfire/packages/base.py:130
+msgid "URL"
+msgstr "URL"
+
+#: ../src/libpakfire/package.c:765 ../src/pakfire/packages/base.py:131
+msgid "License"
+msgstr "Licencja"
+
+#: ../src/libpakfire/package.c:770 ../src/pakfire/packages/base.py:141
+msgid "Maintainer"
+msgstr "Dostawca"
+
+#: ../src/libpakfire/package.c:774 ../src/pakfire/packages/base.py:143
+msgid "Vendor"
+msgstr "Dostawca"
+
+#: ../src/libpakfire/package.c:778 ../src/pakfire/packages/base.py:145
+msgid "UUID"
+msgstr "UUID"
+
+#: ../src/libpakfire/package.c:782 ../src/pakfire/packages/base.py:147
+msgid "Build date"
+msgstr "Data kompilacji"
+
+#: ../src/libpakfire/package.c:786 ../src/pakfire/packages/base.py:148
+msgid "Build host"
+msgstr "Host kompilacji"
+
+#: ../src/libpakfire/package.c:790 ../src/pakfire/packages/base.py:155
+msgid "Provides"
+msgstr "Dostarcza"
+
+#: ../src/libpakfire/package.c:796 ../src/pakfire/packages/base.py:165
+msgid "Requires"
+msgstr "Wymaga"
+
+#: ../src/libpakfire/package.c:802 ../src/pakfire/packages/base.py:170
+msgid "Conflicts"
+msgstr "Konflikty"
+
+#: ../src/libpakfire/package.c:808 ../src/pakfire/packages/base.py:175
+msgid "Obsoletes"
+msgstr "Zastępuje"
+
+#: ../src/libpakfire/package.c:814 ../src/pakfire/packages/base.py:180
+msgid "Recommends"
+msgstr "zalecenia"
+
+#: ../src/libpakfire/package.c:820 ../src/pakfire/packages/base.py:185
+msgid "Suggests"
+msgstr "Sugeruje"
+
+#: ../src/libpakfire/package.c:828
+#, fuzzy
+msgid "Filelist"
+msgstr "Plik"
+
+#: ../src/libpakfire/problem.c:47
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
 msgstr "%s nie należy do repozytorium distupgrade"
 
-#: ../src/_pakfire/problem.c:166
+#: ../src/libpakfire/problem.c:54
 #, c-format
 msgid "%s has inferior architecture"
 msgstr "%s ma gorszą architekturę"
 
-#: ../src/_pakfire/problem.c:173
+#: ../src/libpakfire/problem.c:61
 #, c-format
 msgid "problem with installed package %s"
 msgstr "problem z zainstalowanym pakietem %s"
 
-#: ../src/_pakfire/problem.c:179
+#: ../src/libpakfire/problem.c:67
 #, c-format
 msgid "conflicting requests"
 msgstr "sprzeczne żądania"
 
-#: ../src/_pakfire/problem.c:184
+#: ../src/libpakfire/problem.c:71
+#, fuzzy, c-format
+msgid "unsupported request"
+msgstr "Wspierane architektury"
+
+#: ../src/libpakfire/problem.c:75
 #, c-format
 msgid "nothing provides requested %s"
 msgstr "nic nie dostarcza wymaganego %s"
 
-#: ../src/_pakfire/problem.c:190
+#: ../src/libpakfire/problem.c:81
+#, fuzzy, c-format
+msgid "package %s does not exist"
+msgstr "pakiet %s nie zostanie zainstalowany"
+
+#: ../src/libpakfire/problem.c:87
+#, c-format
+msgid "%s is provided by the system"
+msgstr ""
+
+#: ../src/libpakfire/problem.c:93
 #, c-format
 msgid "some dependency problem"
 msgstr "pewne problemy z zależnościami"
 
-#: ../src/_pakfire/problem.c:195
+#: ../src/libpakfire/problem.c:99
+#, fuzzy, c-format
+msgid "cannot install the best update candidate for package %s"
+msgstr "nie można jednocześnie zainstalować %s i %s"
+
+#: ../src/libpakfire/problem.c:103
+#, fuzzy, c-format
+msgid "cannot install the best candidate for the job"
+msgstr "nie można jednocześnie zainstalować %s i %s"
+
+#: ../src/libpakfire/problem.c:108
 #, c-format
 msgid "package %s is not installable"
 msgstr "pakiet %s nie zostanie zainstalowany"
 
-#: ../src/_pakfire/problem.c:202
+#: ../src/libpakfire/problem.c:115
 #, c-format
 msgid "nothing provides %s needed by %s"
 msgstr "nic nie dostarcza %s wymaganego przez %s"
 
-#: ../src/_pakfire/problem.c:209
+#: ../src/libpakfire/problem.c:122
 #, c-format
 msgid "cannot install both %s and %s"
 msgstr "nie można jednocześnie zainstalować %s i %s"
 
-#: ../src/_pakfire/problem.c:216
+#: ../src/libpakfire/problem.c:129
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
 msgstr "pakiet %s powoduje konflikt z %s pochodzacym z %s"
 
-#: ../src/_pakfire/problem.c:224
+#: ../src/libpakfire/problem.c:137
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
 msgstr "pakiet %s dezaktualizuje %s pochodzący z %s"
 
-#: ../src/_pakfire/problem.c:232
+#: ../src/libpakfire/problem.c:145
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
 msgstr "zainstalowany pakiet %s dezaktualizuje %s pochodzący z %s"
 
-#: ../src/_pakfire/problem.c:240
+#: ../src/libpakfire/problem.c:153
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
 msgstr "pakiet %s bezwarunkowo dezaktualizuje %s pochodzący z %s"
 
-#: ../src/_pakfire/problem.c:248
+#: ../src/libpakfire/problem.c:161
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
 msgstr "pakiet %s wymaga %s, ale żaden dostawca nie jest zainstalowany"
 
-#: ../src/_pakfire/problem.c:255
+#: ../src/libpakfire/problem.c:168
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
 msgstr "pakiet %s powoduje konflikt z %s pochodzacym od siebie samego"
 
-#: ../src/_pakfire/problem.c:264
+#: ../src/libpakfire/problem.c:175
+#, fuzzy, c-format
+msgid "both package %s and %s obsolete %s"
+msgstr "pakiet %s dezaktualizuje %s pochodzący z %s"
+
+#: ../src/libpakfire/problem.c:184
 #, c-format
 msgid "bad rule type"
 msgstr "zły typ reguły"
 
-#: ../src/_pakfire/solution.c:86
-#, c-format
-msgid "do not keep %s installed"
-msgstr "nie zachowuj %s zainstalowanego"
-
-#: ../src/_pakfire/solution.c:89
-#, c-format
-msgid "do not install a solvable %s"
-msgstr "nie instaluj %s"
-
-#: ../src/_pakfire/solution.c:92
-#, c-format
-msgid "do not install %s"
-msgstr "nie instaluj %s"
-
-#: ../src/_pakfire/solution.c:98
-#, c-format
-msgid "do not forbid installation of %s"
-msgstr "nie zabraniaj instalacji %s"
-
-#: ../src/_pakfire/solution.c:101
-#, c-format
-msgid "do not deinstall all solvables %s"
-msgstr "nie deinstaluj %s"
-
-#: ../src/_pakfire/solution.c:104
-#, c-format
-msgid "do not deinstall %s"
-msgstr "nie odinstalowuj %s"
-
-#: ../src/_pakfire/solution.c:109
-#, c-format
-msgid "do not install most recent version of %s"
-msgstr "nie instaluj najnowszych wersji %s"
-
-#: ../src/_pakfire/solution.c:114
-#, c-format
-msgid "do not lock %s"
+#. XXX pool_job2str must be localised
+#: ../src/libpakfire/solution.c:54
+#, fuzzy, c-format
+msgid "do not ask to %s"
 msgstr "nie blokuj %s"
 
-#: ../src/_pakfire/solution.c:119
-#, c-format
-msgid "do something different"
-msgstr "zrób coś innego"
-
-#: ../src/_pakfire/solution.c:126
+#: ../src/libpakfire/solution.c:61
 #, c-format
 msgid "keep %s despite the inferior architecture"
 msgstr "zachowaj %s mimo gorszej architektury"
 
-#: ../src/_pakfire/solution.c:129
+#: ../src/libpakfire/solution.c:64
 #, c-format
 msgid "install %s despite the inferior architecture"
 msgstr "instaluj %s mimo gorszej architektury"
 
-#: ../src/_pakfire/solution.c:135
+#: ../src/libpakfire/solution.c:71
 #, c-format
 msgid "keep obsolete %s"
 msgstr "zachowaj przestarzałe %s"
 
-#: ../src/_pakfire/solution.c:138
-#, c-format
-msgid "install %s from excluded repository"
-msgstr "instalacja %s z wykluczonego repozytorium"
+#: ../src/libpakfire/solution.c:74
+#, fuzzy, c-format
+msgid "install %s"
+msgstr "nie instaluj %s"
 
-#: ../src/_pakfire/solution.c:150
-#, c-format
-msgid "allow downgrade of %s to %s"
-msgstr "zezwól na downgrade %s do %s"
+#: ../src/libpakfire/solution.c:81
+#, fuzzy, c-format
+msgid "keep old %s"
+msgstr "zachowaj przestarzałe %s"
 
-#: ../src/_pakfire/solution.c:154
-#, c-format
-msgid "allow architecture change of %s to %s"
-msgstr "zezwalaj na zmianę architektury z %s na %s"
+#: ../src/libpakfire/solution.c:84
+#, fuzzy, c-format
+msgid "install %s despite the old version"
+msgstr "instaluj %s mimo gorszej architektury"
 
-#: ../src/_pakfire/solution.c:159
-#, c-format
-msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
-msgstr "zezwól na zmianę dostawcy z '%s'(%s) na '%s'(%s)"
+#: ../src/libpakfire/solution.c:88
+#, fuzzy, c-format
+msgid "allow deinstallation of %s"
+msgstr "nie zabraniaj instalacji %s"
 
-#: ../src/_pakfire/solution.c:163
-#, c-format
-msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
-msgstr "zezwól na zmianę dostawcy z '%s'(%s) na brak wydacy (%s)"
-
-#: ../src/_pakfire/solution.c:169
+#: ../src/libpakfire/solution.c:92
 #, c-format
 msgid "allow replacement of %s with %s"
 msgstr "zezwól na zamianę %s na %s"
+
+#: ../src/libpakfire/solution.c:96
+#, c-format
+msgid "bad solution element"
+msgstr ""
+
+#: ../src/libpakfire/transaction.c:198
+#, fuzzy
+msgid "package(s)"
+msgstr "pakiet"
+
+#: ../src/libpakfire/transaction.c:215 ../src/pakfire/transaction.py:423
+msgid "Package"
+msgstr "Pakiet"
+
+#: ../src/libpakfire/transaction.c:216 ../src/pakfire/packages/base.py:107
+#: ../src/pakfire/transaction.py:422
+msgid "Arch"
+msgstr "Arch"
+
+#: ../src/libpakfire/transaction.c:218 ../src/pakfire/cli.py:355
+#: ../src/pakfire/transaction.py:424
+msgid "Repository"
+msgstr "Repozytorium"
+
+#: ../src/libpakfire/transaction.c:225 ../src/libpakfire/transaction.c:241
+#: ../src/pakfire/transaction.py:440
+msgid "Installing:"
+msgstr "Instalowanie:"
+
+#: ../src/libpakfire/transaction.c:227 ../src/libpakfire/transaction.c:242
+#: ../src/pakfire/transaction.py:441
+msgid "Reinstalling:"
+msgstr "Reinstalacja:"
+
+#: ../src/libpakfire/transaction.c:229 ../src/libpakfire/transaction.c:243
+#: ../src/pakfire/transaction.py:442
+msgid "Updating:"
+msgstr "Aktualizowanie:"
+
+#: ../src/libpakfire/transaction.c:231 ../src/libpakfire/transaction.c:244
+#: ../src/pakfire/transaction.py:443
+msgid "Downgrading:"
+msgstr "Downgrading:"
+
+#: ../src/libpakfire/transaction.c:233 ../src/libpakfire/transaction.c:245
+#: ../src/pakfire/transaction.py:444
+msgid "Removing:"
+msgstr "Usuwanie:"
+
+#: ../src/libpakfire/transaction.c:235 ../src/libpakfire/transaction.c:246
+#, fuzzy
+msgid "Obsoleting:"
+msgstr "Zastępuje"
+
+#. Summary
+#. Append the transaction summary
+#: ../src/libpakfire/transaction.c:238 ../src/pakfire/transaction.py:454
+msgid "Transaction Summary"
+msgstr "Podsumowanie transakcji"
+
+#: ../src/libpakfire/transaction.c:252
+#, fuzzy
+msgid "Total Download Size"
+msgstr "Całkowity rozmiar pobierania: %s"
+
+#: ../src/libpakfire/transaction.c:258
+#, fuzzy
+msgid "Installed Size"
+msgstr "Rozmiar po instalacji"
+
+#: ../src/libpakfire/transaction.c:258
+#, fuzzy
+msgid "Freed Size"
+msgstr "Zwolnione miejsce: %s"
 
 #: ../src/pakfire/actions.py:69
 #, python-format
@@ -203,1138 +394,916 @@ msgstr "%s nie ma żadnych podpisów"
 msgid "%s has got no valid signatures"
 msgstr "%s nie posiada ważnego podpisu"
 
-#: ../src/pakfire/actions.py:234
+#: ../src/pakfire/actions.py:235
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr "Nie można obsłużyć skryptletu nieznanego typu. Pomijanie."
 
-#: ../src/pakfire/actions.py:237
+#: ../src/pakfire/actions.py:238
 msgid "Executing scriptlet..."
 msgstr "Wykonywanie skryptletu..."
 
-#: ../src/pakfire/actions.py:243
+#: ../src/pakfire/actions.py:244
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Nie można uruchomić skryptletu ponieważ interpreter nie jest dostępny: %s"
+msgstr ""
+"Nie można uruchomić skryptletu ponieważ interpreter nie jest dostępny: %s"
 
-#: ../src/pakfire/actions.py:247
+#: ../src/pakfire/actions.py:248
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr "Nie można uruchomić skryptletu ponieważ interpreter nie jest wykonywalny: %s"
+msgstr ""
+"Nie można uruchomić skryptletu ponieważ interpreter nie jest wykonywalny: %s"
 
-#: ../src/pakfire/actions.py:286
+#: ../src/pakfire/actions.py:287
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
 "%s"
-msgstr "Skryptlet zwrócił błąd:\n%s"
+msgstr ""
+"Skryptlet zwrócił błąd:\n"
+"%s"
 
-#: ../src/pakfire/actions.py:289
+#: ../src/pakfire/actions.py:290
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr "Skryptlet działał dłużej niż %s sekund i został zabity."
 
-#: ../src/pakfire/actions.py:293
+#: ../src/pakfire/actions.py:294
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
 "%s"
-msgstr "Skriptlet zwrócił nieobsługiwany błąd:\n%s"
+msgstr ""
+"Skriptlet zwrócił nieobsługiwany błąd:\n"
+"%s"
 
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:307
+#: ../src/pakfire/actions.py:308
 msgid "Executing python scriptlet..."
 msgstr "Wykonywanie skryptów python..."
 
-#: ../src/pakfire/actions.py:332
+#: ../src/pakfire/actions.py:333
 #, python-format
 msgid "Exception occured: %s"
 msgstr "Wystąpił wyjątek: %s"
 
-#: ../src/pakfire/actions.py:405 ../src/pakfire/actions.py:452
-#: ../src/pakfire/actions.py:462 ../src/pakfire/actions.py:483
+#: ../src/pakfire/actions.py:406 ../src/pakfire/actions.py:453
+#: ../src/pakfire/actions.py:463 ../src/pakfire/actions.py:484
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Uruchomiono test transakcji dla %s"
 
-#: ../src/pakfire/actions.py:415
+#: ../src/pakfire/actions.py:416
 msgid "Reinstalling"
 msgstr "Reinstalacja"
 
-#: ../src/pakfire/actions.py:417
+#: ../src/pakfire/actions.py:418
 msgid "Updating"
 msgstr "Aktualizowanie"
 
-#: ../src/pakfire/actions.py:419
+#: ../src/pakfire/actions.py:420
 msgid "Downgrading"
 msgstr "Downgrading"
 
-#: ../src/pakfire/actions.py:421
+#: ../src/pakfire/actions.py:422
 msgid "Installing"
 msgstr "Instalowanie"
 
-#: ../src/pakfire/actions.py:469
+#: ../src/pakfire/actions.py:470
 msgid "Cleanup"
 msgstr "Oczyszczanie"
 
-#: ../src/pakfire/actions.py:471
+#: ../src/pakfire/actions.py:472
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../src/pakfire/base.py:197
-msgid "Local install repository"
-msgstr "Lokalne repozytorium instalacji"
+#: ../src/pakfire/base.py:130
+msgid "Build command has failed."
+msgstr "Polecenie kompilacji nie powiodło się."
 
-#: ../src/pakfire/base.py:261
-#, python-format
-msgid "Could not find any installed package providing \"%s\"."
-msgstr "Nie można odnaleźć żadnego pakietu dostarczającego \"%s\"."
-
-#: ../src/pakfire/base.py:267
-#, python-format
-msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
-msgstr "Wiele kandydatów do reinstalacji  \"%(pattern)s\": %(pkgs)s "
-
-#: ../src/pakfire/base.py:271 ../src/pakfire/base.py:337
-#: ../src/pakfire/base.py:384 ../src/pakfire/base.py:448
-#: ../src/pakfire/base.py:475 ../src/pakfire/transaction.py:414
-msgid "Nothing to do"
-msgstr "Nic do zrobienia"
-
-#: ../src/pakfire/base.py:296
-#, python-format
-msgid "Could not find package %s in a remote repository."
-msgstr "Nie można odnaleźć pakietu %s w zdalnym repozytorium."
-
-#: ../src/pakfire/base.py:368
-#, python-format
-msgid "Excluding %s."
-msgstr "Wyłączając %s."
-
-#: ../src/pakfire/base.py:434
+#: ../src/pakfire/base.py:274
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" pakiet nie wygląda na zainstalowany."
 
-#: ../src/pakfire/base.py:598
-msgid "Everything is fine."
-msgstr "Wszystko w porządku."
+#: ../src/pakfire/base.py:288 ../src/pakfire/cli.py:259
+#: ../src/pakfire/transaction.py:413
+msgid "Nothing to do"
+msgstr "Nic do zrobienia"
 
-#: ../src/pakfire/base.py:619
-msgid "Build command has failed."
-msgstr "Polecenie kompilacji nie powiodło się."
-
-#: ../src/pakfire/base.py:656
+#: ../src/pakfire/base.py:322
 msgid "You have not set the distribution for which you want to build."
 msgstr "Nie ustawiono dystrybucji, dla którego chcesz kompilować."
 
-#: ../src/pakfire/base.py:657
+#: ../src/pakfire/base.py:323
 msgid "Please do so in builder.conf or on the CLI."
 msgstr "Proszę to zrobić w builder.conf lub w CLI."
 
-#: ../src/pakfire/base.py:658
+#: ../src/pakfire/base.py:324
 msgid "Distribution configuration is missing."
 msgstr "Brak konfiguracji dystrybucji."
 
-#: ../src/pakfire/base.py:739
+#: ../src/pakfire/base.py:401
 msgid "New repository"
 msgstr "Nowe repozytorium"
 
-#: ../src/pakfire/builder.py:80
-#, python-format
-msgid "Cannot build for %s on this host."
+#: ../src/pakfire/builder.py:106
+#, fuzzy, python-format
+msgid "Cannot build for %s on this host"
 msgstr "Nie można skompilować dla %s na tym hoście."
 
-#. Log the package information.
-#: ../src/pakfire/builder.py:148
-msgid "Package information:"
-msgstr "Informacje o pakiecie:"
-
 #. Install all packages.
-#: ../src/pakfire/builder.py:444
+#: ../src/pakfire/builder.py:501 ../src/pakfire/builder.py:724
 msgid "Install packages needed for build..."
 msgstr "Instalowania pakietów wymaganych do kompilacji..."
 
-#: ../src/pakfire/builder.py:449 ../src/pakfire/cli.py:464
+#. Logging
+#: ../src/pakfire/builder.py:518
+#, python-format
+msgid "Installing build requirements: %s"
+msgstr ""
+
+#. Log the package information.
+#: ../src/pakfire/builder.py:601
+msgid "Package information:"
+msgstr "Informacje o pakiecie:"
+
+#: ../src/pakfire/builder.py:729 ../src/pakfire/cli.py:407
 msgid "Extracting"
 msgstr "Rozpakowywanie"
 
-#: ../src/pakfire/builder.py:781
+#: ../src/pakfire/builder.py:847
 msgid "You cannot run a build when no package was given."
 msgstr "Nie można uruchomić kompilacji jeżeli nie podano pakietu."
 
-#: ../src/pakfire/builder.py:785
+#: ../src/pakfire/builder.py:851
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr "Nie odnaleziono makefile w głównym katalogu kompilacji: %s"
 
-#: ../src/pakfire/builder.py:815
+#: ../src/pakfire/builder.py:881
 msgid "Build failed"
 msgstr "Błąd kompilacji."
 
-#: ../src/pakfire/builder.py:818
+#: ../src/pakfire/builder.py:884
 msgid "Build interrupted"
 msgstr "Kompilacja przerwana"
 
-#: ../src/pakfire/builder.py:824
+#: ../src/pakfire/builder.py:890
 msgid "Build failed."
 msgstr "Kompilacja nie powiodła się."
 
 #. End here in case of an error.
-#: ../src/pakfire/builder.py:840
+#: ../src/pakfire/builder.py:906
 msgid "The build command failed. See logfile for details."
 msgstr "Kompilacja zakończone niepowodzeniem. Sprawdź logi"
 
-#: ../src/pakfire/builder.py:843
+#: ../src/pakfire/builder.py:909
 msgid "Running installation test..."
 msgstr "Uruchamianie testu transakcji..."
 
-#: ../src/pakfire/builder.py:849
+#: ../src/pakfire/builder.py:915
 msgid "Installation test succeeded."
 msgstr "Test instalacji zakończony powodzeniem."
 
 #. Create a progressbar.
-#: ../src/pakfire/builder.py:892
+#: ../src/pakfire/builder.py:934
 msgid "Signing packages..."
 msgstr "Podpisywanie pakietów..."
 
-#: ../src/pakfire/builder.py:926
+#: ../src/pakfire/builder.py:968
 msgid "Dumping package information:"
 msgstr "Zrzucanie informacji o pakiecie:"
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../src/pakfire/builder.py:1078
+#: ../src/pakfire/builder.py:1101
 msgid "Creating packages:"
 msgstr "Tworzenie pakietów:"
 
 #. Execute the buildscript of this stage.
-#: ../src/pakfire/builder.py:1092
+#: ../src/pakfire/builder.py:1115
 #, python-format
 msgid "Running stage %s:"
 msgstr "Etap działania %s:"
 
-#: ../src/pakfire/builder.py:1110
+#: ../src/pakfire/builder.py:1133
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr "Nie można usunąć statycznych bibliotek: %s"
 
-#: ../src/pakfire/builder.py:1116
+#: ../src/pakfire/builder.py:1139
 msgid "Compressing man pages did not complete successfully."
 msgstr "Kompresja man pages zakończona niepowodzeniem."
 
-#: ../src/pakfire/builder.py:1136
+#: ../src/pakfire/builder.py:1159
 msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Wyodrębnianie debuginfo nie zakończyło się powodzeniem. Przerywanie kompilacji."
+msgstr ""
+"Wyodrębnianie debuginfo nie zakończyło się powodzeniem. Przerywanie "
+"kompilacji."
 
-#: ../src/pakfire/cli.py:53
-msgid "Pakfire command line interface."
+#: ../src/pakfire/cli.py:54
+#, fuzzy
+msgid "Pakfire command line interface"
 msgstr "Linia poleceń Pakfire."
 
-#: ../src/pakfire/cli.py:60
-msgid "The path where pakfire should operate in."
+#: ../src/pakfire/cli.py:62
+#, fuzzy
+msgid "The path where pakfire should operate in"
 msgstr "Ścieżka w której powinien działać pakfire."
 
-#: ../src/pakfire/cli.py:149
+#. check
+#: ../src/pakfire/cli.py:65
+#, fuzzy
+msgid "Check the system for any errors"
+msgstr "Sprawdź system w poszukiwaniu błędów."
+
+#: ../src/pakfire/cli.py:70
+#, fuzzy
+msgid "Check, if there are any updates available"
+msgstr "Sprawdź czy są dostępne aktualizacje."
+
+#: ../src/pakfire/cli.py:73 ../src/pakfire/cli.py:161
+#, fuzzy
+msgid "Exclude package from update"
+msgstr "Wyklucz pakiet z aktualizacji."
+
+#: ../src/pakfire/cli.py:75 ../src/pakfire/cli.py:163
+#, fuzzy
+msgid "Allow changing the architecture of packages"
+msgstr "Zabroń zmian architektury dla pakietu."
+
+#: ../src/pakfire/cli.py:77 ../src/pakfire/cli.py:165
+#, fuzzy
+msgid "Allow downgrading of packages"
+msgstr "Zezwól na zmianę dostawcy pakietu."
+
+#: ../src/pakfire/cli.py:79 ../src/pakfire/cli.py:90 ../src/pakfire/cli.py:167
+#, fuzzy
+msgid "Allow changing the vendor of packages"
+msgstr "Zezwól na zmianę dostawcy pakietu."
+
+#. clean
+#: ../src/pakfire/cli.py:82 ../src/pakfire/cli.py:452
+#, fuzzy
+msgid "Cleanup all temporary files"
+msgstr "Wyczyść wszystkie pliki tymczasowe."
+
+#. downgrade
+#: ../src/pakfire/cli.py:86
+#, fuzzy
+msgid "Downgrade one or more packages"
+msgstr "Instalacja starszej wersji jednego lub kilku pakietów."
+
+#: ../src/pakfire/cli.py:88
+#, fuzzy
+msgid "Give a name of a package to downgrade"
+msgstr "Podaj nazwę pakietu do downgrade."
+
+#: ../src/pakfire/cli.py:92
+#, fuzzy
+msgid "Disallow changing the architecture of packages"
+msgstr "Zabroń zmian architektury dla pakietu."
+
+#. extract
+#: ../src/pakfire/cli.py:97 ../src/pakfire/cli.py:464
+#, fuzzy
+msgid "Extract a package to a directory"
+msgstr "Wypakuj pakiet do katalogu."
+
+#: ../src/pakfire/cli.py:99 ../src/pakfire/cli.py:466
+#, fuzzy
+msgid "Give name of the file to extract"
+msgstr "Podaj nazwę pliku do wypakowania."
+
+#: ../src/pakfire/cli.py:101 ../src/pakfire/cli.py:468
+#, fuzzy
+msgid "Target directory where to extract to"
+msgstr "Katalog docelowy do którego wypakować."
+
+#: ../src/pakfire/cli.py:106 ../src/pakfire/cli.py:473
+#, fuzzy
+msgid "Print some information about the given package(s)"
+msgstr "Wyświetl informacje na temat wybranego pakietu(ów)."
+
+#: ../src/pakfire/cli.py:108
+#, fuzzy
+msgid "Give at least the name of one package"
+msgstr "Podaj przynajmniej nazwę jednego pakietu."
+
+#: ../src/pakfire/cli.py:113
+#, fuzzy
+msgid "Install one or more packages to the system"
+msgstr "Zainstaluj jeden lub więcej pakietów w systemie."
+
+#: ../src/pakfire/cli.py:115
+#, fuzzy
+msgid "Give name of at least one package to install"
+msgstr "Podaj nazwę przynajmniej jednego pakietu do instalacji."
+
+#: ../src/pakfire/cli.py:117
+#, fuzzy
+msgid "Don't install recommended packages"
+msgstr "Nie instaluj zalecanych pakietów."
+
+#: ../src/pakfire/cli.py:122 ../src/pakfire/cli.py:480
+#, fuzzy
+msgid "Get a list of packages that provide a given file or feature"
+msgstr "Pobierz listę pakietów dostarczających dany plik lub funkcjonalność."
+
+#: ../src/pakfire/cli.py:123 ../src/pakfire/cli.py:482
+#, fuzzy
+msgid "File or feature to search for"
+msgstr "Plik lub funkcja do wyszukania."
+
+#: ../src/pakfire/cli.py:128
+#, fuzzy
+msgid "Reinstall one or more packages"
+msgstr "Ponowna instalacja jednego lub kilku pakietów."
+
+#: ../src/pakfire/cli.py:130
+#, fuzzy
+msgid "Give name of at least one package to reinstall"
+msgstr "Podaj nazwę przynajmniej jednego pakietu do reinstalacji."
+
+#: ../src/pakfire/cli.py:135
+#, fuzzy
+msgid "Remove one or more packages from the system"
+msgstr "Usuń jeden lub więcej pakietów z systemu."
+
+#: ../src/pakfire/cli.py:137
+#, fuzzy
+msgid "Give name of at least one package to remove"
+msgstr "Podaj nazwę przynajmniej jednego pakietu do usunięcia."
+
+#: ../src/pakfire/cli.py:142 ../src/pakfire/cli.py:487
+#, fuzzy
+msgid "List all currently enabled repositories"
+msgstr "Wyświetl wszystkie włączone repozytoria."
+
+#. search
+#: ../src/pakfire/cli.py:146 ../src/pakfire/cli.py:491
+#, fuzzy
+msgid "Search for a given pattern"
+msgstr "Wyszukiwanie według wzorca."
+
+#: ../src/pakfire/cli.py:147 ../src/pakfire/cli.py:492
+#, fuzzy
+msgid "A pattern to search for"
+msgstr "Wzorzec do wyszukania."
+
+#: ../src/pakfire/cli.py:152
+#, fuzzy
+msgid "Sync all installed with the latest one in the distribution"
+msgstr "Zsynchronizuj wszyskie zainstalowane z najnowszym w dystrybucji"
+
+#: ../src/pakfire/cli.py:157
+#, fuzzy
+msgid "Update the whole system or one specific package"
+msgstr "Aktualizacja całego systemu lub wybranego pakietu"
+
+#: ../src/pakfire/cli.py:159
+#, fuzzy
+msgid "Give a name of a package to update or leave emtpy for all"
+msgstr "Podaj nazwę pakietu do aktualizacji. Puste dla wszystkich pakietów."
+
+#: ../src/pakfire/cli.py:177
 msgid "Enable verbose output."
 msgstr "Włącz szczegółowe komunikaty."
 
-#: ../src/pakfire/cli.py:152
+#: ../src/pakfire/cli.py:180
 msgid "Path to a configuration file to load."
 msgstr "Ścieżka konfiguracji do załadowania."
 
-#: ../src/pakfire/cli.py:155
+#: ../src/pakfire/cli.py:183
 msgid "Disable a repository temporarily."
 msgstr "Wyłącz czasowo repozytorium."
 
-#: ../src/pakfire/cli.py:158
+#: ../src/pakfire/cli.py:186
 msgid "Enable a repository temporarily."
 msgstr "Włącz czasowo repozytorium."
 
-#: ../src/pakfire/cli.py:162
+#: ../src/pakfire/cli.py:190
 msgid "Run pakfire in offline mode."
 msgstr "Uruchom pakfire w trybie offline"
 
-#: ../src/pakfire/cli.py:167
-msgid "Install one or more packages to the system."
-msgstr "Zainstaluj jeden lub więcej pakietów w systemie."
-
-#: ../src/pakfire/cli.py:169
-msgid "Give name of at least one package to install."
-msgstr "Podaj nazwę przynajmniej jednego pakietu do instalacji."
-
-#: ../src/pakfire/cli.py:171
-msgid "Don't install recommended packages."
-msgstr "Nie instaluj zalecanych pakietów."
-
-#: ../src/pakfire/cli.py:177
-msgid "Reinstall one or more packages."
-msgstr "Ponowna instalacja jednego lub kilku pakietów."
-
-#: ../src/pakfire/cli.py:179
-msgid "Give name of at least one package to reinstall."
-msgstr "Podaj nazwę przynajmniej jednego pakietu do reinstalacji."
-
-#: ../src/pakfire/cli.py:185
-msgid "Remove one or more packages from the system."
-msgstr "Usuń jeden lub więcej pakietów z systemu."
-
-#: ../src/pakfire/cli.py:187
-msgid "Give name of at least one package to remove."
-msgstr "Podaj nazwę przynajmniej jednego pakietu do usunięcia."
-
-#: ../src/pakfire/cli.py:194
-msgid "Give a name of a package to update or leave emtpy for all."
-msgstr "Podaj nazwę pakietu do aktualizacji. Puste dla wszystkich pakietów."
-
-#: ../src/pakfire/cli.py:197
-msgid "Exclude package from update."
-msgstr "Wyklucz pakiet z aktualizacji."
-
-#: ../src/pakfire/cli.py:199 ../src/pakfire/cli.py:231
-msgid "Allow changing the vendor of packages."
-msgstr "Zezwól na zmianę dostawcy pakietu."
-
-#: ../src/pakfire/cli.py:201 ../src/pakfire/cli.py:233
-msgid "Disallow changing the architecture of packages."
-msgstr "Zabroń zmian architektury dla pakietu."
-
-#: ../src/pakfire/cli.py:206
-msgid "Update the whole system or one specific package."
-msgstr "Aktualizacja całego systemu lub wybranego pakietu"
-
 #: ../src/pakfire/cli.py:213
-msgid "Sync all installed with the latest one in the distribution."
-msgstr "Zsynchronizuj wszyskie zainstalowane z najnowszym w dystrybucji"
+msgid "Received keyboard interupt (Ctrl-C). Exiting."
+msgstr ""
 
-#: ../src/pakfire/cli.py:220
-msgid "Check, if there are any updates available."
-msgstr "Sprawdź czy są dostępne aktualizacje."
-
-#: ../src/pakfire/cli.py:227
-msgid "Downgrade one or more packages."
-msgstr "Instalacja starszej wersji jednego lub kilku pakietów."
+#: ../src/pakfire/cli.py:219
+#, fuzzy
+msgid "One or more dependencies could not been resolved"
+msgstr "Jedna lub kilka zależności nie może być rozwiązana."
 
 #: ../src/pakfire/cli.py:229
-msgid "Give a name of a package to downgrade."
-msgstr "Podaj nazwę pakietu do downgrade."
+msgid "Possible solutions are:"
+msgstr ""
 
-#: ../src/pakfire/cli.py:239
-msgid "Print some information about the given package(s)."
-msgstr "Wyświetl informacje na temat wybranego pakietu(ów)."
+#: ../src/pakfire/cli.py:240
+#, fuzzy
+msgid "An error has occured when running Pakfire"
+msgstr "Wystąpił błąd podczas próby pobrania pliku przez pakfire."
 
-#: ../src/pakfire/cli.py:241
-msgid "Give at least the name of one package."
-msgstr "Podaj przynajmniej nazwę jednego pakietu."
+#: ../src/pakfire/cli.py:242
+#, python-format
+msgid "%s: %s"
+msgstr ""
 
-#: ../src/pakfire/cli.py:247
-msgid "Search for a given pattern."
-msgstr "Wyszukiwanie według wzorca."
+#: ../src/pakfire/cli.py:267
+msgid "Aborted by user"
+msgstr ""
 
-#: ../src/pakfire/cli.py:249
-msgid "A pattern to search for."
-msgstr "Wzorzec do wyszukania."
-
-#: ../src/pakfire/cli.py:255
-msgid "Get a list of packages that provide a given file or feature."
-msgstr "Pobierz listę pakietów dostarczających dany plik lub funkcjonalność."
-
-#: ../src/pakfire/cli.py:257
-msgid "File or feature to search for."
-msgstr "Plik lub funkcja do wyszukania."
-
-#: ../src/pakfire/cli.py:263
-msgid "Get list of packages that belong to the given group."
-msgstr "Pobierz listę pakietów należących do podanej grupy."
-
-#: ../src/pakfire/cli.py:265
-msgid "Group name to search for."
-msgstr "Nazwa grupy do wyszukania."
-
-#: ../src/pakfire/cli.py:271
-msgid "Install all packages that belong to the given group."
-msgstr "Instalacja wszystkich pakietów należących do grupy."
-
-#: ../src/pakfire/cli.py:273
-msgid "Group name."
-msgstr "Nazwa grupy."
-
-#: ../src/pakfire/cli.py:279
-msgid "List all currently enabled repositories."
-msgstr "Wyświetl wszystkie włączone repozytoria."
-
-#: ../src/pakfire/cli.py:283
-msgid "Cleanup commands."
-msgstr "Polecenia oczyszczające."
-
-#: ../src/pakfire/cli.py:291
-msgid "Cleanup all temporary files."
-msgstr "Wyczyść wszystkie pliki tymczasowe."
-
-#: ../src/pakfire/cli.py:297
-msgid "Check the system for any errors."
-msgstr "Sprawdź system w poszukiwaniu błędów."
-
-#: ../src/pakfire/cli.py:303
-msgid "Check the dependencies for a particular package."
-msgstr "Sprawdź zależności dla danego pakietu."
-
-#: ../src/pakfire/cli.py:305
-msgid "Give name of at least one package to check."
-msgstr "Podaj nazwę przynajmniej jednego pakietu do sprawdzenia."
-
-#: ../src/pakfire/cli.py:311
-msgid "Extract a package to a directory."
-msgstr "Wypakuj pakiet do katalogu."
-
-#: ../src/pakfire/cli.py:313
-msgid "Give name of the file to extract."
-msgstr "Podaj nazwę pliku do wypakowania."
-
-#: ../src/pakfire/cli.py:315
-msgid "Target directory where to extract to."
-msgstr "Katalog docelowy do którego wypakować."
-
-#: ../src/pakfire/cli.py:403 ../src/pakfire/transaction.py:425
-msgid "Repository"
-msgstr "Repozytorium"
-
-#: ../src/pakfire/cli.py:403
+#: ../src/pakfire/cli.py:355
 msgid "Enabled"
 msgstr "Włączony"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1144
+#: ../src/pakfire/cli.py:355
 msgid "Priority"
 msgstr "Priorytet"
 
-#: ../src/pakfire/cli.py:403 ../src/pakfire/cli.py:1189
+#: ../src/pakfire/cli.py:355
 msgid "Packages"
 msgstr "Pakiety"
 
-#: ../src/pakfire/cli.py:411
+#: ../src/pakfire/cli.py:363
 msgid "Cleaning up everything..."
 msgstr "Czyszczenie wszystkiego..."
 
-#: ../src/pakfire/cli.py:447
+#: ../src/pakfire/cli.py:373
+#, fuzzy
+msgid "Everything okay"
+msgstr "Wszystko w porządku."
+
+#: ../src/pakfire/cli.py:390
 msgid "Cannot extract mixed package types"
 msgstr "Nie można wyodrębnić mieszanych typów pakietów"
 
-#: ../src/pakfire/cli.py:450
+#: ../src/pakfire/cli.py:393
 msgid "You must provide an install directory with --target=..."
 msgstr "Musisz podać katalog instalacji za pomocą opcji --target=..."
 
-#: ../src/pakfire/cli.py:456
+#: ../src/pakfire/cli.py:399
 msgid "Cannot extract to /."
 msgstr "Nie można wypakować do /."
 
-#: ../src/pakfire/cli.py:474
-msgid "You cannot run pakfire-builder in a pakfire chroot."
+#: ../src/pakfire/cli.py:417
+#, fuzzy
+msgid "You cannot run pakfire-builder in a pakfire chroot"
 msgstr "Nie możesz uruchomić pakfire-builder w pakfire chroot."
 
-#: ../src/pakfire/cli.py:477 ../src/pakfire/cli.py:819
-msgid "Pakfire builder command line interface."
+#: ../src/pakfire/cli.py:421
+#, fuzzy
+msgid "Pakfire builder command line interface"
 msgstr "Linia poleceń kompilatora Pakfire."
 
-#: ../src/pakfire/cli.py:536
+#: ../src/pakfire/cli.py:430
+#, fuzzy
+msgid "Run pakfire for the given architecture"
+msgstr "Uruchom pakfire dla danej architektury."
+
+#: ../src/pakfire/cli.py:432
 msgid "Choose the distribution configuration to use for build"
 msgstr "Wybierz konfigurację dystrybucji dla kompilacji"
 
-#: ../src/pakfire/cli.py:539
-msgid "Run pakfire for the given architecture."
-msgstr "Uruchom pakfire dla danej architektury."
-
-#: ../src/pakfire/cli.py:544
-msgid "Update the package indexes."
-msgstr "Aktualizuj indeksy pakietów."
-
-#: ../src/pakfire/cli.py:550 ../src/pakfire/cli.py:839
-msgid "Build one or more packages."
+#. build
+#: ../src/pakfire/cli.py:435
+#, fuzzy
+msgid "Build one or more packages"
 msgstr "Kompilacja jednego lub kilku pakietów."
 
-#: ../src/pakfire/cli.py:552 ../src/pakfire/cli.py:728
-#: ../src/pakfire/cli.py:841
-msgid "Give name of at least one package to build."
+#: ../src/pakfire/cli.py:437
+#, fuzzy
+msgid "Give name of at least one package to build"
 msgstr "Podaj nazwę przynajmniej jednego pakietu do kompilacji."
 
-#: ../src/pakfire/cli.py:556 ../src/pakfire/cli.py:588
-#: ../src/pakfire/cli.py:847
-msgid "Path were the output files should be copied to."
+#: ../src/pakfire/cli.py:441 ../src/pakfire/cli.py:461
+#, fuzzy
+msgid "Path were the output files should be copied to"
 msgstr "Ścieżka do której będą kopiowane pliki wyjściowe."
 
-#: ../src/pakfire/cli.py:558 ../src/pakfire/cli.py:575
-#: ../src/pakfire/cli.py:849
+#: ../src/pakfire/cli.py:443
+#, fuzzy
+msgid "Mode to run in. Is either 'release' or 'development' (default)"
+msgstr "Tryb pracy - 'release' lub 'development'(domyślnie)."
+
+#: ../src/pakfire/cli.py:445
+#, fuzzy
+msgid "Run a shell after a successful build"
+msgstr "Uruchom shell'a po poprawnej kompilacji."
+
+#: ../src/pakfire/cli.py:447
+#, fuzzy
+msgid "Do not perform the install test"
+msgstr "Nie wykonuj testu instalacji."
+
+#: ../src/pakfire/cli.py:449 ../src/pakfire/cli.py:503
+#, fuzzy
+msgid "Disable network in container"
+msgstr "Wyłącz sieć w kontenerze (domenie)"
+
+#. dist
+#: ../src/pakfire/cli.py:456
+#, fuzzy
+msgid "Generate a source package"
+msgstr "Generuj pakiet ze źródłami."
+
+#: ../src/pakfire/cli.py:457
+#, fuzzy
+msgid "Give name(s) of a package(s)"
+msgstr "Podaj nazwę(y) pakietu(ów)"
+
+#: ../src/pakfire/cli.py:475
+msgid "Give at least the name of one package."
+msgstr "Podaj przynajmniej nazwę jednego pakietu."
+
+#. shell
+#: ../src/pakfire/cli.py:496
+#, fuzzy
+msgid "Go into a build shell"
+msgstr "Przejdź do linii poleceń."
+
+#: ../src/pakfire/cli.py:497
+#, fuzzy
+msgid "Give name of a package"
+msgstr "Podaj nazwę pakietu."
+
+#: ../src/pakfire/cli.py:501 ../src/pakfire/cli.py:586
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr "Tryb pracy - 'release' lub 'development'(domyślnie)."
 
-#: ../src/pakfire/cli.py:560
-msgid "Run a shell after a successful build."
-msgstr "Uruchom shell'a po poprawnej kompilacji."
+#. update
+#: ../src/pakfire/cli.py:506
+#, fuzzy
+msgid "Update the package indexes"
+msgstr "Aktualizuj indeksy pakietów."
 
-#: ../src/pakfire/cli.py:562
-msgid "Do not perform the install test."
-msgstr "Nie wykonuj testu instalacji."
+#: ../src/pakfire/cli.py:557
+msgid "Pakfire builder command line interface."
+msgstr "Linia poleceń kompilatora Pakfire."
 
-#: ../src/pakfire/cli.py:564 ../src/pakfire/cli.py:577
-msgid "Disable network in container."
-msgstr "Wyłącz sieć w kontenerze (domenie)"
+#: ../src/pakfire/cli.py:576
+msgid "Build one or more packages."
+msgstr "Kompilacja jednego lub kilku pakietów."
 
-#: ../src/pakfire/cli.py:569
-msgid "Go into a shell."
-msgstr "Przejdź do linii poleceń."
-
-#: ../src/pakfire/cli.py:571
-msgid "Give name of a package."
-msgstr "Podaj nazwę pakietu."
+#: ../src/pakfire/cli.py:578
+msgid "Give name of at least one package to build."
+msgstr "Podaj nazwę przynajmniej jednego pakietu do kompilacji."
 
 #: ../src/pakfire/cli.py:582
-msgid "Generate a source package."
-msgstr "Generuj pakiet ze źródłami."
-
-#: ../src/pakfire/cli.py:584
-msgid "Give name(s) of a package(s)."
-msgstr "Podaj nazwę(y) pakietu(ów)"
-
-#: ../src/pakfire/cli.py:685
-msgid "Pakfire server command line interface."
-msgstr "Linia poleceń serwera Pakfire"
-
-#: ../src/pakfire/cli.py:726
-msgid "Send a scrach build job to the server."
-msgstr "Wyślij szkic zadania kompilacji do serwera."
-
-#: ../src/pakfire/cli.py:730
-msgid "Limit build to only these architecture(s)."
-msgstr "Ogranicz kompilację tylko do tych architektur()."
-
-#: ../src/pakfire/cli.py:736
-msgid "Send a keepalive to the server."
-msgstr "Wyślij keepalive do serwera."
-
-#: ../src/pakfire/cli.py:743
-msgid "Update all repositories."
-msgstr "Aktualizacja wszystkich repozytoriów."
-
-#: ../src/pakfire/cli.py:749
-msgid "Repository management commands."
-msgstr "Polecenia zarządzające repozytorium."
-
-#: ../src/pakfire/cli.py:757
-msgid "Create a new repository index."
-msgstr "Utwórz nowy indeks repozytorium."
-
-#: ../src/pakfire/cli.py:759
-msgid "Path to the packages."
-msgstr "Ścieżka do pakietów."
-
-#: ../src/pakfire/cli.py:761
-msgid "Path to input packages."
-msgstr "Ścieżka do pakietów wejściowych."
-
-#: ../src/pakfire/cli.py:763
-msgid "Key to sign the repository with."
-msgstr "Klucz do podpisania repozytorium."
-
-#: ../src/pakfire/cli.py:768
-msgid "Dump some information about this machine."
-msgstr "Zrzuć nieco informacji o tej maszynie. "
-
-#: ../src/pakfire/cli.py:845 ../src/pakfire/cli.py:937
 msgid "Build the package for the given architecture."
 msgstr "Kompilacja pakietu dla wskazanej architektury."
 
-#: ../src/pakfire/cli.py:851
+#: ../src/pakfire/cli.py:584
+msgid "Path were the output files should be copied to."
+msgstr "Ścieżka do której będą kopiowane pliki wyjściowe."
+
+#: ../src/pakfire/cli.py:588
 msgid "Do not verify build dependencies."
 msgstr "Nie weryfikuj zależności kompilacji."
 
-#: ../src/pakfire/cli.py:853
+#: ../src/pakfire/cli.py:590
 msgid "Only run the prepare stage."
 msgstr "Uruchom tylko przygotowawczy etap."
 
-#: ../src/pakfire/cli.py:887
-msgid "Pakfire client command line interface."
+#: ../src/pakfire/cli.py:626
+#, fuzzy
+msgid "Pakfire client command line interface"
 msgstr "Klient linii poleceń Pakfire."
 
-#: ../src/pakfire/cli.py:931
-msgid "Build a package remotely."
+#: ../src/pakfire/cli.py:628
+msgid "sub-command help"
+msgstr ""
+
+#. build
+#: ../src/pakfire/cli.py:634
+#, fuzzy
+msgid "Build a package remote"
 msgstr "Zdalna kompilacja pakietu."
 
-#: ../src/pakfire/cli.py:933
-msgid "Give name of a package to build."
-msgstr "Podaj nazwę pakietu do kompilacji."
+#: ../src/pakfire/cli.py:635
+#, fuzzy
+msgid "Package(s) to build"
+msgstr "Pakiet(y) do podpisu."
 
-#: ../src/pakfire/cli.py:942
-msgid "Print some information about this host."
-msgstr "Pokaż informacje o tym hoście"
+#: ../src/pakfire/cli.py:639
+#, fuzzy
+msgid "Build the package(s) for the given architecture only"
+msgstr "Kompilacja pakietu dla wskazanej architektury."
 
-#: ../src/pakfire/cli.py:948
-msgid "Check the connection to the hub."
+#: ../src/pakfire/cli.py:643
+#, fuzzy
+msgid "Check the connection to the hub"
 msgstr "Sprawdź połączenie do hub'a."
 
-#: ../src/pakfire/cli.py:953
-msgid "Show information about build jobs."
-msgstr "Pokaż informacje o zadaniach kompilacji."
-
-#: ../src/pakfire/cli.py:963
-msgid "Show a list of all active jobs."
-msgstr "Pokaż listę wszystkich aktywnych zadań."
-
-#: ../src/pakfire/cli.py:968
-msgid "Show a list of all recently finished of failed build jobs."
-msgstr "Pokaż listę niedawno zakończonych lub nieudanych kompilacji. "
-
-#: ../src/pakfire/cli.py:973
-msgid "Show details about given build job."
-msgstr "Pokaż szczegóły wybranego zadania."
-
-#: ../src/pakfire/cli.py:974
-msgid "The ID of the build job."
-msgstr "ID zadania kompilacji."
-
-#: ../src/pakfire/cli.py:979
-msgid "Show information about builds."
-msgstr "Pokaż informacje o kompilacjach."
-
-#: ../src/pakfire/cli.py:987
-msgid "Show details about the given build."
-msgstr "Pokaż szczegóły wybranej kompilacji."
-
-#: ../src/pakfire/cli.py:988
-msgid "The ID of the build."
-msgstr "ID kompilacji"
-
-#: ../src/pakfire/cli.py:993
-msgid "Test the connection to the hub."
-msgstr "Test połączenia do huba."
-
-#: ../src/pakfire/cli.py:994
-msgid "Error code to test."
-msgstr "Kod błędu do testu."
-
-#: ../src/pakfire/cli.py:1045 ../src/pakfire/server.py:303
-msgid "Hostname"
-msgstr "Nazwa hosta"
-
-#: ../src/pakfire/cli.py:1046
-msgid "Pakfire hub"
-msgstr "Pakfire hub"
-
-#: ../src/pakfire/cli.py:1049
-msgid "Username"
-msgstr "Nazwa użytkownika"
-
-#. Hardware information
-#: ../src/pakfire/cli.py:1053 ../src/pakfire/server.py:307
-msgid "Hardware information"
-msgstr "Informacje o sprzęcie"
-
-#: ../src/pakfire/cli.py:1054 ../src/pakfire/server.py:308
-msgid "CPU model"
-msgstr "Model procesora"
-
-#: ../src/pakfire/cli.py:1055 ../src/pakfire/server.py:309
-msgid "Memory"
-msgstr "Pamięć"
-
-#: ../src/pakfire/cli.py:1056
-msgid "Parallelism"
-msgstr "Równoległość"
-
-#: ../src/pakfire/cli.py:1058 ../src/pakfire/server.py:311
-msgid "Native arch"
-msgstr "Natywna arch"
-
-#: ../src/pakfire/cli.py:1060
-msgid "Default arch"
-msgstr "Domyślna arch"
-
-#: ../src/pakfire/cli.py:1062 ../src/pakfire/server.py:313
-msgid "Supported arches"
-msgstr "Wspierane architektury"
-
-#: ../src/pakfire/cli.py:1075
-msgid "Your IP address"
-msgstr "Twój adres IP"
-
-#: ../src/pakfire/cli.py:1080
-msgid "You are authenticated to the build service:"
+#. upload
+#: ../src/pakfire/cli.py:647
+#, fuzzy
+msgid "Upload a file to the build service"
 msgstr "Jesteś upoważniony do serwisu kompilacji: "
 
-#: ../src/pakfire/cli.py:1086
-msgid "User name"
-msgstr "Nazwa użytkownika"
+#: ../src/pakfire/cli.py:648
+#, fuzzy
+msgid "Filename"
+msgstr "Nazwa pliku: %s"
 
-#: ../src/pakfire/cli.py:1087
-msgid "Real name"
-msgstr "Pełna nazwa"
+#. watch-build
+#: ../src/pakfire/cli.py:652
+msgid "Watch the status of a build"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1088
-msgid "Email address"
-msgstr "Adres email"
+#: ../src/pakfire/cli.py:653 ../src/pakfire/packages/base.py:146
+msgid "Build ID"
+msgstr "ID kompilacji"
 
-#: ../src/pakfire/cli.py:1089
-msgid "Registered"
-msgstr "Zarejestrowany"
+#. watch-job
+#: ../src/pakfire/cli.py:657
+msgid "Watch the status of a job"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1096
-msgid "You could not be authenticated to the build service."
-msgstr "Uwierzytelnienie do serwisu kompilacji nie powiodło się,"
+#: ../src/pakfire/cli.py:658
+msgid "Job ID"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1117
-msgid "No ongoing jobs found."
-msgstr "Nie znaleziono bieżących zadań."
+#: ../src/pakfire/cli.py:710
+msgid "Connection OK"
+msgstr ""
 
-#: ../src/pakfire/cli.py:1120
-msgid "Active build jobs"
-msgstr "Aktywne zadania kompilacji"
-
-#: ../src/pakfire/cli.py:1126
-msgid "No jobs found."
-msgstr "Nie znaleziono zadań."
-
-#: ../src/pakfire/cli.py:1129
-msgid "Recently processed build jobs"
-msgstr "Ostatnio przetworzone zadania kompilacji"
-
-#: ../src/pakfire/cli.py:1136
-#, python-format
-msgid "A build with ID %s could not be found."
-msgstr "Kompilacja z ID %s nie została odnaleziona."
-
-#: ../src/pakfire/cli.py:1139
-#, python-format
-msgid "Build: %(name)s"
-msgstr "Kompilacja: %(name)s"
-
-#: ../src/pakfire/cli.py:1143 ../src/pakfire/cli.py:1171
-msgid "State"
-msgstr "Stan"
-
-#: ../src/pakfire/cli.py:1147
-msgid "Jobs"
-msgstr "Zadania"
-
-#: ../src/pakfire/cli.py:1160
-#, python-format
-msgid "A job with ID %s could not be found."
-msgstr "Nie można znaleźć zadania z ID %s."
-
-#: ../src/pakfire/cli.py:1167
-#, python-format
-msgid "Job: %(name)s"
-msgstr "Zadanie: %(name)s"
-
-#: ../src/pakfire/cli.py:1172 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:423
-msgid "Arch"
-msgstr "Arch"
-
-#: ../src/pakfire/cli.py:1177 ../src/pakfire/packages/base.py:148
-msgid "Build host"
-msgstr "Host kompilacji"
-
-#: ../src/pakfire/cli.py:1182
-msgid "Time created"
-msgstr "Czas utworzenia"
-
-#: ../src/pakfire/cli.py:1183
-msgid "Time started"
-msgstr "Czas rozpoczęcia"
-
-#: ../src/pakfire/cli.py:1184
-msgid "Time finished"
-msgstr "Czas zakończenia"
-
-#: ../src/pakfire/cli.py:1185
-msgid "Duration"
-msgstr "Czas trwania"
-
-#: ../src/pakfire/cli.py:1213
-msgid "Invalid error code given."
-msgstr "Zwrócono niepoprawny kod błędu."
-
-#: ../src/pakfire/cli.py:1216
-#, python-format
-msgid "Reponse from the server: %s"
-msgstr "Odpowiedź od serwera: %s"
-
-#: ../src/pakfire/cli.py:1227
-msgid "Pakfire daemon command line interface."
+#: ../src/pakfire/cli.py:745
+#, fuzzy
+msgid "Pakfire daemon command line interface"
 msgstr "Linia poleceń demona Pakfire."
 
-#: ../src/pakfire/cli.py:1258
-msgid "Pakfire key command line interface."
+#: ../src/pakfire/cli.py:771
+#, fuzzy
+msgid "Pakfire key command line interface"
 msgstr "Interfejs linii poleceń dla kluczy pakfire."
 
-#: ../src/pakfire/cli.py:1294 ../src/pakfire/cli.py:1304
-msgid "Import a key from file."
-msgstr "Importuj klucz z pliku."
-
-#: ../src/pakfire/cli.py:1296
-msgid "The real name of the owner of this key."
-msgstr "Prawdziwa nazwa właściciela tego klucza."
-
-#: ../src/pakfire/cli.py:1298
-msgid "The email address of the owner of this key."
-msgstr "Adres email właściciela tego klucza. "
-
-#: ../src/pakfire/cli.py:1306
-msgid "Filename of that key to import."
-msgstr "Nazwa pliku z kluczem do importu."
-
-#: ../src/pakfire/cli.py:1312
-msgid "Export a key to a file."
-msgstr "Eksport klucza do pliku."
-
-#: ../src/pakfire/cli.py:1314
-msgid "The ID of the key to export."
-msgstr "ID klucza do eksportu."
-
-#: ../src/pakfire/cli.py:1316
-msgid "Write the key to this file."
-msgstr "Zapisz klucz do tego pliku."
-
-#: ../src/pakfire/cli.py:1322
-msgid "Delete a key from the local keyring."
+#. delete
+#: ../src/pakfire/cli.py:779
+#, fuzzy
+msgid "Delete a key from the local keyring"
 msgstr "Usuń klucz z lokalnej bazy kluczy."
 
-#: ../src/pakfire/cli.py:1324
-msgid "The ID of the key to delete."
+#: ../src/pakfire/cli.py:780
+#, fuzzy
+msgid "The fingerprint of the key to delete"
 msgstr "ID klucza do usunięcia."
 
-#: ../src/pakfire/cli.py:1330
-msgid "List all imported keys."
+#. export
+#: ../src/pakfire/cli.py:784
+#, fuzzy
+msgid "Export a key to a file"
+msgstr "Eksport klucza do pliku."
+
+#: ../src/pakfire/cli.py:786
+#, fuzzy
+msgid "The fingerprint of the key to export"
+msgstr "ID klucza do eksportu."
+
+#: ../src/pakfire/cli.py:787
+#, fuzzy
+msgid "Write the key to this file"
+msgstr "Zapisz klucz do tego pliku."
+
+#: ../src/pakfire/cli.py:789
+msgid "Export the secret key"
+msgstr ""
+
+#. import
+#. generate
+#: ../src/pakfire/cli.py:793 ../src/pakfire/cli.py:798
+#, fuzzy
+msgid "Import a key from file"
+msgstr "Importuj klucz z pliku."
+
+#: ../src/pakfire/cli.py:794
+#, fuzzy
+msgid "Filename of that key to import"
+msgstr "Nazwa pliku z kluczem do importu."
+
+#: ../src/pakfire/cli.py:800
+#, fuzzy
+msgid "The real name of the owner of this key"
+msgstr "Prawdziwa nazwa właściciela tego klucza."
+
+#: ../src/pakfire/cli.py:802
+#, fuzzy
+msgid "The email address of the owner of this key"
+msgstr "Adres email właściciela tego klucza. "
+
+#. list
+#: ../src/pakfire/cli.py:806
+#, fuzzy
+msgid "List all imported keys"
 msgstr "Lista wszystkich zaimportowanych kluczy."
 
-#: ../src/pakfire/cli.py:1336
+#: ../src/pakfire/cli.py:814
 msgid "Sign one or more packages."
 msgstr "Podpisz jeden lub kilka pakietów."
 
-#: ../src/pakfire/cli.py:1338
+#: ../src/pakfire/cli.py:816
 msgid "Key that is used sign the package(s)."
 msgstr "Klucz używany do podpisania pakietu(-ów)."
 
-#: ../src/pakfire/cli.py:1340
+#: ../src/pakfire/cli.py:818
 msgid "Package(s) to sign."
 msgstr "Pakiet(y) do podpisu."
 
-#: ../src/pakfire/cli.py:1346
+#: ../src/pakfire/cli.py:824
 msgid "Verify one or more packages."
 msgstr "Weryfikuj jeden lub więcej pakietów."
 
-#: ../src/pakfire/cli.py:1350
+#: ../src/pakfire/cli.py:828
 msgid "Package(s) to verify."
 msgstr "Pakiet(y) do weryfikacji."
 
-#: ../src/pakfire/cli.py:1357
+#: ../src/pakfire/cli.py:834
 msgid "Generating the key may take a moment..."
 msgstr "Generowanie klucza może chwilę potrwać..."
 
-#: ../src/pakfire/cli.py:1411
+#: ../src/pakfire/cli.py:851
+#, fuzzy, python-format
+msgid "Could not find key with fingerprint %s"
+msgstr "Nie odnaleziono makefile w głównym katalogu kompilacji: %s"
+
+#: ../src/pakfire/cli.py:903
 #, python-format
 msgid "Signing %s..."
 msgstr "Podpisywanie %s..."
 
-#: ../src/pakfire/cli.py:1431
+#: ../src/pakfire/cli.py:925
 #, python-format
 msgid "Verifying %s..."
 msgstr "Weryfikowanie %s..."
 
-#: ../src/pakfire/cli.py:1441
+#: ../src/pakfire/cli.py:935
 msgid "This signature is valid."
 msgstr "Ten podpis jest ważny."
 
-#: ../src/pakfire/cli.py:1444
+#: ../src/pakfire/cli.py:938
 msgid "Unknown key"
 msgstr "Nieznany klucz"
 
-#: ../src/pakfire/cli.py:1445
+#: ../src/pakfire/cli.py:939
 msgid "Could not check if this signature is valid."
 msgstr "Nie można sprawdzić poprawności podpisu."
 
-#: ../src/pakfire/cli.py:1448 ../src/pakfire/keyring.py:98
+#: ../src/pakfire/cli.py:942
 #, python-format
 msgid "Created: %s"
 msgstr "Utworzony: %s"
 
-#: ../src/pakfire/cli.py:1452 ../src/pakfire/keyring.py:101
+#: ../src/pakfire/cli.py:946
 #, python-format
 msgid "Expires: %s"
 msgstr "Wygasa: %s"
+
+#: ../src/pakfire/client.py:189
+#, fuzzy, python-format
+msgid "Score: %s"
+msgstr "Sekcja: %s"
+
+#: ../src/pakfire/client.py:190
+#, fuzzy, python-format
+msgid "Priority: %s"
+msgstr "Priorytet"
+
+#: ../src/pakfire/client.py:277
+#, python-format
+msgid "on %s"
+msgstr ""
+
+#: ../src/pakfire/client.py:280
+#, python-format
+msgid "in %s"
+msgstr ""
+
+#: ../src/pakfire/client.py:299
+#, fuzzy, python-format
+msgid "Builder: %s"
+msgstr "Kompilacja: %(name)s"
 
 #: ../src/pakfire/compress.py:85 ../src/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
 msgstr "Podany algorytm '%s' nie jest wspierany."
 
-#: ../src/pakfire/config.py:191
-#, python-format
-msgid "Unhandled configuration update: %s = %s"
-msgstr "Nieobsługiwana aktualizacja konfiguracji: %s = %s"
-
-#: ../src/pakfire/config.py:205
+#: ../src/pakfire/config.py:88
 msgid "Configuration:"
 msgstr "Konfiguracja:"
 
-#: ../src/pakfire/config.py:207
+#: ../src/pakfire/config.py:91
 #, python-format
 msgid "Section: %s"
 msgstr "Sekcja: %s"
 
-#: ../src/pakfire/config.py:212
-msgid "No settings in this section."
-msgstr "Brak ustawień w tej sekcji."
-
-#: ../src/pakfire/config.py:214
-msgid "Loaded from files:"
-msgstr "Ładowane z plików: "
-
-#: ../src/pakfire/daemon.py:100
+#: ../src/pakfire/daemon.py:116
 msgid "Shutting down..."
 msgstr "Wyłączanie"
 
-#: ../src/pakfire/daemon.py:104
+#: ../src/pakfire/daemon.py:120
 msgid "Restarting keepalive process"
 msgstr "Restartowanie procesu poddtrzymującego"
 
-#: ../src/pakfire/daemon.py:166
+#: ../src/pakfire/daemon.py:182
 #, python-format
 msgid "Terminating worker process: %s"
 msgstr "Kończenie procesu roboczego: %s"
 
-#: ../src/pakfire/daemon.py:315
+#: ../src/pakfire/daemon.py:326
 msgid "Sending builder information to hub..."
 msgstr "Wysyłanie informacji buildera do huba..."
 
-#: ../src/pakfire/downloader.py:165
-msgid "Downloading source files:"
-msgstr "Pobieranie plików źródłowych:"
-
-#: ../src/pakfire/downloader.py:168
-msgid "Cannot download source code in offline mode."
-msgstr "Nie można pobrać kodu źródłowego w trybie offline."
-
-#: ../src/pakfire/downloader.py:191
-#, python-format
-msgid "Downloaded empty file: %s"
-msgstr "Pobrano pusty plik: %s"
-
-#: ../src/pakfire/errors.py:30
+#: ../src/pakfire/errors.py:32
 msgid "An unhandled error occured."
 msgstr "Wystąpił nieobsługiwany błąd."
 
-#: ../src/pakfire/errors.py:46
+#: ../src/pakfire/errors.py:48
 msgid "Could not compress/decompress data."
 msgstr "Nie można spakować/rozpakować danych."
 
-#: ../src/pakfire/errors.py:58
-msgid "One or more dependencies could not been resolved."
-msgstr "Jedna lub kilka zależności nie może być rozwiązana."
-
-#: ../src/pakfire/errors.py:61
+#: ../src/pakfire/errors.py:59
 msgid "An error occured when pakfire tried to download files."
 msgstr "Wystąpił błąd podczas próby pobrania pliku przez pakfire."
 
-#: ../src/pakfire/errors.py:74
+#: ../src/pakfire/errors.py:72
 msgid ""
 "The requested action cannot be done on offline mode.\n"
-"Please connect your system to the network, remove --offline from the command line and try again."
-msgstr "Żądana operacja nie może być wykonana w trybie offline.\nProszę podłączyć system do sieci, usunąć --offline z linii poleceń i spróbować ponownie."
+"Please connect your system to the network, remove --offline from the command "
+"line and try again."
+msgstr ""
+"Żądana operacja nie może być wykonana w trybie offline.\n"
+"Proszę podłączyć system do sieci, usunąć --offline z linii poleceń i "
+"spróbować ponownie."
 
-#: ../src/pakfire/errors.py:86
+#: ../src/pakfire/errors.py:84
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Uruchamić pakfire-build w kontenerze pakfire?"
 
-#: ../src/pakfire/errors.py:98 ../src/pakfire/transaction.py:510
+#: ../src/pakfire/errors.py:96 ../src/pakfire/transaction.py:509
 msgid "Transaction test was not successful"
 msgstr "Test transakcji nieprawidłowy"
 
-#: ../src/pakfire/errors.py:162
+#: ../src/pakfire/errors.py:160
 msgid "Generic XMLRPC error."
 msgstr "Ogólny błąd XMLRPC."
 
-#: ../src/pakfire/errors.py:166
+#: ../src/pakfire/errors.py:164
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
-msgstr "Odmówiono wykonania tej czynności. Może powinieneś sprawdzić poświadczenia."
+msgstr ""
+"Odmówiono wykonania tej czynności. Może powinieneś sprawdzić poświadczenia."
 
-#: ../src/pakfire/errors.py:170
+#: ../src/pakfire/errors.py:168
 msgid "A request could not be fulfilled by the server."
 msgstr "Żądanie nie może być zrealizowane przez serwer."
 
-#: ../src/pakfire/errors.py:174
+#: ../src/pakfire/errors.py:172
 msgid "Could not find the requested URL."
 msgstr "Nie można odnaleźć żądanego URL."
 
-#: ../src/pakfire/errors.py:178
+#: ../src/pakfire/errors.py:176
 msgid "An unforseable problem on the XML-RPC transport connection occured."
 msgstr "Wystąpił nieprzewidziany problem w połączeniu XML-RPC."
+
+#: ../src/pakfire/http.py:138
+#, fuzzy, python-format
+msgid "Selected mirror: %s"
+msgstr "Sekcja: %s"
+
+#: ../src/pakfire/http.py:142 ../src/pakfire/http.py:156
+msgid "No more mirrors to try"
+msgstr ""
+
+#: ../src/pakfire/http.py:158
+#, python-format
+msgid "Skipping mirror %s"
+msgstr ""
+
+#: ../src/pakfire/http.py:359
+msgid "Invalid checksum"
+msgstr ""
 
 #: ../src/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
 msgstr "%(commas)s i %(last)s"
 
-#: ../src/pakfire/keyring.py:76
-#, python-format
-msgid "Not in key store: %s"
-msgstr "Klucza %s nie ma w magazynie."
-
-#: ../src/pakfire/keyring.py:82
-#, python-format
-msgid "Fingerprint: %s"
-msgstr "Odciska palca: %s"
-
-#: ../src/pakfire/keyring.py:86
-msgid "Private key available!"
-msgstr "Dostępny klucz prywatny!"
-
-#: ../src/pakfire/keyring.py:90
-#, python-format
-msgid "Subkey: %s"
-msgstr "Podklucz: %s"
-
-#: ../src/pakfire/keyring.py:92
-msgid "This key has expired!"
-msgstr "Upłynęła ważność klucza!"
-
-#: ../src/pakfire/keyring.py:95
-msgid "This is a secret key."
-msgstr "To jest sekretny klucz"
-
-#: ../src/pakfire/keyring.py:103
-msgid "This key does not expire."
-msgstr "Ten klucz nie wygasł. "
-
-#: ../src/pakfire/keyring.py:151
-#, python-format
-msgid "Generating new key for %(realname)s <%(email)s>..."
-msgstr "Generowanie nowego klucza dla %(realname)s <%(email)s>..."
-
-#: ../src/pakfire/keyring.py:152
-msgid "This may take a while..."
-msgstr "To może zająć chwilkę..."
-
-#: ../src/pakfire/keyring.py:171
-#, python-format
-msgid "Successfully imported %s."
-msgstr "Zaimportowany prawidłowo %s."
-
-#: ../src/pakfire/keyring.py:191
-msgid "Host key:"
-msgstr "Klucz hosta:"
-
-#: ../src/pakfire/keyring.py:198
-#, python-format
-msgid ""
-"WARNING! Host key with ID %s configured, but the secret key is missing!"
-msgstr "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale brakuje klucza szyfrującego!"
-
-#: ../src/pakfire/keyring.py:201
-#, python-format
-msgid "WARNING! Host key with ID %s configured, but not found!"
-msgstr "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale nie znaleziony!"
-
-#: ../src/pakfire/keyring.py:203
-msgid "No host key available or configured."
-msgstr "Klucz host niedostępny lun nieskonfigurowany."
-
-#: ../src/pakfire/packages/base.py:99
-msgid "Name"
-msgstr "Nazwa"
-
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:427
-msgid "Version"
-msgstr "Wersja"
-
-#: ../src/pakfire/packages/base.py:111
-msgid "Release"
-msgstr "Wydanie"
-
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:426
-msgid "Size"
-msgstr "Rozmiar"
-
-#: ../src/pakfire/packages/base.py:119
-msgid "Installed size"
-msgstr "Rozmiar po instalacji"
-
-#: ../src/pakfire/packages/base.py:125
-msgid "Repo"
-msgstr "Repo"
-
-#: ../src/pakfire/packages/base.py:128
-msgid "Summary"
-msgstr "Podsumowanie"
-
 #: ../src/pakfire/packages/base.py:129
 msgid "Groups"
 msgstr "Grupy"
-
-#: ../src/pakfire/packages/base.py:130
-msgid "URL"
-msgstr "URL"
-
-#: ../src/pakfire/packages/base.py:131
-msgid "License"
-msgstr "Licencja"
-
-#: ../src/pakfire/packages/base.py:134
-msgid "Description"
-msgstr "Opis"
-
-#: ../src/pakfire/packages/base.py:141
-msgid "Maintainer"
-msgstr "Dostawca"
-
-#: ../src/pakfire/packages/base.py:143
-msgid "Vendor"
-msgstr "Dostawca"
-
-#: ../src/pakfire/packages/base.py:145
-msgid "UUID"
-msgstr "UUID"
-
-#: ../src/pakfire/packages/base.py:146
-msgid "Build ID"
-msgstr "ID kompilacji"
-
-#: ../src/pakfire/packages/base.py:147
-msgid "Build date"
-msgstr "Data kompilacji"
 
 #: ../src/pakfire/packages/base.py:150
 msgid "Signatures"
 msgstr "Podpisy"
 
-#: ../src/pakfire/packages/base.py:155
-msgid "Provides"
-msgstr "Dostarcza"
-
 #: ../src/pakfire/packages/base.py:160
 msgid "Pre-requires"
 msgstr "Wymagania"
-
-#: ../src/pakfire/packages/base.py:165
-msgid "Requires"
-msgstr "Wymaga"
-
-#: ../src/pakfire/packages/base.py:170
-msgid "Conflicts"
-msgstr "Konflikty"
-
-#: ../src/pakfire/packages/base.py:175
-msgid "Obsoletes"
-msgstr "Zastępuje"
-
-#: ../src/pakfire/packages/base.py:180
-msgid "Recommends"
-msgstr "zalecenia"
-
-#: ../src/pakfire/packages/base.py:185
-msgid "Suggests"
-msgstr "Sugeruje"
 
 #: ../src/pakfire/packages/base.py:193
 msgid "File"
@@ -1344,12 +1313,12 @@ msgstr "Plik"
 msgid "Not set"
 msgstr "Nie ustawiono"
 
-#: ../src/pakfire/packages/base.py:570
+#: ../src/pakfire/packages/base.py:573
 #, python-format
 msgid "Config file saved as %s."
 msgstr "Konfiguracja zapisana jako %s."
 
-#: ../src/pakfire/packages/base.py:575
+#: ../src/pakfire/packages/base.py:578
 #, python-format
 msgid "Preserving datafile '/%s'"
 msgstr "Zabezpieczanie pliku danych '/%s'"
@@ -1359,22 +1328,22 @@ msgstr "Zabezpieczanie pliku danych '/%s'"
 msgid "Filename: %s"
 msgstr "Nazwa pliku: %s"
 
-#: ../src/pakfire/packages/file.py:184
+#: ../src/pakfire/packages/file.py:186
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
 msgstr "Pliku w archiwum brakuje w metadanych: %s. Pomijanie."
 
-#: ../src/pakfire/packages/file.py:240
+#: ../src/pakfire/packages/file.py:242
 #, python-format
 msgid "Config file created as %s"
 msgstr "Konfiguracja utworzona jako %s"
 
-#: ../src/pakfire/packages/file.py:245
+#: ../src/pakfire/packages/file.py:247
 #, python-format
 msgid "Don't overwrite already existing datafile '/%s'"
 msgstr "Nie nadpisuj istniejących plików '/%s'"
 
-#: ../src/pakfire/packages/file.py:259
+#: ../src/pakfire/packages/file.py:261
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr "Nie można usunąć pliku: /%s"
@@ -1384,37 +1353,37 @@ msgstr "Nie można usunąć pliku: /%s"
 msgid "Template does not exist: %s"
 msgstr "Szablon nie istnieje: %s"
 
-#: ../src/pakfire/packages/make.py:83
+#: ../src/pakfire/packages/make.py:80
 msgid "Package name is undefined."
 msgstr "Niezdefiniowana nazwa pakietu."
 
-#: ../src/pakfire/packages/make.py:86
+#: ../src/pakfire/packages/make.py:83
 msgid "Package version is undefined."
 msgstr "Niezdefiniowana wersja pakietu."
 
-#: ../src/pakfire/packages/make.py:443
+#: ../src/pakfire/packages/make.py:461
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
 msgstr "Wyszukiwanie zależności dla %s..."
 
-#: ../src/pakfire/packages/make.py:497
+#: ../src/pakfire/packages/make.py:515
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
 msgstr "Wyrażenie regularne jest nieprawidłowe i zostało pominięte: %s"
 
 #. Let the user know what has been done.
-#: ../src/pakfire/packages/make.py:513
+#: ../src/pakfire/packages/make.py:531
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr "Filtr '%(pattern)s' filtruje %(dep)s."
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:399
-#: ../src/pakfire/packages/packager.py:713
+#: ../src/pakfire/packages/packager.py:397
+#: ../src/pakfire/packages/packager.py:714
 msgid "Packaging"
 msgstr "Pakowanie"
 
-#: ../src/pakfire/packages/packager.py:741
+#: ../src/pakfire/packages/packager.py:742
 #, python-format
 msgid "Building source package %s:"
 msgstr "Tworzenie pakietu źródłowego %s:"
@@ -1424,26 +1393,8 @@ msgstr "Tworzenie pakietu źródłowego %s:"
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Nie można wypakować pliku: /%(src)s - %(dst)s"
 
-#: ../src/pakfire/progressbar.py:206
-#, python-format
-msgid "Elapsed Time: %s"
-msgstr "Upłynęło Czasu: %s"
-
-#: ../src/pakfire/progressbar.py:228 ../src/pakfire/progressbar.py:235
-msgid "ETA"
-msgstr "ETA"
-
-#: ../src/pakfire/progressbar.py:231
-msgid "Time"
-msgstr "czas"
-
-#: ../src/pakfire/repository/__init__.py:93
-msgid "Initializing repositories..."
-msgstr "Inicjalizacja repozytoriów..."
-
 #: ../src/pakfire/repository/database.py:120
-msgid ""
-"The format of the database is not supported by this version of pakfire."
+msgid "The format of the database is not supported by this version of pakfire."
 msgstr "Format bazy danych nie jest obsługiwany przez tę wersję pakfire."
 
 #: ../src/pakfire/repository/database.py:229
@@ -1457,112 +1408,63 @@ msgid "Migrating database from format %(old)s to %(new)s."
 msgstr "Zmiana wersji bazy danych z %(old)s do %(new)s."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:123
+#: ../src/pakfire/repository/local.py:121
 #, python-format
 msgid "%s: Adding packages..."
 msgstr "%s: Dodawanie pakietów..."
 
 #. Make a nice progress bar.
-#: ../src/pakfire/repository/local.py:229
+#: ../src/pakfire/repository/local.py:227
 msgid "Compressing database..."
 msgstr "Kompresowanie bazy danych..."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:287
+#: ../src/pakfire/repository/local.py:285
 #, python-format
 msgid "%s: Reading packages..."
 msgstr "%s: Odczytywanie pakietów..."
 
-#: ../src/pakfire/repository/remote.py:151
-#, python-format
-msgid "No metadata available for repository %s. Cannot download any."
-msgstr "Brak dostępnych metadanych dla repozytorium %s. Pobranie niemożliwe."
+#: ../src/pakfire/repository/remote.py:107
+#, fuzzy, python-format
+msgid "Skipping refreshing %s since we are running in offline mode"
+msgstr "Kontynuuje ponieważ działamy w trybie przyzwalającym."
 
-#: ../src/pakfire/repository/remote.py:176
-#, python-format
-msgid "Could not update metadata for %s from any mirror server"
-msgstr "Nie można zaktualizować metadanych dla %s z żadnego serwera"
-
-#: ../src/pakfire/repository/remote.py:185
+#: ../src/pakfire/repository/remote.py:193
 msgid "The downloaded metadata was less recent than the current one."
 msgstr "Pobrany plik metadata jest starszy od aktualnego posiadanego."
 
 #: ../src/pakfire/repository/remote.py:224
 #, python-format
-msgid "Cannot download package database for %s in offline mode."
-msgstr "Nie można pobrać bazy danych pakietów dla %s w trybie offline."
-
-#: ../src/pakfire/repository/remote.py:235
-#, python-format
 msgid "%s: package database"
 msgstr "%s: baza pakietów"
 
-#: ../src/pakfire/repository/remote.py:309
+#: ../src/pakfire/repository/remote.py:267
 #, python-format
 msgid "Cannot download this file in offline mode: %s"
 msgstr "Nie można pobrać tego pliku w trybie offline: %s"
 
-#: ../src/pakfire/repository/remote.py:315
+#: ../src/pakfire/repository/remote.py:273
 #, python-format
 msgid "Could not download %s: %s"
 msgstr "Nie można pobrać %s: %s"
 
-#: ../src/pakfire/repository/remote.py:340
+#: ../src/pakfire/repository/remote.py:298
 msgid "The checksum of the downloaded file did not match."
 msgstr "Suma kontrolna pobranego pliku nie zgadza się."
 
-#: ../src/pakfire/repository/remote.py:341
+#: ../src/pakfire/repository/remote.py:299
 #, python-format
 msgid "Expected %(good)s but got %(bad)s."
 msgstr "Oczekiwano %(good)s a otrzymano %(bad)s."
 
-#: ../src/pakfire/repository/remote.py:342
+#: ../src/pakfire/repository/remote.py:300
 msgid "Trying an other mirror."
 msgstr "Próbowanie innego serwera lustrzanego."
 
 #. Create a progressbar.
-#: ../src/pakfire/repository/system.py:59
+#: ../src/pakfire/repository/system.py:56
 msgid "Loading installed packages"
 msgstr "Wczytywanie zainstalowanych pakietów"
-
-#: ../src/pakfire/satsolver.py:329
-#, python-format
-msgid "Dependency solving finished in %.2f ms"
-msgstr "Rozwiązywanie zależności zakończone w %.2f ms"
-
-#: ../src/pakfire/satsolver.py:344 ../src/pakfire/satsolver.py:370
-msgid "The solver returned one problem:"
-msgstr "Rozwiązywanie zwróciło następujący problem:"
-
-#. Ask the user if he or she want to modify the request. If not, just exit.
-#: ../src/pakfire/satsolver.py:386
-msgid "Do you want to manually alter the request?"
-msgstr "Chcesz ręcznie zmienić żądanie?"
-
-#: ../src/pakfire/satsolver.py:389
-msgid "You can now try to satisfy the solver by modifying your request."
-msgstr "Możesz teraz zmodyfikować swoje żądanie by spełnić warunki stawiane przez solver.."
-
-#: ../src/pakfire/satsolver.py:394
-msgid "Which problem to you want to resolve?"
-msgstr "Który problem chcesz rozwiązać?"
-
-#: ../src/pakfire/satsolver.py:396
-msgid "Press enter to try to re-solve the request."
-msgstr "Naciśnij przycisk Enter, aby spróbować ponownie rozwiązać żądanie."
-
-#: ../src/pakfire/satsolver.py:427
-#, python-format
-msgid "    Solution: %s"
-msgstr "Rozwiązania: %s"
-
-#: ../src/pakfire/satsolver.py:436
-msgid "    Solutions:"
-msgstr "Rozwiązania:"
-
-#: ../src/pakfire/server.py:279 ../src/pakfire/system.py:149
-msgid "Could not be determined"
-msgstr "Nie może być ustalona"
 
 #: ../src/pakfire/shell.py:84
 #, python-format
@@ -1584,133 +1486,461 @@ msgstr "Proces potomny zwrócił: %s"
 msgid "Command failed: %s"
 msgstr "Błąd polecenia: %s"
 
-#: ../src/pakfire/transaction.py:91
+#: ../src/pakfire/system.py:122
+msgid "Could not be determined"
+msgstr "Nie może być ustalona"
+
+#: ../src/pakfire/transaction.py:90
 #, python-format
 msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr "plik %(name)s z %(pkg1)s powoduje konflikt z plikiem z pakietu %(pkg2)s"
+msgstr ""
+"plik %(name)s z %(pkg1)s powoduje konflikt z plikiem z pakietu %(pkg2)s"
 
-#: ../src/pakfire/transaction.py:97
+#: ../src/pakfire/transaction.py:96
 #, python-format
 msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
 msgstr "plik %(name)s z %(pkg)s powoduje konflikt z plikiem z %(pkgs)s"
 
-#: ../src/pakfire/transaction.py:103
+#: ../src/pakfire/transaction.py:102
 #, python-format
-msgid ""
-"file %(name)s causes the transaction test to fail for an unknown reason"
+msgid "file %(name)s causes the transaction test to fail for an unknown reason"
 msgstr "plik %(name)s wywołuje błąd testu transakcji z nieznanego powodu"
 
-#: ../src/pakfire/transaction.py:111
+#: ../src/pakfire/transaction.py:110
 #, python-format
 msgid ""
 "There is not enough space left on %(name)s. Need at least %(size)s to "
 "perform transaction."
-msgstr "Brak wystarczającej ilości miejsca na %(name)s. Wymagane minimum %(size)s do wykonania transakcji. "
+msgstr ""
+"Brak wystarczającej ilości miejsca na %(name)s. Wymagane minimum %(size)s do "
+"wykonania transakcji. "
 
-#: ../src/pakfire/transaction.py:355
+#: ../src/pakfire/transaction.py:354
 #, python-format
 msgid "Not enough space to download %s of packages."
 msgstr "Brak miejsca na pobranie %s pakietów"
 
-#: ../src/pakfire/transaction.py:358
+#: ../src/pakfire/transaction.py:357
 msgid "Downloading packages:"
 msgstr "Pobieranie pakietów: "
 
-#: ../src/pakfire/transaction.py:424
-msgid "Package"
-msgstr "Pakiet"
-
-#: ../src/pakfire/transaction.py:441
-msgid "Installing:"
-msgstr "Instalowanie:"
-
-#: ../src/pakfire/transaction.py:442
-msgid "Reinstalling:"
-msgstr "Reinstalacja:"
-
-#: ../src/pakfire/transaction.py:443
-msgid "Updating:"
-msgstr "Aktualizowanie:"
-
-#: ../src/pakfire/transaction.py:444
-msgid "Downgrading:"
-msgstr "Downgrading:"
-
-#: ../src/pakfire/transaction.py:445
-msgid "Removing:"
-msgstr "Usuwanie:"
-
-#. Append the transaction summary
-#: ../src/pakfire/transaction.py:455
-msgid "Transaction Summary"
-msgstr "Podsumowanie transakcji"
-
-#: ../src/pakfire/transaction.py:463
+#: ../src/pakfire/transaction.py:462
 msgid "package"
 msgstr "pakiet"
 
-#: ../src/pakfire/transaction.py:468
+#: ../src/pakfire/transaction.py:467
 #, python-format
 msgid "Total download size: %s"
 msgstr "Całkowity rozmiar pobierania: %s"
 
-#: ../src/pakfire/transaction.py:472
+#: ../src/pakfire/transaction.py:471
 #, python-format
 msgid "Installed size: %s"
 msgstr "Rozmiar po instalacji: %s"
 
-#: ../src/pakfire/transaction.py:474
+#: ../src/pakfire/transaction.py:473
 #, python-format
 msgid "Freed size: %s"
 msgstr "Zwolnione miejsce: %s"
 
-#: ../src/pakfire/transaction.py:485
+#: ../src/pakfire/transaction.py:484
 msgid "Is this okay?"
 msgstr "W porządku?"
 
-#: ../src/pakfire/transaction.py:491
+#: ../src/pakfire/transaction.py:490
 msgid "Running Transaction Test"
 msgstr "Uruchomione testy transakcji"
 
-#: ../src/pakfire/transaction.py:503
+#: ../src/pakfire/transaction.py:502
 msgid "Transaction Test Succeeded"
 msgstr "Test transakcji poprawny"
 
-#: ../src/pakfire/transaction.py:536
+#: ../src/pakfire/transaction.py:535
 msgid "Verifying signatures..."
 msgstr "Weryfikowanie podpisów..."
 
-#: ../src/pakfire/transaction.py:572
+#: ../src/pakfire/transaction.py:571
 #, python-format
 msgid "Found %s signature error(s)!"
 msgstr "Znaleziono %s błąd(y) sygnatur!"
 
-#: ../src/pakfire/transaction.py:577
+#: ../src/pakfire/transaction.py:576
 msgid "Going on because we are running in permissive mode."
 msgstr "Kontynuuje ponieważ działamy w trybie przyzwalającym."
 
-#: ../src/pakfire/transaction.py:578
+#: ../src/pakfire/transaction.py:577
 msgid "This is dangerous!"
 msgstr "To jest niebezpieczne!"
 
-#: ../src/pakfire/transaction.py:618
+#: ../src/pakfire/transaction.py:617
 msgid "Running transaction"
 msgstr "Uruchomione transakcje"
 
-#: ../src/pakfire/util.py:68
+#: ../src/pakfire/ui/progressbar.py:221
+#, fuzzy, python-format
+msgid "Error: %s"
+msgstr "Wygasa: %s"
+
+#: ../src/pakfire/ui/progressbar.py:236
+#, python-format
+msgid "Elapsed Time: %s"
+msgstr "Upłynęło Czasu: %s"
+
+#: ../src/pakfire/ui/progressbar.py:258 ../src/pakfire/ui/progressbar.py:265
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/pakfire/ui/progressbar.py:261
+msgid "Time"
+msgstr "czas"
+
+#: ../src/pakfire/util.py:64
 #, python-format
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-#: ../src/pakfire/util.py:242
+#: ../src/pakfire/util.py:193
 msgid "Killing orphans..."
 msgstr "Zabijanie sierot..."
 
-#: ../src/pakfire/util.py:249
+#: ../src/pakfire/util.py:200
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "Proces ID %s jest wciąż uruchomiony w środowisku chroot. Zamykam..."
 
-#: ../src/pakfire/util.py:261
+#: ../src/pakfire/util.py:212
 msgid "Waiting for processes to terminate..."
 msgstr "Oczekiwanie na zakończenie procesu..."
+
+#: ../src/pakfire/ui/cli.py:51
+#, fuzzy
+msgid "Is this okay? [y/N]"
+msgstr "W porządku?"
+
+#~ msgid "do not keep %s installed"
+#~ msgstr "nie zachowuj %s zainstalowanego"
+
+#~ msgid "do not install a solvable %s"
+#~ msgstr "nie instaluj %s"
+
+#~ msgid "do not deinstall all solvables %s"
+#~ msgstr "nie deinstaluj %s"
+
+#~ msgid "do not deinstall %s"
+#~ msgstr "nie odinstalowuj %s"
+
+#~ msgid "do not install most recent version of %s"
+#~ msgstr "nie instaluj najnowszych wersji %s"
+
+#~ msgid "do something different"
+#~ msgstr "zrób coś innego"
+
+#~ msgid "install %s from excluded repository"
+#~ msgstr "instalacja %s z wykluczonego repozytorium"
+
+#~ msgid "allow downgrade of %s to %s"
+#~ msgstr "zezwól na downgrade %s do %s"
+
+#~ msgid "allow architecture change of %s to %s"
+#~ msgstr "zezwalaj na zmianę architektury z %s na %s"
+
+#~ msgid "allow vendor change from '%s' (%s) to '%s' (%s)"
+#~ msgstr "zezwól na zmianę dostawcy z '%s'(%s) na '%s'(%s)"
+
+#~ msgid "allow vendor change from '%s' (%s) to no vendor (%s)"
+#~ msgstr "zezwól na zmianę dostawcy z '%s'(%s) na brak wydacy (%s)"
+
+#~ msgid "Local install repository"
+#~ msgstr "Lokalne repozytorium instalacji"
+
+#~ msgid "Could not find any installed package providing \"%s\"."
+#~ msgstr "Nie można odnaleźć żadnego pakietu dostarczającego \"%s\"."
+
+#~ msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
+#~ msgstr "Wiele kandydatów do reinstalacji  \"%(pattern)s\": %(pkgs)s "
+
+#~ msgid "Could not find package %s in a remote repository."
+#~ msgstr "Nie można odnaleźć pakietu %s w zdalnym repozytorium."
+
+#~ msgid "Excluding %s."
+#~ msgstr "Wyłączając %s."
+
+#~ msgid "Get list of packages that belong to the given group."
+#~ msgstr "Pobierz listę pakietów należących do podanej grupy."
+
+#~ msgid "Group name to search for."
+#~ msgstr "Nazwa grupy do wyszukania."
+
+#~ msgid "Install all packages that belong to the given group."
+#~ msgstr "Instalacja wszystkich pakietów należących do grupy."
+
+#~ msgid "Group name."
+#~ msgstr "Nazwa grupy."
+
+#~ msgid "Cleanup commands."
+#~ msgstr "Polecenia oczyszczające."
+
+#~ msgid "Check the dependencies for a particular package."
+#~ msgstr "Sprawdź zależności dla danego pakietu."
+
+#~ msgid "Give name of at least one package to check."
+#~ msgstr "Podaj nazwę przynajmniej jednego pakietu do sprawdzenia."
+
+#~ msgid "Pakfire server command line interface."
+#~ msgstr "Linia poleceń serwera Pakfire"
+
+#~ msgid "Send a scrach build job to the server."
+#~ msgstr "Wyślij szkic zadania kompilacji do serwera."
+
+#~ msgid "Limit build to only these architecture(s)."
+#~ msgstr "Ogranicz kompilację tylko do tych architektur()."
+
+#~ msgid "Send a keepalive to the server."
+#~ msgstr "Wyślij keepalive do serwera."
+
+#~ msgid "Update all repositories."
+#~ msgstr "Aktualizacja wszystkich repozytoriów."
+
+#~ msgid "Repository management commands."
+#~ msgstr "Polecenia zarządzające repozytorium."
+
+#~ msgid "Create a new repository index."
+#~ msgstr "Utwórz nowy indeks repozytorium."
+
+#~ msgid "Path to the packages."
+#~ msgstr "Ścieżka do pakietów."
+
+#~ msgid "Path to input packages."
+#~ msgstr "Ścieżka do pakietów wejściowych."
+
+#~ msgid "Key to sign the repository with."
+#~ msgstr "Klucz do podpisania repozytorium."
+
+#~ msgid "Dump some information about this machine."
+#~ msgstr "Zrzuć nieco informacji o tej maszynie. "
+
+#~ msgid "Give name of a package to build."
+#~ msgstr "Podaj nazwę pakietu do kompilacji."
+
+#~ msgid "Print some information about this host."
+#~ msgstr "Pokaż informacje o tym hoście"
+
+#~ msgid "Show information about build jobs."
+#~ msgstr "Pokaż informacje o zadaniach kompilacji."
+
+#~ msgid "Show a list of all active jobs."
+#~ msgstr "Pokaż listę wszystkich aktywnych zadań."
+
+#~ msgid "Show a list of all recently finished of failed build jobs."
+#~ msgstr "Pokaż listę niedawno zakończonych lub nieudanych kompilacji. "
+
+#~ msgid "Show details about given build job."
+#~ msgstr "Pokaż szczegóły wybranego zadania."
+
+#~ msgid "The ID of the build job."
+#~ msgstr "ID zadania kompilacji."
+
+#~ msgid "Show information about builds."
+#~ msgstr "Pokaż informacje o kompilacjach."
+
+#~ msgid "Show details about the given build."
+#~ msgstr "Pokaż szczegóły wybranej kompilacji."
+
+#~ msgid "The ID of the build."
+#~ msgstr "ID kompilacji"
+
+#~ msgid "Test the connection to the hub."
+#~ msgstr "Test połączenia do huba."
+
+#~ msgid "Error code to test."
+#~ msgstr "Kod błędu do testu."
+
+#~ msgid "Hostname"
+#~ msgstr "Nazwa hosta"
+
+#~ msgid "Pakfire hub"
+#~ msgstr "Pakfire hub"
+
+#~ msgid "Username"
+#~ msgstr "Nazwa użytkownika"
+
+#~ msgid "Hardware information"
+#~ msgstr "Informacje o sprzęcie"
+
+#~ msgid "CPU model"
+#~ msgstr "Model procesora"
+
+#~ msgid "Memory"
+#~ msgstr "Pamięć"
+
+#~ msgid "Parallelism"
+#~ msgstr "Równoległość"
+
+#~ msgid "Native arch"
+#~ msgstr "Natywna arch"
+
+#~ msgid "Default arch"
+#~ msgstr "Domyślna arch"
+
+#~ msgid "Your IP address"
+#~ msgstr "Twój adres IP"
+
+#~ msgid "User name"
+#~ msgstr "Nazwa użytkownika"
+
+#~ msgid "Real name"
+#~ msgstr "Pełna nazwa"
+
+#~ msgid "Email address"
+#~ msgstr "Adres email"
+
+#~ msgid "Registered"
+#~ msgstr "Zarejestrowany"
+
+#~ msgid "You could not be authenticated to the build service."
+#~ msgstr "Uwierzytelnienie do serwisu kompilacji nie powiodło się,"
+
+#~ msgid "No ongoing jobs found."
+#~ msgstr "Nie znaleziono bieżących zadań."
+
+#~ msgid "Active build jobs"
+#~ msgstr "Aktywne zadania kompilacji"
+
+#~ msgid "No jobs found."
+#~ msgstr "Nie znaleziono zadań."
+
+#~ msgid "Recently processed build jobs"
+#~ msgstr "Ostatnio przetworzone zadania kompilacji"
+
+#~ msgid "A build with ID %s could not be found."
+#~ msgstr "Kompilacja z ID %s nie została odnaleziona."
+
+#~ msgid "State"
+#~ msgstr "Stan"
+
+#~ msgid "Jobs"
+#~ msgstr "Zadania"
+
+#~ msgid "A job with ID %s could not be found."
+#~ msgstr "Nie można znaleźć zadania z ID %s."
+
+#~ msgid "Job: %(name)s"
+#~ msgstr "Zadanie: %(name)s"
+
+#~ msgid "Time created"
+#~ msgstr "Czas utworzenia"
+
+#~ msgid "Time started"
+#~ msgstr "Czas rozpoczęcia"
+
+#~ msgid "Time finished"
+#~ msgstr "Czas zakończenia"
+
+#~ msgid "Duration"
+#~ msgstr "Czas trwania"
+
+#~ msgid "Invalid error code given."
+#~ msgstr "Zwrócono niepoprawny kod błędu."
+
+#~ msgid "Reponse from the server: %s"
+#~ msgstr "Odpowiedź od serwera: %s"
+
+#~ msgid "Unhandled configuration update: %s = %s"
+#~ msgstr "Nieobsługiwana aktualizacja konfiguracji: %s = %s"
+
+#~ msgid "No settings in this section."
+#~ msgstr "Brak ustawień w tej sekcji."
+
+#~ msgid "Loaded from files:"
+#~ msgstr "Ładowane z plików: "
+
+#~ msgid "Downloading source files:"
+#~ msgstr "Pobieranie plików źródłowych:"
+
+#~ msgid "Cannot download source code in offline mode."
+#~ msgstr "Nie można pobrać kodu źródłowego w trybie offline."
+
+#~ msgid "Downloaded empty file: %s"
+#~ msgstr "Pobrano pusty plik: %s"
+
+#~ msgid "Not in key store: %s"
+#~ msgstr "Klucza %s nie ma w magazynie."
+
+#~ msgid "Fingerprint: %s"
+#~ msgstr "Odciska palca: %s"
+
+#~ msgid "Private key available!"
+#~ msgstr "Dostępny klucz prywatny!"
+
+#~ msgid "Subkey: %s"
+#~ msgstr "Podklucz: %s"
+
+#~ msgid "This is a secret key."
+#~ msgstr "To jest sekretny klucz"
+
+#~ msgid "This key does not expire."
+#~ msgstr "Ten klucz nie wygasł. "
+
+#~ msgid "Generating new key for %(realname)s <%(email)s>..."
+#~ msgstr "Generowanie nowego klucza dla %(realname)s <%(email)s>..."
+
+#~ msgid "This may take a while..."
+#~ msgstr "To może zająć chwilkę..."
+
+#~ msgid "Successfully imported %s."
+#~ msgstr "Zaimportowany prawidłowo %s."
+
+#~ msgid "Host key:"
+#~ msgstr "Klucz hosta:"
+
+#~ msgid ""
+#~ "WARNING! Host key with ID %s configured, but the secret key is missing!"
+#~ msgstr ""
+#~ "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale brakuje klucza "
+#~ "szyfrującego!"
+
+#~ msgid "WARNING! Host key with ID %s configured, but not found!"
+#~ msgstr ""
+#~ "OSTRZEŻENIE! Klucz hosta o ID %s skonfigurowany, ale nie znaleziony!"
+
+#~ msgid "No host key available or configured."
+#~ msgstr "Klucz host niedostępny lun nieskonfigurowany."
+
+#~ msgid "Initializing repositories..."
+#~ msgstr "Inicjalizacja repozytoriów..."
+
+#~ msgid "No metadata available for repository %s. Cannot download any."
+#~ msgstr ""
+#~ "Brak dostępnych metadanych dla repozytorium %s. Pobranie niemożliwe."
+
+#~ msgid "Could not update metadata for %s from any mirror server"
+#~ msgstr "Nie można zaktualizować metadanych dla %s z żadnego serwera"
+
+#~ msgid "Cannot download package database for %s in offline mode."
+#~ msgstr "Nie można pobrać bazy danych pakietów dla %s w trybie offline."
+
+#~ msgid "Dependency solving finished in %.2f ms"
+#~ msgstr "Rozwiązywanie zależności zakończone w %.2f ms"
+
+#~ msgid "The solver returned one problem:"
+#~ msgstr "Rozwiązywanie zwróciło następujący problem:"
+
+#~ msgid "Do you want to manually alter the request?"
+#~ msgstr "Chcesz ręcznie zmienić żądanie?"
+
+#~ msgid "You can now try to satisfy the solver by modifying your request."
+#~ msgstr ""
+#~ "Możesz teraz zmodyfikować swoje żądanie by spełnić warunki stawiane przez "
+#~ "solver.."
+
+#~ msgid "Which problem to you want to resolve?"
+#~ msgstr "Który problem chcesz rozwiązać?"
+
+#~ msgid "Press enter to try to re-solve the request."
+#~ msgstr "Naciśnij przycisk Enter, aby spróbować ponownie rozwiązać żądanie."
+
+#~ msgid "    Solution: %s"
+#~ msgstr "Rozwiązania: %s"
+
+#~ msgid "    Solutions:"
+#~ msgstr "Rozwiązania:"
