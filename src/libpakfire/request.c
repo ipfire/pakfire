@@ -22,7 +22,7 @@
 #include <solv/solver.h>
 #include <solv/transaction.h>
 
-#ifdef DEBUG
+#ifdef SOLVER_DEBUG
 # include <solv/solverdebug.h>
 #endif
 
@@ -119,7 +119,7 @@ static int solve(PakfireRequest request, Queue* queue) {
 	clock_t solving_start = clock();
 
 	if (solver_solve(request->solver, queue)) {
-#ifdef DEBUG
+#ifdef SOLVER_DEBUG
 		solver_printallsolutions(request->solver);
 #endif
 
