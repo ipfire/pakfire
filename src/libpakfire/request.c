@@ -26,6 +26,7 @@
 # include <solv/solverdebug.h>
 #endif
 
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/private.h>
 #include <pakfire/problem.h>
@@ -114,6 +115,9 @@ static int solve(PakfireRequest request, Queue* queue) {
 
 	pakfire_pool_apply_changes(request->pool);
 
+	// Save time when we starting solving
+	clock_t solving_start = clock();
+
 	if (solver_solve(request->solver, queue)) {
 #ifdef DEBUG
 		solver_printallsolutions(request->solver);
@@ -121,6 +125,12 @@ static int solve(PakfireRequest request, Queue* queue) {
 
 		return 1;
 	}
+
+	// Save time when we finished solving
+	clock_t solving_end = clock();
+
+	DEBUG("Solved request in %.4fms\n",
+		(double)(solving_end - solving_start) * 1000 / CLOCKS_PER_SEC);
 
 	/* If the solving process was successful, we get the transaction
 	 * from the solver. */
