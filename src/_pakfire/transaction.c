@@ -59,7 +59,7 @@ static PyObject* Transaction_new(PyTypeObject* type, PyObject* args, PyObject* k
 
 static void Transaction_dealloc(TransactionObject* self) {
 	if (self->transaction)
-		pakfire_transaction_free(self->transaction);
+		pakfire_transaction_unref(self->transaction);
 
 	Py_XDECREF(self->request);
 	Py_TYPE(self)->tp_free((PyObject *)self);

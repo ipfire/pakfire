@@ -22,8 +22,10 @@
 #include <solv/transaction.h>
 
 #include <pakfire/i18n.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/step.h>
@@ -31,9 +33,20 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+struct _PakfireTransaction {
+	PakfirePool pool;
+	Transaction* transaction;
+
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
-	transaction->pool = pool;
+	if (!transaction)
+		return NULL;
+
+	transaction->pool = pakfire_pool_ref(pool);
+	transaction->nrefs = 1;
 
 	// Clone the transaction, so we get independent from what ever called this.
 	if (trans) {
@@ -46,9 +59,38 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, T
 	return transaction;
 }
 
-PAKFIRE_EXPORT void pakfire_transaction_free(PakfireTransaction transaction) {
+PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_ref(PakfireTransaction transaction) {
+	if (!transaction)
+		return NULL;
+
+	transaction->nrefs++;
+	return transaction;
+}
+
+void pakfire_transaction_free(PakfireTransaction transaction) {
+	pakfire_pool_unref(transaction->pool);
+
 	transaction_free(transaction->transaction);
 	pakfire_free(transaction);
+}
+
+PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction) {
+	if (!transaction)
+		return NULL;
+
+	if (--transaction->nrefs > 0)
+		return transaction;
+
+	pakfire_transaction_free(transaction);
+	return NULL;
+}
+
+PAKFIRE_EXPORT PakfirePool pakfire_transaction_get_pool(PakfireTransaction transaction) {
+	return pakfire_pool_ref(transaction->pool);
+}
+
+Transaction* pakfire_transaction_get_transaction(PakfireTransaction transaction) {
+	return transaction->transaction;
 }
 
 PAKFIRE_EXPORT size_t pakfire_transaction_count(PakfireTransaction transaction) {
@@ -63,7 +105,6 @@ PAKFIRE_EXPORT ssize_t pakfire_transaction_installsizechange(PakfireTransaction 
 }
 
 PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
-	PakfirePool pool = pakfire_transaction_pool(transaction);
 	ssize_t size = 0;
 
 	for (int i = 0; i < transaction->transaction->steps.count; i++) {
@@ -79,7 +120,7 @@ PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction trans
 			continue;
 
 		// Get the package for this step
-		PakfirePackage pkg = pakfire_package_create(pool, p);
+		PakfirePackage pkg = pakfire_package_create(transaction->pool, p);
 
 		if (!pakfire_package_is_cached(pkg))
 			size += pakfire_package_get_downloadsize(pkg);
@@ -100,8 +141,6 @@ PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction trans
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type) {
-	PakfirePool pool = pakfire_transaction_pool(transaction);
-
 	PakfirePackageList packagelist = pakfire_packagelist_create();
 
 	for (int i = 0; i < transaction->transaction->steps.count; i++) {
@@ -113,7 +152,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransa
 			SOLVER_TRANSACTION_SHOW_ACTIVE);
 
 		if (t == type) {
-			PakfirePackage package = pakfire_package_create(pool, p);
+			PakfirePackage package = pakfire_package_create(transaction->pool, p);
 			pakfire_packagelist_push(packagelist, package);
 		}
 	}
@@ -262,6 +301,8 @@ PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, si
 
 	if (l > 0 && string[l] == '\n')
 		string[l] = '\0';
+
+	DEBUG("Transaction: %s\n", string);
 
 	return string;
 }

@@ -26,8 +26,10 @@
 #include <pakfire/types.h>
 
 PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans);
-void pakfire_transaction_free(PakfireTransaction transaction);
+PakfireTransaction pakfire_transaction_ref(PakfireTransaction transaction);
+PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction);
 
+PakfirePool pakfire_transaction_get_pool(PakfireTransaction transaction);
 size_t pakfire_transaction_count(PakfireTransaction transaction);
 
 ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction);
@@ -49,14 +51,7 @@ typedef enum _pakfire_action_types {
 	PAKFIRE_ACTION_POSTTRANS = 1 << 3,
 } pakfire_action_type;
 
-struct _PakfireTransaction {
-	PakfirePool pool;
-	Transaction* transaction;
-};
-
-static inline PakfirePool pakfire_transaction_pool(PakfireTransaction transaction) {
-	return transaction->pool;
-}
+Transaction* pakfire_transaction_get_transaction(PakfireTransaction transaction);
 
 #endif
 
