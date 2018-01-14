@@ -48,24 +48,10 @@ static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
 }
 
 static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage pkg, const char* name, const char* evr) {
-#if 1
 	PakfireRelation relation = pakfire_relation_create(pool, name, PAKFIRE_EQ, evr);
-
 	pakfire_package_add_provides(pkg, relation);
 
 	pakfire_relation_free(relation);
-#else
-	Id iname = pool_str2id(pool->pool, name, 1);
-	Id ievr  = pool_str2id(pool->pool, evr,  1);
-
-	Id rel = pool_rel2id(pool->pool, iname, ievr, REL_EQ, 1);
-
-	Solvable* s = get_solvable(pkg);
-
-	PakfireRepo repo = pakfire_package_get_repo(pkg);
-
-	s->provides = repo_addid_dep(repo->repo, s->provides, rel, 0);
-#endif
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
