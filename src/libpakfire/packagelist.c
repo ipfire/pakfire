@@ -100,6 +100,8 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _po
 		FOR_JOB_SELECT(p, pp, q->elements[i], q->elements[i + 1]) {
 			PakfirePackage pkg = pakfire_package_create(_pool, p);
 			pakfire_packagelist_push(list, pkg);
+
+			pakfire_package_unref(pkg);
 		}
 	}
 
