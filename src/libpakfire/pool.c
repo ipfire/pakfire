@@ -56,6 +56,9 @@ PAKFIRE_EXPORT PakfirePool pakfire_pool_create(Pakfire pakfire) {
 		pool->pool = pool_create();
 		queue_init(&pool->installonly);
 
+		// Self-reference this object in libsolv
+		pool->pool->appdata = pool;
+
 		// Set architecture
 		const char* arch = pakfire_get_arch(pakfire);
 		pool_setarch(pool->pool, arch);
