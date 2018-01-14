@@ -27,6 +27,7 @@
 #include <solv/repo.h>
 
 #include <pakfire/cache.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
@@ -48,6 +49,7 @@ struct _PakfirePool {
 PAKFIRE_EXPORT PakfirePool pakfire_pool_create(Pakfire pakfire) {
 	PakfirePool pool = pakfire_calloc(1, sizeof(*pool));
 	if (pool) {
+		DEBUG("Allocated Pool at %p\n", pool);
 		pool->nrefs = 1;
 
 		// Initialize pool
@@ -82,6 +84,8 @@ static void pakfire_pool_free(PakfirePool pool) {
 
 	pool_free(pool->pool);
 	pakfire_free(pool);
+
+	DEBUG("Released Pool at %p\n", pool);
 }
 
 PAKFIRE_EXPORT PakfirePool pakfire_pool_ref(PakfirePool pool) {

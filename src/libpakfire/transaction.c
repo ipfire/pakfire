@@ -42,18 +42,19 @@ struct _PakfireTransaction {
 
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
-	if (!transaction)
-		return NULL;
+	if (transaction) {
+		DEBUG("Allocated Transaction at %p\n", transaction);
+		transaction->nrefs = 1;
 
-	transaction->pool = pakfire_pool_ref(pool);
-	transaction->nrefs = 1;
+		transaction->pool = pakfire_pool_ref(pool);
 
-	// Clone the transaction, so we get independent from what ever called this.
-	if (trans) {
-		transaction->transaction = transaction_create_clone(trans);
-		transaction_order(transaction->transaction, 0);
-	} else {
-		transaction->transaction = transaction_create(trans->pool);
+		// Clone the transaction, so we get independent from what ever called this.
+		if (trans) {
+			transaction->transaction = transaction_create_clone(trans);
+			transaction_order(transaction->transaction, 0);
+		} else {
+			transaction->transaction = transaction_create(trans->pool);
+		}
 	}
 
 	return transaction;
@@ -72,6 +73,8 @@ void pakfire_transaction_free(PakfireTransaction transaction) {
 
 	transaction_free(transaction->transaction);
 	pakfire_free(transaction);
+
+	DEBUG("Released Transaction at %p\n", transaction);
 }
 
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction) {

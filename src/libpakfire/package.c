@@ -33,6 +33,7 @@
 #include <pakfire/constants.h>
 #include <pakfire/file.h>
 #include <pakfire/i18n.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagecache.h>
 #include <pakfire/pool.h>
@@ -64,6 +65,8 @@ static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage p
 PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
 	PakfirePackage pkg = pakfire_calloc(1, sizeof(*pkg));
 	if (pkg) {
+		DEBUG("Allocated Package at %p\n", pkg);
+
 		pkg->pool = pakfire_pool_ref(pool);
 		pkg->id = id;
 
@@ -90,6 +93,8 @@ static void pakfire_package_free(PakfirePackage pkg) {
 	pakfire_pool_unref(pkg->pool);
 	pakfire_package_filelist_remove(pkg);
 	pakfire_free(pkg);
+
+	DEBUG("Released Package at %p\n", pkg);
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_package_ref(PakfirePackage pkg) {
