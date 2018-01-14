@@ -147,15 +147,4 @@ enum pakfire_package_dump_flags {
 	PAKFIRE_PKG_DUMP_LONG     = 1 << 1,
 };
 
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfirePackage {
-	PakfirePool pool;
-	Id id;
-	int nrefs;
-	PakfireFile filelist;
-};
-
-#endif
-
 #endif /* PAKFIRE_PACKAGE_H */

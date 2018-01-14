@@ -43,6 +43,13 @@
 #include <pakfire/repocache.h>
 #include <pakfire/util.h>
 
+struct _PakfirePackage {
+	PakfirePool pool;
+	Id id;
+	PakfireFile filelist;
+	int nrefs;
+};
+
 static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
     return pakfire_pool_get_solv_pool(pkg->pool);
 }
