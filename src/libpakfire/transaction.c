@@ -36,7 +36,8 @@
 struct _PakfireTransaction {
 	PakfirePool pool;
 	Transaction* transaction;
-
+	PakfireStep* steps;
+	size_t num_steps;
 	int nrefs;
 };
 
@@ -55,6 +56,14 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, T
 		} else {
 			transaction->transaction = transaction_create(trans->pool);
 		}
+
+		// Save total number of steps
+		transaction->num_steps = transaction->transaction->steps.count;
+
+		// Import all steps
+		PakfireStep* steps = transaction->steps = pakfire_calloc(transaction->num_steps + 1, sizeof(*steps));
+		for (unsigned int i = 0; i < transaction->num_steps; i++)
+			*steps++ = pakfire_step_create(transaction, transaction->transaction->steps.elements[i]);
 	}
 
 	return transaction;
@@ -70,6 +79,10 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_ref(PakfireTransaction tra
 
 void pakfire_transaction_free(PakfireTransaction transaction) {
 	pakfire_pool_unref(transaction->pool);
+
+	// Release all steps
+	while (*transaction->steps)
+		pakfire_step_unref(*transaction->steps++);
 
 	transaction_free(transaction->transaction);
 	pakfire_free(transaction);
@@ -97,7 +110,7 @@ Transaction* pakfire_transaction_get_transaction(PakfireTransaction transaction)
 }
 
 PAKFIRE_EXPORT size_t pakfire_transaction_count(PakfireTransaction transaction) {
-	return transaction->transaction->steps.count;
+	return transaction->num_steps;
 }
 
 PAKFIRE_EXPORT ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction) {
@@ -110,32 +123,34 @@ PAKFIRE_EXPORT ssize_t pakfire_transaction_installsizechange(PakfireTransaction 
 PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
 	ssize_t size = 0;
 
-	size_t steps = pakfire_transaction_count(transaction);
-	for (unsigned int i = 0; i < steps; i++) {
-		PakfireStep step = pakfire_transaction_get_step(transaction, i);
-		size += pakfire_step_get_downloadsize(step);
+	PakfireStep* steps = transaction->steps;
+	while (*steps) {
+		PakfireStep step = *steps++;
 
-		pakfire_step_unref(step);
+		size += pakfire_step_get_downloadsize(step);
 	}
 
 	return size;
 }
 
-PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index) {
-	Transaction* trans = transaction->transaction;
+PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, unsigned int index) {
+	PakfireStep* steps = transaction->steps;
 
-	if (index >= trans->steps.count)
-		return NULL;
+	while (index-- && *steps)
+		steps++;
 
-	return pakfire_step_create(transaction, trans->steps.elements[index]);
+	if (*steps)
+		return pakfire_step_ref(*steps);
+
+	return NULL;
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, pakfire_step_type_t type) {
 	PakfirePackageList packagelist = pakfire_packagelist_create();
 
-	size_t steps = pakfire_transaction_count(transaction);
-	for (unsigned int i = 0; i < steps; i++) {
-		PakfireStep step = pakfire_transaction_get_step(transaction, i);
+	PakfireStep* steps = transaction->steps;
+	while (*steps) {
+		PakfireStep step = *steps++;
 
 		if (pakfire_step_get_type(step) == type) {
 			PakfirePackage package = pakfire_step_get_package(step);
@@ -143,8 +158,6 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransa
 
 			pakfire_package_unref(package);
 		}
-
-		pakfire_step_unref(step);
 	}
 
 	// Sort list in place
@@ -298,18 +311,15 @@ PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, si
 }
 
 static int pakfire_transaction_run_steps(PakfireTransaction transaction, const pakfire_action_type action) {
-	size_t steps = pakfire_transaction_count(transaction);
+	int r = 0;
 
 	// Walk through all steps
-	int r = 0;
-	for (unsigned int i = 0; i < steps; i++) {
-		PakfireStep step = pakfire_transaction_get_step(transaction, i);
+	PakfireStep* steps = transaction->steps;
+	while (*steps) {
+		PakfireStep step = *steps++;
 
 		// Verify the step
 		r = pakfire_step_run(step, action);
-
-		// Free memory
-		pakfire_step_unref(step);
 
 		// End loop if action was unsuccessful
 		if (r)

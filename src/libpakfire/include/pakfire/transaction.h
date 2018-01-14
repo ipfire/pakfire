@@ -34,7 +34,7 @@ size_t pakfire_transaction_count(PakfireTransaction transaction);
 
 ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction);
 
-PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index);
+PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, unsigned int index);
 PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, pakfire_step_type_t type);
 
 char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width);
