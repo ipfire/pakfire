@@ -224,6 +224,7 @@ static size_t pakfire_transaction_add_section(char** str, size_t width, PakfireT
 	for (unsigned int i = 0; i < c; i++) {
 		PakfirePackage pkg = pakfire_packagelist_get(list, i);
 		pakfire_transaction_add_package(str, width, pkg);
+		pakfire_package_unref(pkg);
 	}
 
 	// newline

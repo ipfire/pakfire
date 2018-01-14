@@ -63,7 +63,7 @@ PAKFIRE_EXPORT void pakfire_packagelist_sort(PakfirePackageList list) {
 
 PAKFIRE_EXPORT PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index) {
 	if (index < list->count)
-		return list->elements[index];
+		return pakfire_package_ref(list->elements[index]);
 
 	return NULL;
 }

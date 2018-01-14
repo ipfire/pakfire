@@ -151,6 +151,8 @@ PyObject* PyList_FromPackageList(PoolObject* pool, PakfirePackageList packagelis
 
 		PyObject* item = new_package(pool, pakfire_package_id(package));
 		PyList_Append(list, item);
+
+		pakfire_package_unref(package);
 		Py_DECREF(item);
 	}
 

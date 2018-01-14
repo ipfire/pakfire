@@ -86,13 +86,16 @@ static PyObject* Selector_get_providers(SelectorObject* self) {
 	PakfirePackageList packagelist = pakfire_selector_providers(self->selector);
 
 	PyObject* list = PyList_New(0);
-	PakfirePackage package;
-	int i;
+	for (unsigned int i = 0; i < pakfire_packagelist_count(packagelist); i++) {
+		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
 
-	FOR_PACKAGELIST(package, packagelist, i) {
 		PyObject* obj = new_package(self->pool, pakfire_package_id(package));
 		PyList_Append(list, obj);
+
+		pakfire_package_unref(package);
+		Py_DECREF(obj);
 	}
+
 	pakfire_packagelist_free(packagelist);
 
 	return list;

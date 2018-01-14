@@ -36,9 +36,6 @@ PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index);
 void pakfire_packagelist_push(PakfirePackageList list, PakfirePackage pkg);
 void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePackage pkg);
 
-#define FOR_PACKAGELIST(pkg, list, i) \
-	for (i = 0; (pkg = pakfire_packagelist_get(list, i)) != NULL; i++)
-
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfirePackageList {
