@@ -206,7 +206,7 @@ static void pakfire_transaction_add_separator(char** str, size_t width) {
 }
 
 static size_t pakfire_transaction_add_section(char** str, size_t width, PakfireTransaction transaction,
-		const char* headline, pakfire_step_type type) {
+		const char* headline, pakfire_step_type_t type) {
 	PakfirePackageList list = pakfire_transaction_get_packages(transaction, type);
 
 	// Nothing to do if there are no packages in this stage

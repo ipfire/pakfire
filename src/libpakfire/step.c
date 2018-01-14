@@ -54,7 +54,7 @@ PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {
 	return pakfire_package_create(step->pool, step->id);
 }
 
-PAKFIRE_EXPORT pakfire_step_type pakfire_step_get_type(PakfireStep step) {
+PAKFIRE_EXPORT pakfire_step_type_t pakfire_step_get_type(PakfireStep step) {
 	Transaction* trans = pakfire_transaction_get_transaction(step->transaction);
 
 	int type = transaction_type(trans, step->id,
@@ -92,7 +92,7 @@ PAKFIRE_EXPORT pakfire_step_type pakfire_step_get_type(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_step_get_type_string(PakfireStep step) {
-	pakfire_step_type type = pakfire_step_get_type(step);
+	pakfire_step_type_t type = pakfire_step_get_type(step);
 
 	switch(type) {
 		case PAKFIRE_STEP_INSTALL:
@@ -155,7 +155,7 @@ PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
 	PakfirePackage pkg = pakfire_step_get_package(step);
 	int installsize = pakfire_package_get_installsize(pkg);
 
-	pakfire_step_type type = pakfire_step_get_type(step);
+	pakfire_step_type_t type = pakfire_step_get_type(step);
 	switch (type) {
 		case PAKFIRE_STEP_IGNORE:
 		case PAKFIRE_STEP_ERASE:
@@ -225,7 +225,7 @@ static int pakfire_step_erase(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
-	pakfire_step_type type = pakfire_step_get_type(step);
+	pakfire_step_type_t type = pakfire_step_get_type(step);
 
 	// Get the package
 	PakfirePackage pkg = pakfire_step_get_package(step);

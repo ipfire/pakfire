@@ -34,13 +34,13 @@ typedef enum _pakfire_step_types {
 	PAKFIRE_STEP_UPGRADE,
 	PAKFIRE_STEP_DOWNGRADE,
 	PAKFIRE_STEP_OBSOLETE,
-} pakfire_step_type;
+} pakfire_step_type_t;
 
 PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id);
 void pakfire_step_free(PakfireStep step);
 
 PakfirePackage pakfire_step_get_package(PakfireStep step);
-pakfire_step_type pakfire_step_get_type(PakfireStep step);
+pakfire_step_type_t pakfire_step_get_type(PakfireStep step);
 const char* pakfire_step_get_type_string(PakfireStep step);
 
 unsigned long long pakfire_step_get_downloadsize(PakfireStep step);
