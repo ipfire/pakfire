@@ -38,13 +38,14 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
 
 	step->pool = pakfire_transaction_get_pool(transaction);
-	step->transaction = transaction;
+	step->transaction = pakfire_transaction_ref(transaction);
 	step->id = id;
 
 	return step;
 }
 
 PAKFIRE_EXPORT void pakfire_step_free(PakfireStep step) {
+	pakfire_transaction_unref(step->transaction);
 	pakfire_pool_unref(step->pool);
 	pakfire_free(step);
 }
