@@ -23,18 +23,7 @@
 
 #include <solv/pooltypes.h>
 
-#include <pakfire/transaction.h>
 #include <pakfire/types.h>
-
-typedef enum _pakfire_step_types {
-	PAKFIRE_STEP_IGNORE = 0,
-	PAKFIRE_STEP_INSTALL,
-	PAKFIRE_STEP_REINSTALL,
-	PAKFIRE_STEP_ERASE,
-	PAKFIRE_STEP_UPGRADE,
-	PAKFIRE_STEP_DOWNGRADE,
-	PAKFIRE_STEP_OBSOLETE,
-} pakfire_step_type_t;
 
 PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id);
 void pakfire_step_free(PakfireStep step);

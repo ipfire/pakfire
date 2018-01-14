@@ -35,21 +35,13 @@ size_t pakfire_transaction_count(PakfireTransaction transaction);
 ssize_t pakfire_transaction_installsizechange(PakfireTransaction transaction);
 
 PakfireStep pakfire_transaction_get_step(PakfireTransaction transaction, int index);
-PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type);
+PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, pakfire_step_type_t type);
 
 char* pakfire_transaction_dump(PakfireTransaction transaction, size_t width);
 
 int pakfire_transaction_run(PakfireTransaction transaction);
 
 #ifdef PAKFIRE_PRIVATE
-
-typedef enum _pakfire_action_types {
-	PAKFIRE_ACTION_NOOP      = 0,
-	PAKFIRE_ACTION_VERIFY    = 1 << 0,
-	PAKFIRE_ACTION_EXECUTE   = 1 << 1,
-	PAKFIRE_ACTION_PRETRANS  = 1 << 2,
-	PAKFIRE_ACTION_POSTTRANS = 1 << 3,
-} pakfire_action_type;
 
 Transaction* pakfire_transaction_get_transaction(PakfireTransaction transaction);
 

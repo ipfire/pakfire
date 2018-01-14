@@ -66,6 +66,24 @@ enum _pakfire_comparison_types {
 	PAKFIRE_GLOB      = 1 << 12,
 };
 
+typedef enum _pakfire_action_types {
+	PAKFIRE_ACTION_NOOP      = 0,
+	PAKFIRE_ACTION_VERIFY    = 1 << 0,
+	PAKFIRE_ACTION_EXECUTE   = 1 << 1,
+	PAKFIRE_ACTION_PRETRANS  = 1 << 2,
+	PAKFIRE_ACTION_POSTTRANS = 1 << 3,
+} pakfire_action_type;
+
+typedef enum _pakfire_step_types {
+	PAKFIRE_STEP_IGNORE = 0,
+	PAKFIRE_STEP_INSTALL,
+	PAKFIRE_STEP_REINSTALL,
+	PAKFIRE_STEP_ERASE,
+	PAKFIRE_STEP_UPGRADE,
+	PAKFIRE_STEP_DOWNGRADE,
+	PAKFIRE_STEP_OBSOLETE,
+} pakfire_step_type_t;
+
 #define PAKFIRE_SOLVABLE_FILEMARKER "solvable:filemarker"
 
 #endif /* PAKFIRE_TYPES_H */

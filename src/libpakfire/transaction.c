@@ -107,25 +107,12 @@ PAKFIRE_EXPORT ssize_t pakfire_transaction_installsizechange(PakfireTransaction 
 PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction transaction) {
 	ssize_t size = 0;
 
-	for (int i = 0; i < transaction->transaction->steps.count; i++) {
-		Id p = transaction->transaction->steps.elements[i];
-		Id t = transaction_type(transaction->transaction, p,
-			SOLVER_TRANSACTION_SHOW_OBSOLETES |
-			SOLVER_TRANSACTION_CHANGE_IS_REINSTALL |
-			SOLVER_TRANSACTION_SHOW_ALL |
-			SOLVER_TRANSACTION_SHOW_ACTIVE);
+	size_t steps = pakfire_transaction_count(transaction);
+	for (unsigned int i = 0; i < steps; i++) {
+		PakfireStep step = pakfire_transaction_get_step(transaction, i);
+		size += pakfire_step_get_downloadsize(step);
 
-		// Erasing a package does not require us to download it
-		if (t == SOLVER_TRANSACTION_ERASE)
-			continue;
-
-		// Get the package for this step
-		PakfirePackage pkg = pakfire_package_create(transaction->pool, p);
-
-		if (!pakfire_package_is_cached(pkg))
-			size += pakfire_package_get_downloadsize(pkg);
-
-		pakfire_package_free(pkg);
+		pakfire_step_free(step);
 	}
 
 	return size;
@@ -140,21 +127,21 @@ PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction trans
 	return pakfire_step_create(transaction, trans->steps.elements[index]);
 }
 
-PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, int type) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, pakfire_step_type_t type) {
 	PakfirePackageList packagelist = pakfire_packagelist_create();
 
-	for (int i = 0; i < transaction->transaction->steps.count; i++) {
-		Id p = transaction->transaction->steps.elements[i];
-		Id t = transaction_type(transaction->transaction, p,
-			SOLVER_TRANSACTION_SHOW_OBSOLETES |
-			SOLVER_TRANSACTION_CHANGE_IS_REINSTALL |
-			SOLVER_TRANSACTION_SHOW_ALL |
-			SOLVER_TRANSACTION_SHOW_ACTIVE);
+	size_t steps = pakfire_transaction_count(transaction);
+	for (unsigned int i = 0; i < steps; i++) {
+		PakfireStep step = pakfire_transaction_get_step(transaction, i);
 
-		if (t == type) {
-			PakfirePackage package = pakfire_package_create(transaction->pool, p);
+		if (pakfire_step_get_type(step) == type) {
+			PakfirePackage package = pakfire_step_get_package(step);
 			pakfire_packagelist_push(packagelist, package);
+
+			pakfire_package_free(package);
 		}
+
+		pakfire_step_free(step);
 	}
 
 	// Sort list in place
