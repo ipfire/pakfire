@@ -81,14 +81,14 @@ PAKFIRE_EXPORT int pakfire_packagelist_has(PakfirePackageList list, PakfirePacka
 
 PAKFIRE_EXPORT void pakfire_packagelist_push(PakfirePackageList list, PakfirePackage pkg) {
 	list->elements = solv_extend(list->elements, list->count, 1, sizeof(pkg), BLOCK_SIZE);
-	list->elements[list->count++] = pkg;
+	list->elements[list->count++] = pakfire_package_ref(pkg);
 }
 
 PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePackage pkg) {
 	if (pakfire_packagelist_has(list, pkg))
 		return;
 
-	pakfire_packagelist_push(list, pakfire_package_ref(pkg));
+	pakfire_packagelist_push(list, pkg);
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {
