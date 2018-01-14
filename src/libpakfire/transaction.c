@@ -115,7 +115,7 @@ PAKFIRE_EXPORT ssize_t pakfire_transaction_downloadsize(PakfireTransaction trans
 		PakfireStep step = pakfire_transaction_get_step(transaction, i);
 		size += pakfire_step_get_downloadsize(step);
 
-		pakfire_step_free(step);
+		pakfire_step_unref(step);
 	}
 
 	return size;
@@ -144,7 +144,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransa
 			pakfire_package_unref(package);
 		}
 
-		pakfire_step_free(step);
+		pakfire_step_unref(step);
 	}
 
 	// Sort list in place
@@ -309,7 +309,7 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 		r = pakfire_step_run(step, action);
 
 		// Free memory
-		pakfire_step_free(step);
+		pakfire_step_unref(step);
 
 		// End loop if action was unsuccessful
 		if (r)

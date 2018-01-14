@@ -25,6 +25,7 @@
 
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
@@ -36,18 +37,41 @@
 
 PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
+	if (step) {
+		DEBUG("Allocated Step at %p\n", step);
+		step->nrefs = 1;
 
-	step->pool = pakfire_transaction_get_pool(transaction);
-	step->transaction = pakfire_transaction_ref(transaction);
-	step->id = id;
+		step->pool = pakfire_transaction_get_pool(transaction);
+		step->transaction = pakfire_transaction_ref(transaction);
+		step->id = id;
+	}
 
 	return step;
 }
 
-PAKFIRE_EXPORT void pakfire_step_free(PakfireStep step) {
+PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
+	step->nrefs++;
+
+	return step;
+}
+
+static void pakfire_step_free(PakfireStep step) {
 	pakfire_transaction_unref(step->transaction);
 	pakfire_pool_unref(step->pool);
 	pakfire_free(step);
+
+	DEBUG("Released Step at %p\n", step);
+}
+
+PAKFIRE_EXPORT PakfireStep pakfire_step_unref(PakfireStep step) {
+	if (!step)
+		return NULL;
+
+	if (--step->nrefs > 0)
+		return step;
+
+	pakfire_step_free(step);
+	return NULL;
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {

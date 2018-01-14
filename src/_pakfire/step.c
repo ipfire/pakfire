@@ -58,8 +58,7 @@ static PyObject* Step_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 }
 
 static void Step_dealloc(StepObject* self) {
-	if (self->step)
-		pakfire_step_free(self->step);
+	pakfire_step_unref(self->step);
 
 	Py_XDECREF(self->transaction);
 	Py_TYPE(self)->tp_free((PyObject *)self);

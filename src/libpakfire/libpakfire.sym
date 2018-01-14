@@ -302,13 +302,14 @@ global:
 
 	# step
 	pakfire_step_create;
-	pakfire_step_free;
 	pakfire_step_get_downloadsize;
 	pakfire_step_get_installsizechange;
 	pakfire_step_get_package;
 	pakfire_step_get_type;
 	pakfire_step_get_type_string;
 	pakfire_step_needs_download;
+	pakfire_step_ref;
+	pakfire_step_unref;
 
 	# transaction
 	pakfire_transaction_count;

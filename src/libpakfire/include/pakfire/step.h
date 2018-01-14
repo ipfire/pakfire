@@ -26,7 +26,8 @@
 #include <pakfire/types.h>
 
 PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id);
-void pakfire_step_free(PakfireStep step);
+PakfireStep pakfire_step_ref(PakfireStep step);
+PakfireStep pakfire_step_unref(PakfireStep step);
 
 PakfirePackage pakfire_step_get_package(PakfireStep step);
 pakfire_step_type_t pakfire_step_get_type(PakfireStep step);
@@ -58,6 +59,7 @@ struct _PakfireStep {
 	PakfirePool pool;
 	PakfireTransaction transaction;
 	Id id;
+	int nrefs;
 };
 
 static inline PakfirePool pakfire_step_pool(PakfireStep step) {
