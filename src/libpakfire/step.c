@@ -38,6 +38,7 @@
 struct _PakfireStep {
 	PakfirePool pool;
 	PakfireTransaction transaction;
+	PakfirePackage package;
 	Id id;
 	int nrefs;
 };
@@ -51,6 +52,9 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 		step->pool = pakfire_transaction_get_pool(transaction);
 		step->transaction = pakfire_transaction_ref(transaction);
 		step->id = id;
+
+		// Get the package
+		step->package = pakfire_package_create(step->pool, step->id);
 	}
 
 	return step;
@@ -63,6 +67,7 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
 }
 
 static void pakfire_step_free(PakfireStep step) {
+	pakfire_package_unref(step->package);
 	pakfire_transaction_unref(step->transaction);
 	pakfire_pool_unref(step->pool);
 	pakfire_free(step);
@@ -82,7 +87,7 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_unref(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {
-	return pakfire_package_create(step->pool, step->id);
+	return pakfire_package_ref(step->package);
 }
 
 PAKFIRE_EXPORT pakfire_step_type_t pakfire_step_get_type(PakfireStep step) {
@@ -168,22 +173,17 @@ static int pakfire_step_get_downloadtype(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT unsigned long long pakfire_step_get_downloadsize(PakfireStep step) {
-	PakfirePackage pkg = NULL;
 	int downloadsize = 0;
 
 	if (pakfire_step_get_downloadtype(step)) {
-		pkg = pakfire_step_get_package(step);
-		downloadsize = pakfire_package_get_downloadsize(pkg);
+		downloadsize = pakfire_package_get_downloadsize(step->package);
 	}
-
-	pakfire_package_unref(pkg);
 
 	return downloadsize;
 }
 
 PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
-	PakfirePackage pkg = pakfire_step_get_package(step);
-	int installsize = pakfire_package_get_installsize(pkg);
+	int installsize = pakfire_package_get_installsize(step->package);
 
 	pakfire_step_type_t type = pakfire_step_get_type(step);
 	switch (type) {
@@ -197,22 +197,16 @@ PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
 			break;
 	}
 
-	pakfire_package_unref(pkg);
-
 	return installsize;
 }
 
 PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
-	PakfirePackage pkg = NULL;
 	int ret = true;
 
 	if (!pakfire_step_get_downloadtype(step))
 		return false;
 
-	/* Get the package object. */
-	pkg = pakfire_step_get_package(step);
-
-	PakfireRepo repo = pakfire_package_get_repo(pkg);
+	PakfireRepo repo = pakfire_package_get_repo(step->package);
 	if (pakfire_repo_is_installed_repo(repo)) {
 		ret = false;
 		goto finish;
@@ -223,11 +217,9 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 		goto finish;
 
 	// Return false if package is in cache.
-	ret = !pakfire_cache_has_package(cache, pkg);
+	ret = !pakfire_cache_has_package(cache, step->package);
 
 finish:
-	pakfire_package_unref(pkg);
-
 	return ret;
 }
 
@@ -255,9 +247,6 @@ static int pakfire_step_erase(PakfireStep step) {
 
 PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
 	pakfire_step_type_t type = pakfire_step_get_type(step);
-
-	// Get the package
-	PakfirePackage pkg = pakfire_step_get_package(step);
 
 	int r = 0;
 	switch (action) {
@@ -365,7 +354,5 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type 
 	}
 
 END:
-	pakfire_package_unref(pkg);
-
 	return r;
 }
