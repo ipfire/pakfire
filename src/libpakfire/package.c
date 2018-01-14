@@ -70,9 +70,8 @@ static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage p
 
 PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
 	PakfirePackage pkg = pakfire_calloc(1, sizeof(*pkg));
-
 	if (pkg) {
-		pkg->pool = pool;
+		pkg->pool = pakfire_pool_ref(pool);
 		pkg->id = id;
 
 		// Initialize reference counter
@@ -98,6 +97,7 @@ PAKFIRE_EXPORT void pakfire_package_free(PakfirePackage pkg) {
 	if (--pkg->nrefs > 0)
 		return;
 
+	pakfire_pool_unref(pkg->pool);
 	pakfire_package_filelist_remove(pkg);
 	pakfire_free(pkg);
 }
