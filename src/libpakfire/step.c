@@ -172,18 +172,15 @@ static int pakfire_step_get_downloadtype(PakfireStep step) {
 	return 0;
 }
 
-PAKFIRE_EXPORT unsigned long long pakfire_step_get_downloadsize(PakfireStep step) {
-	int downloadsize = 0;
+PAKFIRE_EXPORT size_t pakfire_step_get_downloadsize(PakfireStep step) {
+	if (pakfire_step_get_downloadtype(step))
+		return pakfire_package_get_downloadsize(step->package);
 
-	if (pakfire_step_get_downloadtype(step)) {
-		downloadsize = pakfire_package_get_downloadsize(step->package);
-	}
-
-	return downloadsize;
+	return 0;
 }
 
-PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
-	int installsize = pakfire_package_get_installsize(step->package);
+PAKFIRE_EXPORT ssize_t pakfire_step_get_installsizechange(PakfireStep step) {
+	ssize_t installsize = pakfire_package_get_installsize(step->package);
 
 	pakfire_step_type_t type = pakfire_step_get_type(step);
 	switch (type) {

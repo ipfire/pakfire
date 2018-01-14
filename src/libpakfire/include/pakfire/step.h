@@ -33,8 +33,8 @@ PakfirePackage pakfire_step_get_package(PakfireStep step);
 pakfire_step_type_t pakfire_step_get_type(PakfireStep step);
 const char* pakfire_step_get_type_string(PakfireStep step);
 
-unsigned long long pakfire_step_get_downloadsize(PakfireStep step);
-long pakfire_step_get_installsizechange(PakfireStep step);
+size_t pakfire_step_get_downloadsize(PakfireStep step);
+ssize_t pakfire_step_get_installsizechange(PakfireStep step);
 
 int pakfire_step_needs_download(PakfireStep step);
 
