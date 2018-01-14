@@ -25,6 +25,7 @@
 #include <solv/solver.h>
 #include <solv/util.h>
 
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/private.h>
@@ -33,23 +34,51 @@
 
 #define BLOCK_SIZE 31
 
+struct _PakfirePackageList {
+	PakfirePackage* elements;
+	size_t count;
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_create(void) {
 	PakfirePackageList list = pakfire_calloc(1, sizeof(*list));
+	if (list) {
+		DEBUG("Allocated PackageList at %p\n", list);
+		list->nrefs = 1;
+	}
 
 	return list;
 }
 
-PAKFIRE_EXPORT void pakfire_packagelist_free(PakfirePackageList list) {
-	for (int i = 0; i < list->count; i++) {
-		PakfirePackage pkg = list->elements[i];
-		pakfire_package_unref(pkg);
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_ref(PakfirePackageList list) {
+	list->nrefs++;
+
+	return list;
+}
+
+static void pakfire_packagelist_free(PakfirePackageList list) {
+	for (unsigned int i = 0; i < list->count; i++) {
+		pakfire_package_unref(list->elements[i]);
 	}
 
 	pakfire_free(list->elements);
 	pakfire_free(list);
+
+	DEBUG("Released PackageList at %p\n", list);
 }
 
-PAKFIRE_EXPORT int pakfire_packagelist_count(PakfirePackageList list) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_unref(PakfirePackageList list) {
+	if (!list)
+		return NULL;
+
+	if (--list->nrefs > 0)
+		return list;
+
+	pakfire_packagelist_free(list);
+	return NULL;
+}
+
+PAKFIRE_EXPORT size_t pakfire_packagelist_count(PakfirePackageList list) {
 	return list->count;
 }
 
@@ -61,7 +90,7 @@ PAKFIRE_EXPORT void pakfire_packagelist_sort(PakfirePackageList list) {
 	qsort(list->elements, list->count, sizeof(*list->elements), _packagelist_cmp);
 }
 
-PAKFIRE_EXPORT PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index) {
+PAKFIRE_EXPORT PakfirePackage pakfire_packagelist_get(PakfirePackageList list, unsigned int index) {
 	if (index < list->count)
 		return pakfire_package_ref(list->elements[index]);
 
@@ -69,7 +98,7 @@ PAKFIRE_EXPORT PakfirePackage pakfire_packagelist_get(PakfirePackageList list, i
 }
 
 PAKFIRE_EXPORT int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg) {
-	for (int i = 0; i < list->count; i++) {
+	for (unsigned int i = 0; i < list->count; i++) {
 		PakfirePackage _pkg = list->elements[i];
 
 		if (pakfire_package_identical(pkg, _pkg))

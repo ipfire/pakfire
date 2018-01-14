@@ -231,7 +231,7 @@ static size_t pakfire_transaction_add_section(char** str, size_t width, PakfireT
 	pakfire_transaction_add_newline(str, width);
 
 END:
-	pakfire_packagelist_free(list);
+	pakfire_packagelist_unref(list);
 
 	return c;
 }

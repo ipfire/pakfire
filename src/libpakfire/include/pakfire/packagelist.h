@@ -26,22 +26,18 @@
 #include <pakfire/types.h>
 
 PakfirePackageList pakfire_packagelist_create(void);
-void pakfire_packagelist_free(PakfirePackageList list);
+PakfirePackageList pakfire_packagelist_ref(PakfirePackageList list);
+PakfirePackageList pakfire_packagelist_unref(PakfirePackageList list);
 
-int pakfire_packagelist_count(PakfirePackageList list);
+size_t pakfire_packagelist_count(PakfirePackageList list);
 void pakfire_packagelist_sort(PakfirePackageList list);
 int pakfire_packagelist_has(PakfirePackageList list, PakfirePackage pkg);
-PakfirePackage pakfire_packagelist_get(PakfirePackageList list, int index);
+PakfirePackage pakfire_packagelist_get(PakfirePackageList list, unsigned int index);
 
 void pakfire_packagelist_push(PakfirePackageList list, PakfirePackage pkg);
 void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePackage pkg);
 
 #ifdef PAKFIRE_PRIVATE
-
-struct _PakfirePackageList {
-	PakfirePackage* elements;
-	int count;
-};
 
 PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q);
 

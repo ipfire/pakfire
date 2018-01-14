@@ -186,12 +186,13 @@ global:
 	# packagelist
 	pakfire_packagelist_count;
 	pakfire_packagelist_create;
-	pakfire_packagelist_free;
 	pakfire_packagelist_get;
 	pakfire_packagelist_has;
 	pakfire_packagelist_push;
 	pakfire_packagelist_push_if_not_exists;
+	pakfire_packagelist_ref;
 	pakfire_packagelist_sort;
+	pakfire_packagelist_unref;
 
 	# pool
 	pakfire_pool_count;

@@ -122,7 +122,7 @@ static PyObject* Relation_get_providers(RelationObject* self) {
 		Py_DECREF(obj);
 	}
 
-	pakfire_packagelist_free(packagelist);
+	pakfire_packagelist_unref(packagelist);
 
 	return list;
 }
