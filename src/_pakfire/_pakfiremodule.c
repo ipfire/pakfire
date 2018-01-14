@@ -25,6 +25,8 @@
 #include <sched.h>
 #include <sys/personality.h>
 
+#include <solv/solver.h>
+
 #include "archive.h"
 #include "capabilities.h"
 #include "constants.h"

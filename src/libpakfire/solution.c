@@ -26,11 +26,12 @@
 #include <pakfire/i18n.h>
 #include <pakfire/private.h>
 #include <pakfire/problem.h>
+#include <pakfire/request.h>
 #include <pakfire/solution.h>
 #include <pakfire/util.h>
 
 static void import_elements(PakfireSolution solution) {
-	Solver* solver = solution->problem->request->solver;
+	Solver* solver = pakfire_request_get_solver(solution->problem->request);
 	Pool* pool = solver->pool;
 
 	// Reserve memory

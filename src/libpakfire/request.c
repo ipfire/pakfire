@@ -36,14 +36,23 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+struct _PakfireRequest {
+	PakfirePool pool;
+	Queue queue;
+	Solver* solver;
+	Transaction* transaction;
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfireRequest pakfire_request_create(PakfirePool pool) {
 	PakfireRequest request = pakfire_calloc(1, sizeof(*request));
-	request->pool = pool;
+	if (request) {
+		DEBUG("Allocated Request at %p\n", request);
+		request->nrefs = 1;
 
-	queue_init(&request->queue);
-
-	// Initialise reference counter
-	request->nrefs = 1;
+		request->pool = pakfire_pool_ref(pool);
+		queue_init(&request->queue);
+	}
 
 	return request;
 }
@@ -54,9 +63,8 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_ref(PakfireRequest request) {
 	return request;
 }
 
-PAKFIRE_EXPORT void pakfire_request_free(PakfireRequest request) {
-	if (--request->nrefs > 0)
-		return;
+static void pakfire_request_free(PakfireRequest request) {
+	pakfire_pool_unref(request->pool);
 
 	if (request->transaction)
 		transaction_free(request->transaction);
@@ -65,17 +73,32 @@ PAKFIRE_EXPORT void pakfire_request_free(PakfireRequest request) {
 		solver_free(request->solver);
 
 	queue_free(&request->queue);
-
 	pakfire_free(request);
+
+	DEBUG("Released Request at %p\n", request);
 }
 
-PAKFIRE_EXPORT PakfirePool pakfire_request_pool(PakfireRequest request) {
-	return request->pool;
+PAKFIRE_EXPORT PakfireRequest pakfire_request_unref(PakfireRequest request) {
+	if (!request)
+		return NULL;
+
+	if (--request->nrefs > 0)
+		return request;
+
+	pakfire_request_free(request);
+	return NULL;
+}
+
+PAKFIRE_EXPORT PakfirePool pakfire_request_get_pool(PakfireRequest request) {
+	return pakfire_pool_ref(request->pool);
+}
+
+Solver* pakfire_request_get_solver(PakfireRequest request) {
+	return request->solver;
 }
 
 static void init_solver(PakfireRequest request, int flags) {
-	PakfirePool pool = pakfire_request_pool(request);
-	Pool* p = pakfire_pool_get_solv_pool(pool);
+	Pool* p = pakfire_pool_get_solv_pool(request->pool);
 
 	Solver* solver = solver_create(p);
 

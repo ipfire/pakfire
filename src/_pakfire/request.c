@@ -44,7 +44,7 @@ static PyObject* Request_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 static void Request_dealloc(RequestObject* self) {
 	if (self->request)
-		pakfire_request_free(self->request);
+		pakfire_request_unref(self->request);
 
 	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);

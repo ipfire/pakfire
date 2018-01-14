@@ -22,7 +22,6 @@
 #define PAKFIRE_REQUEST_H
 
 #include <solv/queue.h>
-#include <solv/solver.h>
 #include <solv/transaction.h>
 
 #include <pakfire/types.h>
@@ -42,10 +41,11 @@ enum _pakfire_solver_flags {
 };
 
 PakfireRequest pakfire_request_create(PakfirePool pool);
-PakfireRequest pakfire_request_ref(PakfireRequest request);
-void pakfire_request_free(PakfireRequest request);
 
-PakfirePool pakfire_request_pool(PakfireRequest request);
+PakfireRequest pakfire_request_ref(PakfireRequest request);
+PakfireRequest pakfire_request_unref(PakfireRequest request);
+
+PakfirePool pakfire_request_get_pool(PakfireRequest request);
 
 int pakfire_request_solve(PakfireRequest request, int flags);
 PakfireProblem pakfire_request_get_problems(PakfireRequest request);
@@ -74,13 +74,9 @@ int pakfire_request_verify(PakfireRequest request);
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _PakfireRequest {
-	PakfirePool pool;
-	Queue queue;
-	Solver* solver;
-	Transaction* transaction;
-	int nrefs;
-};
+#include <solv/solver.h>
+
+Solver* pakfire_request_get_solver(PakfireRequest request);
 
 #endif
 

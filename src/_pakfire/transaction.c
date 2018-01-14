@@ -22,6 +22,7 @@
 
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pool.h>
 #include <pakfire/transaction.h>
 
 #include "package.h"
@@ -79,9 +80,10 @@ static int Transaction_init(TransactionObject* self, PyObject* args, PyObject* k
 
 	// If request has got no transaction, we will create an (empty) new one.
 	if (!self->transaction) {
-		PakfirePool pool = pakfire_request_pool(req);
+		PakfirePool pool = pakfire_request_get_pool(req);
 
 		self->transaction = pakfire_transaction_create(pool, NULL);
+		pakfire_pool_unref(pool);
 	}
 
 	return 0;

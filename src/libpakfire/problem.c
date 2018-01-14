@@ -27,7 +27,7 @@
 #include <pakfire/util.h>
 
 static char* to_string(PakfireProblem problem) {
-	Solver* solver = problem->request->solver;
+	Solver* solver = pakfire_request_get_solver(problem->request);
 	Pool* pool = solver->pool;
 
 	// Get the problem rule
@@ -218,7 +218,7 @@ PAKFIRE_EXPORT void pakfire_problem_free(PakfireProblem problem) {
 	if (problem->next)
 		pakfire_problem_free(problem->next);
 
-	pakfire_request_free(problem->request);
+	pakfire_request_unref(problem->request);
 
 	if (problem->string)
 		pakfire_free(problem->string);
@@ -247,9 +247,10 @@ PAKFIRE_EXPORT const char* pakfire_problem_to_string(PakfireProblem problem) {
 
 PAKFIRE_EXPORT PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem) {
 	PakfireSolution ret = NULL;
+	Solver* solver = pakfire_request_get_solver(problem->request);
 
 	Id solution = 0;
-	while ((solution = solver_next_solution(problem->request->solver, problem->id, solution)) != 0) {
+	while ((solution = solver_next_solution(solver, problem->id, solution)) != 0) {
 		PakfireSolution s = pakfire_solution_create(problem, solution);
 
 		if (ret)

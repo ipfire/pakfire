@@ -268,10 +268,10 @@ global:
 	# request
 	pakfire_request_create;
 	pakfire_request_distupgrade;
-	pakfire_request_free;
 	pakfire_request_erase;
 	pakfire_request_erase_relation;
 	pakfire_request_erase_selector;
+	pakfire_request_get_pool;
 	pakfire_request_get_problems;
 	pakfire_request_get_transaction;
 	pakfire_request_install;
@@ -280,12 +280,13 @@ global:
 	pakfire_request_lock;
 	pakfire_request_lock_relation;
 	pakfire_request_lock_selector;
-	pakfire_request_pool;
+	pakfire_request_ref;
 	pakfire_request_solve;
 	pakfire_request_upgrade;
 	pakfire_request_upgrade_all;
 	pakfire_request_upgrade_relation;
 	pakfire_request_upgrade_selector;
+	pakfire_request_unref;
 	pakfire_request_verify;
 
 	# selector
