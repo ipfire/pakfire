@@ -55,17 +55,6 @@ typedef enum _pakfire_script_types {
 	PAKFIRE_SCRIPT_POSTTRANSUP,
 } pakfire_script_type;
 
-struct _PakfireStep {
-	PakfirePool pool;
-	PakfireTransaction transaction;
-	Id id;
-	int nrefs;
-};
-
-static inline PakfirePool pakfire_step_pool(PakfireStep step) {
-	return step->pool;
-}
-
 int pakfire_step_run(PakfireStep step, pakfire_action_type action);
 
 #endif

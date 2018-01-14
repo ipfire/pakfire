@@ -35,6 +35,13 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+struct _PakfireStep {
+	PakfirePool pool;
+	PakfireTransaction transaction;
+	Id id;
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
 	if (step) {
