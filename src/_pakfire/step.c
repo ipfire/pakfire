@@ -91,7 +91,7 @@ static PyObject* Step_repr(StepObject* self) {
 	PyObject* repr = PyUnicode_FromFormat("<_pakfire.Step object type %s, %s>",
 		pakfire_step_get_type_string(self->step), nevra);
 
-	pakfire_package_free(package);
+	pakfire_package_unref(package);
 	pakfire_free(nevra);
 
 	return repr;
@@ -101,7 +101,7 @@ static PyObject* Step_get_package(StepObject* self) {
 	PakfirePackage package = pakfire_step_get_package(self->step);
 
 	PyObject* obj = new_package(self->transaction->request->pool, pakfire_package_id(package));
-	pakfire_package_free(package);
+	pakfire_package_unref(package);
 
 	return obj;
 }

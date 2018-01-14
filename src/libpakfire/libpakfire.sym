@@ -120,7 +120,6 @@ global:
 	pakfire_package_dump;
 	pakfire_package_filelist_append;
 	pakfire_package_filelist_remove;
-	pakfire_package_free;
 	pakfire_package_get_arch;
 	pakfire_package_get_buildhost;
 	pakfire_package_get_buildtime;
@@ -157,6 +156,7 @@ global:
 	pakfire_package_get_version;
 	pakfire_package_id;
 	pakfire_package_is_installed;
+	pakfire_package_ref;
 	pakfire_package_set_arch;
 	pakfire_package_set_buildhost;
 	pakfire_package_set_buildtime;
@@ -181,6 +181,7 @@ global:
 	pakfire_package_set_url;
 	pakfire_package_set_uuid;
 	pakfire_package_set_vendor;
+	pakfire_package_unref;
 
 	# packagelist
 	pakfire_packagelist_count;

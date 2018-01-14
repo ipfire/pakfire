@@ -30,7 +30,9 @@
 
 PakfirePackage pakfire_package_create(PakfirePool pool, Id id);
 PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const char* name, const char* evr, const char* arch);
-void pakfire_package_free(PakfirePackage pkg);
+
+PakfirePackage pakfire_package_ref(PakfirePackage pkg);
+PakfirePackage pakfire_package_unref(PakfirePackage pkg);
 
 int pakfire_package_identical(PakfirePackage pkg1, PakfirePackage pkg2);
 int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2);

@@ -79,13 +79,27 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireR
 	return pkg;
 }
 
-PAKFIRE_EXPORT void pakfire_package_free(PakfirePackage pkg) {
-	if (--pkg->nrefs > 0)
-		return;
-
+static void pakfire_package_free(PakfirePackage pkg) {
 	pakfire_pool_unref(pkg->pool);
 	pakfire_package_filelist_remove(pkg);
 	pakfire_free(pkg);
+}
+
+PAKFIRE_EXPORT PakfirePackage pakfire_package_ref(PakfirePackage pkg) {
+	pkg->nrefs++;
+
+	return pkg;
+}
+
+PAKFIRE_EXPORT PakfirePackage pakfire_package_unref(PakfirePackage pkg) {
+	if (!pkg)
+		return NULL;
+
+	if (--pkg->nrefs > 0)
+		return pkg;
+
+	pakfire_package_free(pkg);
+	return NULL;
 }
 
 static Solvable* get_solvable(PakfirePackage pkg) {

@@ -145,8 +145,7 @@ PAKFIRE_EXPORT unsigned long long pakfire_step_get_downloadsize(PakfireStep step
 		downloadsize = pakfire_package_get_downloadsize(pkg);
 	}
 
-	if (pkg)
-		pakfire_package_free(pkg);
+	pakfire_package_unref(pkg);
 
 	return downloadsize;
 }
@@ -167,7 +166,7 @@ PAKFIRE_EXPORT long pakfire_step_get_installsizechange(PakfireStep step) {
 			break;
 	}
 
-	pakfire_package_free(pkg);
+	pakfire_package_unref(pkg);
 
 	return installsize;
 }
@@ -196,8 +195,7 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 	ret = !pakfire_cache_has_package(cache, pkg);
 
 finish:
-	if (pkg)
-		pakfire_package_free(pkg);
+	pakfire_package_unref(pkg);
 
 	return ret;
 }
@@ -336,7 +334,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type 
 	}
 
 END:
-	pakfire_package_free(pkg);
+	pakfire_package_unref(pkg);
 
 	return r;
 }

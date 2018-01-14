@@ -42,7 +42,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_create(void) {
 PAKFIRE_EXPORT void pakfire_packagelist_free(PakfirePackageList list) {
 	for (int i = 0; i < list->count; i++) {
 		PakfirePackage pkg = list->elements[i];
-		pakfire_package_free(pkg);
+		pakfire_package_unref(pkg);
 	}
 
 	pakfire_free(list->elements);
@@ -88,7 +88,7 @@ PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList li
 	if (pakfire_packagelist_has(list, pkg))
 		return;
 
-	pakfire_packagelist_push(list, pkg);
+	pakfire_packagelist_push(list, pakfire_package_ref(pkg));
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {

@@ -138,7 +138,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransa
 			PakfirePackage package = pakfire_step_get_package(step);
 			pakfire_packagelist_push(packagelist, package);
 
-			pakfire_package_free(package);
+			pakfire_package_unref(package);
 		}
 
 		pakfire_step_free(step);

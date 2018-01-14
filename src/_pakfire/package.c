@@ -50,7 +50,7 @@ static PyObject* Package_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 static void Package_dealloc(PackageObject* self) {
 	if (self->package)
-		pakfire_package_free(self->package);
+		pakfire_package_unref(self->package);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
