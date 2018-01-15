@@ -25,7 +25,7 @@
 
 PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id);
 PakfireSolution pakfire_solution_ref(PakfireSolution solution);
-void pakfire_solution_free(PakfireSolution solution);
+PakfireSolution pakfire_solution_unref(PakfireSolution solution);
 
 PakfireSolution pakfire_solution_next(PakfireSolution solution);
 void pakfire_solution_append(PakfireSolution solution, PakfireSolution new_solution);

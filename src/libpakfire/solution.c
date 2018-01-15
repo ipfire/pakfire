@@ -24,6 +24,7 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/i18n.h>
+#include <pakfire/logging.h>
 #include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
@@ -115,16 +116,16 @@ static void import_elements(PakfireSolution solution) {
 
 PAKFIRE_EXPORT PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
 	PakfireSolution solution = pakfire_calloc(1, sizeof(*solution));
+	if (solution) {
+		DEBUG("Allocated Solution at %p\n", solution);
+		solution->nrefs = 1;
 
-	solution->problem = pakfire_problem_ref(problem);
-	solution->id = id;
+		solution->problem = pakfire_problem_ref(problem);
+		solution->id = id;
 
-	// Initialise reference counter
-	solution->nrefs = 1;
-	solution->next = NULL;
-
-	// Extract information from solver
-	import_elements(solution);
+		// Extract information from solver
+		import_elements(solution);
+	}
 
 	return solution;
 }
@@ -135,12 +136,9 @@ PAKFIRE_EXPORT PakfireSolution pakfire_solution_ref(PakfireSolution solution) {
 	return solution;
 }
 
-PAKFIRE_EXPORT void pakfire_solution_free(PakfireSolution solution) {
-	if (--solution->nrefs > 0)
-		return;
-
+static void pakfire_solution_free(PakfireSolution solution) {
 	if (solution->next)
-		pakfire_solution_free(solution->next);
+		pakfire_solution_unref(solution->next);
 
 	pakfire_problem_free(solution->problem);
 
@@ -149,6 +147,18 @@ PAKFIRE_EXPORT void pakfire_solution_free(PakfireSolution solution) {
 			pakfire_free(*solution->elements++);
 
 	pakfire_free(solution);
+	DEBUG("Released Solution at %p\n", solution);
+}
+
+PAKFIRE_EXPORT PakfireSolution pakfire_solution_unref(PakfireSolution solution) {
+	if (!solution)
+		return NULL;
+
+	if (--solution->nrefs > 0)
+		return solution;
+
+	pakfire_solution_free(solution);
+	return NULL;
 }
 
 PAKFIRE_EXPORT PakfireSolution pakfire_solution_next(PakfireSolution solution) {

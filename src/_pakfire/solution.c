@@ -49,8 +49,7 @@ static PyObject* Solution_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 }
 
 static void Solution_dealloc(SolutionObject* self) {
-	if (self->solution)
-		pakfire_solution_free(self->solution);
+	pakfire_solution_unref(self->solution);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }

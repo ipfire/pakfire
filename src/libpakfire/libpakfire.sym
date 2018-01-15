@@ -297,10 +297,10 @@ global:
 
 	# solution
 	pakfire_solution_create;
-	pakfire_solution_free;
 	pakfire_solution_next;
 	pakfire_solution_ref;
 	pakfire_solution_to_string;
+	pakfire_solution_unref;
 
 	# step
 	pakfire_step_create;
