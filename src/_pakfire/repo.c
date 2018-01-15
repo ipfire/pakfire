@@ -49,8 +49,7 @@ static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 }
 
 static void Repo_dealloc(RepoObject* self) {
-	if (self->repo)
-		pakfire_repo_free(self->repo);
+	pakfire_repo_unref(self->repo);
 
 	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);

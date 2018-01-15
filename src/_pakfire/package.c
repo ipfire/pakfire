@@ -452,12 +452,11 @@ static PyObject* Package_get_cache_full_path(PackageObject* self) {
 
 static PyObject* Package_get_repo(PackageObject* self) {
 	PakfireRepo repo = pakfire_package_get_repo(self->package);
-
 	if (!repo)
 		return NULL;
 
 	const char* name = pakfire_repo_get_name(repo);
-	pakfire_repo_free(repo);
+	pakfire_repo_unref(repo);
 
 	return new_repo(self->pool, name);
 }

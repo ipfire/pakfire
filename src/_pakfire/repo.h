@@ -34,7 +34,7 @@ typedef struct {
     PakfireRepo repo;
 
 	// XXX COMPAT
-	Repo* _repo;
+	void* _repo;
 } RepoObject;
 
 extern PyTypeObject RepoType;

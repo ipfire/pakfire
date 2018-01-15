@@ -21,13 +21,12 @@
 #ifndef PAKFIRE_REPO_H
 #define PAKFIRE_REPO_H
 
-#include <solv/repo.h>
-
 #include <pakfire/types.h>
 
 PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name);
-PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r);
-void pakfire_repo_free(PakfireRepo pkg);
+
+PakfireRepo pakfire_repo_ref(PakfireRepo repo);
+PakfireRepo pakfire_repo_unref(PakfireRepo repo);
 
 PakfirePool pakfire_repo_pool(PakfireRepo repo);
 
@@ -60,24 +59,14 @@ int pakfire_repo_clean(PakfireRepo repo);
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _PakfireRepo {
-	PakfirePool pool;
-	Repo* repo;
-	PakfireRepoCache cache;
-	int nrefs;
+#include <solv/repo.h>
 
-	Repodata* filelist;
-};
+PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r);
 
 PakfirePackage pakfire_repo_add_package(PakfireRepo repo);
 
-static inline Pool* pakfire_repo_solv_pool(PakfireRepo repo) {
-	return pakfire_pool_get_solv_pool(repo->pool);
-}
-
-static inline Repo* pakfire_repo_get_solv_repo(PakfireRepo repo) {
-	return repo->repo;
-}
+Repo* pakfire_repo_get_repo(PakfireRepo repo);
+Repodata* pakfire_repo_get_repodata(PakfireRepo repo);
 
 #endif
 

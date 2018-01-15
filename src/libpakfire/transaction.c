@@ -196,7 +196,7 @@ static void pakfire_transaction_add_package(char** str, size_t width, PakfirePac
 		size_str
 	);
 
-	pakfire_repo_free(repo);
+	pakfire_repo_unref(repo);
 	pakfire_free(size_str);
 }
 

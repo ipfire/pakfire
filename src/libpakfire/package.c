@@ -162,13 +162,13 @@ PAKFIRE_EXPORT int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2)
 
 	if (repo1 && repo2) {
 		ret = pakfire_repo_cmp(repo1, repo2);
-
-		pakfire_repo_free(repo1);
-		pakfire_repo_free(repo2);
-
-		if (ret)
-			return ret;
 	}
+
+	pakfire_repo_unref(repo1);
+	pakfire_repo_unref(repo2);
+
+	if (ret)
+		return ret;
 
 	// Check package architectures
 	str1 = pool_id2str(pool, s1->arch);
@@ -306,7 +306,7 @@ static void pakfire_package_internalize_repo(PakfirePackage pkg) {
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 	if (repo) {
 		pakfire_repo_internalize(repo);
-		pakfire_repo_free(repo);
+		pakfire_repo_unref(repo);
 	}
 }
 
@@ -638,7 +638,7 @@ PAKFIRE_EXPORT PakfireRepo pakfire_package_get_repo(PakfirePackage pkg) {
 PAKFIRE_EXPORT void pakfire_package_set_repo(PakfirePackage pkg, PakfireRepo repo) {
 	Solvable* s = get_solvable(pkg);
 
-	s->repo = pakfire_repo_get_solv_repo(repo);
+	s->repo = pakfire_repo_get_repo(repo);
 }
 
 PAKFIRE_EXPORT char* pakfire_package_get_location(PakfirePackage pkg) {
@@ -754,7 +754,7 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 		const char* repo_name = pakfire_repo_get_name(repo);
 		pakfire_package_dump_add_line(&string, _("Repo"), repo_name);
 
-		pakfire_repo_free(repo);
+		pakfire_repo_unref(repo);
 	}
 
 	// Summary
@@ -887,8 +887,7 @@ PAKFIRE_EXPORT char* pakfire_package_get_cache_full_path(PakfirePackage pkg) {
 	cache_path = pakfire_repocache_get_full_path(repo_cache, pkg_cache_path);
 
 out:
-	if (repo)
-		pakfire_repo_free(repo);
+	pakfire_repo_unref(repo);
 
 	return cache_path;
 }
@@ -900,7 +899,7 @@ static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 	Solvable* s = get_solvable(pkg);
 	Pool* p = pakfire_package_get_solv_pool(pkg);
-	Repo* r = pakfire_repo_get_solv_repo(repo);
+	Repo* r = pakfire_repo_get_repo(repo);
 
 	int found_marker = 0;
 
@@ -930,6 +929,8 @@ static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 		// Sort the output
 		file = pakfire_file_sort(file);
 	}
+
+	pakfire_repo_unref(repo);
 
 	return file;
 }
@@ -981,18 +982,21 @@ PAKFIRE_EXPORT PakfireFile pakfire_package_get_filelist(PakfirePackage pkg) {
 
 PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, const char* filename) {
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
+	Repodata* repodata = pakfire_repo_get_repodata(repo);
 
 	Id handle = pakfire_package_get_handle(pkg);
 
 	char* dirname  = pakfire_dirname(filename);
 	char* basename = pakfire_basename(filename);
 
-	Id did = repodata_str2dir(repo->filelist, dirname, 1);
+	Id did = repodata_str2dir(repodata, dirname, 1);
 	if (!did)
-		did = repodata_str2dir(repo->filelist, "/", 1);
+		did = repodata_str2dir(repodata, "/", 1);
 
-	repodata_add_dirstr(repo->filelist, handle,
+	repodata_add_dirstr(repodata, handle,
 		SOLVABLE_FILELIST, did, basename);
+
+	pakfire_repo_unref(repo);
 
 	return NULL;
 }

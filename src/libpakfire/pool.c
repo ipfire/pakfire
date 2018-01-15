@@ -76,7 +76,7 @@ static void pakfire_pool_free_repos(Pool* pool) {
 		if (r == NULL)
 			continue;
 
-		pakfire_repo_free(r);
+		pakfire_repo_unref(r);
 	}
 }
 
@@ -151,8 +151,7 @@ PAKFIRE_EXPORT void pakfire_pool_set_installed_repo(PakfirePool pool, PakfireRep
 		return;
 	}
 
-	assert(pool == repo->pool);
-	pool_set_installed(pool->pool, repo->repo);
+	pool_set_installed(pool->pool, pakfire_repo_get_repo(repo));
 }
 
 PAKFIRE_EXPORT const char** pakfire_pool_get_installonly(PakfirePool pool) {

@@ -31,6 +31,7 @@
 
 #include <pakfire/constants.h>
 #include <pakfire/errno.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
@@ -41,6 +42,14 @@
 
 const uint8_t XZ_HEADER_MAGIC[] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
+
+struct _PakfireRepo {
+	PakfirePool pool;
+	Repo* repo;
+	PakfireRepoCache cache;
+	Repodata* filelist;
+	int nrefs;
+};
 
 static Repo* get_repo_by_name(Pool* pool, const char* name) {
 	Repo* repo;
@@ -82,42 +91,62 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(PakfirePool pool, const char* nam
 }
 
 PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r) {
-	PakfireRepo repo;
+	// Return existing object if we have one
+	if (r->appdata)
+		return pakfire_repo_ref(r->appdata);
 
-	if (r->appdata) {
-		repo = r->appdata;
-		repo->nrefs++;
+	PakfireRepo repo = r->appdata = pakfire_calloc(1, sizeof(*repo));
+	if (repo) {
+		DEBUG("Allocated Repo at %p\n", repo);
+		repo->nrefs = 1;
 
-	} else {
-		repo = pakfire_calloc(1, sizeof(*repo));
-		if (repo) {
-			repo->pool = pool;
+		repo->pool = pakfire_pool_ref(pool);
+		repo->repo = r;
+		repo->cache = pakfire_repocache_create(repo);
 
-			repo->repo = r;
-			repo->cache = pakfire_repocache_create(repo);
-			repo->repo->appdata = repo;
-
-			repo->filelist = repo_add_repodata(r, REPO_EXTEND_SOLVABLES|REPO_LOCALPOOL|REPO_NO_INTERNALIZE|REPO_NO_LOCATION);
-
-			// Initialize reference counter
-			repo->nrefs = 1;
-		}
+		repo->filelist = repo_add_repodata(r,
+			REPO_EXTEND_SOLVABLES|REPO_LOCALPOOL|REPO_NO_INTERNALIZE|REPO_NO_LOCATION);
 	}
 
 	return repo;
 }
 
-PAKFIRE_EXPORT void pakfire_repo_free(PakfireRepo repo) {
-	if (--repo->nrefs > 0)
-		return;
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_ref(PakfireRepo repo) {
+	repo->nrefs++;
 
+	return repo;
+}
+
+static void pakfire_repo_free(PakfireRepo repo) {
 	if (repo->repo)
 		repo->repo->appdata = NULL;
 
 	if (repo->cache)
 		pakfire_repocache_free(repo->cache);
 
+	pakfire_pool_unref(repo->pool);
+
 	pakfire_free(repo);
+	DEBUG("Released Repo at %p\n", repo);
+}
+
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_unref(PakfireRepo repo) {
+	if (!repo)
+		return NULL;
+
+	if (--repo->nrefs > 0)
+		return repo;
+
+	pakfire_repo_free(repo);
+	return NULL;
+}
+
+Repo* pakfire_repo_get_repo(PakfireRepo repo) {
+	return repo->repo;
+}
+
+Repodata* pakfire_repo_get_repodata(PakfireRepo repo) {
+	return repo->filelist;
 }
 
 PAKFIRE_EXPORT PakfirePool pakfire_repo_pool(PakfireRepo repo) {
@@ -145,7 +174,7 @@ PAKFIRE_EXPORT int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
 }
 
 PAKFIRE_EXPORT int pakfire_repo_count(PakfireRepo repo) {
-	Pool* pool = pakfire_repo_solv_pool(repo);
+	Pool* pool = pakfire_pool_get_solv_pool(repo->pool);
 	int cnt = 0;
 
 	for (int i = 2; i < pool->nsolvables; i++) {
