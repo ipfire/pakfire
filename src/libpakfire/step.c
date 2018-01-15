@@ -37,63 +37,14 @@
 
 struct _PakfireStep {
 	PakfirePool pool;
-	PakfireTransaction transaction;
 	PakfirePackage package;
 	Id id;
+	pakfire_step_type_t type;
 	int nrefs;
 };
 
-PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
-	PakfireStep step = pakfire_calloc(1, sizeof(*step));
-	if (step) {
-		DEBUG("Allocated Step at %p\n", step);
-		step->nrefs = 1;
-
-		step->pool = pakfire_transaction_get_pool(transaction);
-		step->transaction = pakfire_transaction_ref(transaction);
-		step->id = id;
-
-		// Get the package
-		step->package = pakfire_package_create(step->pool, step->id);
-	}
-
-	return step;
-}
-
-PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
-	step->nrefs++;
-
-	return step;
-}
-
-static void pakfire_step_free(PakfireStep step) {
-	pakfire_package_unref(step->package);
-	pakfire_transaction_unref(step->transaction);
-	pakfire_pool_unref(step->pool);
-	pakfire_free(step);
-
-	DEBUG("Released Step at %p\n", step);
-}
-
-PAKFIRE_EXPORT PakfireStep pakfire_step_unref(PakfireStep step) {
-	if (!step)
-		return NULL;
-
-	if (--step->nrefs > 0)
-		return step;
-
-	pakfire_step_free(step);
-	return NULL;
-}
-
-PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {
-	return pakfire_package_ref(step->package);
-}
-
-PAKFIRE_EXPORT pakfire_step_type_t pakfire_step_get_type(PakfireStep step) {
-	Transaction* trans = pakfire_transaction_get_transaction(step->transaction);
-
-	int type = transaction_type(trans, step->id,
+static pakfire_step_type_t get_type(Transaction* transaction, Id id) {
+	int type = transaction_type(transaction, id,
 		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
 
 	// Translate solver types into our own types
@@ -125,6 +76,58 @@ PAKFIRE_EXPORT pakfire_step_type_t pakfire_step_get_type(PakfireStep step) {
 		default:
 				return PAKFIRE_STEP_IGNORE;
 	}
+}
+
+PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
+	Transaction* t = pakfire_transaction_get_transaction(transaction);
+
+	PakfireStep step = pakfire_calloc(1, sizeof(*step));
+	if (step) {
+		DEBUG("Allocated Step at %p\n", step);
+		step->nrefs = 1;
+
+		step->pool = pakfire_transaction_get_pool(transaction);
+		step->id = id;
+		step->type = get_type(t, step->id);
+
+		// Get the package
+		step->package = pakfire_package_create(step->pool, step->id);
+	}
+
+	return step;
+}
+
+PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
+	step->nrefs++;
+
+	return step;
+}
+
+static void pakfire_step_free(PakfireStep step) {
+	pakfire_package_unref(step->package);
+	pakfire_pool_unref(step->pool);
+	pakfire_free(step);
+
+	DEBUG("Released Step at %p\n", step);
+}
+
+PAKFIRE_EXPORT PakfireStep pakfire_step_unref(PakfireStep step) {
+	if (!step)
+		return NULL;
+
+	if (--step->nrefs > 0)
+		return step;
+
+	pakfire_step_free(step);
+	return NULL;
+}
+
+PAKFIRE_EXPORT PakfirePackage pakfire_step_get_package(PakfireStep step) {
+	return pakfire_package_ref(step->package);
+}
+
+PAKFIRE_EXPORT pakfire_step_type_t pakfire_step_get_type(PakfireStep step) {
+	return step->type;
 }
 
 PAKFIRE_EXPORT const char* pakfire_step_get_type_string(PakfireStep step) {
