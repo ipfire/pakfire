@@ -29,6 +29,7 @@ PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Transaction* tran
 PakfireTransaction pakfire_transaction_ref(PakfireTransaction transaction);
 PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction);
 
+Pakfire pakfire_transaction_get_pakfire(PakfireTransaction transaction);
 PakfirePool pakfire_transaction_get_pool(PakfireTransaction transaction);
 size_t pakfire_transaction_count(PakfireTransaction transaction);
 

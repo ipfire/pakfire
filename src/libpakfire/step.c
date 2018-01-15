@@ -27,6 +27,7 @@
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
@@ -36,7 +37,7 @@
 #include <pakfire/util.h>
 
 struct _PakfireStep {
-	PakfirePool pool;
+	Pakfire pakfire;
 	PakfirePackage package;
 	pakfire_step_type_t type;
 	int nrefs;
@@ -85,11 +86,13 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 		DEBUG("Allocated Step at %p\n", step);
 		step->nrefs = 1;
 
-		step->pool = pakfire_transaction_get_pool(transaction);
+		step->pakfire = pakfire_transaction_get_pakfire(transaction);
 		step->type = get_type(t, id);
 
 		// Get the package
-		step->package = pakfire_package_create(step->pool, id);
+		PakfirePool pool = pakfire_get_pool(step->pakfire);
+		step->package = pakfire_package_create(pool, id);
+		pakfire_pool_unref(pool);
 	}
 
 	return step;
@@ -103,7 +106,7 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
 
 static void pakfire_step_free(PakfireStep step) {
 	pakfire_package_unref(step->package);
-	pakfire_pool_unref(step->pool);
+	pakfire_unref(step->pakfire);
 	pakfire_free(step);
 
 	DEBUG("Released Step at %p\n", step);
@@ -199,6 +202,7 @@ PAKFIRE_EXPORT ssize_t pakfire_step_get_installsizechange(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
+	PakfirePool pool = NULL;
 	int ret = true;
 
 	if (!pakfire_step_get_downloadtype(step))
@@ -210,7 +214,8 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 		goto finish;
 	}
 
-	PakfireCache cache = pakfire_pool_get_cache(step->pool);
+	pool = pakfire_get_pool(step->pakfire);
+	PakfireCache cache = pakfire_pool_get_cache(pool);
 	if (!cache)
 		goto finish;
 
@@ -218,6 +223,8 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 	ret = !pakfire_cache_has_package(cache, step->package);
 
 finish:
+	pakfire_pool_unref(pool);
+
 	return ret;
 }
 

@@ -102,6 +102,10 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_unref(PakfireTransaction t
 	return NULL;
 }
 
+PAKFIRE_EXPORT Pakfire pakfire_transaction_get_pakfire(PakfireTransaction transaction) {
+	return pakfire_ref(transaction->pakfire);
+}
+
 PAKFIRE_EXPORT PakfirePool pakfire_transaction_get_pool(PakfireTransaction transaction) {
 	return pakfire_get_pool(transaction->pakfire);
 }
