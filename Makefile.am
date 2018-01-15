@@ -211,8 +211,6 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/selector.h \
 	src/_pakfire/solution.c \
 	src/_pakfire/solution.h \
-	src/_pakfire/solvable.c \
-	src/_pakfire/solvable.h \
 	src/_pakfire/step.c \
 	src/_pakfire/step.h \
 	src/_pakfire/transaction.c \

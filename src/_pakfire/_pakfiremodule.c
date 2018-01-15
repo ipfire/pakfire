@@ -40,7 +40,6 @@
 #include "repo.h"
 #include "request.h"
 #include "solution.h"
-#include "solvable.h"
 #include "step.h"
 #include "transaction.h"
 #include "util.h"
@@ -53,54 +52,6 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
 	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
 	{"unshare", (PyCFunction)_unshare, METH_VARARGS, NULL},
-	{ NULL, NULL, 0, NULL }
-};
-
-static PyMethodDef Solvable_methods[] = {
-	{"get_name", (PyCFunction)Solvable_get_name, METH_NOARGS, NULL},
-	{"get_evr", (PyCFunction)Solvable_get_evr, METH_NOARGS, NULL},
-	{"get_arch", (PyCFunction)Solvable_get_arch, METH_NOARGS, NULL},
-	{"get_vendor", (PyCFunction)Solvable_get_vendor, METH_NOARGS, NULL},
-	{"set_vendor", (PyCFunction)Solvable_set_vendor, METH_VARARGS, NULL},
-	{"get_repo_name", (PyCFunction)Solvable_get_repo_name, METH_NOARGS, NULL},
-	{"get_uuid", (PyCFunction)Solvable_get_uuid, METH_NOARGS, NULL},
-	{"set_uuid", (PyCFunction)Solvable_set_uuid, METH_VARARGS, NULL},
-	{"get_hash1", (PyCFunction)Solvable_get_hash1, METH_NOARGS, NULL},
-	{"set_hash1", (PyCFunction)Solvable_set_hash1, METH_VARARGS, NULL},
-	{"get_summary", (PyCFunction)Solvable_get_summary, METH_NOARGS, NULL},
-	{"set_summary", (PyCFunction)Solvable_set_summary, METH_VARARGS, NULL},
-	{"get_description", (PyCFunction)Solvable_get_description, METH_NOARGS, NULL},
-	{"set_description", (PyCFunction)Solvable_set_description, METH_VARARGS, NULL},
-	{"get_groups", (PyCFunction)Solvable_get_groups, METH_NOARGS, NULL},
-	{"set_groups", (PyCFunction)Solvable_set_groups, METH_VARARGS, NULL},
-	{"get_url", (PyCFunction)Solvable_get_url, METH_NOARGS, NULL},
-	{"set_url", (PyCFunction)Solvable_set_url, METH_VARARGS, NULL},
-	{"get_filename", (PyCFunction)Solvable_get_filename, METH_NOARGS, NULL},
-	{"set_filename", (PyCFunction)Solvable_set_filename, METH_VARARGS, NULL},
-	{"get_license", (PyCFunction)Solvable_get_license, METH_NOARGS, NULL},
-	{"set_license", (PyCFunction)Solvable_set_license, METH_VARARGS, NULL},
-	{"get_buildhost", (PyCFunction)Solvable_get_buildhost, METH_NOARGS, NULL},
-	{"set_buildhost", (PyCFunction)Solvable_set_buildhost, METH_VARARGS, NULL},
-	{"get_maintainer", (PyCFunction)Solvable_get_maintainer, METH_NOARGS, NULL},
-	{"set_maintainer", (PyCFunction)Solvable_set_maintainer, METH_VARARGS, NULL},
-	{"get_downloadsize", (PyCFunction)Solvable_get_downloadsize, METH_NOARGS, NULL},
-	{"set_downloadsize", (PyCFunction)Solvable_set_downloadsize, METH_VARARGS, NULL},
-	{"get_installsize", (PyCFunction)Solvable_get_installsize, METH_NOARGS, NULL},
-	{"set_installsize", (PyCFunction)Solvable_set_installsize, METH_VARARGS, NULL},
-	{"get_buildtime", (PyCFunction)Solvable_get_buildtime, METH_NOARGS, NULL},
-	{"set_buildtime", (PyCFunction)Solvable_set_buildtime, METH_VARARGS, NULL},
-	{"add_provides", (PyCFunction)Solvable_add_provides, METH_VARARGS, NULL},
-	{"get_provides", (PyCFunction)Solvable_get_provides, METH_NOARGS, NULL},
-	{"add_requires", (PyCFunction)Solvable_add_requires, METH_VARARGS, NULL},
-	{"get_requires", (PyCFunction)Solvable_get_requires, METH_NOARGS, NULL},
-	{"add_obsoletes", (PyCFunction)Solvable_add_obsoletes, METH_VARARGS, NULL},
-	{"get_obsoletes", (PyCFunction)Solvable_get_obsoletes, METH_NOARGS, NULL},
-	{"add_conflicts", (PyCFunction)Solvable_add_conflicts, METH_VARARGS, NULL},
-	{"get_conflicts", (PyCFunction)Solvable_get_conflicts, METH_NOARGS, NULL},
-	{"add_recommends", (PyCFunction)Solvable_add_recommends, METH_VARARGS, NULL},
-	{"get_recommends", (PyCFunction)Solvable_get_recommends, METH_NOARGS, NULL},
-	{"add_suggests", (PyCFunction)Solvable_add_suggests, METH_VARARGS, NULL},
-	{"get_suggests", (PyCFunction)Solvable_get_suggests, METH_NOARGS, NULL},
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -188,13 +139,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	Py_INCREF(&RepoType);
 	PyModule_AddObject(module, "Repo", (PyObject *)&RepoType);
-
-	// Solvable
-	SolvableType.tp_methods = Solvable_methods;
-	if (PyType_Ready(&SolvableType) < 0)
-		return NULL;
-	Py_INCREF(&SolvableType);
-	PyModule_AddObject(module, "Solvable", (PyObject *)&SolvableType);
 
 	// Relation
 	if (PyType_Ready(&RelationType) < 0)
