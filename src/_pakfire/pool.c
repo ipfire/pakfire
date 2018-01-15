@@ -33,7 +33,6 @@
 #include "pool.h"
 #include "relation.h"
 #include "repo.h"
-#include "solvable.h"
 #include "util.h"
 
 static PyObject* Pool_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
