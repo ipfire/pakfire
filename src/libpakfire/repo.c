@@ -33,6 +33,7 @@
 #include <pakfire/errno.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
@@ -44,7 +45,7 @@ const uint8_t XZ_HEADER_MAGIC[] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
 
 struct _PakfireRepo {
-	PakfirePool pool;
+	Pakfire pakfire;
 	Repo* repo;
 	PakfireRepoCache cache;
 	Repodata* filelist;
@@ -74,23 +75,29 @@ static PakfireRepo get_pakfire_repo_by_name(PakfirePool pool, const char* name) 
 	return NULL;
 }
 
-PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name) {
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name) {
+	PakfirePool pool = pakfire_get_pool(pakfire);
+
 	PakfireRepo repo = get_pakfire_repo_by_name(pool, name);
 	if (repo) {
 		repo->nrefs++;
+
+		pakfire_pool_unref(pool);
+
 		return repo;
 	}
 
 	Pool* p = pakfire_pool_get_solv_pool(pool);
+	pakfire_pool_unref(pool);
 
 	Repo* r = get_repo_by_name(p, name);
 	if (!r)
 		r = repo_create(p, name);
 
-	return pakfire_repo_create_from_repo(pool, r);
+	return pakfire_repo_create_from_repo(pakfire, r);
 }
 
-PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r) {
+PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* r) {
 	// Return existing object if we have one
 	if (r->appdata)
 		return pakfire_repo_ref(r->appdata);
@@ -100,7 +107,7 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo*
 		DEBUG("Allocated Repo at %p\n", repo);
 		repo->nrefs = 1;
 
-		repo->pool = pakfire_pool_ref(pool);
+		repo->pakfire = pakfire_ref(pakfire);
 		repo->repo = r;
 		repo->cache = pakfire_repocache_create(repo);
 
@@ -124,7 +131,7 @@ static void pakfire_repo_free(PakfireRepo repo) {
 	if (repo->cache)
 		pakfire_repocache_free(repo->cache);
 
-	pakfire_pool_unref(repo->pool);
+	pakfire_unref(repo->pakfire);
 
 	pakfire_free(repo);
 	DEBUG("Released Repo at %p\n", repo);
@@ -149,8 +156,17 @@ Repodata* pakfire_repo_get_repodata(PakfireRepo repo) {
 	return repo->filelist;
 }
 
-PAKFIRE_EXPORT PakfirePool pakfire_repo_pool(PakfireRepo repo) {
-	return repo->pool;
+PAKFIRE_EXPORT PakfirePool pakfire_repo_get_pool(PakfireRepo repo) {
+	return pakfire_get_pool(repo->pakfire);
+}
+
+static Pool* pakfire_repo_get_solv_pool(PakfireRepo repo) {
+	PakfirePool pool = pakfire_repo_get_pool(repo);
+
+	Pool* p = pakfire_pool_get_solv_pool(pool);
+	pakfire_pool_unref(pool);
+
+	return p;
 }
 
 PAKFIRE_EXPORT int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2) {
@@ -174,7 +190,7 @@ PAKFIRE_EXPORT int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
 }
 
 PAKFIRE_EXPORT int pakfire_repo_count(PakfireRepo repo) {
-	Pool* pool = pakfire_pool_get_solv_pool(repo->pool);
+	Pool* pool = pakfire_repo_get_solv_pool(repo);
 	int cnt = 0;
 
 	for (int i = 2; i < pool->nsolvables; i++) {
@@ -205,8 +221,9 @@ PAKFIRE_EXPORT int pakfire_repo_get_enabled(PakfireRepo repo) {
 PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
 	repo->repo->disabled = !enabled;
 
-	PakfirePool pool = pakfire_repo_pool(repo);
+	PakfirePool pool = pakfire_repo_get_pool(repo);
 	pakfire_pool_has_changed(pool);
+	pakfire_pool_unref(pool);
 }
 
 PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
@@ -218,11 +235,13 @@ PAKFIRE_EXPORT void pakfire_repo_set_priority(PakfireRepo repo, int priority) {
 }
 
 PAKFIRE_EXPORT int pakfire_repo_is_installed_repo(PakfireRepo repo) {
-	PakfirePool pool = pakfire_repo_pool(repo);
+	PakfireRepo installed_repo = pakfire_get_installed_repo(repo->pakfire);
 
-	PakfireRepo installed_repo = pakfire_pool_get_installed_repo(pool);
+	int r = pakfire_repo_identical(repo, installed_repo);
 
-	return pakfire_repo_identical(repo, installed_repo);
+	pakfire_repo_unref(installed_repo);
+
+	return r;
 }
 
 PAKFIRE_EXPORT int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags) {
@@ -384,7 +403,9 @@ PAKFIRE_EXPORT int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flag
 			return PAKFIRE_E_SOLV_CORRUPTED;
 	}
 
-	pakfire_pool_has_changed(repo->pool);
+	PakfirePool pool = pakfire_get_pool(repo->pakfire);
+	pakfire_pool_has_changed(pool);
+	pakfire_pool_unref(pool);
 
 	return ret;
 }
@@ -410,7 +431,11 @@ PAKFIRE_EXPORT int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int fla
 PAKFIRE_EXPORT PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
 	Id id = repo_add_solvable(repo->repo);
 
-	return pakfire_package_create(repo->pool, id);
+	PakfirePool pool = pakfire_get_pool(repo->pakfire);
+	PakfirePackage pkg = pakfire_package_create(pool, id);
+	pakfire_pool_unref(pool);
+
+	return pkg;
 }
 
 PAKFIRE_EXPORT PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {

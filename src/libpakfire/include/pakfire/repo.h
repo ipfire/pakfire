@@ -23,12 +23,12 @@
 
 #include <pakfire/types.h>
 
-PakfireRepo pakfire_repo_create(PakfirePool pool, const char* name);
+PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name);
 
 PakfireRepo pakfire_repo_ref(PakfireRepo repo);
 PakfireRepo pakfire_repo_unref(PakfireRepo repo);
 
-PakfirePool pakfire_repo_pool(PakfireRepo repo);
+PakfirePool pakfire_repo_get_pool(PakfireRepo repo);
 
 int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2);
 int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2);
@@ -61,7 +61,7 @@ int pakfire_repo_clean(PakfireRepo repo);
 
 #include <solv/repo.h>
 
-PakfireRepo pakfire_repo_create_from_repo(PakfirePool pool, Repo* r);
+PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* r);
 
 PakfirePackage pakfire_repo_add_package(PakfireRepo repo);
 

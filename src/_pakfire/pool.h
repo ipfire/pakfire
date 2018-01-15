@@ -28,9 +28,6 @@
 typedef struct {
 	PyObject_HEAD
 	PakfirePool pool;
-
-	// XXX COMPAT
-	Pool* _pool;
 } PoolObject;
 
 extern PyTypeObject PoolType;

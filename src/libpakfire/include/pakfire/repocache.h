@@ -46,7 +46,7 @@ struct _PakfireRepoCache {
 };
 
 inline PakfirePool pakfire_repocache_pool(PakfireRepoCache repo_cache) {
-	return pakfire_repo_pool(repo_cache->repo);
+	return pakfire_repo_get_pool(repo_cache->repo);
 }
 
 inline PakfireCache pakfire_repocache_cache(PakfireRepoCache repo_cache) {

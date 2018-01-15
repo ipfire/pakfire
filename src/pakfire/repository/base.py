@@ -31,7 +31,7 @@ class RepositoryFactory(_pakfire.Repo):
 		self.pakfire = pakfire
 
 		# Inherit
-		_pakfire.Repo.__init__(self, self.pakfire.pool, name)
+		_pakfire.Repo.__init__(self, self.pakfire, name)
 
 		# Save description
 		self.description = description

@@ -32,7 +32,6 @@
 #include "pakfire.h"
 #include "pool.h"
 #include "relation.h"
-#include "repo.h"
 #include "util.h"
 
 static PyObject* Pool_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
@@ -77,36 +76,6 @@ static PyObject* Pool_version_compare(PoolObject* self, PyObject* args) {
 
 static Py_ssize_t Pool_len(PoolObject* self) {
 	return pakfire_pool_count(self->pool);
-}
-
-static PyObject* Pool_get_installed_repo(PoolObject* self) {
-	PakfireRepo repo = pakfire_pool_get_installed_repo(self->pool);
-	if (!repo)
-		Py_RETURN_NONE;
-
-	PyObject* obj = new_repo(self, pakfire_repo_get_name(repo));
-	Py_XINCREF(obj);
-
-	return obj;
-}
-
-static int Pool_set_installed_repo(PoolObject* self, PyObject* value) {
-#if 0
-	if (PyObject_Not(value)) {
-		pakfire_pool_set_installed_repo(self->pool, NULL);
-		return 0;
-	}
-#endif
-
-	if (!PyObject_TypeCheck(value, &RepoType)) {
-		PyErr_SetString(PyExc_ValueError, "Argument must be a _pakfire.Repo object");
-		return -1;
-	}
-
-	RepoObject* repo = (RepoObject *)value;
-	pakfire_pool_set_installed_repo(self->pool, repo->repo);
-
-	return 0;
 }
 
 static PyObject* Pool_get_installonly(PoolObject* self) {
@@ -225,13 +194,6 @@ static struct PyGetSetDef Pool_getsetters[] = {
 		"cache_path",
 		(getter)Pool_get_cache_path,
 		(setter)Pool_set_cache_path,
-		NULL,
-		NULL
-	},
-	{
-		"installed_repo",
-		(getter)Pool_get_installed_repo,
-		(setter)Pool_set_installed_repo,
 		NULL,
 		NULL
 	},

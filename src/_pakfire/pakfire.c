@@ -22,9 +22,11 @@
 
 #include <pakfire/pakfire.h>
 #include <pakfire/key.h>
+#include <pakfire/repo.h>
 
 #include "key.h"
 #include "pakfire.h"
+#include "repo.h"
 
 static PyObject* Pakfire_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	PakfireObject* self = (PakfireObject *)type->tp_alloc(type, 0);
@@ -73,6 +75,36 @@ static PyObject* Pakfire_get_arch(PakfireObject* self) {
     const char* arch = pakfire_get_arch(self->pakfire);
 
     return PyUnicode_FromString(arch);
+}
+
+static PyObject* Pakfire_get_installed_repo(PakfireObject* self) {
+	PakfireRepo repo = pakfire_get_installed_repo(self->pakfire);
+	if (!repo)
+		Py_RETURN_NONE;
+
+	PyObject* obj = new_repo(self, pakfire_repo_get_name(repo));
+	Py_XINCREF(obj);
+
+	return obj;
+}
+
+static int Pakfire_set_installed_repo(PakfireObject* self, PyObject* value) {
+#if 0
+	if (PyObject_Not(value)) {
+		pakfire_pool_set_installed_repo(self->pool, NULL);
+		return 0;
+	}
+#endif
+
+	if (!PyObject_TypeCheck(value, &RepoType)) {
+		PyErr_SetString(PyExc_ValueError, "Argument must be a _pakfire.Repo object");
+		return -1;
+	}
+
+	RepoObject* repo = (RepoObject *)value;
+	pakfire_set_installed_repo(self->pakfire, repo->repo);
+
+	return 0;
 }
 
 static PyObject* _import_keylist(PakfireObject* pakfire, PakfireKey* keys) {
@@ -165,6 +197,13 @@ static struct PyGetSetDef Pakfire_getsetters[] = {
 		"arch",
 		(getter)Pakfire_get_arch,
 		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"installed_repo",
+		(getter)Pakfire_get_installed_repo,
+		(setter)Pakfire_set_installed_repo,
 		NULL,
 		NULL
 	},

@@ -54,7 +54,7 @@ class Repositories(object):
 		self.dummy = base.RepositoryDummy(self.pakfire)
 
 		# Create the local repository.
-		self.local = self.pool.installed_repo = RepositorySystem(self.pakfire)
+		self.local = self.pakfire.installed_repo = RepositorySystem(self.pakfire)
 		self.add_repo(self.local)
 
 		# If we running in build mode, we include our local build repository.

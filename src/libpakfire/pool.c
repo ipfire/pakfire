@@ -136,24 +136,6 @@ void pakfire_pool_apply_changes(PakfirePool pool) {
 	}
 }
 
-PAKFIRE_EXPORT PakfireRepo pakfire_pool_get_installed_repo(PakfirePool pool) {
-	Pool* p = pool->pool;
-
-	if (!p->installed)
-		return NULL;
-
-	return pakfire_repo_create_from_repo(pool, p->installed);
-}
-
-PAKFIRE_EXPORT void pakfire_pool_set_installed_repo(PakfirePool pool, PakfireRepo repo) {
-	if (!repo) {
-		pool_set_installed(pool->pool, NULL);
-		return;
-	}
-
-	pool_set_installed(pool->pool, pakfire_repo_get_repo(repo));
-}
-
 PAKFIRE_EXPORT const char** pakfire_pool_get_installonly(PakfirePool pool) {
 	Queue q;
 	queue_init_clone(&q, &pool->installonly);

@@ -23,22 +23,18 @@
 
 #include <Python.h>
 
-#include <pakfire/pool.h>
-#include <pakfire/repo.h>
+#include <pakfire/types.h>
 
-#include "pool.h"
+#include "pakfire.h"
 
 typedef struct {
     PyObject_HEAD
-    PoolObject* pool;
+    PakfireObject* pakfire;
     PakfireRepo repo;
-
-	// XXX COMPAT
-	void* _repo;
 } RepoObject;
 
 extern PyTypeObject RepoType;
 
-PyObject* new_repo(PoolObject* pool, const char* name);
+PyObject* new_repo(PakfireObject* pakfire, const char* name);
 
 #endif /* PYTHON_PAKFIRE_REPO_H */

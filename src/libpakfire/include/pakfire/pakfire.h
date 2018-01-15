@@ -35,4 +35,7 @@ const char* pakfire_get_arch(Pakfire pakfire);
 
 PakfirePool pakfire_get_pool(Pakfire pakfire);
 
+PakfireRepo pakfire_get_installed_repo(Pakfire pakfire);
+void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo);
+
 #endif /* PAKFIRE_PAKFIRE_H */

@@ -18,10 +18,13 @@
 #                                                                             #
 #############################################################################*/
 
+#include <solv/pool.h>
+
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
+#include <pakfire/repo.h>
 #include <pakfire/system.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
@@ -95,4 +98,23 @@ PAKFIRE_EXPORT const char* pakfire_get_arch(Pakfire pakfire) {
 
 PAKFIRE_EXPORT PakfirePool pakfire_get_pool(Pakfire pakfire) {
 	return pakfire_pool_ref(pakfire->pool);
+}
+
+PAKFIRE_EXPORT PakfireRepo pakfire_get_installed_repo(Pakfire pakfire) {
+	Pool* p = pakfire_pool_get_solv_pool(pakfire->pool);
+	if (!p->installed)
+		return NULL;
+
+	return pakfire_repo_create_from_repo(pakfire, p->installed);
+}
+
+PAKFIRE_EXPORT void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo) {
+	Pool* p = pakfire_pool_get_solv_pool(pakfire->pool);
+
+	if (!repo) {
+		pool_set_installed(p, NULL);
+		return;
+	}
+
+	pool_set_installed(p, pakfire_repo_get_repo(repo));
 }

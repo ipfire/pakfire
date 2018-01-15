@@ -30,9 +30,6 @@ void pakfire_pool_unref(PakfirePool pool);
 int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2);
 int pakfire_pool_count(PakfirePool pool);
 
-PakfireRepo pakfire_pool_get_installed_repo(PakfirePool pool);
-void pakfire_pool_set_installed_repo(PakfirePool pool, PakfireRepo repo);
-
 const char** pakfire_pool_get_installonly(PakfirePool pool);
 void pakfire_pool_set_installonly(PakfirePool pool, const char** installonly);
 

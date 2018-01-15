@@ -23,6 +23,7 @@
 #include <pakfire/file.h>
 #include <pakfire/package.h>
 #include <pakfire/relationlist.h>
+#include <pakfire/repo.h>
 #include <pakfire/util.h>
 
 #include "package.h"
@@ -458,7 +459,7 @@ static PyObject* Package_get_repo(PackageObject* self) {
 	const char* name = pakfire_repo_get_name(repo);
 	pakfire_repo_unref(repo);
 
-	return new_repo(self->pool, name);
+	return new_repo(self->pakfire, name);
 }
 
 static int Package_set_repo(PackageObject* self, PyObject* value) {

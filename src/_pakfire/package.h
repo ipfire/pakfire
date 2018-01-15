@@ -26,10 +26,12 @@
 #include <pakfire/package.h>
 #include <solv/pooltypes.h>
 
+#include "pakfire.h"
 #include "pool.h"
 
 typedef struct {
 	PyObject_HEAD
+	PakfireObject* pakfire;
 	PoolObject* pool;
 	PakfirePackage package;
 } PackageObject;

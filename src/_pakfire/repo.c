@@ -29,8 +29,8 @@
 #include "package.h"
 #include "repo.h"
 
-PyObject* new_repo(PoolObject* pool, const char* name) {
-	PyObject* args = Py_BuildValue("Os", (PyObject *)pool, name);
+PyObject* new_repo(PakfireObject* pakfire, const char* name) {
+	PyObject* args = Py_BuildValue("Os", (PyObject *)pakfire, name);
 	PyObject* repo = PyObject_CallObject((PyObject *)&RepoType, args);
 
 	Py_DECREF(args);
@@ -41,7 +41,7 @@ PyObject* new_repo(PoolObject* pool, const char* name) {
 static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	RepoObject* self = (RepoObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pool = NULL;
+		self->pakfire = NULL;
 		self->repo = NULL;
 	}
 
@@ -51,21 +51,21 @@ static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 static void Repo_dealloc(RepoObject* self) {
 	pakfire_repo_unref(self->repo);
 
-	Py_XDECREF(self->pool);
+	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Repo_init(RepoObject* self, PyObject* args, PyObject* kwds) {
-	PyObject* pool;
+	PakfireObject* pakfire;
 	const char* name;
 
-	if (!PyArg_ParseTuple(args, "O!s", &PoolType, &pool, &name))
+	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &name))
 		return -1;
 
-	self->pool = (PoolObject *)pool;
-	Py_INCREF(self->pool);
+	self->pakfire = pakfire;
+	Py_INCREF(self->pakfire);
 
-	self->repo = pakfire_repo_create(self->pool->pool, name);
+	self->repo = pakfire_repo_create(self->pakfire->pakfire, name);
 
 	return 0;
 }
@@ -220,10 +220,11 @@ static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "sss", &name, &evr, &arch))
 		return NULL;
 
-	PakfirePool pool = pakfire_repo_pool(self->repo);
+	PakfirePool pool = pakfire_repo_get_pool(self->repo);
 	PakfirePackage pkg = pakfire_package_create2(pool, self->repo, name, evr, arch);
 
-	return new_package(self->pool, pakfire_package_id(pkg));
+	// XXX must be self->pakfire instead of NULL
+	return new_package(NULL /* self->pakfire */, pakfire_package_id(pkg));
 }
 
 static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {
