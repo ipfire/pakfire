@@ -140,7 +140,7 @@ static void pakfire_solution_free(PakfireSolution solution) {
 	if (solution->next)
 		pakfire_solution_unref(solution->next);
 
-	pakfire_problem_free(solution->problem);
+	pakfire_problem_unref(solution->problem);
 
 	if (solution->elements)
 		while (*solution->elements)

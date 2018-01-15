@@ -212,11 +212,11 @@ global:
 	# problem
 	pakfire_problem_append;
 	pakfire_problem_create;
-	pakfire_problem_free;
 	pakfire_problem_get_solutions;
 	pakfire_problem_next;
 	pakfire_problem_ref;
 	pakfire_problem_to_string;
+	pakfire_problem_unref;
 
 	# repo
 	pakfire_repo_cmp;

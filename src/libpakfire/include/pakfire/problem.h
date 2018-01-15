@@ -28,7 +28,7 @@
 
 PakfireProblem pakfire_problem_create(PakfireRequest request, Id id);
 PakfireProblem pakfire_problem_ref(PakfireProblem problem);
-void pakfire_problem_free(PakfireProblem problem);
+PakfireProblem pakfire_problem_unref(PakfireProblem problem);
 
 PakfireProblem pakfire_problem_next(PakfireProblem problem);
 void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem);

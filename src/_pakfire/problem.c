@@ -50,8 +50,7 @@ static PyObject* Problem_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 }
 
 static void Problem_dealloc(ProblemObject* self) {
-	if (self->problem)
-		pakfire_problem_free(self->problem);
+	pakfire_problem_unref(self->problem);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
