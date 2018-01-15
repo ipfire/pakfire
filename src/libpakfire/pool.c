@@ -97,11 +97,15 @@ PAKFIRE_EXPORT PakfirePool pakfire_pool_ref(PakfirePool pool) {
 	return pool;
 }
 
-PAKFIRE_EXPORT void pakfire_pool_unref(PakfirePool pool) {
+PAKFIRE_EXPORT PakfirePool pakfire_pool_unref(PakfirePool pool) {
+	if (!pool)
+		return NULL;
+
 	if (--pool->nrefs > 0)
-		return;
+		return pool;
 
 	pakfire_pool_free(pool);
+	return NULL;
 }
 
 Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
