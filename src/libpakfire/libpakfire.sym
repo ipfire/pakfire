@@ -291,9 +291,10 @@ global:
 
 	# selector
 	pakfire_selector_create;
-	pakfire_selector_free;
 	pakfire_selector_providers;
+	pakfire_selector_ref;
 	pakfire_selector_set;
+	pakfire_selector_unref;
 
 	# solution
 	pakfire_solution_create;

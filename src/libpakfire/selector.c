@@ -26,6 +26,7 @@
 
 #include <pakfire/errno.h>
 #include <pakfire/filter.h>
+#include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pool.h>
@@ -34,20 +35,54 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+struct _PakfireSelector {
+	PakfirePool pool;
+	PakfireFilter f_name;
+	PakfireFilter f_provides;
+	PakfireFilter f_evr;
+	PakfireFilter f_arch;
+	int nrefs;
+};
+
 PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(PakfirePool pool) {
 	PakfireSelector selector = pakfire_calloc(1, sizeof(*selector));
-	selector->pool = pool;
+	if (selector) {
+		DEBUG("Allocated Selector at %p\n", selector);
+		selector->nrefs = 1;
 
-	selector->f_arch = NULL;
-	selector->f_name = NULL;
-	selector->f_evr = NULL;
-	selector->f_provides = NULL;
+		selector->pool = pakfire_pool_ref(pool);
+
+		selector->f_arch = NULL;
+		selector->f_name = NULL;
+		selector->f_evr = NULL;
+		selector->f_provides = NULL;
+	}
 
 	return selector;
 }
 
-PAKFIRE_EXPORT void pakfire_selector_free(PakfireSelector selector) {
+PAKFIRE_EXPORT PakfireSelector pakfire_selector_ref(PakfireSelector selector) {
+	selector->nrefs++;
+
+	return selector;
+}
+
+static void pakfire_selector_free(PakfireSelector selector) {
+	pakfire_pool_unref(selector->pool);
 	pakfire_free(selector);
+
+	DEBUG("Released Selector at %p\n", selector);
+}
+
+PAKFIRE_EXPORT PakfireSelector pakfire_selector_unref(PakfireSelector selector) {
+	if (!selector)
+		return NULL;
+
+	if (--selector->nrefs > 0)
+		return selector;
+
+	pakfire_selector_free(selector);
+	return NULL;
 }
 
 static int pakfire_selector_valid_setting(int keyname, int cmp_type) {

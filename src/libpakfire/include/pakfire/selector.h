@@ -29,28 +29,14 @@
 #include <pakfire/pool.h>
 
 PakfireSelector pakfire_selector_create(PakfirePool pool);
-void pakfire_selector_free(PakfireSelector selector);
+
+PakfireSelector pakfire_selector_ref(PakfireSelector selector);
+PakfireSelector pakfire_selector_unref(PakfireSelector selector);
 
 int pakfire_selector_set(PakfireSelector selector, int keyname, int cmp_type, const char* match);
 
 PakfirePackageList pakfire_selector_providers(PakfireSelector selector);
 
 int pakfire_selector2queue(const PakfireSelector selector, Queue* queue, int solver_action);
-
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfireSelector {
-	PakfirePool pool;
-	PakfireFilter f_name;
-	PakfireFilter f_provides;
-	PakfireFilter f_evr;
-	PakfireFilter f_arch;
-};
-
-static inline Pool* pakfire_selector_solv_pool(PakfireSelector selector) {
-	return pakfire_pool_get_solv_pool(selector->pool);
-}
-
-#endif
 
 #endif /* PAKFIRE_SELECTOR_H */

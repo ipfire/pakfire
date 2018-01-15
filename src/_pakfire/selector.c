@@ -41,8 +41,7 @@ static PyObject* Selector_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 }
 
 static void Selector_dealloc(SelectorObject* self) {
-	if (self->selector)
-		pakfire_selector_free(self->selector);
+	pakfire_selector_unref(self->selector);
 
 	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);
