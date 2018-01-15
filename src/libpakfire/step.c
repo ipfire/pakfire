@@ -244,6 +244,8 @@ static int pakfire_step_erase(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type action) {
+	DEBUG("Running Step %p (%d)\n", step, action);
+
 	pakfire_step_type_t type = pakfire_step_get_type(step);
 
 	int r = 0;

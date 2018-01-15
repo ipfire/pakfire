@@ -331,6 +331,8 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 }
 
 PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
+	DEBUG("Running Transaction %p\n", transaction);
+
 	int r = 0;
 
 	// Verify steps
@@ -351,6 +353,8 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_POSTTRANS);
 	if (r)
 		return r;
+
+	DEBUG("Transaction %p has finished successfully\n", transaction);
 
 	return 0;
 }
