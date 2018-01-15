@@ -75,17 +75,23 @@ PAKFIRE_EXPORT Pakfire pakfire_ref(Pakfire pakfire) {
 	return pakfire;
 }
 
-PAKFIRE_EXPORT void pakfire_unref(Pakfire pakfire) {
+PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
+	if (!pakfire)
+		return NULL;
+
 	if (--pakfire->nrefs > 0)
-		return;
+		return pakfire;
 
 	pakfire_pool_unref(pakfire->pool);
 
 	pakfire_free(pakfire->path);
 	pakfire_free(pakfire->arch);
 
-	DEBUG("Pakfire released at %p\n", pakfire);
 	pakfire_free(pakfire);
+
+	DEBUG("Pakfire released at %p\n", pakfire);
+
+	return NULL;
 }
 
 PAKFIRE_EXPORT const char* pakfire_get_path(Pakfire pakfire) {

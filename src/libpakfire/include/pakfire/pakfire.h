@@ -28,7 +28,7 @@ int pakfire_init();
 Pakfire pakfire_create(const char* path, const char* arch);
 
 Pakfire pakfire_ref(Pakfire pakfire);
-void pakfire_unref(Pakfire pakfire);
+Pakfire pakfire_unref(Pakfire pakfire);
 
 const char* pakfire_get_path(Pakfire pakfire);
 const char* pakfire_get_arch(Pakfire pakfire);
