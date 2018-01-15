@@ -26,6 +26,7 @@
 
 #include "errors.h"
 #include "package.h"
+#include "pakfire.h"
 #include "problem.h"
 #include "relation.h"
 #include "request.h"
@@ -36,7 +37,7 @@ static PyObject* Request_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	RequestObject* self = (RequestObject *)type->tp_alloc(type, 0);
 	if (self) {
 		self->request = NULL;
-		self->pool = NULL;
+		self->pakfire = NULL;
 	}
 
 	return (PyObject *)self;
@@ -46,20 +47,20 @@ static void Request_dealloc(RequestObject* self) {
 	if (self->request)
 		pakfire_request_unref(self->request);
 
-	Py_XDECREF(self->pool);
+	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Request_init(RequestObject* self, PyObject* args, PyObject* kwds) {
-	PyObject* pool;
+	PakfireObject* pakfire;
 
-	if (!PyArg_ParseTuple(args, "O!", &PoolType, &pool))
+	if (!PyArg_ParseTuple(args, "O!", &PakfireType, &pakfire))
 		return -1;
 
-	self->pool = (PoolObject *)pool;
-	Py_INCREF(self->pool);
+	self->pakfire = pakfire;
+	Py_INCREF(self->pakfire);
 
-	self->request = pakfire_request_create(self->pool->pool);
+	self->request = pakfire_request_create(self->pakfire->pakfire);
 
 	return 0;
 }
@@ -264,13 +265,6 @@ static PyObject* Request_solve(RequestObject* self, PyObject* args, PyObject *kw
 	return new_transaction(self, transaction);
 }
 
-static PyObject* Request_get_pool(RequestObject* self) {
-	PoolObject* pool = self->pool;
-	Py_INCREF(pool);
-
-	return (PyObject *)pool;
-}
-
 static struct PyMethodDef Request_methods[] = {
 	{
 		"install",
@@ -321,13 +315,6 @@ static struct PyGetSetDef Request_getsetters[] = {
 	{
 		"problems",
 		(getter)Request_get_problems,
-		NULL,
-		NULL,
-		NULL
-	},
-	{
-		"pool",
-		(getter)Request_get_pool,
 		NULL,
 		NULL,
 		NULL

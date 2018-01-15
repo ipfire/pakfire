@@ -99,7 +99,8 @@ static PyObject* Step_repr(StepObject* self) {
 static PyObject* Step_get_package(StepObject* self) {
 	PakfirePackage package = pakfire_step_get_package(self->step);
 
-	PyObject* obj = new_package(self->transaction->request->pool, pakfire_package_id(package));
+	// XXX NULL must be the pool object
+	PyObject* obj = new_package(NULL, pakfire_package_id(package));
 	pakfire_package_unref(package);
 
 	return obj;

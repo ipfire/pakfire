@@ -164,7 +164,7 @@ class PakfireContext(object):
 		# Detect any errors in the dependency tree.
 		# For that we create an empty request and solver and try to solve
 		# something.
-		request = _pakfire.Request(self.pakfire.pool)
+		request = _pakfire.Request(self.pakfire)
 		request.verify()
 
 		return request.solve(**kwargs)
@@ -203,7 +203,7 @@ class PakfireContext(object):
 	# Transactions
 
 	def install(self, requires, **kwargs):
-		request = _pakfire.Request(self.pakfire.pool)
+		request = _pakfire.Request(self.pakfire)
 
 		# XXX handle files and URLs
 
@@ -220,7 +220,7 @@ class PakfireContext(object):
 		raise NotImplementedError
 
 	def erase(self, pkgs, **kwargs):
-		request = _pakfire.Request(self.pakfire.pool)
+		request = _pakfire.Request(self.pakfire)
 
 		for pkg in pkgs:
 			relation = _pakfire.Relation(self.pakfire.pool, pkg)
@@ -229,7 +229,7 @@ class PakfireContext(object):
 		return request.solve(**kwargs)
 
 	def update(self, reqs=None, excludes=None, **kwargs):
-		request = _pakfire.Request(self.pakfire.pool)
+		request = _pakfire.Request(self.pakfire)
 
 		# Add all packages that should be updated to the request
 		for req in reqs or []:

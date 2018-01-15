@@ -25,15 +25,12 @@
 
 #include <pakfire/request.h>
 
-#include "pool.h"
+#include "pakfire.h"
 
 typedef struct {
 	PyObject_HEAD
-	PoolObject* pool;
+	PakfireObject* pakfire;
 	PakfireRequest request;
-
-	// XXX COMPAT
-	Pool* _pool;
 } RequestObject;
 
 extern PyTypeObject RequestType;

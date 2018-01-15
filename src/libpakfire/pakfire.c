@@ -100,6 +100,10 @@ PAKFIRE_EXPORT PakfirePool pakfire_get_pool(Pakfire pakfire) {
 	return pakfire_pool_ref(pakfire->pool);
 }
 
+Pool* pakfire_get_solv_pool(Pakfire pakfire) {
+	return pakfire_pool_get_solv_pool(pakfire->pool);
+}
+
 PAKFIRE_EXPORT PakfireRepo pakfire_get_installed_repo(Pakfire pakfire) {
 	Pool* p = pakfire_pool_get_solv_pool(pakfire->pool);
 	if (!p->installed)

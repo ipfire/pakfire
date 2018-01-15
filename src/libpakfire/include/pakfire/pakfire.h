@@ -38,4 +38,12 @@ PakfirePool pakfire_get_pool(Pakfire pakfire);
 PakfireRepo pakfire_get_installed_repo(Pakfire pakfire);
 void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo);
 
+#ifdef PAKFIRE_PRIVATE
+
+#include <solv/pool.h>
+
+Pool* pakfire_get_solv_pool(Pakfire pakfire);
+
+#endif
+
 #endif /* PAKFIRE_PAKFIRE_H */

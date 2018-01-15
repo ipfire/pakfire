@@ -28,6 +28,7 @@
 
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
@@ -37,20 +38,20 @@
 #include <pakfire/util.h>
 
 struct _PakfireRequest {
-	PakfirePool pool;
+	Pakfire pakfire;
 	Queue queue;
 	Solver* solver;
 	Transaction* transaction;
 	int nrefs;
 };
 
-PAKFIRE_EXPORT PakfireRequest pakfire_request_create(PakfirePool pool) {
+PAKFIRE_EXPORT PakfireRequest pakfire_request_create(Pakfire pakfire) {
 	PakfireRequest request = pakfire_calloc(1, sizeof(*request));
 	if (request) {
 		DEBUG("Allocated Request at %p\n", request);
 		request->nrefs = 1;
 
-		request->pool = pakfire_pool_ref(pool);
+		request->pakfire = pakfire_ref(pakfire);
 		queue_init(&request->queue);
 	}
 
@@ -64,7 +65,7 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_ref(PakfireRequest request) {
 }
 
 static void pakfire_request_free(PakfireRequest request) {
-	pakfire_pool_unref(request->pool);
+	pakfire_unref(request->pakfire);
 
 	if (request->transaction)
 		transaction_free(request->transaction);
@@ -90,7 +91,7 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_unref(PakfireRequest request) {
 }
 
 PAKFIRE_EXPORT PakfirePool pakfire_request_get_pool(PakfireRequest request) {
-	return pakfire_pool_ref(request->pool);
+	return pakfire_get_pool(request->pakfire);
 }
 
 Solver* pakfire_request_get_solver(PakfireRequest request) {
@@ -98,7 +99,7 @@ Solver* pakfire_request_get_solver(PakfireRequest request) {
 }
 
 static void init_solver(PakfireRequest request, int flags) {
-	Pool* p = pakfire_pool_get_solv_pool(request->pool);
+	Pool* p = pakfire_get_solv_pool(request->pakfire);
 
 	Solver* solver = solver_create(p);
 
@@ -136,7 +137,9 @@ static int solve(PakfireRequest request, Queue* queue) {
 		request->transaction = NULL;
 	}
 
-	pakfire_pool_apply_changes(request->pool);
+	PakfirePool pool = pakfire_get_pool(request->pakfire);
+	pakfire_pool_apply_changes(pool);
+	pakfire_pool_unref(pool);
 
 	// Save time when we starting solving
 	clock_t solving_start = clock();
@@ -177,7 +180,10 @@ PAKFIRE_EXPORT int pakfire_request_solve(PakfireRequest request, int flags) {
 	}
 
 	/* turn off implicit obsoletes for installonly packages */
-	Queue* installonly = pakfire_pool_get_installonly_queue(request->pool);
+	PakfirePool pool = pakfire_get_pool(request->pakfire);
+	Queue* installonly = pakfire_pool_get_installonly_queue(pool);
+	pakfire_pool_unref(pool);
+
 	for (int i = 0; i < installonly->count; i++)
 		queue_push2(&queue, SOLVER_MULTIVERSION|SOLVER_SOLVABLE_PROVIDES,
 			installonly->elements[i]);
@@ -211,7 +217,11 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_request_get_transaction(PakfireRequest
 	if (!request->transaction)
 		return NULL;
 
-	return pakfire_transaction_create(request->pool, request->transaction);
+	PakfirePool pool = pakfire_get_pool(request->pakfire);
+	PakfireTransaction transaction = pakfire_transaction_create(pool, request->transaction);
+	pakfire_pool_unref(pool);
+
+	return transaction;
 }
 
 PAKFIRE_EXPORT int pakfire_request_install(PakfireRequest request, PakfirePackage package) {

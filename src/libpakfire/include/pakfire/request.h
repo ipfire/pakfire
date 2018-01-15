@@ -40,7 +40,7 @@ enum _pakfire_solver_flags {
 	PAKFIRE_SOLVER_ALLOW_VENDORCHANGE = 1 << 5,
 };
 
-PakfireRequest pakfire_request_create(PakfirePool pool);
+PakfireRequest pakfire_request_create(Pakfire pakfire);
 
 PakfireRequest pakfire_request_ref(PakfireRequest request);
 PakfireRequest pakfire_request_unref(PakfireRequest request);
