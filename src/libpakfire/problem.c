@@ -27,6 +27,15 @@
 #include <pakfire/solution.h>
 #include <pakfire/util.h>
 
+struct _PakfireProblem {
+	PakfireRequest request;
+	Id id;
+	char* string;
+
+	PakfireProblem next;
+	int nrefs;
+};
+
 static char* to_string(PakfireProblem problem) {
 	Solver* solver = pakfire_request_get_solver(problem->request);
 	Pool* pool = solver->pool;
@@ -251,6 +260,14 @@ PAKFIRE_EXPORT void pakfire_problem_append(PakfireProblem problem, PakfireProble
 
 PAKFIRE_EXPORT const char* pakfire_problem_to_string(PakfireProblem problem) {
 	return problem->string;
+}
+
+Id pakfire_problem_get_id(PakfireProblem problem) {
+	return problem->id;
+}
+
+PAKFIRE_EXPORT PakfireRequest pakfire_problem_get_request(PakfireProblem problem) {
+	return pakfire_request_ref(problem->request);
 }
 
 PAKFIRE_EXPORT PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem) {

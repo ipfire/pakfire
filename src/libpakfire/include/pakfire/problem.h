@@ -21,9 +21,6 @@
 #ifndef PAKFIRE_PROBLEM_H
 #define PAKFIRE_PROBLEM_H
 
-#include <solv/pool.h>
-#include <solv/queue.h>
-
 #include <pakfire/request.h>
 
 PakfireProblem pakfire_problem_create(PakfireRequest request, Id id);
@@ -35,18 +32,14 @@ void pakfire_problem_append(PakfireProblem problem, PakfireProblem new_problem);
 
 const char* pakfire_problem_to_string(PakfireProblem problem);
 
+PakfireRequest pakfire_problem_get_request(PakfireProblem problem);
 PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem);
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _PakfireProblem {
-	PakfireRequest request;
-	Id id;
-	char* string;
+#include <solv/pooltypes.h>
 
-	PakfireProblem next;
-	int nrefs;
-};
+Id pakfire_problem_get_id(PakfireProblem problem);
 
 #endif
 

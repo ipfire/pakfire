@@ -41,17 +41,19 @@ struct _PakfireSolution {
 };
 
 static void import_elements(PakfireSolution solution) {
-	Solver* solver = pakfire_request_get_solver(solution->problem->request);
+	PakfireRequest request = pakfire_problem_get_request(solution->problem);
+
+	Solver* solver = pakfire_request_get_solver(request);
 	Pool* pool = solver->pool;
 
 	// Reserve memory
-	unsigned int num = solver_solutionelement_count(solver, solution->problem->id, solution->id);
+	unsigned int num = solver_solutionelement_count(solver, pakfire_problem_get_id(solution->problem), solution->id);
 	char** elements = solution->elements = pakfire_calloc(num + 1, sizeof(*elements));
 
 	Id p;
 	Id rp;
 	Id element = 0;
-	while ((element = solver_next_solutionelement(solver, solution->problem->id, solution->id, element, &p, &rp)) != 0) {
+	while ((element = solver_next_solutionelement(solver, pakfire_problem_get_id(solution->problem), solution->id, element, &p, &rp)) != 0) {
 		char line[STRING_SIZE];
 
 		if (p == SOLVER_SOLUTION_JOB || p == SOLVER_SOLUTION_POOLJOB) {
@@ -112,6 +114,8 @@ static void import_elements(PakfireSolution solution) {
 
 	// Terminate array
 	*elements = NULL;
+
+	pakfire_request_unref(request);
 }
 
 PAKFIRE_EXPORT PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
