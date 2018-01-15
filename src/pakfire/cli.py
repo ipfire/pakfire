@@ -37,7 +37,6 @@ from . import config
 from . import daemon
 from . import packages
 from . import repository
-from . import transaction
 from . import ui
 from . import util
 

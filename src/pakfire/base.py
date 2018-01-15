@@ -28,7 +28,6 @@ from . import distro
 from . import filelist
 from . import packages
 from . import repository
-from . import transaction
 from . import util
 
 import logging

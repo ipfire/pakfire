@@ -133,7 +133,6 @@ pakfire_PYTHON = \
 	src/pakfire/progressbar.py \
 	src/pakfire/shell.py \
 	src/pakfire/system.py \
-	src/pakfire/transaction.py \
 	src/pakfire/util.py
 
 pakfiredir = $(pythondir)/pakfire
