@@ -25,6 +25,8 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include <pakfire/types.h>
+
 void pakfire_oom(size_t num, size_t len);
 
 void* pakfire_malloc(size_t len);
@@ -47,6 +49,8 @@ int pakfire_mkdir(const char* path, mode_t mode);
 
 char* pakfire_sgets(char* str, int num, char** input);
 char* pakfire_remove_trailing_newline(char* str);
+
+const char* pakfire_action_type_string(pakfire_action_type_t type);
 
 void init_libgcrypt();
 

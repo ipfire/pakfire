@@ -72,7 +72,7 @@ typedef enum _pakfire_action_types {
 	PAKFIRE_ACTION_EXECUTE   = 1 << 1,
 	PAKFIRE_ACTION_PRETRANS  = 1 << 2,
 	PAKFIRE_ACTION_POSTTRANS = 1 << 3,
-} pakfire_action_type;
+} pakfire_action_type_t;
 
 typedef enum _pakfire_step_types {
 	PAKFIRE_STEP_IGNORE = 0,

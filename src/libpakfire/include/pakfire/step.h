@@ -55,7 +55,7 @@ typedef enum _pakfire_script_types {
 	PAKFIRE_SCRIPT_POSTTRANSUP,
 } pakfire_script_type;
 
-int pakfire_step_run(PakfireStep step, pakfire_action_type action);
+int pakfire_step_run(PakfireStep step, pakfire_action_type_t action);
 
 #endif
 

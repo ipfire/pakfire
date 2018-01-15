@@ -35,6 +35,7 @@
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/private.h>
+#include <pakfire/types.h>
 
 void pakfire_oom(size_t num, size_t len) {
 	if (num)
@@ -252,4 +253,25 @@ void init_libgcrypt() {
 
 	// Tell libgcrypt that initialization has completed
 	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+}
+
+PAKFIRE_EXPORT const char* pakfire_action_type_string(pakfire_action_type_t type) {
+	switch (type) {
+		case PAKFIRE_ACTION_NOOP:
+			return "NOOP";
+
+		case PAKFIRE_ACTION_VERIFY:
+			return "VERIFY";
+
+		case PAKFIRE_ACTION_EXECUTE:
+			return "EXECUTE";
+
+		case PAKFIRE_ACTION_PRETRANS:
+			return "PRETRANS";
+
+		case PAKFIRE_ACTION_POSTTRANS:
+			return "POSTTRANS";
+	}
+
+	return NULL;
 }

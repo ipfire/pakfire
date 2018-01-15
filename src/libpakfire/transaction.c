@@ -311,7 +311,7 @@ PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, si
 	return string;
 }
 
-static int pakfire_transaction_run_steps(PakfireTransaction transaction, const pakfire_action_type action) {
+static int pakfire_transaction_run_steps(PakfireTransaction transaction, const pakfire_action_type_t action) {
 	int r = 0;
 
 	// Walk through all steps
