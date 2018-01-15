@@ -38,7 +38,6 @@
 struct _PakfireStep {
 	PakfirePool pool;
 	PakfirePackage package;
-	Id id;
 	pakfire_step_type_t type;
 	int nrefs;
 };
@@ -87,11 +86,10 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 		step->nrefs = 1;
 
 		step->pool = pakfire_transaction_get_pool(transaction);
-		step->id = id;
-		step->type = get_type(t, step->id);
+		step->type = get_type(t, id);
 
 		// Get the package
-		step->package = pakfire_package_create(step->pool, step->id);
+		step->package = pakfire_package_create(step->pool, id);
 	}
 
 	return step;
