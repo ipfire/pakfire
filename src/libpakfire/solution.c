@@ -30,6 +30,15 @@
 #include <pakfire/solution.h>
 #include <pakfire/util.h>
 
+struct _PakfireSolution {
+	PakfireProblem problem;
+	Id id;
+	char** elements;
+
+	PakfireSolution next;
+	int nrefs;
+};
+
 static void import_elements(PakfireSolution solution) {
 	Solver* solver = pakfire_request_get_solver(solution->problem->request);
 	Pool* pool = solver->pool;

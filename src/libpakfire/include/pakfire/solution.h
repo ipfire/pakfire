@@ -32,17 +32,4 @@ void pakfire_solution_append(PakfireSolution solution, PakfireSolution new_solut
 
 char* pakfire_solution_to_string(PakfireSolution solution);
 
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfireSolution {
-	PakfireProblem problem;
-	Id id;
-	char** elements;
-
-	PakfireSolution next;
-	int nrefs;
-};
-
-#endif
-
 #endif /* PAKFIRE_SOLUTION_H */
