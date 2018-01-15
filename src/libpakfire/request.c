@@ -217,11 +217,7 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_request_get_transaction(PakfireRequest
 	if (!request->transaction)
 		return NULL;
 
-	PakfirePool pool = pakfire_get_pool(request->pakfire);
-	PakfireTransaction transaction = pakfire_transaction_create(pool, request->transaction);
-	pakfire_pool_unref(pool);
-
-	return transaction;
+	return pakfire_transaction_create(request->pakfire, request->transaction);
 }
 
 PAKFIRE_EXPORT int pakfire_request_install(PakfireRequest request, PakfirePackage package) {

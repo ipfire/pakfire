@@ -78,13 +78,9 @@ static int Transaction_init(TransactionObject* self, PyObject* args, PyObject* k
 	PakfireRequest req = request->request;
 	self->transaction = pakfire_request_get_transaction(req);
 
-	// If request has got no transaction, we will create an (empty) new one.
-	if (!self->transaction) {
-		PakfirePool pool = pakfire_request_get_pool(req);
-
-		self->transaction = pakfire_transaction_create(pool, NULL);
-		pakfire_pool_unref(pool);
-	}
+	// Fail on empty transaction
+	if (!self->transaction)
+		return -1;
 
 	return 0;
 }

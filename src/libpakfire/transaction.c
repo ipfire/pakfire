@@ -25,6 +25,7 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
@@ -34,20 +35,20 @@
 #include <pakfire/util.h>
 
 struct _PakfireTransaction {
-	PakfirePool pool;
+	Pakfire pakfire;
 	Transaction* transaction;
 	PakfireStep* steps;
 	size_t num_steps;
 	int nrefs;
 };
 
-PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans) {
+PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
 	if (transaction) {
 		DEBUG("Allocated Transaction at %p\n", transaction);
 		transaction->nrefs = 1;
 
-		transaction->pool = pakfire_pool_ref(pool);
+		transaction->pakfire = pakfire_ref(pakfire);
 
 		// Clone the transaction, so we get independent from what ever called this.
 		if (trans) {
@@ -78,7 +79,7 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_ref(PakfireTransaction tra
 }
 
 void pakfire_transaction_free(PakfireTransaction transaction) {
-	pakfire_pool_unref(transaction->pool);
+	pakfire_unref(transaction->pakfire);
 
 	// Release all steps
 	while (*transaction->steps)
@@ -102,7 +103,7 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_unref(PakfireTransaction t
 }
 
 PAKFIRE_EXPORT PakfirePool pakfire_transaction_get_pool(PakfireTransaction transaction) {
-	return pakfire_pool_ref(transaction->pool);
+	return pakfire_get_pool(transaction->pakfire);
 }
 
 Transaction* pakfire_transaction_get_transaction(PakfireTransaction transaction) {

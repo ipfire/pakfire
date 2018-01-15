@@ -25,7 +25,7 @@
 
 #include <pakfire/types.h>
 
-PakfireTransaction pakfire_transaction_create(PakfirePool pool, Transaction* trans);
+PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Transaction* trans);
 PakfireTransaction pakfire_transaction_ref(PakfireTransaction transaction);
 PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction);
 
