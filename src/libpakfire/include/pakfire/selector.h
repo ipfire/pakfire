@@ -26,9 +26,8 @@
 
 #include <pakfire/filter.h>
 #include <pakfire/packagelist.h>
-#include <pakfire/pool.h>
 
-PakfireSelector pakfire_selector_create(PakfirePool pool);
+PakfireSelector pakfire_selector_create(Pakfire pakfire);
 
 PakfireSelector pakfire_selector_ref(PakfireSelector selector);
 PakfireSelector pakfire_selector_unref(PakfireSelector selector);

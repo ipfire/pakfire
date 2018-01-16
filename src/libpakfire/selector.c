@@ -38,7 +38,6 @@
 
 struct _PakfireSelector {
 	Pakfire pakfire;
-	PakfirePool pool;
 	PakfireFilter f_name;
 	PakfireFilter f_provides;
 	PakfireFilter f_evr;
@@ -46,13 +45,13 @@ struct _PakfireSelector {
 	int nrefs;
 };
 
-PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(PakfirePool pool) {
+PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(Pakfire pakfire) {
 	PakfireSelector selector = pakfire_calloc(1, sizeof(*selector));
 	if (selector) {
 		DEBUG("Allocated Selector at %p\n", selector);
 		selector->nrefs = 1;
 
-		selector->pool = pakfire_pool_ref(pool);
+		selector->pakfire = pakfire_ref(pakfire);
 
 		selector->f_arch = NULL;
 		selector->f_name = NULL;
@@ -70,7 +69,7 @@ PAKFIRE_EXPORT PakfireSelector pakfire_selector_ref(PakfireSelector selector) {
 }
 
 static void pakfire_selector_free(PakfireSelector selector) {
-	pakfire_pool_unref(selector->pool);
+	pakfire_unref(selector->pakfire);
 	pakfire_free(selector);
 
 	DEBUG("Released Selector at %p\n", selector);
@@ -195,69 +194,65 @@ static Id str2archid(Pool* pool, const char* arch) {
     return id;
 }
 
-static int filter_arch2queue(PakfirePool pool, const PakfireFilter f, Queue* queue) {
+static int filter_arch2queue(Pakfire pakfire, const PakfireFilter f, Queue* queue) {
 	if (f == NULL)
 		return 0;
 
 	assert(f->cmp_type == PAKFIRE_EQ);
 
-	Pool* p = pakfire_pool_get_solv_pool(pool);
-	Id archid = str2archid(p, f->match);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
+	Id archid = str2archid(pool, f->match);
 	if (archid == 0)
 		return PAKFIRE_E_ARCH;
 
 	for (int i = 0; i < queue->count; i += 2) {
-		assert((queue->elements[i] & SOLVER_SELECTMASK) == SOLVER_SOLVABLE_NAME);
-
 		Id dep = queue->elements[i + 1];
-		queue->elements[i + 1] = pool_rel2id(p, dep, archid, REL_ARCH, 1);
+
+		queue->elements[i + 1] = pool_rel2id(pool, dep, archid, REL_ARCH, 1);
 		queue->elements[i] |= SOLVER_SETARCH;
 	}
 
 	return 0;
 }
 
-static int filter_evr2queue(PakfirePool pool, const PakfireFilter f, Queue* queue) {
+static int filter_evr2queue(Pakfire pakfire, const PakfireFilter f, Queue* queue) {
 	if (f == NULL)
 		return 0;
 
 	assert(f->cmp_type == PAKFIRE_EQ);
 
-	Pool* p = pakfire_pool_get_solv_pool(pool);
-	Id evr = pool_str2id(p, f->match, 1);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
+	Id evr = pool_str2id(pool, f->match, 1);
 
 	for (int i = 0; i < queue->count; i += 2) {
-		assert((queue->elements[i] & SOLVER_SELECTMASK) == SOLVER_SOLVABLE_NAME);
-
 		Id dep = queue->elements[i + 1];
-		queue->elements[i + 1] = pool_rel2id(p, dep, evr, REL_EQ, 1);
+		queue->elements[i + 1] = pool_rel2id(pool, dep, evr, REL_EQ, 1);
 		queue->elements[i] |= PAKFIRE_PKG_VERSION ? SOLVER_SETEV : SOLVER_SETEVR;
 	}
 
 	return 0;
 }
 
-static int filter_name2queue(PakfirePool pool, const PakfireFilter f, Queue* queue) {
+static int filter_name2queue(Pakfire pakfire, const PakfireFilter f, Queue* queue) {
 	if (f == NULL)
 		return 0;
 
-	Pool* p = pakfire_pool_get_solv_pool(pool);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
 	const char* name = f->match;
 	Id id;
 	Dataiterator di;
 
 	switch (f->cmp_type) {
 		case PAKFIRE_EQ:
-			id = pool_str2id(p, name, 0);
+			id = pool_str2id(pool, name, 0);
 			if (id)
 				queue_push2(queue, SOLVER_SOLVABLE_NAME, id);
 			break;
 
 		case PAKFIRE_GLOB:
-			dataiterator_init(&di, p, 0, 0, SOLVABLE_NAME, name, SEARCH_GLOB);
+			dataiterator_init(&di, pool, 0, 0, SOLVABLE_NAME, name, SEARCH_GLOB);
 
 			while (dataiterator_step(&di)) {
-				assert(di.idp);
 				Id id = *di.idp;
 
 				if (queue_has(queue, SOLVABLE_NAME, id))
@@ -270,29 +265,27 @@ static int filter_name2queue(PakfirePool pool, const PakfireFilter f, Queue* que
 			break;
 
 		default:
-			assert(0);
 			return 1;
 	}
 
 	return 0;
 }
 
-static int filter_provides2queue(PakfirePool pool, const PakfireFilter f, Queue* queue) {
+static int filter_provides2queue(Pakfire pakfire, const PakfireFilter f, Queue* queue) {
 	if (f == NULL)
 		return 0;
 
-	Pool* p = pakfire_pool_get_solv_pool(pool);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
 	Id id;
 
 	switch (f->cmp_type) {
 		case PAKFIRE_EQ:
-			id = pool_str2id(p, f->match, 0);
+			id = pool_str2id(pool, f->match, 0);
 			if (id)
 				queue_push2(queue, SOLVER_SOLVABLE_PROVIDES, id);
 			break;
 
 		default:
-			assert(0);
 			return 1;
 	}
 
@@ -300,7 +293,6 @@ static int filter_provides2queue(PakfirePool pool, const PakfireFilter f, Queue*
 }
 
 PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue* queue, int solver_action) {
-	PakfirePool pool = selector->pool;
 	int ret = 0;
 
 	Queue queue_selector;
@@ -314,19 +306,19 @@ PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue*
 
 	pakfire_pool_apply_changes(selector->pakfire);
 
-	ret = filter_name2queue(pool, selector->f_name, &queue_selector);
+	ret = filter_name2queue(selector->pakfire, selector->f_name, &queue_selector);
 	if (ret)
 		goto finish;
 
-	ret = filter_provides2queue(pool, selector->f_provides, &queue_selector);
+	ret = filter_provides2queue(selector->pakfire, selector->f_provides, &queue_selector);
 	if (ret)
 		goto finish;
 
-	ret = filter_arch2queue(pool, selector->f_arch, &queue_selector);
+	ret = filter_arch2queue(selector->pakfire, selector->f_arch, &queue_selector);
 	if (ret)
 		goto finish;
 
-	ret = filter_evr2queue(pool, selector->f_evr, &queue_selector);
+	ret = filter_evr2queue(selector->pakfire, selector->f_evr, &queue_selector);
 	if (ret)
 		goto finish;
 
