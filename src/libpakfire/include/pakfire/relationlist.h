@@ -21,14 +21,12 @@
 #ifndef PAKFIRE_RELATIONLIST_H
 #define PAKFIRE_RELATIONLIST_H
 
-#include <solv/queue.h>
-
-#include <pakfire/pool.h>
-#include <pakfire/relation.h>
 #include <pakfire/types.h>
 
-PakfireRelationList pakfire_relationlist_create(PakfirePool pool);
-void pakfire_relationlist_free(PakfireRelationList reldeplist);
+PakfireRelationList pakfire_relationlist_create(Pakfire pakfire);
+
+PakfireRelationList pakfire_relationlist_ref(PakfireRelationList relationlist);
+PakfireRelationList pakfire_relationlist_unref(PakfireRelationList relationlist);
 
 void pakfire_relationlist_add(PakfireRelationList relationlist, PakfireRelation relation);
 int pakfire_relationlist_count(PakfireRelationList relationlist);
@@ -37,12 +35,7 @@ PakfireRelation pakfire_relationlist_get_clone(PakfireRelationList relationlist,
 
 #ifdef PAKFIRE_PRIVATE
 
-struct _PakfireRelationList {
-	PakfirePool pool;
-	Queue queue;
-};
-
-PakfireRelationList pakfire_relationlist_from_queue(PakfirePool pool, Queue q);
+PakfireRelationList pakfire_relationlist_from_queue(Pakfire pakfire, Queue q);
 void pakfire_relationlist_clone_to_queue(PakfireRelationList relationlist, Queue* q);
 
 #endif

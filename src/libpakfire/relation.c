@@ -24,12 +24,20 @@
 #include <solv/queue.h>
 #include <solv/solver.h>
 
+#include <pakfire/logging.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
+
+struct _PakfireRelation {
+	Pakfire pakfire;
+	Id id;
+	int nrefs;
+};
 
 static int cmptype2relflags(int type) {
 	int flags = 0;
@@ -44,8 +52,8 @@ static int cmptype2relflags(int type) {
 	return flags;
 }
 
-PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int cmp_type, const char* evr) {
-	Pool* p = pakfire_pool_get_solv_pool(pool);
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(Pakfire pakfire, const char* name, int cmp_type, const char* evr) {
+	Pool* p = pakfire_get_solv_pool(pakfire);
 
 	Id id = pool_str2id(p, name, 1);
 
@@ -60,28 +68,52 @@ PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(PakfirePool pool, const c
 		id = pool_rel2id(p, id, ievr, flags, 1);
 	}
 
-	return pakfire_relation_create_from_id(pool, id);
+	return pakfire_relation_create_from_id(pakfire, id);
 }
 
-PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_id(PakfirePool pool, Id id) {
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_id(Pakfire pakfire, Id id) {
 	PakfireRelation relation = pakfire_calloc(1, sizeof(*relation));
+	if (relation) {
+		DEBUG("Allocated Relation at %p\n", relation);
+		relation->nrefs = 1;
 
-	relation->pool = pool;
-	relation->id = id;
+		relation->pakfire = pakfire_ref(pakfire);
+		relation->id = id;
+	}
 
 	return relation;
 }
 
-PAKFIRE_EXPORT void pakfire_relation_free(PakfireRelation relation) {
-	pakfire_free(relation);
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_ref(PakfireRelation relation) {
+	relation->nrefs++;
+
+	return relation;
 }
 
-PAKFIRE_EXPORT Id pakfire_relation_id(PakfireRelation relation) {
+static void pakfire_relation_free(PakfireRelation relation) {
+	pakfire_unref(relation->pakfire);
+	pakfire_free(relation);
+
+	DEBUG("Released Relation at %p\n", relation);
+}
+
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_unref(PakfireRelation relation) {
+	if (!relation)
+		return NULL;
+
+	if (--relation->nrefs > 0)
+		return relation;
+
+	pakfire_relation_free(relation);
+	return NULL;
+}
+
+PAKFIRE_EXPORT Id pakfire_relation_get_id(PakfireRelation relation) {
 	return relation->id;
 }
 
 PAKFIRE_EXPORT char* pakfire_relation_str(PakfireRelation relation) {
-	Pool* pool = pakfire_relation_solv_pool(relation);
+	Pool* pool = pakfire_get_solv_pool(relation->pakfire);
 
 	const char* str = pool_dep2str(pool, relation->id);
 

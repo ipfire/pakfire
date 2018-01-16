@@ -28,12 +28,12 @@
 #include <pakfire/types.h>
 
 #include "package.h"
+#include "pakfire.h"
 #include "selector.h"
 
 static PyObject* Selector_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	SelectorObject* self = (SelectorObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pool = NULL;
 		self->selector = NULL;
 	}
 
@@ -43,20 +43,16 @@ static PyObject* Selector_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 static void Selector_dealloc(SelectorObject* self) {
 	pakfire_selector_unref(self->selector);
 
-	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Selector_init(SelectorObject* self, PyObject* args, PyObject* kwds) {
-	PyObject* pool;
+	PakfireObject* pakfire;
 
-	if (!PyArg_ParseTuple(args, "O!", &PoolType, &pool))
+	if (!PyArg_ParseTuple(args, "O!", &PakfireType, &pakfire))
 		return -1;
 
-	self->pool = (PoolObject *)pool;
-	Py_INCREF(self->pool);
-
-	self->selector = pakfire_selector_create(self->pool->pool);
+	self->selector = pakfire_selector_create(pakfire->pakfire);
 
 	return 0;
 }
@@ -88,7 +84,7 @@ static PyObject* Selector_get_providers(SelectorObject* self) {
 	for (unsigned int i = 0; i < pakfire_packagelist_count(packagelist); i++) {
 		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
 
-		PyObject* obj = new_package(self->pool, pakfire_package_id(package));
+		PyObject* obj = new_package(NULL, pakfire_package_id(package));
 		PyList_Append(list, obj);
 
 		pakfire_package_unref(package);

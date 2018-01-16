@@ -23,13 +23,10 @@
 
 #include <Python.h>
 
-#include <pakfire/selector.h>
-
-#include "pool.h"
+#include <pakfire/types.h>
 
 typedef struct {
     PyObject_HEAD
-    PoolObject* pool;
     PakfireSelector selector;
 } SelectorObject;
 

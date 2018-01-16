@@ -64,13 +64,11 @@ static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
 }
 
 static void pakfire_package_add_self_provides(Pakfire pakfire, PakfirePackage pkg, const char* name, const char* evr) {
-	PakfirePool pool = pakfire_get_pool(pakfire);
+	PakfireRelation relation = pakfire_relation_create(pakfire, name, PAKFIRE_EQ, evr);
 
-	PakfireRelation relation = pakfire_relation_create(pool, name, PAKFIRE_EQ, evr);
 	pakfire_package_add_provides(pkg, relation);
 
-	pakfire_relation_free(relation);
-	pakfire_pool_unref(pool);
+	pakfire_relation_unref(relation);
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_package_create(Pakfire pakfire, Id id) {
@@ -527,10 +525,7 @@ static PakfireRelationList pakfire_package_get_relationlist(PakfirePackage pkg, 
 	Solvable* s = get_solvable(pkg);
 	solvable_lookup_idarray(s, type, &q);
 
-	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
-	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pool, q);
-	pakfire_pool_unref(pool);
-
+	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pkg->pakfire, q);
 	queue_free(&q);
 
 	return relationlist;
@@ -554,16 +549,16 @@ static void pakfire_package_set_relationlist(PakfirePackage pkg, Id type, Pakfir
 	int count = pakfire_relationlist_count(relationlist);
 	for (int i = 0; i < count; i++) {
 		PakfireRelation relation = pakfire_relationlist_get_clone(relationlist, i);
-		solvable_add_idarray(s, type, relation->id);
+		solvable_add_idarray(s, type, pakfire_relation_get_id(relation));
 
-		pakfire_relation_free(relation);
+		pakfire_relation_unref(relation);
 	}
 }
 
 static void pakfire_package_add_relation(PakfirePackage pkg, Id type, PakfireRelation relation) {
 	Solvable* s = get_solvable(pkg);
 
-	solvable_add_idarray(s, type, relation->id);
+	solvable_add_idarray(s, type, pakfire_relation_get_id(relation));
 }
 
 PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_provides(PakfirePackage pkg) {
@@ -710,7 +705,7 @@ static void pakfire_package_dump_add_line_relations(char** str, const char* key,
 
 		if (relation) {
 			char* dep = pakfire_relation_str(relation);
-			pakfire_relation_free(relation);
+			pakfire_relation_unref(relation);
 
 			// Stop here and don't list any files.
 			if (strcmp(PAKFIRE_SOLVABLE_FILEMARKER, dep) == 0)
@@ -814,37 +809,37 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 		PakfireRelationList provides = pakfire_package_get_provides(pkg);
 		if (provides) {
 			pakfire_package_dump_add_line_relations(&string, _("Provides"), provides);
-			pakfire_relationlist_free(provides);
+			pakfire_relationlist_unref(provides);
 		}
 
 		PakfireRelationList requires = pakfire_package_get_requires(pkg);
 		if (requires) {
 			pakfire_package_dump_add_line_relations(&string, _("Requires"), requires);
-			pakfire_relationlist_free(requires);
+			pakfire_relationlist_unref(requires);
 		}
 
 		PakfireRelationList conflicts = pakfire_package_get_conflicts(pkg);
 		if (conflicts) {
 			pakfire_package_dump_add_line_relations(&string, _("Conflicts"), conflicts);
-			pakfire_relationlist_free(conflicts);
+			pakfire_relationlist_unref(conflicts);
 		}
 
 		PakfireRelationList obsoletes = pakfire_package_get_obsoletes(pkg);
 		if (obsoletes) {
 			pakfire_package_dump_add_line_relations(&string, _("Obsoletes"), obsoletes);
-			pakfire_relationlist_free(obsoletes);
+			pakfire_relationlist_unref(obsoletes);
 		}
 
 		PakfireRelationList recommends = pakfire_package_get_recommends(pkg);
 		if (recommends) {
 			pakfire_package_dump_add_line_relations(&string, _("Recommends"), recommends);
-			pakfire_relationlist_free(recommends);
+			pakfire_relationlist_unref(recommends);
 		}
 
 		PakfireRelationList suggests = pakfire_package_get_suggests(pkg);
 		if (suggests) {
 			pakfire_package_dump_add_line_relations(&string, _("Suggests"), suggests);
-			pakfire_relationlist_free(suggests);
+			pakfire_relationlist_unref(suggests);
 		}
 	}
 

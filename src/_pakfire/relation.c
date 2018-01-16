@@ -29,15 +29,13 @@
 #include "package.h"
 #include "relation.h"
 
-static RelationObject* Relation_new_core(PyTypeObject* type, PoolObject* pool) {
+static RelationObject* Relation_new_core(PyTypeObject* type, PakfireObject* pakfire) {
 	RelationObject* self = (RelationObject *)type->tp_alloc(type, 0);
 	if (!self)
 		return NULL;
 
-	if (pool) {
-		self->pool = pool;
-		Py_INCREF(self->pool);
-	}
+	self->pakfire = pakfire;
+	Py_INCREF(self->pakfire);
 
 	self->relation = NULL;
 
@@ -58,27 +56,28 @@ static PyObject* Relation_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 }
 
 static void Relation_dealloc(RelationObject* self) {
-	if (self->relation)
-		pakfire_relation_free(self->relation);
+	pakfire_relation_unref(self->relation);
 
 	Py_XDECREF(self->pool);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static int Relation_init(RelationObject* self, PyObject* args, PyObject* kwds) {
-	PyObject* pool;
+	PakfireObject* pakfire;
 	const char* name;
 	const char* evr = NULL;
 	int cmp_type = 0;
 
-	if (!PyArg_ParseTuple(args, "O!s|is", &PoolType, &pool, &name, &cmp_type, &evr))
+	if (!PyArg_ParseTuple(args, "O!s|is", &PakfireType, &pakfire, &name, &cmp_type, &evr))
 		return -1;
 
-	self->pool = (PoolObject *)pool;
-	Py_INCREF(self->pool);
+	self->pakfire = pakfire;
+	Py_INCREF(self->pakfire);
 
-	self->relation = pakfire_relation_create(self->pool->pool, name, cmp_type, evr);
+	self->relation = pakfire_relation_create(self->pakfire->pakfire, name, cmp_type, evr);
 	if (!self->relation) {
+		Py_DECREF(self->pakfire);
+
 		PyErr_Format(PyExc_ValueError, "No such relation: %s", name);
 		return -1;
 	}
@@ -87,7 +86,7 @@ static int Relation_init(RelationObject* self, PyObject* args, PyObject* kwds) {
 }
 
 static long Relation_hash(RelationObject* self) {
-	return pakfire_relation_id(self->relation);
+	return pakfire_relation_get_id(self->relation);
 }
 
 static PyObject* Relation_repr(RelationObject* self) {

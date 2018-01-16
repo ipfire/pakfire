@@ -21,6 +21,8 @@
 #include <solv/pooltypes.h>
 #include <solv/queue.h>
 
+#include <pakfire/logging.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
@@ -28,33 +30,66 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_create(PakfirePool pool) {
+struct _PakfireRelationList {
+	Pakfire pakfire;
+	Queue queue;
+	int nrefs;
+};
+
+PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_create(Pakfire pakfire) {
 	PakfireRelationList relationlist = pakfire_calloc(1, sizeof(*relationlist));
 	if (relationlist) {
-		relationlist->pool = pool;
+		DEBUG("Allocated RelationList at %p\n", relationlist);
+		relationlist->nrefs = 1;
+
+		relationlist->pakfire = pakfire_ref(pakfire);
 		queue_init(&relationlist->queue);
 	}
 
 	return relationlist;
 }
 
-PAKFIRE_EXPORT void pakfire_relationlist_free(PakfireRelationList relationlist) {
+PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_ref(PakfireRelationList relationlist) {
+	relationlist->nrefs++;
+
+	return relationlist;
+}
+
+static void pakfire_relationlist_free(PakfireRelationList relationlist) {
 	queue_free(&relationlist->queue);
+
+	pakfire_unref(relationlist->pakfire);
 	pakfire_free(relationlist);
+
+	DEBUG("Released RelationList at %p\n", relationlist);
+}
+
+PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_unref(PakfireRelationList relationlist) {
+	if (!relationlist)
+		return NULL;
+
+	if (--relationlist->nrefs > 0)
+		return relationlist;
+
+	pakfire_relationlist_free(relationlist);
+	return NULL;
 }
 
 PAKFIRE_EXPORT void pakfire_relationlist_add(PakfireRelationList relationlist, PakfireRelation relation) {
-	queue_push(&relationlist->queue, relation->id);
+	queue_push(&relationlist->queue, pakfire_relation_get_id(relation));
 }
 
 PAKFIRE_EXPORT int pakfire_relationlist_count(PakfireRelationList relationlist) {
 	return relationlist->queue.count;
 }
 
-PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_from_queue(PakfirePool pool, Queue q) {
-	PakfireRelationList relationlist = pakfire_calloc(1, sizeof(*relationlist));
+PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_from_queue(Pakfire pakfire, Queue q) {
+	PakfireRelationList relationlist = pakfire_relationlist_create(pakfire);
 	if (relationlist) {
-		relationlist->pool = pool;
+		// Release old queue
+		queue_free(&relationlist->queue);
+
+		// Copy the queue
 		queue_init_clone(&relationlist->queue, &q);
 	}
 
@@ -64,7 +99,7 @@ PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_from_queue(PakfirePool p
 PAKFIRE_EXPORT PakfireRelation pakfire_relationlist_get_clone(PakfireRelationList relationlist, int index) {
 	Id id = relationlist->queue.elements[index];
 
-	return pakfire_relation_create_from_id(relationlist->pool, id);
+	return pakfire_relation_create_from_id(relationlist->pakfire, id);
 }
 
 PAKFIRE_EXPORT void pakfire_relationlist_clone_to_queue(PakfireRelationList relationlist, Queue* q) {

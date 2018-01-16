@@ -258,17 +258,19 @@ global:
 	# relation
 	pakfire_relation_create;
 	pakfire_relation_create_from_id;
-	pakfire_relation_free;
-	pakfire_relation_id;
+	pakfire_relation_get_id;
 	pakfire_relation_providers;
+	pakfire_relation_ref;
 	pakfire_relation_str;
+	pakfire_relation_unref;
 
 	# relationlist
 	pakfire_relationlist_add;
 	pakfire_relationlist_count;
 	pakfire_relationlist_create;
-	pakfire_relationlist_free;
 	pakfire_relationlist_get_clone;
+	pakfire_relationlist_ref;
+	pakfire_relationlist_unref;
 
 	# request
 	pakfire_request_create;

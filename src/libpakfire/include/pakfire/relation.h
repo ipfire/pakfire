@@ -28,29 +28,17 @@
 #include <pakfire/pool.h>
 #include <pakfire/types.h>
 
-PakfireRelation pakfire_relation_create(PakfirePool pool, const char* name, int cmp_type, const char* evr);
-PakfireRelation pakfire_relation_create_from_id(PakfirePool pool, Id id);
-void pakfire_relation_free(PakfireRelation relation);
+PakfireRelation pakfire_relation_create(Pakfire pakfire, const char* name, int cmp_type, const char* evr);
+PakfireRelation pakfire_relation_create_from_id(Pakfire pakfire, Id id);
 
-Id pakfire_relation_id(PakfireRelation relation);
+PakfireRelation pakfire_relation_ref(PakfireRelation relation);
+PakfireRelation pakfire_relation_unref(PakfireRelation relation);
+
+Id pakfire_relation_get_id(PakfireRelation relation);
 char* pakfire_relation_str(PakfireRelation relation);
 
 PakfirePackageList pakfire_relation_providers(PakfireRelation relation);
 
 int pakfire_relation2queue(const PakfireRelation relation, Queue* queue, int solver_action);
-
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfireRelation {
-	Pakfire pakfire;
-	PakfirePool pool;
-	Id id;
-};
-
-static inline Pool* pakfire_relation_solv_pool(PakfireRelation relation) {
-	return pakfire_pool_get_solv_pool(relation->pool);
-}
-
-#endif
 
 #endif /* PAKFIRE_RELATION_H */
