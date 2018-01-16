@@ -63,17 +63,6 @@ static int Pool_init(PoolObject* self, PyObject* args, PyObject* kwds) {
 	return 0;
 }
 
-static PyObject* Pool_version_compare(PoolObject* self, PyObject* args) {
-	const char* evr1 = NULL;
-	const char* evr2 = NULL;
-
-	if (!PyArg_ParseTuple(args, "ss", &evr1, &evr2))
-		return NULL;
-
-	int cmp = pakfire_pool_version_compare(self->pool, evr1, evr2);
-	return PyLong_FromLong(cmp);
-}
-
 static Py_ssize_t Pool_len(PoolObject* self) {
 	return pakfire_pool_count(self->pool);
 }
@@ -133,62 +122,6 @@ static int Pool_set_cache_path(PoolObject* self, PyObject* value) {
 	return 0;
 }
 
-static PyObject* Pool_whatprovides(PoolObject* self, PyObject* args, PyObject* kwds) {
-	char* kwlist[] = {"provides", "glob", "icase", "name_only", NULL};
-
-	const char* provides;
-	int glob = 0;
-	int icase = 0;
-	int name_only = 0;
-
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iii", kwlist, &provides, &glob, &icase, &name_only))
-		return NULL;
-
-	int flags = 0;
-	if (glob)
-		flags |= PAKFIRE_GLOB;
-	if (icase)
-		flags |= PAKFIRE_ICASE;
-	if (name_only)
-		flags |= PAKFIRE_NAME_ONLY;
-
-	PakfirePackageList list = pakfire_pool_whatprovides(self->pool, provides, flags);
-
-	return PyList_FromPackageList(self, list);
-}
-
-static PyObject* Pool_search(PoolObject* self, PyObject* args) {
-	const char* what;
-
-	if (!PyArg_ParseTuple(args, "s", &what))
-		return NULL;
-
-	PakfirePackageList list = pakfire_pool_search(self->pool, what, 0);
-	return PyList_FromPackageList(self, list);
-}
-
-static struct PyMethodDef Pool_methods[] = {
-	{
-		"search",
-		(PyCFunction)Pool_search,
-		METH_VARARGS,
-		NULL
-	},
-	{
-		"version_compare",
-		(PyCFunction)Pool_version_compare,
-		METH_VARARGS,
-		NULL
-	},
-	{
-		"whatprovides",
-		(PyCFunction)Pool_whatprovides,
-		METH_VARARGS|METH_KEYWORDS,
-		NULL
-	},
-	{ NULL }
-};
-
 static struct PyGetSetDef Pool_getsetters[] = {
 	{
 		"cache_path",
@@ -220,7 +153,6 @@ PyTypeObject PoolType = {
 	tp_dealloc:         (destructor)Pool_dealloc,
 	tp_init:            (initproc)Pool_init,
 	tp_doc:             "Pool object",
-	tp_methods:         Pool_methods,
 	tp_getset:          Pool_getsetters,
 	tp_as_sequence:     &Pool_sequence,
 };

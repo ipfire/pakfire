@@ -27,6 +27,7 @@
 #include "key.h"
 #include "pakfire.h"
 #include "repo.h"
+#include "util.h"
 
 static PyObject* Pakfire_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	PakfireObject* self = (PakfireObject *)type->tp_alloc(type, 0);
@@ -170,6 +171,52 @@ static PyObject* Pakfire_import_key(PakfireObject* self, PyObject* args) {
 	return _import_keylist(self, keys);
 }
 
+static PyObject* Pakfire_whatprovides(PakfireObject* self, PyObject* args, PyObject* kwds) {
+	char* kwlist[] = {"provides", "glob", "icase", "name_only", NULL};
+
+	const char* provides;
+	int glob = 0;
+	int icase = 0;
+	int name_only = 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|iii", kwlist, &provides, &glob, &icase, &name_only))
+		return NULL;
+
+	int flags = 0;
+	if (glob)
+		flags |= PAKFIRE_GLOB;
+	if (icase)
+		flags |= PAKFIRE_ICASE;
+	if (name_only)
+		flags |= PAKFIRE_NAME_ONLY;
+
+	PakfirePackageList list = pakfire_whatprovides(self->pakfire, provides, flags);
+
+	return PyList_FromPackageList(self, list);
+}
+
+static PyObject* Pakfire_search(PakfireObject* self, PyObject* args) {
+	const char* what;
+
+	if (!PyArg_ParseTuple(args, "s", &what))
+		return NULL;
+
+	PakfirePackageList list = pakfire_search(self->pakfire, what, 0);
+	return PyList_FromPackageList(self, list);
+}
+
+static PyObject* Pakfire_version_compare(PakfireObject* self, PyObject* args) {
+	const char* evr1 = NULL;
+	const char* evr2 = NULL;
+
+	if (!PyArg_ParseTuple(args, "ss", &evr1, &evr2))
+		return NULL;
+
+	int cmp = pakfire_version_compare(self->pakfire, evr1, evr2);
+
+	return PyLong_FromLong(cmp);
+}
+
 static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"generate_key",
@@ -187,6 +234,24 @@ static struct PyMethodDef Pakfire_methods[] = {
 		"import_key",
 		(PyCFunction)Pakfire_import_key,
 		METH_VARARGS,
+		NULL
+	},
+	{
+		"search",
+		(PyCFunction)Pakfire_search,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"version_compare",
+		(PyCFunction)Pakfire_version_compare,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"whatprovides",
+		(PyCFunction)Pakfire_whatprovides,
+		METH_VARARGS|METH_KEYWORDS,
 		NULL
 	},
 	{ NULL },

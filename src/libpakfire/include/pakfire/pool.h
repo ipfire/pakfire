@@ -48,9 +48,6 @@ PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int f
 Pool* pakfire_pool_get_solv_pool(PakfirePool pool);
 char* pakfire_pool_tmpdup(Pool* pool, const char* s);
 
-void pakfire_pool_has_changed(PakfirePool pool);
-void pakfire_pool_apply_changes(PakfirePool pool);
-
 Queue* pakfire_pool_get_installonly_queue(PakfirePool pool);
 
 #endif

@@ -142,14 +142,14 @@ PyObject* performance_index(PyObject* self, PyObject* args) {
 	return PyLong_FromUnsignedLong(iterations);
 }
 
-PyObject* PyList_FromPackageList(PoolObject* pool, PakfirePackageList packagelist) {
+PyObject* PyList_FromPackageList(PakfireObject* pakfire, PakfirePackageList packagelist) {
 	PyObject* list = PyList_New(0);
 
 	int count = pakfire_packagelist_count(packagelist);
 	for (int i = 0; i < count; i++) {
 		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
 
-		PyObject* item = new_package(pool, pakfire_package_id(package));
+		PyObject* item = new_package(pakfire, pakfire_package_id(package));
 		PyList_Append(list, item);
 
 		pakfire_package_unref(package);

@@ -28,8 +28,11 @@ global:
 	pakfire_get_path;
 	pakfire_get_pool;
 	pakfire_ref;
+	pakfire_search;
 	pakfire_set_installed_repo;
 	pakfire_unref;
+	pakfire_version_compare;
+	pakfire_whatprovides;
 
 	# archive
 	pakfire_archive_count_signatures;

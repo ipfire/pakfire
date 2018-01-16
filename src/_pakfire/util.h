@@ -26,7 +26,7 @@
 #include <pakfire/types.h>
 #include <solv/evr.h>
 
-#include "pool.h"
+#include "pakfire.h"
 
 extern PyObject *_personality(PyObject *self, PyObject *args);
 extern PyObject *_sync(PyObject *self, PyObject *args);
@@ -34,6 +34,6 @@ extern PyObject *_unshare(PyObject *self, PyObject *args);
 extern PyObject *version_compare(PyObject *self, PyObject *args);
 extern PyObject* performance_index(PyObject* self, PyObject* args);
 
-PyObject* PyList_FromPackageList(PoolObject* pool, PakfirePackageList packagelist);
+PyObject* PyList_FromPackageList(PakfireObject* pakfire, PakfirePackageList packagelist);
 
 #endif /* PYTHON_PAKFIRE_UTIL_H */
