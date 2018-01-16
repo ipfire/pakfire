@@ -28,6 +28,7 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/private.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
@@ -120,19 +121,22 @@ PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList li
 	pakfire_packagelist_push(list, pkg);
 }
 
-PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(Pakfire pakfire, Queue* q) {
+	PakfirePool _pool = pakfire_get_pool(pakfire);
 	PakfirePackageList list = pakfire_packagelist_create();
 
 	Pool* pool = pakfire_pool_get_solv_pool(_pool);
 	Id p, pp;
 	for (int i = 0; i < q->count; i += 2) {
 		FOR_JOB_SELECT(p, pp, q->elements[i], q->elements[i + 1]) {
-			PakfirePackage pkg = pakfire_package_create(_pool, p);
+			PakfirePackage pkg = pakfire_package_create(pakfire, p);
 			pakfire_packagelist_push(list, pkg);
 
 			pakfire_package_unref(pkg);
 		}
 	}
+
+	pakfire_pool_unref(_pool);
 
 	return list;
 }

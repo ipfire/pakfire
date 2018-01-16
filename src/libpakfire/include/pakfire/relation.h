@@ -42,6 +42,7 @@ int pakfire_relation2queue(const PakfireRelation relation, Queue* queue, int sol
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireRelation {
+	Pakfire pakfire;
 	PakfirePool pool;
 	Id id;
 };

@@ -27,17 +27,15 @@
 #include <solv/pooltypes.h>
 
 #include "pakfire.h"
-#include "pool.h"
 
 typedef struct {
 	PyObject_HEAD
 	PakfireObject* pakfire;
-	PoolObject* pool;
 	PakfirePackage package;
 } PackageObject;
 
 extern PyTypeObject PackageType;
 
-PyObject* new_package(PoolObject* pool, Id id);
+PyObject* new_package(PakfireObject* pakfire, Id id);
 
 #endif /* PYTHON_PAKFIRE_PACKAGE_H */

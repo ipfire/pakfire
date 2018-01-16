@@ -39,7 +39,7 @@ void pakfire_packagelist_push_if_not_exists(PakfirePackageList list, PakfirePack
 
 #ifdef PAKFIRE_PRIVATE
 
-PakfirePackageList pakfire_packagelist_from_queue(PakfirePool _pool, Queue* q);
+PakfirePackageList pakfire_packagelist_from_queue(Pakfire pakfire, Queue* q);
 
 #endif
 

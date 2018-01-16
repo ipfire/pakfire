@@ -137,9 +137,7 @@ static int solve(PakfireRequest request, Queue* queue) {
 		request->transaction = NULL;
 	}
 
-	PakfirePool pool = pakfire_get_pool(request->pakfire);
-	pakfire_pool_apply_changes(pool);
-	pakfire_pool_unref(pool);
+	pakfire_pool_apply_changes(request->pakfire);
 
 	// Save time when we starting solving
 	clock_t solving_start = clock();

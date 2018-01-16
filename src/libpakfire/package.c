@@ -29,6 +29,7 @@
 #include <solv/repo.h>
 #include <solv/solvable.h>
 
+#include <pakfire/archive.h>
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/file.h>
@@ -36,6 +37,7 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagecache.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
@@ -45,29 +47,38 @@
 #include <pakfire/util.h>
 
 struct _PakfirePackage {
-	PakfirePool pool;
+	Pakfire pakfire;
 	Id id;
 	PakfireFile filelist;
+	PakfireArchive archive;
 	int nrefs;
 };
 
 static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
-    return pakfire_pool_get_solv_pool(pkg->pool);
+	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
+
+    Pool* p = pakfire_pool_get_solv_pool(pool);
+	pakfire_pool_unref(pool);
+
+	return p;
 }
 
-static void pakfire_package_add_self_provides(PakfirePool pool, PakfirePackage pkg, const char* name, const char* evr) {
+static void pakfire_package_add_self_provides(Pakfire pakfire, PakfirePackage pkg, const char* name, const char* evr) {
+	PakfirePool pool = pakfire_get_pool(pakfire);
+
 	PakfireRelation relation = pakfire_relation_create(pool, name, PAKFIRE_EQ, evr);
 	pakfire_package_add_provides(pkg, relation);
 
 	pakfire_relation_free(relation);
+	pakfire_pool_unref(pool);
 }
 
-PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
+PAKFIRE_EXPORT PakfirePackage pakfire_package_create(Pakfire pakfire, Id id) {
 	PakfirePackage pkg = pakfire_calloc(1, sizeof(*pkg));
 	if (pkg) {
 		DEBUG("Allocated Package at %p\n", pkg);
 
-		pkg->pool = pakfire_pool_ref(pool);
+		pkg->pakfire = pakfire_ref(pakfire);
 		pkg->id = id;
 
 		// Initialize reference counter
@@ -77,21 +88,22 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_create(PakfirePool pool, Id id) {
 	return pkg;
 }
 
-PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const char* name, const char* evr, const char* arch) {
+PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(Pakfire pakfire, PakfireRepo repo, const char* name, const char* evr, const char* arch) {
 	PakfirePackage pkg = pakfire_repo_add_package(repo);
 
 	pakfire_package_set_name(pkg, name);
 	pakfire_package_set_evr(pkg, evr);
 	pakfire_package_set_arch(pkg, arch);
 
-	pakfire_package_add_self_provides(pool, pkg, name, evr);
+	pakfire_package_add_self_provides(pakfire, pkg, name, evr);
 
 	return pkg;
 }
 
 static void pakfire_package_free(PakfirePackage pkg) {
-	pakfire_pool_unref(pkg->pool);
+	pakfire_archive_unref(pkg->archive);
 	pakfire_package_filelist_remove(pkg);
+	pakfire_unref(pkg->pakfire);
 	pakfire_free(pkg);
 
 	DEBUG("Released Package at %p\n", pkg);
@@ -515,7 +527,9 @@ static PakfireRelationList pakfire_package_get_relationlist(PakfirePackage pkg, 
 	Solvable* s = get_solvable(pkg);
 	solvable_lookup_idarray(s, type, &q);
 
-	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pkg->pool, q);
+	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
+	PakfireRelationList relationlist = pakfire_relationlist_from_queue(pool, q);
+	pakfire_pool_unref(pool);
 
 	queue_free(&q);
 
@@ -632,7 +646,7 @@ PAKFIRE_EXPORT void pakfire_package_add_suggests(PakfirePackage pkg, PakfireRela
 PAKFIRE_EXPORT PakfireRepo pakfire_package_get_repo(PakfirePackage pkg) {
 	Solvable* s = get_solvable(pkg);
 
-	return pakfire_repo_create_from_repo(pkg->pool, s->repo);
+	return pakfire_repo_create_from_repo(pkg->pakfire, s->repo);
 }
 
 PAKFIRE_EXPORT void pakfire_package_set_repo(PakfirePackage pkg, PakfireRepo repo) {
@@ -853,7 +867,10 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 }
 
 PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
-	PakfireCache cache = pakfire_pool_get_cache(pkg->pool);
+	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
+	PakfireCache cache = pakfire_pool_get_cache(pool);
+	pakfire_pool_unref(pool);
+
 	if (!cache)
 		return 1;
 
@@ -861,7 +878,10 @@ PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT char* pakfire_package_get_cache_path(PakfirePackage pkg) {
-	PakfireCache cache = pakfire_pool_get_cache(pkg->pool);
+	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
+	PakfireCache cache = pakfire_pool_get_cache(pool);
+	pakfire_pool_unref(pool);
+
 	if (!cache)
 		return NULL;
 
@@ -890,6 +910,21 @@ out:
 	pakfire_repo_unref(repo);
 
 	return cache_path;
+}
+
+PAKFIRE_EXPORT PakfireArchive pakfire_package_get_archive(PakfirePackage pkg) {
+	// Return the package if it has already been opened
+	if (pkg->archive)
+		return pakfire_archive_ref(pkg->archive);
+
+	// Otherwise open the archive from the cache
+	char* path = pakfire_package_get_cache_full_path(pkg);
+	PakfireArchive archive = pakfire_archive_open(pkg->pakfire, path);
+
+	// Free resources
+	pakfire_free(path);
+
+	return archive;
 }
 
 static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {

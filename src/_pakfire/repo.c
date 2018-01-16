@@ -220,11 +220,9 @@ static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "sss", &name, &evr, &arch))
 		return NULL;
 
-	PakfirePool pool = pakfire_repo_get_pool(self->repo);
-	PakfirePackage pkg = pakfire_package_create2(pool, self->repo, name, evr, arch);
+	PakfirePackage pkg = pakfire_package_create2(self->pakfire->pakfire, self->repo, name, evr, arch);
 
-	// XXX must be self->pakfire instead of NULL
-	return new_package(NULL /* self->pakfire */, pakfire_package_id(pkg));
+	return new_package(self->pakfire, pakfire_package_id(pkg));
 }
 
 static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {

@@ -29,6 +29,7 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/selector.h>
@@ -36,6 +37,7 @@
 #include <pakfire/util.h>
 
 struct _PakfireSelector {
+	Pakfire pakfire;
 	PakfirePool pool;
 	PakfireFilter f_name;
 	PakfireFilter f_provides;
@@ -161,7 +163,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_selector_providers(PakfireSelector sel
 
 	pakfire_selector2queue(selector, &q, 0);
 
-	PakfirePackageList list = pakfire_packagelist_from_queue(selector->pool, &q);
+	PakfirePackageList list = pakfire_packagelist_from_queue(selector->pakfire, &q);
 
 	queue_free(&q);
 
@@ -310,7 +312,7 @@ PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue*
 		goto finish;
 	}
 
-	pakfire_pool_apply_changes(pool);
+	pakfire_pool_apply_changes(selector->pakfire);
 
 	ret = filter_name2queue(pool, selector->f_name, &queue_selector);
 	if (ret)

@@ -26,10 +26,12 @@
 #include <solv/pooltypes.h>
 #include <pakfire/relation.h>
 
+#include "pakfire.h"
 #include "pool.h"
 
 typedef struct {
     PyObject_HEAD
+    PakfireObject* pakfire;
     PoolObject* pool;
     PakfireRelation relation;
 
@@ -40,6 +42,6 @@ typedef struct {
 
 extern PyTypeObject RelationType;
 
-PyObject* new_relation(PoolObject* pool, Id id);
+PyObject* new_relation(PakfireObject* pakfire, Id id);
 
 #endif /* PYTHON_PAKFIRE_RELATION_H */

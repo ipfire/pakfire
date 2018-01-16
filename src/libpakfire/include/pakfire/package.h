@@ -25,11 +25,10 @@
 
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>
-#include <pakfire/pool.h>
 #include <pakfire/types.h>
 
-PakfirePackage pakfire_package_create(PakfirePool pool, Id id);
-PakfirePackage pakfire_package_create2(PakfirePool pool, PakfireRepo repo, const char* name, const char* evr, const char* arch);
+PakfirePackage pakfire_package_create(Pakfire pakfire, Id id);
+PakfirePackage pakfire_package_create2(Pakfire pakfire, PakfireRepo repo, const char* name, const char* evr, const char* arch);
 
 PakfirePackage pakfire_package_ref(PakfirePackage pkg);
 PakfirePackage pakfire_package_unref(PakfirePackage pkg);

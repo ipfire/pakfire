@@ -90,9 +90,7 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 		step->type = get_type(t, id);
 
 		// Get the package
-		PakfirePool pool = pakfire_get_pool(step->pakfire);
-		step->package = pakfire_package_create(pool, id);
-		pakfire_pool_unref(pool);
+		step->package = pakfire_package_create(step->pakfire, id);
 	}
 
 	return step;

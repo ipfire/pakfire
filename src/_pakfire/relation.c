@@ -44,9 +44,9 @@ static RelationObject* Relation_new_core(PyTypeObject* type, PoolObject* pool) {
 	return self;
 }
 
-PyObject* new_relation(PoolObject* pool, Id id) {
-	RelationObject* relation = Relation_new_core(&RelationType, pool);
-	relation->relation = pakfire_relation_create_from_id(pool->pool, id);
+PyObject* new_relation(PakfireObject* pakfire, Id id) {
+	RelationObject* relation = Relation_new_core(&RelationType, pakfire);
+	relation->relation = pakfire_relation_create_from_id(pakfire->pakfire, id);
 
 	return (PyObject *)relation;
 }
@@ -115,7 +115,7 @@ static PyObject* Relation_get_providers(RelationObject* self) {
 	for (unsigned int i = 0; i < pakfire_packagelist_count(packagelist); i++) {
 		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
 
-		PyObject* obj = new_package(self->pool, pakfire_package_id(package));
+		PyObject* obj = new_package(self->pakfire, pakfire_package_id(package));
 		PyList_Append(list, obj);
 
 		pakfire_package_unref(package);

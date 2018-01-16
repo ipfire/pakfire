@@ -100,7 +100,7 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_relation_providers(PakfireRelation rel
 
 	pakfire_relation2queue(relation, &q, 0);
 
-	PakfirePackageList list = pakfire_packagelist_from_queue(relation->pool, &q);
+	PakfirePackageList list = pakfire_packagelist_from_queue(relation->pakfire, &q);
 
 	queue_free(&q);
 
