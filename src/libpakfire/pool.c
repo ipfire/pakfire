@@ -104,10 +104,6 @@ PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
 	return NULL;
 }
 
-PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int flags) {
-	return pakfire_search(pool->pakfire, what, flags);
-}
-
 PAKFIRE_EXPORT char* pakfire_pool_tmpdup(Pool* pool, const char* s) {
 	char* dup = pool_alloctmpspace(pool, strlen(s) + 1);
 

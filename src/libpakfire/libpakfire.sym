@@ -206,7 +206,6 @@ global:
 	pakfire_pool_create;
 	pakfire_pool_get_cache_path;
 	pakfire_pool_ref;
-	pakfire_pool_search;
 	pakfire_pool_set_cache_path;
 	pakfire_pool_unref;
 

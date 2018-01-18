@@ -32,8 +32,6 @@ const char* pakfire_pool_get_cache_path(PakfirePool pool);
 void pakfire_pool_set_cache_path(PakfirePool pool, const char* path);
 PakfireCache pakfire_pool_get_cache(PakfirePool pool);
 
-PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int flags);
-
 #ifdef PAKFIRE_PRIVATE
 
 #include <solv/pool.h>
