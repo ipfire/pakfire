@@ -28,8 +28,6 @@ PakfirePool pakfire_pool_create(Pakfire pakfire);
 PakfirePool pakfire_pool_ref(PakfirePool pool);
 PakfirePool pakfire_pool_unref(PakfirePool pool);
 
-int pakfire_pool_count(PakfirePool pool);
-
 const char* pakfire_pool_get_cache_path(PakfirePool pool);
 void pakfire_pool_set_cache_path(PakfirePool pool, const char* path);
 PakfireCache pakfire_pool_get_cache(PakfirePool pool);

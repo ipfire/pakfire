@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+#include <stddef.h>
+
 #include <solv/evr.h>
 #include <solv/pool.h>
 #include <solv/poolarch.h>
@@ -149,6 +151,18 @@ Pool* pakfire_get_solv_pool(Pakfire pakfire) {
 
 void pakfire_pool_has_changed(Pakfire pakfire) {
 	pakfire->pool_ready = 0;
+}
+
+PAKFIRE_EXPORT size_t pakfire_count_packages(Pakfire pakfire) {
+	size_t cnt = 0;
+
+	for (int i = 2; i < pakfire->pool->nsolvables; i++) {
+		Solvable* s = pakfire->pool->solvables + i;
+		if (s->repo)
+			cnt++;
+	}
+
+	return cnt;
 }
 
 void pakfire_pool_apply_changes(Pakfire pakfire) {

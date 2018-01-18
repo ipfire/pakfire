@@ -83,19 +83,6 @@ Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
 	return pakfire_get_solv_pool(pool->pakfire);
 }
 
-PAKFIRE_EXPORT int pakfire_pool_count(PakfirePool pool) {
-	Pool* p = pakfire_get_solv_pool(pool->pakfire);
-	int cnt = 0;
-
-	for (int i = 2; i < p->nsolvables; i++) {
-		Solvable* s = p->solvables + i;
-		if (s->repo)
-			cnt++;
-	}
-
-	return cnt;
-}
-
 PAKFIRE_EXPORT const char* pakfire_pool_get_cache_path(PakfirePool pool) {
 	if (!pool->cache)
 		return NULL;

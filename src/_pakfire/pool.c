@@ -63,12 +63,6 @@ static int Pool_init(PoolObject* self, PyObject* args, PyObject* kwds) {
 	return 0;
 }
 
-static Py_ssize_t Pool_len(PoolObject* self) {
-	return pakfire_pool_count(self->pool);
-}
-
-
-
 static PyObject* Pool_get_cache_path(PoolObject* self) {
 	const char* path = pakfire_pool_get_cache_path(self->pool);
 	if (!path)
@@ -96,10 +90,6 @@ static struct PyGetSetDef Pool_getsetters[] = {
 	{ NULL }
 };
 
-static PySequenceMethods Pool_sequence = {
-	sq_length:          (lenfunc)Pool_len,
-};
-
 PyTypeObject PoolType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name:            "_pakfire.Pool",
@@ -110,5 +100,4 @@ PyTypeObject PoolType = {
 	tp_init:            (initproc)Pool_init,
 	tp_doc:             "Pool object",
 	tp_getset:          Pool_getsetters,
-	tp_as_sequence:     &Pool_sequence,
 };

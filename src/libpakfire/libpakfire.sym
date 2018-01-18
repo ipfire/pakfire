@@ -22,6 +22,7 @@ LIBPAKFIRE_0 {
 global:
 	# pakfire
 	pakfire_init;
+	pakfire_count_packages;
 	pakfire_create;
 	pakfire_get_arch;
 	pakfire_get_installed_repo;
@@ -202,7 +203,6 @@ global:
 	pakfire_packagelist_unref;
 
 	# pool
-	pakfire_pool_count;
 	pakfire_pool_create;
 	pakfire_pool_get_cache_path;
 	pakfire_pool_ref;

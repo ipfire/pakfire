@@ -21,6 +21,8 @@
 #ifndef PAKFIRE_PAKFIRE_H
 #define PAKFIRE_PAKFIRE_H
 
+#include <stddef.h>
+
 #include <pakfire/types.h>
 
 int pakfire_init();
@@ -39,6 +41,8 @@ const char** pakfire_get_installonly(Pakfire pakfire);
 void pakfire_set_installonly(Pakfire pakfire, const char** installonly);
 
 int pakfire_version_compare(Pakfire pakfire, const char* evr1, const char* evr2);
+
+size_t pakfire_count_packages(Pakfire pakfire);
 
 PakfireRepo pakfire_get_installed_repo(Pakfire pakfire);
 void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo);

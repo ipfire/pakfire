@@ -256,6 +256,10 @@ static int Pakfire_set_installonly(PakfireObject* self, PyObject* value) {
 	return 0;
 }
 
+static Py_ssize_t Pakfire_len(PakfireObject* self) {
+	return pakfire_count_packages(self->pakfire);
+}
+
 static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"generate_key",
@@ -335,6 +339,10 @@ static struct PyGetSetDef Pakfire_getsetters[] = {
     { NULL },
 };
 
+static PySequenceMethods Pakfire_sequence = {
+	sq_length:          (lenfunc)Pakfire_len,
+};
+
 PyTypeObject PakfireType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name:            "_pakfire.Pakfire",
@@ -347,4 +355,5 @@ PyTypeObject PakfireType = {
 	tp_methods:         Pakfire_methods,
 	tp_getset:          Pakfire_getsetters,
 	tp_repr:            (reprfunc)Pakfire_repr,
+	tp_as_sequence:     &Pakfire_sequence,
 };
