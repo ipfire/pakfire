@@ -217,6 +217,45 @@ static PyObject* Pakfire_version_compare(PakfireObject* self, PyObject* args) {
 	return PyLong_FromLong(cmp);
 }
 
+static PyObject* Pakfire_get_installonly(PakfireObject* self) {
+	const char** installonly = pakfire_get_installonly(self->pakfire);
+
+	PyObject* list = PyList_New(0);
+	const char* name;
+
+	while ((name = *installonly++) != NULL) {
+		PyObject* item = PyUnicode_FromString(name);
+		PyList_Append(list, item);
+
+		Py_DECREF(item);
+	}
+
+	Py_INCREF(list);
+	return list;
+}
+
+static int Pakfire_set_installonly(PakfireObject* self, PyObject* value) {
+	if (!PySequence_Check(value)) {
+		PyErr_SetString(PyExc_AttributeError, "Expected a sequence.");
+		return -1;
+	}
+
+	const int length = PySequence_Length(value);
+	const char* installonly[length + 1];
+
+	for (int i = 0; i < length; i++) {
+		PyObject* item = PySequence_GetItem(value, i);
+
+		installonly[i] = PyUnicode_AsUTF8(item);
+		Py_DECREF(item);
+	}
+	installonly[length] = NULL;
+
+	pakfire_set_installonly(self->pakfire, installonly);
+
+	return 0;
+}
+
 static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"generate_key",
@@ -269,6 +308,13 @@ static struct PyGetSetDef Pakfire_getsetters[] = {
 		"installed_repo",
 		(getter)Pakfire_get_installed_repo,
 		(setter)Pakfire_set_installed_repo,
+		NULL,
+		NULL
+	},
+	{
+		"installonly",
+		(getter)Pakfire_get_installonly,
+		(setter)Pakfire_set_installonly,
 		NULL,
 		NULL
 	},

@@ -178,10 +178,7 @@ PAKFIRE_EXPORT int pakfire_request_solve(PakfireRequest request, int flags) {
 	}
 
 	/* turn off implicit obsoletes for installonly packages */
-	PakfirePool pool = pakfire_get_pool(request->pakfire);
-	Queue* installonly = pakfire_pool_get_installonly_queue(pool);
-	pakfire_pool_unref(pool);
-
+	Queue* installonly = pakfire_get_installonly_queue(request->pakfire);
 	for (int i = 0; i < installonly->count; i++)
 		queue_push2(&queue, SOLVER_MULTIVERSION|SOLVER_SOLVABLE_PROVIDES,
 			installonly->elements[i]);

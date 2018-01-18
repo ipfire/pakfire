@@ -96,18 +96,6 @@ PAKFIRE_EXPORT int pakfire_pool_count(PakfirePool pool) {
 	return cnt;
 }
 
-PAKFIRE_EXPORT const char** pakfire_pool_get_installonly(PakfirePool pool) {
-	return pakfire_get_installonly(pool->pakfire);
-}
-
-Queue* pakfire_pool_get_installonly_queue(PakfirePool pool) {
-	return pakfire_get_installonly_queue(pool->pakfire);
-}
-
-PAKFIRE_EXPORT void pakfire_pool_set_installonly(PakfirePool pool, const char** installonly) {
-	pakfire_set_installonly(pool->pakfire, installonly);
-}
-
 PAKFIRE_EXPORT const char* pakfire_pool_get_cache_path(PakfirePool pool) {
 	if (!pool->cache)
 		return NULL;

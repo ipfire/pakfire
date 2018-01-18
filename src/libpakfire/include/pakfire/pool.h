@@ -30,9 +30,6 @@ PakfirePool pakfire_pool_unref(PakfirePool pool);
 
 int pakfire_pool_count(PakfirePool pool);
 
-const char** pakfire_pool_get_installonly(PakfirePool pool);
-void pakfire_pool_set_installonly(PakfirePool pool, const char** installonly);
-
 const char* pakfire_pool_get_cache_path(PakfirePool pool);
 void pakfire_pool_set_cache_path(PakfirePool pool, const char* path);
 PakfireCache pakfire_pool_get_cache(PakfirePool pool);
@@ -46,8 +43,6 @@ PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int f
 
 Pool* pakfire_pool_get_solv_pool(PakfirePool pool);
 char* pakfire_pool_tmpdup(Pool* pool, const char* s);
-
-Queue* pakfire_pool_get_installonly_queue(PakfirePool pool);
 
 #endif
 

@@ -67,44 +67,7 @@ static Py_ssize_t Pool_len(PoolObject* self) {
 	return pakfire_pool_count(self->pool);
 }
 
-static PyObject* Pool_get_installonly(PoolObject* self) {
-	const char** installonly = pakfire_pool_get_installonly(self->pool);
 
-	PyObject* list = PyList_New(0);
-	const char* name;
-
-	while ((name = *installonly++) != NULL) {
-		PyObject* item = PyUnicode_FromString(name);
-		PyList_Append(list, item);
-
-		Py_DECREF(item);
-	}
-
-	Py_INCREF(list);
-	return list;
-}
-
-static int Pool_set_installonly(PoolObject* self, PyObject* value) {
-	if (!PySequence_Check(value)) {
-		PyErr_SetString(PyExc_AttributeError, "Expected a sequence.");
-		return -1;
-	}
-
-	const int length = PySequence_Length(value);
-	const char* installonly[length + 1];
-
-	for (int i = 0; i < length; i++) {
-		PyObject* item = PySequence_GetItem(value, i);
-
-		installonly[i] = PyUnicode_AsUTF8(item);
-		Py_DECREF(item);
-	}
-	installonly[length] = NULL;
-
-	pakfire_pool_set_installonly(self->pool, installonly);
-
-	return 0;
-}
 
 static PyObject* Pool_get_cache_path(PoolObject* self) {
 	const char* path = pakfire_pool_get_cache_path(self->pool);
@@ -127,13 +90,6 @@ static struct PyGetSetDef Pool_getsetters[] = {
 		"cache_path",
 		(getter)Pool_get_cache_path,
 		(setter)Pool_set_cache_path,
-		NULL,
-		NULL
-	},
-	{
-		"installonly",
-		(getter)Pool_get_installonly,
-		(setter)Pool_set_installonly,
 		NULL,
 		NULL
 	},

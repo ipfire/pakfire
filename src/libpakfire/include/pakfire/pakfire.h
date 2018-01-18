@@ -35,6 +35,9 @@ const char* pakfire_get_arch(Pakfire pakfire);
 
 PakfirePool pakfire_get_pool(Pakfire pakfire);
 
+const char** pakfire_get_installonly(Pakfire pakfire);
+void pakfire_set_installonly(Pakfire pakfire, const char** installonly);
+
 int pakfire_version_compare(Pakfire pakfire, const char* evr1, const char* evr2);
 
 PakfireRepo pakfire_get_installed_repo(Pakfire pakfire);
@@ -51,6 +54,7 @@ void pakfire_pool_has_changed(Pakfire pakfire);
 void pakfire_pool_apply_changes(Pakfire pakfire);
 
 Pool* pakfire_get_solv_pool(Pakfire pakfire);
+Queue* pakfire_get_installonly_queue(Pakfire pakfire);
 
 #endif
 
