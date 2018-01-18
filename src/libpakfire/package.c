@@ -238,8 +238,10 @@ PAKFIRE_EXPORT void pakfire_package_set_evr(PakfirePackage pkg, const char* evr)
 }
 
 static void split_evr(Pool* pool, const char* evr_c, char** epoch, char** version, char** release) {
-    char* evr = pakfire_pool_tmpdup(pool, evr_c);
     char *e, *v, *r;
+
+	char* evr = pool_alloctmpspace(pool, strlen(evr_c) + 1);
+	strcpy(evr, evr_c);
 
     for (e = evr + 1; *e != ':' && *e != '-'; ++e)
     	;

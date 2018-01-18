@@ -37,7 +37,6 @@ PakfireCache pakfire_pool_get_cache(PakfirePool pool);
 #include <solv/pool.h>
 
 Pool* pakfire_pool_get_solv_pool(PakfirePool pool);
-char* pakfire_pool_tmpdup(Pool* pool, const char* s);
 
 #endif
 

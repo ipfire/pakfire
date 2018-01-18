@@ -103,9 +103,3 @@ PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
 
 	return NULL;
 }
-
-PAKFIRE_EXPORT char* pakfire_pool_tmpdup(Pool* pool, const char* s) {
-	char* dup = pool_alloctmpspace(pool, strlen(s) + 1);
-
-	return strcpy(dup, s);
-}
