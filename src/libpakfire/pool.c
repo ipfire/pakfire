@@ -104,10 +104,6 @@ PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
 	return NULL;
 }
 
-PakfirePackageList pakfire_pool_whatprovides(PakfirePool pool, const char* provides, int flags) {
-	return pakfire_whatprovides(pool->pakfire, provides, flags);
-}
-
 PakfirePackageList pakfire_pool_search(PakfirePool pool, const char* what, int flags) {
 	return pakfire_search(pool->pakfire, what, flags);
 }

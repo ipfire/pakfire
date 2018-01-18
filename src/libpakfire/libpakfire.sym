@@ -209,7 +209,6 @@ global:
 	pakfire_pool_search;
 	pakfire_pool_set_cache_path;
 	pakfire_pool_unref;
-	pakfire_pool_whatprovides;
 
 	# problem
 	pakfire_problem_append;
