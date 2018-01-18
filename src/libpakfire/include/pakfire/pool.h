@@ -28,7 +28,6 @@ PakfirePool pakfire_pool_create(Pakfire pakfire);
 PakfirePool pakfire_pool_ref(PakfirePool pool);
 PakfirePool pakfire_pool_unref(PakfirePool pool);
 
-int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2);
 int pakfire_pool_count(PakfirePool pool);
 
 const char** pakfire_pool_get_installonly(PakfirePool pool);

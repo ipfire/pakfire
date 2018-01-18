@@ -83,10 +83,6 @@ Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
 	return pakfire_get_solv_pool(pool->pakfire);
 }
 
-PAKFIRE_EXPORT int pakfire_pool_version_compare(PakfirePool pool, const char* evr1, const char* evr2) {
-	return pakfire_version_compare(pool->pakfire, evr1, evr2);
-}
-
 PAKFIRE_EXPORT int pakfire_pool_count(PakfirePool pool) {
 	Pool* p = pakfire_get_solv_pool(pool->pakfire);
 	int cnt = 0;
