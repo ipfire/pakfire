@@ -99,12 +99,3 @@ PAKFIRE_EXPORT FILE* pakfire_repocache_open(PakfireRepoCache repo_cache, const c
 
 	return fp;
 }
-
-static int _unlink(const char* path, const struct stat* stat, int typeflag, struct FTW* ftwbuf) {
-	return remove(path);
-}
-
-PAKFIRE_EXPORT int pakfire_repocache_destroy(PakfireRepoCache repo_cache) {
-	// Completely delete the tree of files
-	return nftw(repo_cache->prefix, _unlink, 64, FTW_DEPTH|FTW_PHYS);
-}

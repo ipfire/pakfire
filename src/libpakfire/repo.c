@@ -436,11 +436,29 @@ PAKFIRE_EXPORT PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {
 	return repo->cache;
 }
 
+static char* pakfire_repo_get_cache_prefix(PakfireRepo repo) {
+	char* prefix = pakfire_calloc(1, STRING_SIZE + 1);
+
+	snprintf(prefix, STRING_SIZE, "repodata/%s", pakfire_repo_get_name(repo));
+
+	return prefix;
+}
+
+static char* pakfire_repo_make_cache_path(PakfireRepo repo, const char* path) {
+	char* prefix = pakfire_repo_get_cache_prefix(repo);
+
+	// Add the prefix for the repository first
+	char* cache_path = pakfire_path_join(prefix, path);
+	pakfire_free(prefix);
+
+	return cache_path;
+}
+
 PAKFIRE_EXPORT int pakfire_repo_clean(PakfireRepo repo) {
-	PakfireRepoCache cache = pakfire_repo_get_cache(repo);
+	char* cache_path = pakfire_repo_make_cache_path(repo, NULL);
 
-	if (cache)
-		return pakfire_repocache_destroy(cache);
+	if (cache_path)
+		return pakfire_cache_destroy(repo->pakfire, cache_path);
 
-	return 0;
+	return -1;
 }

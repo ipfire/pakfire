@@ -18,7 +18,9 @@
 #                                                                             #
 #############################################################################*/
 
+#include <ftw.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -334,6 +336,22 @@ PAKFIRE_EXPORT void pakfire_set_cache_path(Pakfire pakfire, const char* path) {
 	DEBUG("Set cache path to %s\n", pakfire->cache_path);
 }
 
+static int _unlink(const char* path, const struct stat* stat, int typeflag, struct FTW* ftwbuf) {
+	DEBUG("Deleting %s...\n", path);
+
+	return remove(path);
+}
+
+PAKFIRE_EXPORT int pakfire_cache_destroy(Pakfire pakfire, const char* path) {
+	char* cache_path = pakfire_get_cache_path(pakfire, path);
+
+	// Completely delete the tree of files
+	int r = nftw(cache_path, _unlink, 64, FTW_DEPTH|FTW_PHYS);
+	pakfire_free(cache_path);
+
+	return r;
+}
+
 PAKFIRE_EXPORT int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer) {
 	char* cache_path = pakfire_get_cache_path(pakfire, path);
 
@@ -341,4 +359,40 @@ PAKFIRE_EXPORT int pakfire_cache_stat(Pakfire pakfire, const char* path, struct 
 	pakfire_free(cache_path);
 
 	return r;
+}
+
+PAKFIRE_EXPORT time_t pakfire_cache_age(Pakfire pakfire, const char* path) {
+	struct stat buffer;
+
+	int r = pakfire_cache_stat(pakfire, path, &buffer);
+	if (r == 0) {
+		// Get current timestamp
+		time_t now = time(NULL);
+
+		// Calculate the difference since the file has been created and now.
+		return now - buffer.st_ctime;
+	}
+
+	return -1;
+}
+
+PAKFIRE_EXPORT FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const char* flags) {
+	FILE* f = NULL;
+	char* cache_path = pakfire_get_cache_path(pakfire, path);
+
+	// Ensure that the parent directory exists
+	char* cache_dirname = pakfire_dirname(cache_path);
+
+	int r = pakfire_mkdir(cache_dirname, S_IRUSR|S_IWUSR|S_IXUSR);
+	if (r)
+		goto FAIL;
+
+	// Open the file
+	f = fopen(cache_path, flags);
+
+FAIL:
+	pakfire_free(cache_path);
+	pakfire_free(cache_dirname);
+
+	return f;
 }

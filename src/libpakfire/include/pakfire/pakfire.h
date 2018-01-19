@@ -22,7 +22,9 @@
 #define PAKFIRE_PAKFIRE_H
 
 #include <stddef.h>
+#include <stdio.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include <pakfire/types.h>
 
@@ -56,7 +58,10 @@ PakfirePackageList pakfire_search(Pakfire pakfire, const char* what, int flags);
 char* pakfire_get_cache_path(Pakfire pakfire, const char* path);
 void pakfire_set_cache_path(Pakfire pakfire, const char* path);
 
+int pakfire_cache_destroy(Pakfire pakfire, const char* path);
 int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer);
+time_t pakfire_cache_age(Pakfire pakfire, const char* path);
+FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const char* flags);
 
 #ifdef PAKFIRE_PRIVATE
 

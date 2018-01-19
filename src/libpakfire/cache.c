@@ -20,10 +20,8 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <libgen.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#include <time.h>
 #include <unistd.h>
 
 #include <pakfire/cache.h>
@@ -72,69 +70,4 @@ PAKFIRE_EXPORT int pakfire_cache_has_file(PakfireCache cache, const char* filena
 
 	// Just check if stat() was sucessful.
 	return (r == 0);
-}
-
-PAKFIRE_EXPORT int pakfire_cache_age(PakfireCache cache, const char* filename) {
-	struct stat buf;
-	int r = pakfire_cache_stat(cache, filename, &buf);
-
-	if (r == 0) {
-		// Get timestamp.
-		time_t now = time(NULL);
-
-		// Calculate the difference since the file has been created and now.
-		time_t age = now - buf.st_ctime;
-
-		return (int)age;
-	}
-
-	return -1;
-}
-
-static int pakfire_cache_mkdir(PakfireCache cache, const char* path, mode_t mode) {
-	int r = 0;
-
-	if ((strcmp(path, "/") == 0) || (strcmp(path, ".") == 0)) {
-		return 0;
-	}
-
-	// If parent does not exists, we try to create it.
-	char* parent_path = pakfire_dirname(path);
-	r = access(parent_path, F_OK);
-	if (r) {
-		r = pakfire_cache_mkdir(cache, parent_path, mode);
-	}
-	pakfire_free(parent_path);
-
-	if (!r) {
-		// Finally, create the directory we want.
-		r = mkdir(path, mode);
-
-		if (r) {
-			switch (errno) {
-				// If the directory already exists, this is fine.
-				case EEXIST:
-					r = 0;
-					break;
-			}
-		}
-	}
-
-	return r;
-}
-
-PAKFIRE_EXPORT FILE* pakfire_cache_open(PakfireCache cache, const char* filename, const char* flags) {
-	assert(filename);
-
-	char* cache_filename = pakfire_cache_get_full_path(cache, filename);
-
-	char* cache_dirname = pakfire_dirname(cache_filename);
-	pakfire_cache_mkdir(cache, cache_dirname, S_IRUSR|S_IWUSR|S_IXUSR);
-
-	FILE* fp = fopen(cache_filename, flags);
-
-	pakfire_free(cache_filename);
-	pakfire_free(cache_dirname);
-
-	return fp;
 }
