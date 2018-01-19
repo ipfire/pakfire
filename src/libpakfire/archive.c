@@ -316,11 +316,15 @@ static void pakfire_archive_free(PakfireArchive archive) {
 	pakfire_free(archive);
 }
 
-PAKFIRE_EXPORT void pakfire_archive_unref(PakfireArchive archive) {
+PAKFIRE_EXPORT PakfireArchive pakfire_archive_unref(PakfireArchive archive) {
+	if (!archive)
+		return NULL;
+
 	if (--archive->nrefs > 0)
-		return;
+		return archive;
 
 	pakfire_archive_free(archive);
+	return NULL;
 }
 
 static int pakfire_archive_parse_entry_format(PakfireArchive archive,
