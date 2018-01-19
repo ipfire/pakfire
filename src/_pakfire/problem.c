@@ -24,7 +24,6 @@
 #include <pakfire/errno.h>
 #include <pakfire/problem.h>
 
-#include "pool.h"
 #include "problem.h"
 #include "solution.h"
 

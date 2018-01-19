@@ -122,10 +122,9 @@ PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList li
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(Pakfire pakfire, Queue* q) {
-	PakfirePool _pool = pakfire_get_pool(pakfire);
 	PakfirePackageList list = pakfire_packagelist_create();
 
-	Pool* pool = pakfire_pool_get_solv_pool(_pool);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
 	Id p, pp;
 	for (int i = 0; i < q->count; i += 2) {
 		FOR_JOB_SELECT(p, pp, q->elements[i], q->elements[i + 1]) {
@@ -135,8 +134,6 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(Pakfire pakfire
 			pakfire_package_unref(pkg);
 		}
 	}
-
-	pakfire_pool_unref(_pool);
 
 	return list;
 }

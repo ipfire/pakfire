@@ -36,7 +36,6 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>
@@ -52,12 +51,7 @@ struct _PakfirePackage {
 };
 
 static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
-	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
-
-    Pool* p = pakfire_pool_get_solv_pool(pool);
-	pakfire_pool_unref(pool);
-
-	return p;
+	return pakfire_get_solv_pool(pkg->pakfire);
 }
 
 static void pakfire_package_add_self_provides(Pakfire pakfire, PakfirePackage pkg, const char* name, const char* evr) {

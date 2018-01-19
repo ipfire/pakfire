@@ -25,7 +25,6 @@
 #include <solv/pooltypes.h>
 #include <solv/queue.h>
 
-#include <pakfire/pool.h>
 #include <pakfire/types.h>
 
 PakfireRelation pakfire_relation_create(Pakfire pakfire, const char* name, int cmp_type, const char* evr);

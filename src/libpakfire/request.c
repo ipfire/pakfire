@@ -90,10 +90,6 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_unref(PakfireRequest request) {
 	return NULL;
 }
 
-PAKFIRE_EXPORT PakfirePool pakfire_request_get_pool(PakfireRequest request) {
-	return pakfire_get_pool(request->pakfire);
-}
-
 Solver* pakfire_request_get_solver(PakfireRequest request) {
 	return request->solver;
 }

@@ -35,7 +35,7 @@ from .constants import *
 from .i18n import _
 
 # Import binary version of version_compare and capability functions
-from ._pakfire import version_compare, get_capabilities, set_capabilities, personality
+from ._pakfire import get_capabilities, set_capabilities, personality
 
 def cli_is_interactive():
 	"""

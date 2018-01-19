@@ -53,8 +53,7 @@ class Package(object):
 			#log.debug("%s is equal to %s by UUID" % (self, other))
 			return 0
 
-		ret = util.version_compare(self.pakfire.pool,
-			self.friendly_version, other.friendly_version)
+		ret = self.pakfire.version_compare(self.friendly_version, other.friendly_version)
 
 		# XXX this is to move packages that have been built a while ago and
 		# do not have all the meta information that they won't be evaluated

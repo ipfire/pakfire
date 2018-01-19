@@ -23,21 +23,14 @@
 
 #include <Python.h>
 
-#include <solv/pooltypes.h>
-#include <pakfire/relation.h>
+#include <pakfire/types.h>
 
 #include "pakfire.h"
-#include "pool.h"
 
 typedef struct {
     PyObject_HEAD
     PakfireObject* pakfire;
-    PoolObject* pool;
     PakfireRelation relation;
-
-	// XXX COMPAT
-	Pool* _pool;
-	Id _id;
 } RelationObject;
 
 extern PyTypeObject RelationType;

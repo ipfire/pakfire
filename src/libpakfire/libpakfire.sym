@@ -205,11 +205,6 @@ global:
 	pakfire_packagelist_sort;
 	pakfire_packagelist_unref;
 
-	# pool
-	pakfire_pool_create;
-	pakfire_pool_ref;
-	pakfire_pool_unref;
-
 	# problem
 	pakfire_problem_append;
 	pakfire_problem_create;

@@ -23,7 +23,6 @@
 
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>

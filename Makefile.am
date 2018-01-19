@@ -196,8 +196,6 @@ _pakfire_la_SOURCES = \
 	src/_pakfire/package.h \
 	src/_pakfire/pakfire.c \
 	src/_pakfire/pakfire.h \
-	src/_pakfire/pool.c \
-	src/_pakfire/pool.h \
 	src/_pakfire/problem.c \
 	src/_pakfire/problem.h \
 	src/_pakfire/relation.c \
@@ -254,7 +252,6 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/package.c \
 	src/libpakfire/packagelist.c \
 	src/libpakfire/pakfire.c \
-	src/libpakfire/pool.c \
 	src/libpakfire/problem.c \
 	src/libpakfire/relation.c \
 	src/libpakfire/relationlist.c \
@@ -279,7 +276,6 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/package.h \
 	src/libpakfire/include/pakfire/packagelist.h \
 	src/libpakfire/include/pakfire/pakfire.h \
-	src/libpakfire/include/pakfire/pool.h \
 	src/libpakfire/include/pakfire/private.h \
 	src/libpakfire/include/pakfire/problem.h \
 	src/libpakfire/include/pakfire/relation.h \

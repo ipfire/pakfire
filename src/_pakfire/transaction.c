@@ -22,7 +22,6 @@
 
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
-#include <pakfire/pool.h>
 #include <pakfire/transaction.h>
 
 #include "package.h"

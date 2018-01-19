@@ -88,10 +88,6 @@ class Repositories(object):
 	def distro(self):
 		return self.pakfire.distro
 
-	@property
-	def pool(self):
-		return self.pakfire.pool
-
 	def load_configuration(self, *paths):
 		c = config.Config()
 
@@ -191,7 +187,7 @@ class Repositories(object):
 				repo.enabled = False
 
 	def whatprovides(self, *args, **kwargs):
-		return self.pool.whatprovides(self.pakfire, *args, **kwargs)
+		return self.pakfire.whatprovides(*args, **kwargs)
 
 	def clean(self):
 		log.info("Cleaning up all repository caches...")

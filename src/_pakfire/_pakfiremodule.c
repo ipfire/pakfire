@@ -34,7 +34,6 @@
 #include "key.h"
 #include "package.h"
 #include "pakfire.h"
-#include "pool.h"
 #include "problem.h"
 #include "relation.h"
 #include "repo.h"
@@ -120,12 +119,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	Py_INCREF(&PackageType);
 	PyModule_AddObject(module, "Package", (PyObject *)&PackageType);
-
-	// Pool
-	if (PyType_Ready(&PoolType) < 0)
-		return NULL;
-	Py_INCREF(&PoolType);
-	PyModule_AddObject(module, "Pool", (PyObject *)&PoolType);
 
 	// Problem
 	if (PyType_Ready(&ProblemType) < 0)

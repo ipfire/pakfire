@@ -38,8 +38,6 @@ Pakfire pakfire_unref(Pakfire pakfire);
 const char* pakfire_get_path(Pakfire pakfire);
 const char* pakfire_get_arch(Pakfire pakfire);
 
-PakfirePool pakfire_get_pool(Pakfire pakfire);
-
 const char** pakfire_get_installonly(Pakfire pakfire);
 void pakfire_set_installonly(Pakfire pakfire, const char** installonly);
 

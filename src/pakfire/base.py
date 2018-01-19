@@ -59,7 +59,6 @@ class Pakfire(_pakfire.Pakfire):
 		# Load configuration
 		self.config = config or Config("general.conf")
 
-		self.pool = _pakfire.Pool(self)
 		self.cache_path = cache_path or \
 			os.path.join(CACHE_DIR, self.distro.sname, self.distro.release)
 
@@ -181,7 +180,7 @@ class PakfireContext(object):
 					pkgs.append(pkg)
 
 			else:
-				pkgs += self.pakfire.pool.whatprovides(pattern, name_only=True)
+				pkgs += self.pakfire.whatprovides(pattern, name_only=True)
 
 		return sorted(pkgs)
 
@@ -189,7 +188,7 @@ class PakfireContext(object):
 		pkgs = []
 
 		for pattern in patterns:
-			for pkg in self.pakfire.pool.whatprovides(self, pattern):
+			for pkg in self.pakfire.whatprovides(self, pattern):
 				if pkg in pkgs:
 					continue
 
@@ -198,7 +197,7 @@ class PakfireContext(object):
 		return sorted(pkgs)
 
 	def search(self, pattern):
-		return self.pakfire.pool.search(pattern)
+		return self.pakfire.search(pattern)
 
 	# Transactions
 
@@ -208,7 +207,7 @@ class PakfireContext(object):
 		# XXX handle files and URLs
 
 		for req in requires:
-			relation = _pakfire.Relation(self.pakfire.pool, req)
+			relation = _pakfire.Relation(self.pakfire, req)
 			request.install(relation)
 
 		return request.solve(**kwargs)
@@ -223,7 +222,7 @@ class PakfireContext(object):
 		request = _pakfire.Request(self.pakfire)
 
 		for pkg in pkgs:
-			relation = _pakfire.Relation(self.pakfire.pool, pkg)
+			relation = _pakfire.Relation(self.pakfire, pkg)
 			request.erase(relation)
 
 		return request.solve(**kwargs)
@@ -233,7 +232,7 @@ class PakfireContext(object):
 
 		# Add all packages that should be updated to the request
 		for req in reqs or []:
-			relation = _pakfire.Relation(self.pakfire.pool, req)
+			relation = _pakfire.Relation(self.pakfire, req)
 			request.upgrade(relation)
 
 		# Otherwise we will try to upgrade everything
@@ -242,7 +241,7 @@ class PakfireContext(object):
 
 		# Exclude packages that should not be updated
 		for exclude in excludes or []:
-			relation = _pakfire.Relation(self.pakfire.pool, exclude)
+			relation = _pakfire.Relation(self.pakfire, exclude)
 			request.lock(relation)
 
 		return request.solve(**kwargs)
@@ -254,7 +253,7 @@ class PakfireContext(object):
 			logger = logging.getLogger("pakfire")
 
 		# Create a new request.
-		request = self.pakfire.pool.create_request()
+		request = self.pakfire.create_request()
 
 		# Fill request.
 		for pattern in pkgs:
@@ -272,11 +271,11 @@ class PakfireContext(object):
 			if best is None:
 				logger.warning(_("\"%s\" package does not seem to be installed.") % pattern)
 			else:
-				rel = self.pakfire.pool.create_relation("%s < %s" % (best.name, best.friendly_version))
+				rel = self.pakfire.create_relation("%s < %s" % (best.name, best.friendly_version))
 				request.install(rel)
 
 		# Solve the request.
-		solver = self.pakfire.pool.solve(request, allow_downgrade=True, **kwargs)
+		solver = self.pakfire.solve(request, allow_downgrade=True, **kwargs)
 		assert solver.status is True
 
 		# Create the transaction.

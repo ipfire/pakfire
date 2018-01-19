@@ -24,7 +24,6 @@
 #include <pakfire/errno.h>
 #include <pakfire/solution.h>
 
-#include "pool.h"
 #include "solution.h"
 
 static SolutionObject* Solution_new_core(PyTypeObject* type, PakfireSolution solution) {

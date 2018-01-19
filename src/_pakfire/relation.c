@@ -58,7 +58,7 @@ static PyObject* Relation_new(PyTypeObject* type, PyObject* args, PyObject* kwds
 static void Relation_dealloc(RelationObject* self) {
 	pakfire_relation_unref(self->relation);
 
-	Py_XDECREF(self->pool);
+	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 

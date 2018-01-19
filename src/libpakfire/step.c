@@ -27,7 +27,6 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/step.h>

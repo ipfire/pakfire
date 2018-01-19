@@ -30,7 +30,6 @@
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/selector.h>
 #include <pakfire/types.h>

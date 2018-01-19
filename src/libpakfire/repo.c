@@ -34,7 +34,6 @@
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/types.h>
@@ -62,11 +61,10 @@ static Repo* get_repo_by_name(Pool* pool, const char* name) {
 	return NULL;
 }
 
-static PakfireRepo get_pakfire_repo_by_name(PakfirePool pool, const char* name) {
-	Pool* p = pakfire_pool_get_solv_pool(pool);
+static PakfireRepo get_pakfire_repo_by_name(Pakfire pakfire, const char* name) {
+	Pool* pool = pakfire_get_solv_pool(pakfire);
 
-	Repo* repo = get_repo_by_name(p, name);
-
+	Repo* repo = get_repo_by_name(pool, name);
 	if (repo)
 		return repo->appdata;
 
@@ -74,23 +72,17 @@ static PakfireRepo get_pakfire_repo_by_name(PakfirePool pool, const char* name) 
 }
 
 PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name) {
-	PakfirePool pool = pakfire_get_pool(pakfire);
-
-	PakfireRepo repo = get_pakfire_repo_by_name(pool, name);
+	PakfireRepo repo = get_pakfire_repo_by_name(pakfire, name);
 	if (repo) {
 		repo->nrefs++;
-
-		pakfire_pool_unref(pool);
-
 		return repo;
 	}
 
-	Pool* p = pakfire_pool_get_solv_pool(pool);
-	pakfire_pool_unref(pool);
+	Pool* pool = pakfire_get_solv_pool(pakfire);
 
-	Repo* r = get_repo_by_name(p, name);
+	Repo* r = get_repo_by_name(pool, name);
 	if (!r)
-		r = repo_create(p, name);
+		r = repo_create(pool, name);
 
 	return pakfire_repo_create_from_repo(pakfire, r);
 }
@@ -150,19 +142,6 @@ Repodata* pakfire_repo_get_repodata(PakfireRepo repo) {
 	return repo->filelist;
 }
 
-PAKFIRE_EXPORT PakfirePool pakfire_repo_get_pool(PakfireRepo repo) {
-	return pakfire_get_pool(repo->pakfire);
-}
-
-static Pool* pakfire_repo_get_solv_pool(PakfireRepo repo) {
-	PakfirePool pool = pakfire_repo_get_pool(repo);
-
-	Pool* p = pakfire_pool_get_solv_pool(pool);
-	pakfire_pool_unref(pool);
-
-	return p;
-}
-
 PAKFIRE_EXPORT int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2) {
 	Repo* r1 = repo1->repo;
 	Repo* r2 = repo2->repo;
@@ -184,7 +163,7 @@ PAKFIRE_EXPORT int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2) {
 }
 
 PAKFIRE_EXPORT int pakfire_repo_count(PakfireRepo repo) {
-	Pool* pool = pakfire_repo_get_solv_pool(repo);
+	Pool* pool = pakfire_get_solv_pool(repo->pakfire);
 	int cnt = 0;
 
 	for (int i = 2; i < pool->nsolvables; i++) {

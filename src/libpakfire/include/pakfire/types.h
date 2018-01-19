@@ -31,7 +31,6 @@ typedef struct _PakfireFilter* PakfireFilter;
 typedef struct _PakfireKey* PakfireKey;
 typedef struct _PakfirePackage* PakfirePackage;
 typedef struct _PakfirePackageList* PakfirePackageList;
-typedef struct _PakfirePool* PakfirePool;
 typedef struct _PakfireProblem* PakfireProblem;
 typedef struct _PakfireRelation* PakfireRelation;
 typedef struct _PakfireRelationList* PakfireRelationList;

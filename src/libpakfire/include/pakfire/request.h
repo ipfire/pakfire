@@ -45,8 +45,6 @@ PakfireRequest pakfire_request_create(Pakfire pakfire);
 PakfireRequest pakfire_request_ref(PakfireRequest request);
 PakfireRequest pakfire_request_unref(PakfireRequest request);
 
-PakfirePool pakfire_request_get_pool(PakfireRequest request);
-
 int pakfire_request_solve(PakfireRequest request, int flags);
 PakfireProblem pakfire_request_get_problems(PakfireRequest request);
 PakfireTransaction pakfire_request_get_transaction(PakfireRequest request);

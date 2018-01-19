@@ -27,7 +27,6 @@
 #include <pakfire/logging.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/relation.h>
 #include <pakfire/types.h>

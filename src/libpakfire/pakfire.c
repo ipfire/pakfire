@@ -35,7 +35,6 @@
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
-#include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
 #include <pakfire/system.h>
@@ -48,7 +47,6 @@ struct _Pakfire {
 	char* arch;
 
 	// Pool stuff
-	PakfirePool _pool;
 	Pool* pool;
 	int pool_ready;
 	Queue installonly;
@@ -82,7 +80,6 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 		DEBUG("  path = %s\n", pakfire_get_path(pakfire));
 
 		// Initialize the pool
-		pakfire->_pool = pakfire_pool_create(pakfire);
 		pakfire->pool = pool_create();
 
 		// Set architecture of the pool
@@ -121,7 +118,6 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	if (--pakfire->nrefs > 0)
 		return pakfire;
 
-	pakfire_pool_unref(pakfire->_pool);
 	pakfire_pool_free_repos(pakfire->pool);
 	pool_free(pakfire->pool);
 	queue_free(&pakfire->installonly);
@@ -143,10 +139,6 @@ PAKFIRE_EXPORT const char* pakfire_get_path(Pakfire pakfire) {
 
 PAKFIRE_EXPORT const char* pakfire_get_arch(Pakfire pakfire) {
 	return pakfire->arch;
-}
-
-PAKFIRE_EXPORT PakfirePool pakfire_get_pool(Pakfire pakfire) {
-	return pakfire_pool_ref(pakfire->_pool);
 }
 
 PAKFIRE_EXPORT int pakfire_version_compare(Pakfire pakfire, const char* evr1, const char* evr2) {
