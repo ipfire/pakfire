@@ -246,7 +246,6 @@ lib_LTLIBRARIES += \
 
 libpakfire_la_SOURCES = \
 	src/libpakfire/archive.c \
-	src/libpakfire/cache.c \
 	src/libpakfire/errno.c \
 	src/libpakfire/file.c \
 	src/libpakfire/filter.c \
@@ -270,7 +269,6 @@ libpakfire_la_SOURCES = \
 
 pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/archive.h \
-	src/libpakfire/include/pakfire/cache.h \
 	src/libpakfire/include/pakfire/constants.h \
 	src/libpakfire/include/pakfire/errno.h \
 	src/libpakfire/include/pakfire/file.h \

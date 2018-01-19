@@ -30,13 +30,11 @@
 #include <solv/solvable.h>
 
 #include <pakfire/archive.h>
-#include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/file.h>
 #include <pakfire/i18n.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
-#include <pakfire/packagecache.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/pool.h>
 #include <pakfire/private.h>

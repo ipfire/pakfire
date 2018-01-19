@@ -57,9 +57,6 @@ struct _Pakfire {
 	pakfire_log_function_t log_function;
 	int log_priority;
 
-	// Cache
-	PakfireCache cache;
-
 	int nrefs;
 };
 

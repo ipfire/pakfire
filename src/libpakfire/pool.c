@@ -24,7 +24,6 @@
 #include <solv/queue.h>
 #include <solv/repo.h>
 
-#include <pakfire/cache.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
@@ -39,7 +38,6 @@
 // This is just being left here for compatibility
 struct _PakfirePool {
 	Pakfire pakfire;
-	PakfireCache cache;
 	int nrefs;
 };
 
@@ -81,11 +79,4 @@ PAKFIRE_EXPORT PakfirePool pakfire_pool_unref(PakfirePool pool) {
 
 Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
 	return pakfire_get_solv_pool(pool->pakfire);
-}
-
-PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
-	if (pool->cache)
-		return pool->cache;
-
-	return NULL;
 }

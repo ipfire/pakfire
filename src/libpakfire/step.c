@@ -23,7 +23,6 @@
 #include <solv/pooltypes.h>
 #include <solv/transaction.h>
 
-#include <pakfire/cache.h>
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>

@@ -28,8 +28,6 @@ PakfirePool pakfire_pool_create(Pakfire pakfire);
 PakfirePool pakfire_pool_ref(PakfirePool pool);
 PakfirePool pakfire_pool_unref(PakfirePool pool);
 
-PakfireCache pakfire_pool_get_cache(PakfirePool pool);
-
 #ifdef PAKFIRE_PRIVATE
 
 #include <solv/pool.h>
