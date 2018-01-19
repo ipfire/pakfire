@@ -22,6 +22,7 @@ LIBPAKFIRE_0 {
 global:
 	# pakfire
 	pakfire_init;
+	pakfire_cache_stat;
 	pakfire_count_packages;
 	pakfire_create;
 	pakfire_get_arch;

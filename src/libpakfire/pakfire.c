@@ -19,6 +19,9 @@
 #############################################################################*/
 
 #include <stddef.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <solv/evr.h>
 #include <solv/pool.h>
@@ -329,4 +332,13 @@ PAKFIRE_EXPORT void pakfire_set_cache_path(Pakfire pakfire, const char* path) {
 	pakfire->cache_path = pakfire_strdup(path);
 
 	DEBUG("Set cache path to %s\n", pakfire->cache_path);
+}
+
+PAKFIRE_EXPORT int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer) {
+	char* cache_path = pakfire_get_cache_path(pakfire, path);
+
+	int r = stat(cache_path, buffer);
+	pakfire_free(cache_path);
+
+	return r;
 }

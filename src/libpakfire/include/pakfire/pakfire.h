@@ -22,6 +22,7 @@
 #define PAKFIRE_PAKFIRE_H
 
 #include <stddef.h>
+#include <sys/stat.h>
 
 #include <pakfire/types.h>
 
@@ -54,6 +55,8 @@ PakfirePackageList pakfire_search(Pakfire pakfire, const char* what, int flags);
 
 char* pakfire_get_cache_path(Pakfire pakfire, const char* path);
 void pakfire_set_cache_path(Pakfire pakfire, const char* path);
+
+int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer);
 
 #ifdef PAKFIRE_PRIVATE
 
