@@ -858,7 +858,7 @@ PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
 	char* path = pakfire_package_get_cache_path(pkg);
 
 	// Check if the file is readable
-	int r = access(path, R_OK);
+	int r = pakfire_access(path, NULL, R_OK);
 	pakfire_free(path);
 
 	return r;
