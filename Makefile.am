@@ -280,7 +280,6 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/key.h \
 	src/libpakfire/include/pakfire/logging.h \
 	src/libpakfire/include/pakfire/package.h \
-	src/libpakfire/include/pakfire/packagecache.h \
 	src/libpakfire/include/pakfire/packagelist.h \
 	src/libpakfire/include/pakfire/pakfire.h \
 	src/libpakfire/include/pakfire/pool.h \

@@ -200,30 +200,18 @@ PAKFIRE_EXPORT ssize_t pakfire_step_get_installsizechange(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
-	PakfirePool pool = NULL;
-	int ret = true;
-
 	if (!pakfire_step_get_downloadtype(step))
 		return false;
 
 	PakfireRepo repo = pakfire_package_get_repo(step->package);
-	if (pakfire_repo_is_installed_repo(repo)) {
-		ret = false;
-		goto finish;
-	}
-
-	pool = pakfire_get_pool(step->pakfire);
-	PakfireCache cache = pakfire_pool_get_cache(pool);
-	if (!cache)
-		goto finish;
+	if (pakfire_repo_is_installed_repo(repo))
+		return false;
 
 	// Return false if package is in cache.
-	ret = !pakfire_cache_has_package(cache, step->package);
+	if (pakfire_package_is_cached(step->package) == 0)
+		return false;
 
-finish:
-	pakfire_pool_unref(pool);
-
-	return ret;
+	return true;
 }
 
 static int pakfire_step_verify(PakfireStep step) {

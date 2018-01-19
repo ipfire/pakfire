@@ -74,30 +74,6 @@ PAKFIRE_EXPORT int pakfire_cache_has_file(PakfireCache cache, const char* filena
 	return (r == 0);
 }
 
-PAKFIRE_EXPORT char* pakfire_cache_get_package_path(PakfireCache cache, PakfirePackage pkg) {
-	char buffer[STRING_SIZE] = "";
-
-	const char* filename = pakfire_package_get_filename(pkg);
-	const char* checksum = pakfire_package_get_checksum(pkg);
-
-	if (strlen(checksum) < 3)
-		return NULL;
-
-	snprintf(buffer, sizeof(buffer), "%c%c/%s/%s", checksum[0], checksum[1],
-		checksum + 2, filename);
-
-	return pakfire_strdup(buffer);
-}
-
-PAKFIRE_EXPORT int pakfire_cache_has_package(PakfireCache cache, PakfirePackage pkg) {
-	char* filename = pakfire_cache_get_package_path(cache, pkg);
-
-	int r = pakfire_cache_has_file(cache, filename);
-	pakfire_free(filename);
-
-	return r;
-}
-
 PAKFIRE_EXPORT int pakfire_cache_age(PakfireCache cache, const char* filename) {
 	struct stat buf;
 	int r = pakfire_cache_stat(cache, filename, &buf);

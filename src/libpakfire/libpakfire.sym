@@ -26,12 +26,14 @@ global:
 	pakfire_count_packages;
 	pakfire_create;
 	pakfire_get_arch;
+	pakfire_get_cache_path;
 	pakfire_get_installed_repo;
 	pakfire_get_installonly;
 	pakfire_get_path;
 	pakfire_get_pool;
 	pakfire_ref;
 	pakfire_search;
+	pakfire_set_cache_path;
 	pakfire_set_installed_repo;
 	pakfire_set_installonly;
 	pakfire_unref;
@@ -133,7 +135,6 @@ global:
 	pakfire_package_get_buildhost;
 	pakfire_package_get_buildtime;
 	pakfire_package_get_cache_path;
-	pakfire_package_get_cache_full_path;
 	pakfire_package_get_checksum;
 	pakfire_package_get_conflicts;
 	pakfire_package_get_description;

@@ -444,14 +444,6 @@ static PyObject* Package_get_cache_path(PackageObject* self) {
 	return ret;
 }
 
-static PyObject* Package_get_cache_full_path(PackageObject* self) {
-	char* cache_path = pakfire_package_get_cache_full_path(self->package);
-	PyObject* ret = PyUnicode_FromString(cache_path);
-	pakfire_free(cache_path);
-
-	return ret;
-}
-
 static PyObject* Package_get_repo(PackageObject* self) {
 	PakfireRepo repo = pakfire_package_get_repo(self->package);
 	if (!repo)
@@ -1011,13 +1003,6 @@ static struct PyGetSetDef Package_getsetters[] = {
 	{
 		"cache_path",
 		(getter)Package_get_cache_path,
-		NULL,
-		NULL,
-		NULL
-	},
-	{
-		"cache_full_path",
-		(getter)Package_get_cache_full_path,
 		NULL,
 		NULL,
 		NULL

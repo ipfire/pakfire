@@ -32,8 +32,6 @@ const char* pakfire_cache_get_path(PakfireCache cache);
 char* pakfire_cache_get_full_path(PakfireCache cache, const char* path);
 
 int pakfire_cache_has_file(PakfireCache cache, const char* filename);
-char* pakfire_cache_get_package_path(PakfireCache cache, PakfirePackage pkg);
-int pakfire_cache_has_package(PakfireCache cache, PakfirePackage pkg);
 int pakfire_cache_age(PakfireCache cache, const char* filename);
 
 FILE* pakfire_cache_open(PakfireCache cache, const char* filename, const char* flags);

@@ -864,49 +864,28 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 }
 
 PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
-	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
-	PakfireCache cache = pakfire_pool_get_cache(pool);
-	pakfire_pool_unref(pool);
+	char* path = pakfire_package_get_cache_path(pkg);
 
-	if (!cache)
-		return 1;
+	// Check if the file is readable
+	int r = access(path, R_OK);
+	pakfire_free(path);
 
-	return pakfire_cache_has_package(cache, pkg);
+	return r;
 }
 
 PAKFIRE_EXPORT char* pakfire_package_get_cache_path(PakfirePackage pkg) {
-	PakfirePool pool = pakfire_get_pool(pkg->pakfire);
-	PakfireCache cache = pakfire_pool_get_cache(pool);
-	pakfire_pool_unref(pool);
+	char buffer[STRING_SIZE] = "";
 
-	if (!cache)
+	const char* filename = pakfire_package_get_filename(pkg);
+	const char* checksum = pakfire_package_get_checksum(pkg);
+
+	if (strlen(checksum) < 3)
 		return NULL;
 
-	return pakfire_cache_get_package_path(cache, pkg);
-}
+	snprintf(buffer, sizeof(buffer), "%c%c/%s/%s", checksum[0], checksum[1],
+		checksum + 2, filename);
 
-PAKFIRE_EXPORT char* pakfire_package_get_cache_full_path(PakfirePackage pkg) {
-	char* cache_path = NULL;
-
-	char* pkg_cache_path = pakfire_package_get_cache_path(pkg);
-	if (!pkg_cache_path)
-		return NULL;
-
-	PakfireRepo repo = pakfire_package_get_repo(pkg);
-	if (!repo)
-		goto out;
-
-	PakfireRepoCache repo_cache = pakfire_repo_get_cache(repo);
-	if (!repo_cache) {
-		goto out;
-	}
-
-	cache_path = pakfire_repocache_get_full_path(repo_cache, pkg_cache_path);
-
-out:
-	pakfire_repo_unref(repo);
-
-	return cache_path;
+	return pakfire_get_cache_path(pkg->pakfire, buffer);
 }
 
 PAKFIRE_EXPORT PakfireArchive pakfire_package_get_archive(PakfirePackage pkg) {
@@ -915,7 +894,7 @@ PAKFIRE_EXPORT PakfireArchive pakfire_package_get_archive(PakfirePackage pkg) {
 		return pakfire_archive_ref(pkg->archive);
 
 	// Otherwise open the archive from the cache
-	char* path = pakfire_package_get_cache_full_path(pkg);
+	char* path = pakfire_package_get_cache_path(pkg);
 	PakfireArchive archive = pakfire_archive_open(pkg->pakfire, path);
 
 	// Free resources
