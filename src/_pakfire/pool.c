@@ -63,33 +63,6 @@ static int Pool_init(PoolObject* self, PyObject* args, PyObject* kwds) {
 	return 0;
 }
 
-static PyObject* Pool_get_cache_path(PoolObject* self) {
-	const char* path = pakfire_pool_get_cache_path(self->pool);
-	if (!path)
-		Py_RETURN_NONE;
-
-	return PyUnicode_FromString(path);
-}
-
-static int Pool_set_cache_path(PoolObject* self, PyObject* value) {
-	const char* path = PyUnicode_AsUTF8(value);
-	assert(path);
-
-	pakfire_pool_set_cache_path(self->pool, path);
-	return 0;
-}
-
-static struct PyGetSetDef Pool_getsetters[] = {
-	{
-		"cache_path",
-		(getter)Pool_get_cache_path,
-		(setter)Pool_set_cache_path,
-		NULL,
-		NULL
-	},
-	{ NULL }
-};
-
 PyTypeObject PoolType = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	tp_name:            "_pakfire.Pool",
@@ -99,5 +72,4 @@ PyTypeObject PoolType = {
 	tp_dealloc:         (destructor)Pool_dealloc,
 	tp_init:            (initproc)Pool_init,
 	tp_doc:             "Pool object",
-	tp_getset:          Pool_getsetters,
 };

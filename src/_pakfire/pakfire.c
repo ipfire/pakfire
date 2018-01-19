@@ -23,6 +23,7 @@
 #include <pakfire/pakfire.h>
 #include <pakfire/key.h>
 #include <pakfire/repo.h>
+#include <pakfire/util.h>
 
 #include "key.h"
 #include "pakfire.h"
@@ -76,6 +77,26 @@ static PyObject* Pakfire_get_arch(PakfireObject* self) {
     const char* arch = pakfire_get_arch(self->pakfire);
 
     return PyUnicode_FromString(arch);
+}
+
+static PyObject* Pakfire_get_cache_path(PakfireObject* self) {
+	char* path = pakfire_get_cache_path(self->pakfire, NULL);
+	if (!path)
+		Py_RETURN_NONE;
+
+	PyObject* obj = PyUnicode_FromString(path);
+	pakfire_free(path);
+
+	return obj;
+}
+
+static int Pakfire_set_cache_path(PakfireObject* self, PyObject* value) {
+	const char* path = PyUnicode_AsUTF8(value);
+
+	if (path)
+		pakfire_set_cache_path(self->pakfire, path);
+
+	return 0;
 }
 
 static PyObject* Pakfire_get_installed_repo(PakfireObject* self) {
@@ -305,6 +326,13 @@ static struct PyGetSetDef Pakfire_getsetters[] = {
 		"arch",
 		(getter)Pakfire_get_arch,
 		NULL,
+		NULL,
+		NULL
+	},
+	{
+		"cache_path",
+		(getter)Pakfire_get_cache_path,
+		(setter)Pakfire_set_cache_path,
 		NULL,
 		NULL
 	},

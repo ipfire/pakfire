@@ -60,7 +60,7 @@ class Pakfire(_pakfire.Pakfire):
 		self.config = config or Config("general.conf")
 
 		self.pool = _pakfire.Pool(self)
-		self.pool.cache_path = cache_path or \
+		self.cache_path = cache_path or \
 			os.path.join(CACHE_DIR, self.distro.sname, self.distro.release)
 
 		self.repos = repository.Repositories(self)

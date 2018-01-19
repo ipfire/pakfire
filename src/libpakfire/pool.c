@@ -83,20 +83,6 @@ Pool* pakfire_pool_get_solv_pool(PakfirePool pool) {
 	return pakfire_get_solv_pool(pool->pakfire);
 }
 
-PAKFIRE_EXPORT const char* pakfire_pool_get_cache_path(PakfirePool pool) {
-	if (!pool->cache)
-		return NULL;
-
-	return pakfire_cache_get_path(pool->cache);
-}
-
-PAKFIRE_EXPORT void pakfire_pool_set_cache_path(PakfirePool pool, const char* path) {
-	if (pool->cache)
-		pakfire_cache_free(pool->cache);
-
-	pool->cache = pakfire_cache_create(pool, path);
-}
-
 PAKFIRE_EXPORT PakfireCache pakfire_pool_get_cache(PakfirePool pool) {
 	if (pool->cache)
 		return pool->cache;
