@@ -22,6 +22,7 @@
 #include <ftw.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <pakfire/cache.h>
 #include <pakfire/constants.h>
@@ -74,7 +75,7 @@ PAKFIRE_EXPORT int pakfire_repocache_has_file(PakfireRepoCache repo_cache, const
 	char* cache_filename = pakfire_repocache_get_cache_path(repo_cache, filename);
 
 	PakfireCache cache = pakfire_repocache_cache(repo_cache);
-	int r = pakfire_cache_has_file(cache, cache_filename);
+	int r = pakfire_cache_access(cache, cache_filename, R_OK);
 
 	pakfire_free(cache_filename);
 	return r;

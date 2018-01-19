@@ -361,6 +361,15 @@ PAKFIRE_EXPORT int pakfire_cache_stat(Pakfire pakfire, const char* path, struct 
 	return r;
 }
 
+PAKFIRE_EXPORT int pakfire_cache_access(Pakfire pakfire, const char* path, int mode) {
+	char* cache_path = pakfire_get_cache_path(pakfire, path);
+
+	int r = pakfire_access(cache_path, NULL, mode);
+	pakfire_free(cache_path);
+
+	return r;
+}
+
 PAKFIRE_EXPORT time_t pakfire_cache_age(Pakfire pakfire, const char* path) {
 	struct stat buffer;
 

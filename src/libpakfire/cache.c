@@ -54,20 +54,3 @@ PAKFIRE_EXPORT char* pakfire_cache_get_full_path(PakfireCache cache, const char*
 
 	return pakfire_path_join(cache_path, path);
 }
-
-static int pakfire_cache_stat(PakfireCache cache, const char* filename, struct stat* buf) {
-	char* cache_filename = pakfire_cache_get_full_path(cache, filename);
-
-	int r = stat(cache_filename, buf);
-	pakfire_free(cache_filename);
-
-	return r;
-}
-
-PAKFIRE_EXPORT int pakfire_cache_has_file(PakfireCache cache, const char* filename) {
-	struct stat buf;
-	int r = pakfire_cache_stat(cache, filename, &buf);
-
-	// Just check if stat() was sucessful.
-	return (r == 0);
-}

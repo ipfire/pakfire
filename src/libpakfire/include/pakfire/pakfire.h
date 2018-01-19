@@ -59,6 +59,7 @@ char* pakfire_get_cache_path(Pakfire pakfire, const char* path);
 void pakfire_set_cache_path(Pakfire pakfire, const char* path);
 
 int pakfire_cache_destroy(Pakfire pakfire, const char* path);
+int pakfire_cache_access(Pakfire pakfire, const char* path, int mode);
 int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer);
 time_t pakfire_cache_age(Pakfire pakfire, const char* path);
 FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const char* flags);

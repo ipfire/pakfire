@@ -31,8 +31,6 @@ void pakfire_cache_free(PakfireCache cache);
 const char* pakfire_cache_get_path(PakfireCache cache);
 char* pakfire_cache_get_full_path(PakfireCache cache, const char* path);
 
-int pakfire_cache_has_file(PakfireCache cache, const char* filename);
-
 #ifdef PAKFIRE_PRIVATE
 
 struct _PakfireCache {
