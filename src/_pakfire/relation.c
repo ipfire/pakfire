@@ -35,7 +35,8 @@ static RelationObject* Relation_new_core(PyTypeObject* type, PakfireObject* pakf
 		return NULL;
 
 	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
+	if (self->pakfire)
+		Py_INCREF(self->pakfire);
 
 	self->relation = NULL;
 
