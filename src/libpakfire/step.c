@@ -203,7 +203,7 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 		return false;
 
 	PakfireRepo repo = pakfire_package_get_repo(step->package);
-	if (pakfire_repo_is_installed_repo(repo))
+	if (pakfire_repo_is_installed_repo(repo) == 0)
 		return false;
 
 	// Return false if package is in cache.
