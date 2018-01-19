@@ -220,6 +220,10 @@ global:
 	pakfire_problem_unref;
 
 	# repo
+	pakfire_repo_cache_access;
+	pakfire_repo_cache_age;
+	pakfire_repo_cache_get_path;
+	pakfire_repo_cache_open;
 	pakfire_repo_cmp;
 	pakfire_repo_count;
 	pakfire_repo_clean;
@@ -242,16 +246,6 @@ global:
 	pakfire_repo_write_solv;
 	pakfire_repo_write_solv_fp;
 	pakfire_repo_unref;
-
-	# repocache
-	pakfire_repocache_age;
-	pakfire_repocache_create;
-	pakfire_repocache_destroy;
-	pakfire_repocache_free;
-	pakfire_repocache_get_cache_path;
-	pakfire_repocache_get_full_path;
-	pakfire_repocache_has_file;
-	pakfire_repocache_open;
 
 	# relation
 	pakfire_relation_create;

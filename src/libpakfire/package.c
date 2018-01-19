@@ -43,7 +43,6 @@
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>
 #include <pakfire/repo.h>
-#include <pakfire/repocache.h>
 #include <pakfire/util.h>
 
 struct _PakfirePackage {

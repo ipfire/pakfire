@@ -260,7 +260,6 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/relation.c \
 	src/libpakfire/relationlist.c \
 	src/libpakfire/repo.c \
-	src/libpakfire/repocache.c \
 	src/libpakfire/request.c \
 	src/libpakfire/selector.c \
 	src/libpakfire/solution.c \
@@ -288,7 +287,6 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/relation.h \
 	src/libpakfire/include/pakfire/relationlist.h \
 	src/libpakfire/include/pakfire/repo.h \
-	src/libpakfire/include/pakfire/repocache.h \
 	src/libpakfire/include/pakfire/request.h \
 	src/libpakfire/include/pakfire/selector.h \
 	src/libpakfire/include/pakfire/solution.h \

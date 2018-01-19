@@ -37,7 +37,6 @@
 #include <pakfire/pool.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
-#include <pakfire/repocache.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
@@ -47,7 +46,6 @@ const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
 struct _PakfireRepo {
 	Pakfire pakfire;
 	Repo* repo;
-	PakfireRepoCache cache;
 	Repodata* filelist;
 	int nrefs;
 };
@@ -109,7 +107,6 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* 
 
 		repo->pakfire = pakfire_ref(pakfire);
 		repo->repo = r;
-		repo->cache = pakfire_repocache_create(repo);
 
 		repo->filelist = repo_add_repodata(r,
 			REPO_EXTEND_SOLVABLES|REPO_LOCALPOOL|REPO_NO_INTERNALIZE|REPO_NO_LOCATION);
@@ -127,9 +124,6 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_ref(PakfireRepo repo) {
 static void pakfire_repo_free(PakfireRepo repo) {
 	if (repo->repo)
 		repo->repo->appdata = NULL;
-
-	if (repo->cache)
-		pakfire_repocache_free(repo->cache);
 
 	pakfire_unref(repo->pakfire);
 
@@ -430,11 +424,7 @@ PAKFIRE_EXPORT PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
 	return pakfire_package_create(repo->pakfire, id);
 }
 
-PAKFIRE_EXPORT PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo) {
-	assert(repo);
-
-	return repo->cache;
-}
+// Cache
 
 static char* pakfire_repo_get_cache_prefix(PakfireRepo repo) {
 	char* prefix = pakfire_calloc(1, STRING_SIZE + 1);
@@ -461,4 +451,40 @@ PAKFIRE_EXPORT int pakfire_repo_clean(PakfireRepo repo) {
 		return pakfire_cache_destroy(repo->pakfire, cache_path);
 
 	return -1;
+}
+
+PAKFIRE_EXPORT char* pakfire_repo_cache_get_path(PakfireRepo repo, const char* path) {
+	char* repo_cache_path = pakfire_repo_make_cache_path(repo, path);
+
+	char* cache_path = pakfire_get_cache_path(repo->pakfire, repo_cache_path);
+	pakfire_free(repo_cache_path);
+
+	return cache_path;
+}
+
+PAKFIRE_EXPORT FILE* pakfire_repo_cache_open(PakfireRepo repo, const char* path, const char* mode) {
+	char* cache_path = pakfire_repo_make_cache_path(repo, path);
+
+	FILE* f = pakfire_cache_open(repo->pakfire, cache_path, mode);
+	pakfire_free(cache_path);
+
+	return f;
+}
+
+PAKFIRE_EXPORT int pakfire_repo_cache_access(PakfireRepo repo, const char* path, int mode) {
+	char* cache_path = pakfire_repo_make_cache_path(repo, path);
+
+	int r = pakfire_cache_access(repo->pakfire, cache_path, mode);
+	pakfire_free(cache_path);
+
+	return r;
+}
+
+PAKFIRE_EXPORT time_t pakfire_repo_cache_age(PakfireRepo repo, const char* path) {
+	char* cache_path = pakfire_repo_make_cache_path(repo, path);
+
+	time_t t = pakfire_cache_age(repo->pakfire, cache_path);
+	pakfire_free(cache_path);
+
+	return t;
 }

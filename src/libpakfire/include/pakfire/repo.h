@@ -21,6 +21,9 @@
 #ifndef PAKFIRE_REPO_H
 #define PAKFIRE_REPO_H
 
+#include <time.h>
+#include <unistd.h>
+
 #include <pakfire/types.h>
 
 PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name);
@@ -53,9 +56,13 @@ int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags);
 int pakfire_repo_write_solv(PakfireRepo repo, const char* filename, int flags);
 int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int flags);
 
-PakfireRepoCache pakfire_repo_get_cache(PakfireRepo repo);
+// Cache
 
 int pakfire_repo_clean(PakfireRepo repo);
+char* pakfire_repo_cache_get_path(PakfireRepo repo, const char* path);
+FILE* pakfire_repo_cache_open(PakfireRepo repo, const char* path, const char* mode);
+int pakfire_repo_cache_access(PakfireRepo repo, const char* path, int mode);
+time_t pakfire_repo_cache_age(PakfireRepo repo, const char* path);
 
 #ifdef PAKFIRE_PRIVATE
 

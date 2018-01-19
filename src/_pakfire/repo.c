@@ -23,7 +23,6 @@
 #include <pakfire/errno.h>
 #include <pakfire/package.h>
 #include <pakfire/repo.h>
-#include <pakfire/repocache.h>
 #include <pakfire/util.h>
 
 #include "package.h"
@@ -226,74 +225,55 @@ static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
 }
 
 static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {
-	const char* filename = NULL;
+	const char* path = NULL;
 
-	if (!PyArg_ParseTuple(args, "s", &filename))
+	if (!PyArg_ParseTuple(args, "s", &path))
 		return NULL;
 
-	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
-	if (!cache)
-		Py_RETURN_NONE;
-
-	int age = pakfire_repocache_age(cache, filename);
-
+	time_t age = pakfire_repo_cache_age(self->repo, path);
 	if (age < 0)
 		Py_RETURN_NONE;
 
-	PyObject* ret = PyLong_FromLong(age);
-	return ret;
+	return PyLong_FromLong(age);
 }
 
 static PyObject* Repo_cache_exists(RepoObject* self, PyObject* args) {
-	const char* filename = NULL;
+	const char* path = NULL;
 
-	if (!PyArg_ParseTuple(args, "s", &filename))
+	if (!PyArg_ParseTuple(args, "s", &path))
 		return NULL;
 
-	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
-	if (!cache)
-		Py_RETURN_NONE;
-
-	int ret = pakfire_repocache_has_file(cache, filename);
-
-	if (ret)
+	int r = pakfire_repo_cache_access(self->repo, path, F_OK);
+	if (r == 0)
 		Py_RETURN_TRUE;
 
 	Py_RETURN_FALSE;
 }
 
 static PyObject* Repo_cache_open(RepoObject* self, PyObject* args) {
-	const char* filename = NULL;
-	char* mode = NULL;
+	const char* path = NULL;
+	const char* mode = NULL;
 
-	if (!PyArg_ParseTuple(args, "ss", &filename, &mode))
+	if (!PyArg_ParseTuple(args, "ss", &path, &mode))
 		return NULL;
 
-	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
-	if (!cache)
-		Py_RETURN_NONE;
-
-	FILE* fp = pakfire_repocache_open(cache, filename, mode);
-	if (!fp) {
-		PyErr_Format(PyExc_IOError, "Could not open file %s: %s", filename, strerror(errno));
+	FILE* f = pakfire_repo_cache_open(self->repo, path, mode);
+	if (!f) {
+		PyErr_Format(PyExc_IOError, "Could not open file %s: %s", path, strerror(errno));
 		return NULL;
 	}
 
 	// XXX might cause some problems with internal buffering
-	return PyFile_FromFd(fileno(fp), NULL, mode, 1, NULL, NULL, NULL, 1);
+	return PyFile_FromFd(fileno(f), NULL, mode, 1, NULL, NULL, NULL, 1);
 }
 
 static PyObject* Repo_cache_path(RepoObject* self, PyObject* args) {
-	const char* filename = NULL;
+	const char* path = NULL;
 
-	if (!PyArg_ParseTuple(args, "s", &filename))
+	if (!PyArg_ParseTuple(args, "s", &path))
 		return NULL;
 
-	PakfireRepoCache cache = pakfire_repo_get_cache(self->repo);
-	if (!cache)
-		Py_RETURN_NONE;
-
-	char* cache_path = pakfire_repocache_get_full_path(cache, filename);
+	char* cache_path = pakfire_repo_cache_get_path(self->repo, path);
 
 	PyObject* obj = PyUnicode_FromString(cache_path);
 	pakfire_free(cache_path);
