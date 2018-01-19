@@ -236,7 +236,6 @@ global:
 	pakfire_repo_identical;
 	pakfire_repo_internalize;
 	pakfire_repo_is_installed_repo;
-	pakfire_repo_pool;
 	pakfire_repo_read_solv;
 	pakfire_repo_read_solv_fp;
 	pakfire_repo_ref;
