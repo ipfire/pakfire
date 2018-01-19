@@ -25,4 +25,6 @@
 
 #define PAKFIRE_REPO_SYSTEM_NAME "@system"
 
+#define CACHE_PATH "/var/cache/pakfire"
+
 #endif /* PAKFIRE_CONSTANTS_H */

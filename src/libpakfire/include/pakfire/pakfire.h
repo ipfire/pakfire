@@ -50,6 +50,11 @@ void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo);
 PakfirePackageList pakfire_whatprovides(Pakfire pakfire, const char* provides, int flags);
 PakfirePackageList pakfire_search(Pakfire pakfire, const char* what, int flags);
 
+// Cache
+
+char* pakfire_get_cache_path(Pakfire pakfire, const char* path);
+void pakfire_set_cache_path(Pakfire pakfire, const char* path);
+
 #ifdef PAKFIRE_PRIVATE
 
 #include <solv/pool.h>

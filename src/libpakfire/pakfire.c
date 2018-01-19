@@ -25,6 +25,7 @@
 #include <solv/poolarch.h>
 #include <solv/queue.h>
 
+#include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
@@ -38,6 +39,7 @@
 
 struct _Pakfire {
 	char* path;
+	char* cache_path;
 	char* arch;
 
 	// Pool stuff
@@ -83,6 +85,9 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 
 		// Set architecture of the pool
 		pool_setarch(pakfire->pool, pakfire->arch);
+
+		// Initialise cache
+		pakfire_set_cache_path(pakfire, CACHE_PATH);
 	}
 
 	return pakfire;
@@ -120,6 +125,7 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	queue_free(&pakfire->installonly);
 
 	pakfire_free(pakfire->path);
+	pakfire_free(pakfire->cache_path);
 	pakfire_free(pakfire->arch);
 
 	pakfire_free(pakfire);
@@ -307,4 +313,20 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_whatprovides(Pakfire pakfire, const ch
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_search(Pakfire pakfire, const char* what, int flags) {
 	return pakfire_pool_dataiterator(pakfire, what, 0, PAKFIRE_SUBSTRING);
+}
+
+// Cache
+
+PAKFIRE_EXPORT char* pakfire_get_cache_path(Pakfire pakfire, const char* path) {
+	return pakfire_path_join(pakfire->cache_path, path);
+}
+
+PAKFIRE_EXPORT void pakfire_set_cache_path(Pakfire pakfire, const char* path) {
+	// Release old path
+	if (pakfire->cache_path)
+		pakfire_free(pakfire->cache_path);
+
+	pakfire->cache_path = pakfire_strdup(path);
+
+	DEBUG("Set cache path to %s\n", pakfire->cache_path);
 }
