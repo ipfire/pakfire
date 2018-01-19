@@ -23,6 +23,7 @@
 #include <solv/pooltypes.h>
 #include <solv/transaction.h>
 
+#include <pakfire/archive.h>
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
@@ -217,9 +218,26 @@ static int pakfire_step_verify(PakfireStep step) {
 	if (pakfire_step_needs_download(step))
 		return 1;
 
-	// TODO verify package and signature
+	// Fetch the archive
+	PakfireArchive archive = pakfire_package_get_archive(step->package);
+	if (!archive) {
+		char* nevra = pakfire_package_get_nevra(step->package);
+		char* cache_path = pakfire_package_get_cache_path(step->package);
 
-	return 0;
+		ERROR("Could not open package archive for %s: %s\n", nevra, cache_path);
+
+		pakfire_free(nevra);
+		pakfire_free(cache_path);
+
+		return -1;
+	}
+
+	// Verify the archive
+	pakfire_archive_verify_status_t status = pakfire_archive_verify(archive);
+
+	pakfire_archive_unref(archive);
+
+	return status;
 }
 
 static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script) {

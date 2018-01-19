@@ -108,6 +108,8 @@ char* pakfire_package_get_location(PakfirePackage pkg);
 
 char* pakfire_package_dump(PakfirePackage pkg, int flags);
 
+PakfireArchive pakfire_package_get_archive(PakfirePackage pkg);
+
 int pakfire_package_is_cached(PakfirePackage pkg);
 char* pakfire_package_get_cache_path(PakfirePackage pkg);
 char* pakfire_package_get_cache_full_path(PakfirePackage pkg);
