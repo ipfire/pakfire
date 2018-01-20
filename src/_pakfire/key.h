@@ -25,16 +25,13 @@
 
 #include <pakfire/key.h>
 
-#include "pakfire.h"
-
 typedef struct {
 	PyObject_HEAD
-	PakfireObject* pakfire;
 	PakfireKey key;
 } KeyObject;
 
 extern PyTypeObject KeyType;
 
-PyObject* new_key(PakfireObject* pakfire, PakfireKey key);
+PyObject* new_key(PyTypeObject* type, PakfireKey key);
 
 #endif /* PYTHON_PAKFIRE_KEY_H */

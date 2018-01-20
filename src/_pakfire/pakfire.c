@@ -152,7 +152,7 @@ static PyObject* _import_keylist(PakfireObject* pakfire, PakfireKey* keys) {
 	while (keys && *keys) {
 		PakfireKey key = *keys++;
 
-		PyObject* object = new_key(pakfire, key);
+		PyObject* object = new_key(&KeyType, key);
 		PyList_Append(list, object);
 
 		// Drop reference to the Python object
