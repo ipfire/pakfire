@@ -79,6 +79,22 @@ static PyObject* Pakfire_get_arch(PakfireObject* self) {
     return PyUnicode_FromString(arch);
 }
 
+static PyObject* Pakfire_get_repo(PakfireObject* self, PyObject* args) {
+	const char* name = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &name))
+		return NULL;
+
+	PakfireRepo repo = pakfire_get_repo(self->pakfire, name);
+	if (!repo)
+		Py_RETURN_NONE;
+
+	PyObject* obj = new_repo(&RepoType, repo);
+	pakfire_repo_unref(repo);
+
+	return obj;
+}
+
 static PyObject* Pakfire_get_cache_path(PakfireObject* self) {
 	char* path = pakfire_get_cache_path(self->pakfire, NULL);
 	if (!path)
@@ -104,8 +120,8 @@ static PyObject* Pakfire_get_installed_repo(PakfireObject* self) {
 	if (!repo)
 		Py_RETURN_NONE;
 
-	PyObject* obj = new_repo(self, pakfire_repo_get_name(repo));
-	Py_XINCREF(obj);
+	PyObject* obj = new_repo(&RepoType, repo);
+	pakfire_repo_unref(repo);
 
 	return obj;
 }
@@ -291,6 +307,12 @@ static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"get_key",
 		(PyCFunction)Pakfire_get_key,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"get_repo",
+		(PyCFunction)Pakfire_get_repo,
 		METH_VARARGS,
 		NULL
 	},

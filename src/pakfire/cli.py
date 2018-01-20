@@ -192,12 +192,14 @@ class Cli(object):
 		p = base.Pakfire()
 
 		# Disable repositories.
-		for repo in ns.disable_repo:
-			p.repos.disable_repo(repo)
+		for repo_name in ns.disable_repo:
+			repo = p.get_repo(repo_name)
+			repo.enabled = False
 
 		# Enable repositories.
-		for repo in ns.enable_repo:
-			p.repos.enable_repo(repo)
+		for repo_name in ns.enable_repo:
+			repo = p.get_repo(repo_name)
+			repo.enabled = True
 
 		return p
 

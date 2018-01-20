@@ -35,6 +35,6 @@ typedef struct {
 
 extern PyTypeObject RepoType;
 
-PyObject* new_repo(PakfireObject* pakfire, const char* name);
+PyObject* new_repo(PyTypeObject* type, PakfireRepo repo);
 
 #endif /* PYTHON_PAKFIRE_REPO_H */

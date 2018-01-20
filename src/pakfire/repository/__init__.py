@@ -170,22 +170,6 @@ class Repositories(object):
 		except KeyError:
 			return self.dummy
 
-	def enable_repo(self, name):
-		for repo in self:
-			if repo == self.local:
-				continue
-
-			if repo.name == name or name == "*":
-				repo.enabled = True
-
-	def disable_repo(self, name):
-		for repo in self:
-			if repo == self.local:
-				continue
-
-			if repo.name == name or name == "*":
-				repo.enabled = False
-
 	def clean(self):
 		log.info("Cleaning up all repository caches...")
 

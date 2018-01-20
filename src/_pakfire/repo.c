@@ -28,13 +28,13 @@
 #include "package.h"
 #include "repo.h"
 
-PyObject* new_repo(PakfireObject* pakfire, const char* name) {
-	PyObject* args = Py_BuildValue("Os", (PyObject *)pakfire, name);
-	PyObject* repo = PyObject_CallObject((PyObject *)&RepoType, args);
+PyObject* new_repo(PyTypeObject* type, PakfireRepo repo) {
+	RepoObject* self = (RepoObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->repo = pakfire_repo_ref(repo);
+	}
 
-	Py_DECREF(args);
-
-	return repo;
+	return (PyObject*)self;
 }
 
 static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
