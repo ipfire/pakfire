@@ -54,7 +54,7 @@ struct _PakfireRepo {
 };
 
 static void free_repo_appdata(struct pakfire_repo_appdata* appdata) {
-	repodata_free(appdata->repodata);
+	// repodata is being destroyed with the repository
 	pakfire_free(appdata);
 }
 
