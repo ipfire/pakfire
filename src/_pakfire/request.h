@@ -23,13 +23,10 @@
 
 #include <Python.h>
 
-#include <pakfire/request.h>
-
-#include "pakfire.h"
+#include <pakfire/types.h>
 
 typedef struct {
 	PyObject_HEAD
-	PakfireObject* pakfire;
 	PakfireRequest request;
 } RequestObject;
 

@@ -99,8 +99,7 @@ static PyObject* Step_repr(StepObject* self) {
 static PyObject* Step_get_package(StepObject* self) {
 	PakfirePackage package = pakfire_step_get_package(self->step);
 
-	PyObject* obj = new_package(self->transaction->request->pakfire,
-		pakfire_package_id(package));
+	PyObject* obj = new_package(&PackageType, package);
 	pakfire_package_unref(package);
 
 	return obj;

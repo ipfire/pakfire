@@ -37,17 +37,14 @@ static PyObject* Request_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	RequestObject* self = (RequestObject *)type->tp_alloc(type, 0);
 	if (self) {
 		self->request = NULL;
-		self->pakfire = NULL;
 	}
 
 	return (PyObject *)self;
 }
 
 static void Request_dealloc(RequestObject* self) {
-	if (self->request)
-		pakfire_request_unref(self->request);
+	pakfire_request_unref(self->request);
 
-	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -57,10 +54,9 @@ static int Request_init(RequestObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "O!", &PakfireType, &pakfire))
 		return -1;
 
-	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
-
-	self->request = pakfire_request_create(self->pakfire->pakfire);
+	self->request = pakfire_request_create(pakfire->pakfire);
+	if (!self->request)
+		return -1;
 
 	return 0;
 }
