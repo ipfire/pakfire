@@ -29,7 +29,6 @@
 static PyObject* Archive_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	ArchiveObject* self = (ArchiveObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pakfire = NULL;
 		self->archive = NULL;
 	}
 
@@ -37,10 +36,7 @@ static PyObject* Archive_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 }
 
 static void Archive_dealloc(ArchiveObject* self) {
-	if (self->archive)
-		pakfire_archive_unref(self->archive);
-
-	Py_DECREF(self->pakfire);
+	pakfire_archive_unref(self->archive);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
@@ -52,11 +48,9 @@ static int Archive_init(ArchiveObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &filename))
 		return -1;
 
-	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
-
-	self->archive = pakfire_archive_open(self->pakfire->pakfire, filename);
-	assert(self->archive);
+	self->archive = pakfire_archive_open(pakfire->pakfire, filename);
+	if (!self->archive)
+		return -1;
 
 	return 0;
 }

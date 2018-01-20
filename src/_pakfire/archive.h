@@ -29,7 +29,6 @@
 
 typedef struct {
 	PyObject_HEAD
-	PakfireObject* pakfire;
 	PakfireArchive archive;
 } ArchiveObject;
 
