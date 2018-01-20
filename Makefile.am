@@ -157,7 +157,6 @@ pakfire_packagesdir = $(pythondir)/pakfire/packages
 pakfire_repository_PYTHON = \
 	src/pakfire/repository/__init__.py \
 	src/pakfire/repository/base.py \
-	src/pakfire/repository/cache.py \
 	src/pakfire/repository/database.py \
 	src/pakfire/repository/local.py \
 	src/pakfire/repository/metadata.py \

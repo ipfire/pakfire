@@ -30,7 +30,6 @@ from .. import http
 from .. import util
 
 from . import base
-from . import cache
 from . import metadata
 
 from ..constants import *
