@@ -67,6 +67,7 @@ time_t pakfire_repo_cache_age(PakfireRepo repo, const char* path);
 #include <solv/repo.h>
 
 PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* r);
+void pakfire_repo_free_all(Pakfire pakfire);
 
 PakfirePackage pakfire_repo_add_package(PakfireRepo repo);
 

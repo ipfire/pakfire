@@ -45,6 +45,7 @@ int pakfire_version_compare(Pakfire pakfire, const char* evr1, const char* evr2)
 
 size_t pakfire_count_packages(Pakfire pakfire);
 
+PakfireRepo pakfire_get_repo(Pakfire pakfire, const char* name);
 PakfireRepo pakfire_get_installed_repo(Pakfire pakfire);
 void pakfire_set_installed_repo(Pakfire pakfire, PakfireRepo repo);
 

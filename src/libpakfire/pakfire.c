@@ -98,19 +98,6 @@ PAKFIRE_EXPORT Pakfire pakfire_ref(Pakfire pakfire) {
 	return pakfire;
 }
 
-static void pakfire_pool_free_repos(Pool* pool) {
-	Repo* repo;
-	int i;
-
-	FOR_REPOS(i, repo) {
-		PakfireRepo r = repo->appdata;
-		if (r == NULL)
-			continue;
-
-		pakfire_repo_unref(r);
-	}
-}
-
 PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	if (!pakfire)
 		return NULL;
@@ -118,7 +105,7 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	if (--pakfire->nrefs > 0)
 		return pakfire;
 
-	pakfire_pool_free_repos(pakfire->pool);
+	pakfire_repo_free_all(pakfire);
 	pool_free(pakfire->pool);
 	queue_free(&pakfire->installonly);
 
@@ -171,6 +158,21 @@ void pakfire_pool_apply_changes(Pakfire pakfire) {
 		pool_createwhatprovides(pakfire->pool);
 		pakfire->pool_ready = 1;
 	}
+}
+
+PAKFIRE_EXPORT PakfireRepo pakfire_get_repo(Pakfire pakfire, const char* name) {
+	Pool* pool = pakfire_get_solv_pool(pakfire);
+
+	Repo* repo;
+	int i;
+
+	FOR_REPOS(i, repo) {
+		if (strcmp(repo->name, name) == 0)
+			return pakfire_repo_create_from_repo(pakfire, repo);
+	}
+
+	// Nothing found
+	return NULL;
 }
 
 PAKFIRE_EXPORT PakfireRepo pakfire_get_installed_repo(Pakfire pakfire) {
