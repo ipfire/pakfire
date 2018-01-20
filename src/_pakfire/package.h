@@ -30,7 +30,6 @@
 
 typedef struct {
 	PyObject_HEAD
-	PakfireObject* pakfire;
 	PakfirePackage package;
 } PackageObject;
 

@@ -34,6 +34,6 @@ extern PyObject *_unshare(PyObject *self, PyObject *args);
 extern PyObject *version_compare(PyObject *self, PyObject *args);
 extern PyObject* performance_index(PyObject* self, PyObject* args);
 
-PyObject* PyList_FromPackageList(PakfireObject* pakfire, PakfirePackageList packagelist);
+PyObject* PyList_FromPackageList(PakfirePackageList packagelist);
 
 #endif /* PYTHON_PAKFIRE_UTIL_H */

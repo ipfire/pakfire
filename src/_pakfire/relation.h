@@ -29,12 +29,11 @@
 
 typedef struct {
     PyObject_HEAD
-    PakfireObject* pakfire;
     PakfireRelation relation;
 } RelationObject;
 
 extern PyTypeObject RelationType;
 
-PyObject* new_relation(PakfireObject* pakfire, Id id);
+PyObject* new_relation(PyTypeObject* type, PakfireRelation relation);
 
 #endif /* PYTHON_PAKFIRE_RELATION_H */

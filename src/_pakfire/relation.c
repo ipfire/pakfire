@@ -23,43 +23,33 @@
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/relation.h>
+#include <pakfire/types.h>
 #include <pakfire/util.h>
-#include <solv/pooltypes.h>
 
 #include "package.h"
 #include "relation.h"
 
-static RelationObject* Relation_new_core(PyTypeObject* type, PakfireObject* pakfire) {
+PyObject* new_relation(PyTypeObject* type, PakfireRelation relation) {
 	RelationObject* self = (RelationObject *)type->tp_alloc(type, 0);
-	if (!self)
-		return NULL;
+	if (self) {
+		self->relation = pakfire_relation_ref(relation);
+	}
 
-	self->pakfire = pakfire;
-	if (self->pakfire)
-		Py_INCREF(self->pakfire);
-
-	self->relation = NULL;
-
-	return self;
-}
-
-PyObject* new_relation(PakfireObject* pakfire, Id id) {
-	RelationObject* relation = Relation_new_core(&RelationType, pakfire);
-	relation->relation = pakfire_relation_create_from_id(pakfire->pakfire, id);
-
-	return (PyObject *)relation;
+	return (PyObject*)self;
 }
 
 static PyObject* Relation_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
-	RelationObject* self = Relation_new_core(type, NULL);
+	RelationObject* self = (RelationObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->relation = NULL;
+	}
 
-	return (PyObject *)self;
+	return (PyObject*)self;
 }
 
 static void Relation_dealloc(RelationObject* self) {
 	pakfire_relation_unref(self->relation);
 
-	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -72,13 +62,8 @@ static int Relation_init(RelationObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "O!s|is", &PakfireType, &pakfire, &name, &cmp_type, &evr))
 		return -1;
 
-	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
-
-	self->relation = pakfire_relation_create(self->pakfire->pakfire, name, cmp_type, evr);
+	self->relation = pakfire_relation_create(pakfire->pakfire, name, cmp_type, evr);
 	if (!self->relation) {
-		Py_DECREF(self->pakfire);
-
 		PyErr_Format(PyExc_ValueError, "No such relation: %s", name);
 		return -1;
 	}

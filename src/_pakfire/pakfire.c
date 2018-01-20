@@ -20,6 +20,7 @@
 
 #include <Python.h>
 
+#include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/key.h>
 #include <pakfire/repo.h>
@@ -229,7 +230,10 @@ static PyObject* Pakfire_whatprovides(PakfireObject* self, PyObject* args, PyObj
 
 	PakfirePackageList list = pakfire_whatprovides(self->pakfire, provides, flags);
 
-	return PyList_FromPackageList(self, list);
+	PyObject* obj = PyList_FromPackageList(list);
+	pakfire_packagelist_unref(list);
+
+	return obj;
 }
 
 static PyObject* Pakfire_search(PakfireObject* self, PyObject* args) {
@@ -239,7 +243,11 @@ static PyObject* Pakfire_search(PakfireObject* self, PyObject* args) {
 		return NULL;
 
 	PakfirePackageList list = pakfire_search(self->pakfire, what, 0);
-	return PyList_FromPackageList(self, list);
+
+	PyObject* obj = PyList_FromPackageList(list);
+	pakfire_packagelist_unref(list);
+
+	return obj;
 }
 
 static PyObject* Pakfire_version_compare(PakfireObject* self, PyObject* args) {

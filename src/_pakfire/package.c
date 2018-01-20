@@ -43,7 +43,6 @@ PyObject* new_package(PyTypeObject* type, PakfirePackage pkg) {
 static PyObject* Package_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	PackageObject* self = (PackageObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pakfire = NULL;
 		self->package = NULL;
 	}
 
@@ -52,7 +51,6 @@ static PyObject* Package_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 static void Package_dealloc(PackageObject* self) {
 	pakfire_package_unref(self->package);
-	Py_XDECREF(self->pakfire);
 
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
@@ -64,10 +62,7 @@ static int Package_init(PackageObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "O!|i", &PakfireType, &pakfire, &id))
 		return -1;
 
-	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
-
-	self->package = pakfire_package_create(self->pakfire->pakfire, (Id)id);
+	self->package = pakfire_package_create(pakfire->pakfire, (Id)id);
 
 	return 0;
 }
@@ -469,7 +464,7 @@ static PyObject* Package_get_location(PackageObject* self) {
 	return str;
 }
 
-static PyObject* PyList_FromRelationList(PakfireObject* pakfire, PakfireRelationList relationlist) {
+static PyObject* PyList_FromRelationList(PakfireRelationList relationlist) {
 	PyObject* list = PyList_New(0);
 	if (list == NULL)
 		return NULL;
@@ -478,7 +473,7 @@ static PyObject* PyList_FromRelationList(PakfireObject* pakfire, PakfireRelation
 
 	for (int i = 0; i < count; i++) {
 		PakfireRelation relation = pakfire_relationlist_get_clone(relationlist, i);
-		PyObject* relation_obj = new_relation(pakfire, pakfire_relation_get_id(relation));
+		PyObject* relation_obj = new_relation(&RelationType, relation);
 
 		pakfire_relation_unref(relation);
 		if (relation_obj == NULL)
@@ -498,14 +493,14 @@ fail:
 	return NULL;
 }
 
-static PakfireRelationList PyList_AsRelationList(PakfireObject* pakfire, PyObject* value) {
+static PakfireRelationList PyList_AsRelationList(Pakfire pakfire, PyObject* value) {
 	if (!PySequence_Check(value)) {
 		PyErr_SetString(PyExc_AttributeError, "Expected a sequence.");
 		return NULL;
 	}
 
 	const int length = PySequence_Length(value);
-	PakfireRelationList relationlist = pakfire_relationlist_create(pakfire->pakfire);
+	PakfireRelationList relationlist = pakfire_relationlist_create(pakfire);
 
 	for (int i = 0; i < length; i++) {
 		PyObject* item = PySequence_GetItem(value, i);
@@ -530,14 +525,17 @@ static PakfireRelationList PyList_AsRelationList(PakfireObject* pakfire, PyObjec
 static PyObject* Package_get_provides(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_provides(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_provides(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 
@@ -561,14 +559,17 @@ static PyObject* Package_add_provides(PackageObject* self, PyObject* args) {
 static PyObject* Package_get_requires(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_requires(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_requires(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 
@@ -592,14 +593,17 @@ static PyObject* Package_add_requires(PackageObject* self, PyObject* args) {
 static PyObject* Package_get_obsoletes(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_obsoletes(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_obsoletes(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 
@@ -623,14 +627,17 @@ static PyObject* Package_add_obsoletes(PackageObject* self, PyObject* args) {
 static PyObject* Package_get_conflicts(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_conflicts(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_conflicts(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 
@@ -654,14 +661,17 @@ static PyObject* Package_add_conflicts(PackageObject* self, PyObject* args) {
 static PyObject* Package_get_recommends(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_recommends(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_recommends(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 
@@ -685,14 +695,17 @@ static PyObject* Package_add_recommends(PackageObject* self, PyObject* args) {
 static PyObject* Package_get_suggests(PackageObject* self) {
 	PakfireRelationList relationlist = pakfire_package_get_suggests(self->package);
 
-	PyObject* list = PyList_FromRelationList(self->pakfire, relationlist);
+	PyObject* list = PyList_FromRelationList(relationlist);
 	pakfire_relationlist_unref(relationlist);
 
 	return list;
 }
 
 static int Package_set_suggests(PackageObject* self, PyObject* value) {
-	PakfireRelationList relationlist = PyList_AsRelationList(self->pakfire, value);
+	Pakfire pakfire = pakfire_package_get_pakfire(self->package);
+
+	PakfireRelationList relationlist = PyList_AsRelationList(pakfire, value);
+	pakfire_unref(pakfire);
 	if (!relationlist)
 		return -1;
 

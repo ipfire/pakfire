@@ -32,6 +32,7 @@ PakfirePackage pakfire_package_create2(Pakfire pakfire, PakfireRepo repo, const 
 
 PakfirePackage pakfire_package_ref(PakfirePackage pkg);
 PakfirePackage pakfire_package_unref(PakfirePackage pkg);
+Pakfire pakfire_package_get_pakfire(PakfirePackage pkg);
 
 int pakfire_package_identical(PakfirePackage pkg1, PakfirePackage pkg2);
 int pakfire_package_cmp(PakfirePackage pkg1, PakfirePackage pkg2);

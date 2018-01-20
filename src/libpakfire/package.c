@@ -115,6 +115,10 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_unref(PakfirePackage pkg) {
 	return NULL;
 }
 
+PAKFIRE_EXPORT Pakfire pakfire_package_get_pakfire(PakfirePackage pkg) {
+	return pakfire_ref(pkg->pakfire);
+}
+
 static Solvable* get_solvable(PakfirePackage pkg) {
 	Pool* pool = pakfire_package_get_solv_pool(pkg);
 
