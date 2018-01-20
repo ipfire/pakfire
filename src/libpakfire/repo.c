@@ -133,6 +133,10 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_unref(PakfireRepo repo) {
 	return NULL;
 }
 
+PAKFIRE_EXPORT Pakfire pakfire_repo_get_pakfire(PakfireRepo repo) {
+	return pakfire_ref(repo->pakfire);
+}
+
 Repo* pakfire_repo_get_repo(PakfireRepo repo) {
 	return repo->repo;
 }

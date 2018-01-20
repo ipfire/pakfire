@@ -40,7 +40,6 @@ PyObject* new_repo(PyTypeObject* type, PakfireRepo repo) {
 static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	RepoObject* self = (RepoObject *)type->tp_alloc(type, 0);
 	if (self) {
-		self->pakfire = NULL;
 		self->repo = NULL;
 	}
 
@@ -50,7 +49,6 @@ static PyObject* Repo_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 static void Repo_dealloc(RepoObject* self) {
 	pakfire_repo_unref(self->repo);
 
-	Py_XDECREF(self->pakfire);
 	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -61,10 +59,8 @@ static int Repo_init(RepoObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &name))
 		return -1;
 
-	self->pakfire = pakfire;
-	Py_INCREF(self->pakfire);
-
-	self->repo = pakfire_repo_create(self->pakfire->pakfire, name);
+	// Create a new repository
+	self->repo = pakfire_repo_create(pakfire->pakfire, name);
 
 	return 0;
 }
@@ -219,9 +215,15 @@ static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "sss", &name, &evr, &arch))
 		return NULL;
 
-	PakfirePackage pkg = pakfire_package_create2(self->pakfire->pakfire, self->repo, name, evr, arch);
+	Pakfire pakfire = pakfire_repo_get_pakfire(self->repo);
+	PakfirePackage pkg = pakfire_package_create2(pakfire, self->repo, name, evr, arch);
 
-	return new_package(self->pakfire, pakfire_package_id(pkg));
+	PyObject* obj = new_package(&PackageType, pkg);
+
+	pakfire_package_unref(pkg);
+	pakfire_unref(pakfire);
+
+	return obj;
 }
 
 static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {

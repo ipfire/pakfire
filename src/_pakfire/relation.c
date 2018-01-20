@@ -115,7 +115,7 @@ static PyObject* Relation_get_providers(RelationObject* self) {
 	for (unsigned int i = 0; i < pakfire_packagelist_count(packagelist); i++) {
 		PakfirePackage package = pakfire_packagelist_get(packagelist, i);
 
-		PyObject* obj = new_package(self->pakfire, pakfire_package_id(package));
+		PyObject* obj = new_package(&PackageType, package);
 		PyList_Append(list, obj);
 
 		pakfire_package_unref(package);

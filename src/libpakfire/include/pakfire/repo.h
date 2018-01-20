@@ -30,6 +30,7 @@ PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name);
 
 PakfireRepo pakfire_repo_ref(PakfireRepo repo);
 PakfireRepo pakfire_repo_unref(PakfireRepo repo);
+Pakfire pakfire_repo_get_pakfire(PakfireRepo repo);
 
 int pakfire_repo_identical(PakfireRepo repo1, PakfireRepo repo2);
 int pakfire_repo_cmp(PakfireRepo repo1, PakfireRepo repo2);

@@ -31,13 +31,13 @@
 #include "relation.h"
 #include "repo.h"
 
-PyObject* new_package(PakfireObject* pakfire, Id id) {
-	PyObject* args = Py_BuildValue("Oi", (PyObject *)pakfire, id);
-	PyObject* repo = PyObject_CallObject((PyObject *)&PackageType, args);
+PyObject* new_package(PyTypeObject* type, PakfirePackage pkg) {
+	PackageObject* self = (PackageObject *)type->tp_alloc(type, 0);
+	if (self) {
+		self->package = pakfire_package_ref(pkg);
+	}
 
-	Py_DECREF(args);
-
-	return repo;
+	return (PyObject *)self;
 }
 
 static PyObject* Package_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {

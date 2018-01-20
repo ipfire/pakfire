@@ -23,7 +23,7 @@
 
 #include <Python.h>
 
-#include <pakfire/package.h>
+#include <pakfire/types.h>
 #include <solv/pooltypes.h>
 
 #include "pakfire.h"
@@ -36,6 +36,6 @@ typedef struct {
 
 extern PyTypeObject PackageType;
 
-PyObject* new_package(PakfireObject* pakfire, Id id);
+PyObject* new_package(PyTypeObject* type, PakfirePackage pkg);
 
 #endif /* PYTHON_PAKFIRE_PACKAGE_H */
