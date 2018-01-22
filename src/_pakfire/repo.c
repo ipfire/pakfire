@@ -174,6 +174,21 @@ static int Repo_set_keyfile(RepoObject* self, PyObject* value) {
 	return pakfire_repo_set_keyfile(self->repo, keyfile);
 }
 
+static PyObject* Repo_get_mirrorlist(RepoObject* self) {
+	const char* mirrorlist = pakfire_repo_get_mirrorlist(self->repo);
+
+	return PyUnicode_FromString(mirrorlist);
+}
+
+static int Repo_set_mirrorlist(RepoObject* self, PyObject* value) {
+	const char* mirrorlist = NULL;
+
+	if (value != Py_None)
+		mirrorlist = PyUnicode_AsUTF8(value);
+
+	return pakfire_repo_set_mirrorlist(self->repo, mirrorlist);
+}
+
 static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
 	const char* filename = NULL;
 
@@ -388,6 +403,13 @@ static struct PyGetSetDef Repo_getsetters[] = {
 		"keyfile",
 		(getter)Repo_get_keyfile,
 		(setter)Repo_set_keyfile,
+		NULL,
+		NULL
+	},
+	{
+		"mirrorlist",
+		(getter)Repo_get_mirrorlist,
+		(setter)Repo_set_mirrorlist,
 		NULL,
 		NULL
 	},
