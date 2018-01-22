@@ -331,6 +331,10 @@ PAKFIRE_EXPORT char* pakfire_repo_get_config(PakfireRepo repo) {
 	// Headline
 	p += sprintf(p, "[repo:%s]\n", pakfire_repo_get_name(repo));
 
+	const char* description = pakfire_repo_get_description(repo);
+	if (description)
+		p += sprintf(p, "description = %s\n", description);
+
 	// Enabled
 	p += sprintf(p, "enabled = %d\n", pakfire_repo_get_enabled(repo));
 
