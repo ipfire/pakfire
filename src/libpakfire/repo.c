@@ -45,6 +45,7 @@ const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
 struct pakfire_repo_appdata {
 	Repodata* repodata;
 
+	char* description;
 	char* baseurl;
 	char* keyfile;
 	char* mirrorlist;
@@ -59,6 +60,9 @@ struct _PakfireRepo {
 
 static void free_repo_appdata(struct pakfire_repo_appdata* appdata) {
 	// repodata is being destroyed with the repository
+
+	if (appdata->description)
+		pakfire_free(appdata->description);
 
 	if (appdata->baseurl)
 		pakfire_free(appdata->baseurl);
@@ -230,6 +234,22 @@ PAKFIRE_EXPORT const char* pakfire_repo_get_name(PakfireRepo repo) {
 
 PAKFIRE_EXPORT void pakfire_repo_set_name(PakfireRepo repo, const char* name) {
 	repo->repo->name = pakfire_strdup(name);
+}
+
+PAKFIRE_EXPORT const char* pakfire_repo_get_description(PakfireRepo repo) {
+	return repo->appdata->description;
+}
+
+PAKFIRE_EXPORT int pakfire_repo_set_description(PakfireRepo repo, const char* description) {
+	if (repo->appdata->description)
+		pakfire_free(repo->appdata->description);
+
+	if (description)
+		repo->appdata->description = pakfire_strdup(description);
+	else
+		repo->appdata->description = NULL;
+
+	return 0;
 }
 
 PAKFIRE_EXPORT int pakfire_repo_get_enabled(PakfireRepo repo) {

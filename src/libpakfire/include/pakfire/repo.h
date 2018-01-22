@@ -41,6 +41,9 @@ void pakfire_repo_internalize(PakfireRepo repo);
 const char* pakfire_repo_get_name(PakfireRepo repo);
 void pakfire_repo_set_name(PakfireRepo repo, const char* name);
 
+const char* pakfire_repo_get_description(PakfireRepo repo);
+int pakfire_repo_set_description(PakfireRepo repo, const char* description);
+
 int pakfire_repo_get_enabled(PakfireRepo repo);
 void pakfire_repo_set_enabled(PakfireRepo repo, int enabled);
 

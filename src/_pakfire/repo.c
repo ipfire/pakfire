@@ -112,6 +112,21 @@ static int Repo_set_name(RepoObject* self, PyObject* value) {
 	return 0;
 }
 
+static PyObject* Repo_get_description(RepoObject* self) {
+	const char* description = pakfire_repo_get_description(self->repo);
+
+	return PyUnicode_FromString(description);
+}
+
+static int Repo_set_description(RepoObject* self, PyObject* value) {
+	const char* description = NULL;
+
+	if (value != Py_None)
+		description = PyUnicode_AsUTF8(value);
+
+	return pakfire_repo_set_description(self->repo, description);
+}
+
 static PyObject* Repo_get_enabled(RepoObject* self) {
 	if (pakfire_repo_get_enabled(self->repo))
 		Py_RETURN_TRUE;
@@ -416,6 +431,13 @@ static struct PyGetSetDef Repo_getsetters[] = {
 		(getter)Repo_get_baseurl,
 		(setter)Repo_set_baseurl,
 		"The base URL of this repository",
+		NULL
+	},
+	{
+		"description",
+		(getter)Repo_get_description,
+		(setter)Repo_set_description,
+		NULL,
 		NULL
 	},
 	{

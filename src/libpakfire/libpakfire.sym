@@ -228,6 +228,7 @@ global:
 	pakfire_repo_get_baseurl;
 	pakfire_repo_get_cache;
 	pakfire_repo_get_config;
+	pakfire_repo_get_description;
 	pakfire_repo_get_name;
 	pakfire_repo_get_enabled;
 	pakfire_repo_get_keyfile;
@@ -242,6 +243,7 @@ global:
 	pakfire_repo_read_solv_fp;
 	pakfire_repo_ref;
 	pakfire_repo_set_baseurl;
+	pakfire_repo_set_description;
 	pakfire_repo_set_enabled;
 	pakfire_repo_set_keyfile;
 	pakfire_repo_set_mirrorlist;
