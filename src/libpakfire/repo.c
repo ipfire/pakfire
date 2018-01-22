@@ -44,6 +44,8 @@ const size_t XZ_HEADER_LENGTH = sizeof(XZ_HEADER_MAGIC);
 
 struct pakfire_repo_appdata {
 	Repodata* repodata;
+
+	char* baseurl;
 };
 
 struct _PakfireRepo {
@@ -55,6 +57,10 @@ struct _PakfireRepo {
 
 static void free_repo_appdata(struct pakfire_repo_appdata* appdata) {
 	// repodata is being destroyed with the repository
+
+	if (appdata->baseurl)
+		pakfire_free(appdata->baseurl);
+
 	pakfire_free(appdata);
 }
 
@@ -206,6 +212,18 @@ PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
 
 PAKFIRE_EXPORT void pakfire_repo_set_priority(PakfireRepo repo, int priority) {
 	repo->repo->priority = priority;
+}
+
+PAKFIRE_EXPORT const char* pakfire_repo_get_baseurl(PakfireRepo repo) {
+	return repo->appdata->baseurl;
+}
+
+PAKFIRE_EXPORT int pakfire_repo_set_baseurl(PakfireRepo repo, const char* baseurl) {
+	if (repo->appdata->baseurl)
+		pakfire_free(repo->appdata->baseurl);
+
+	repo->appdata->baseurl = pakfire_strdup(baseurl);
+	return 0;
 }
 
 PAKFIRE_EXPORT int pakfire_repo_is_installed_repo(PakfireRepo repo) {

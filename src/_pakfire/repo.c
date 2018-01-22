@@ -144,6 +144,18 @@ static int Repo_set_priority(RepoObject* self, PyObject* value) {
 	return 0;
 }
 
+static PyObject* Repo_get_baseurl(RepoObject* self) {
+	const char* baseurl = pakfire_repo_get_baseurl(self->repo);
+
+	return PyUnicode_FromString(baseurl);
+}
+
+static int Repo_set_baseurl(RepoObject* self, PyObject* value) {
+	const char* baseurl = PyUnicode_AsUTF8(value);
+
+	return pakfire_repo_set_baseurl(self->repo, baseurl);
+}
+
 static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
 	const char* filename = NULL;
 
@@ -347,6 +359,13 @@ static struct PyMethodDef Repo_methods[] = {
 };
 
 static struct PyGetSetDef Repo_getsetters[] = {
+	{
+		"baseurl",
+		(getter)Repo_get_baseurl,
+		(setter)Repo_set_baseurl,
+		"The base URL of this repository",
+		NULL
+	},
 	{
 		"name",
 		(getter)Repo_get_name,

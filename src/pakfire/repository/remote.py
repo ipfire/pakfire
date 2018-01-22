@@ -42,13 +42,12 @@ class RepositoryRemote(base.RepositoryFactory):
 		# Save the settings that come from the configuration file
 		self.settings = settings
 
+		# Set the baseurl
+		self.baseurl = self.settings.get("baseurl")
+
 		# Enabled/disable the repository, based on the configuration setting.
 		enabled = self.settings.get("enabled", True)
 		self.enabled = util.is_enabled(enabled)
-
-	@property
-	def baseurl(self):
-		return self.settings.get("baseurl")
 
 	@property
 	def keyfile(self):

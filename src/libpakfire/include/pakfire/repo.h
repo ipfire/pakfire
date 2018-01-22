@@ -47,6 +47,9 @@ void pakfire_repo_set_enabled(PakfireRepo repo, int enabled);
 int pakfire_repo_get_priority(PakfireRepo repo);
 void pakfire_repo_set_priority(PakfireRepo repo, int priority);
 
+const char* pakfire_repo_get_baseurl(PakfireRepo repo);
+int pakfire_repo_set_baseurl(PakfireRepo repo, const char* baseurl);
+
 int pakfire_repo_is_installed_repo(PakfireRepo repo);
 
 int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags);
