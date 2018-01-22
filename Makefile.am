@@ -147,7 +147,6 @@ pakfire_packages_PYTHON = \
 	src/pakfire/packages/lexer.py \
 	src/pakfire/packages/make.py \
 	src/pakfire/packages/packager.py \
-	src/pakfire/packages/solv.py \
 	src/pakfire/packages/tar.py
 
 pakfire_packagesdir = $(pythondir)/pakfire/packages

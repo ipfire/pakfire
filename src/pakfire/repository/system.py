@@ -89,14 +89,6 @@ class RepositorySystem(base.RepositoryFactory):
 		self.db.add_package(pkg)
 
 	def rem_package(self, pkg):
-		if isinstance(pkg, packages.SolvPackage):
-			pkg = pkg.get_from_db()
-
-			# If the package can not be found in the database,
-			# we cannot remove it. This does not seem right...
-			if pkg is None:
-				return
-
 		# Remove package from the database.
 		self.db.rem_package(pkg)
 
