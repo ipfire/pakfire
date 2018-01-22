@@ -151,7 +151,10 @@ static PyObject* Repo_get_baseurl(RepoObject* self) {
 }
 
 static int Repo_set_baseurl(RepoObject* self, PyObject* value) {
-	const char* baseurl = PyUnicode_AsUTF8(value);
+	const char* baseurl = NULL;
+
+	if (value != Py_None)
+		baseurl = PyUnicode_AsUTF8(value);
 
 	return pakfire_repo_set_baseurl(self->repo, baseurl);
 }
