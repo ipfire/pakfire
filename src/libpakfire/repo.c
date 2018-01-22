@@ -104,7 +104,7 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name
 }
 
 PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* r) {
-	PakfireRepo repo = r->appdata = pakfire_calloc(1, sizeof(*repo));
+	PakfireRepo repo = pakfire_calloc(1, sizeof(*repo));
 	if (repo) {
 		DEBUG("Allocated Repo at %p\n", repo);
 		repo->nrefs = 1;
