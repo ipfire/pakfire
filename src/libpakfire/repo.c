@@ -184,28 +184,6 @@ PAKFIRE_EXPORT int pakfire_repo_count(PakfireRepo repo) {
 	return cnt;
 }
 
-PAKFIRE_EXPORT void pakfire_repo_internalize(PakfireRepo repo) {
-	repo_internalize(repo->repo);
-}
-
-PAKFIRE_EXPORT const char* pakfire_repo_get_name(PakfireRepo repo) {
-	return repo->repo->name;
-}
-
-PAKFIRE_EXPORT void pakfire_repo_set_name(PakfireRepo repo, const char* name) {
-	repo->repo->name = pakfire_strdup(name);
-}
-
-PAKFIRE_EXPORT int pakfire_repo_get_enabled(PakfireRepo repo) {
-	return !repo->repo->disabled;
-}
-
-PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
-	repo->repo->disabled = !enabled;
-
-	pakfire_pool_has_changed(repo->pakfire);
-}
-
 // Returns a default priority based on the repository configuration
 static int pakfire_repo_auto_priority(PakfireRepo repo) {
 	// The @system repository has a priority of zero
@@ -228,6 +206,32 @@ static int pakfire_repo_auto_priority(PakfireRepo repo) {
 
 	// Default to 100
 	return 100;
+}
+
+PAKFIRE_EXPORT void pakfire_repo_internalize(PakfireRepo repo) {
+	repo_internalize(repo->repo);
+
+	// Set the correct priority in libsolv
+	if (repo->repo->priority == 0)
+		repo->repo->priority = pakfire_repo_auto_priority(repo);
+}
+
+PAKFIRE_EXPORT const char* pakfire_repo_get_name(PakfireRepo repo) {
+	return repo->repo->name;
+}
+
+PAKFIRE_EXPORT void pakfire_repo_set_name(PakfireRepo repo, const char* name) {
+	repo->repo->name = pakfire_strdup(name);
+}
+
+PAKFIRE_EXPORT int pakfire_repo_get_enabled(PakfireRepo repo) {
+	return !repo->repo->disabled;
+}
+
+PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
+	repo->repo->disabled = !enabled;
+
+	pakfire_pool_has_changed(repo->pakfire);
 }
 
 PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
