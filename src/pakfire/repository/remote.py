@@ -42,21 +42,13 @@ class RepositoryRemote(base.RepositoryFactory):
 		# Save the settings that come from the configuration file
 		self.settings = settings
 
-		# Set the baseurl
+		# Set the baseurl & keyfile
 		self.baseurl = self.settings.get("baseurl")
+		self.keyfile = self.settings.get("keyfile", None) or self.settings.get("gpgkey", None)
 
 		# Enabled/disable the repository, based on the configuration setting.
 		enabled = self.settings.get("enabled", True)
 		self.enabled = util.is_enabled(enabled)
-
-	@property
-	def keyfile(self):
-		keyfile = self.settings.get("keyfile", None)
-
-		if keyfile is None:
-			keyfile = self.settings.get("gpgkey", None)
-
-		return keyfile
 
 	def make_downloader(self):
 		"""

@@ -46,6 +46,7 @@ struct pakfire_repo_appdata {
 	Repodata* repodata;
 
 	char* baseurl;
+	char* keyfile;
 };
 
 struct _PakfireRepo {
@@ -60,6 +61,9 @@ static void free_repo_appdata(struct pakfire_repo_appdata* appdata) {
 
 	if (appdata->baseurl)
 		pakfire_free(appdata->baseurl);
+
+	if (appdata->keyfile)
+		pakfire_free(appdata->keyfile);
 
 	pakfire_free(appdata);
 }
@@ -257,6 +261,22 @@ PAKFIRE_EXPORT int pakfire_repo_set_baseurl(PakfireRepo repo, const char* baseur
 		repo->appdata->baseurl = pakfire_strdup(baseurl);
 	else
 		repo->appdata->baseurl = NULL;
+
+	return 0;
+}
+
+PAKFIRE_EXPORT const char* pakfire_repo_get_keyfile(PakfireRepo repo) {
+	return repo->appdata->keyfile;
+}
+
+PAKFIRE_EXPORT int pakfire_repo_set_keyfile(PakfireRepo repo, const char* keyfile) {
+	if (repo->appdata->keyfile)
+		pakfire_free(repo->appdata->keyfile);
+
+	if (keyfile)
+		repo->appdata->keyfile = pakfire_strdup(keyfile);
+	else
+		repo->appdata->keyfile = NULL;
 
 	return 0;
 }

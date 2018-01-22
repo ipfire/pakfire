@@ -156,6 +156,21 @@ static int Repo_set_baseurl(RepoObject* self, PyObject* value) {
 	return pakfire_repo_set_baseurl(self->repo, baseurl);
 }
 
+static PyObject* Repo_get_keyfile(RepoObject* self) {
+	const char* keyfile = pakfire_repo_get_keyfile(self->repo);
+
+	return PyUnicode_FromString(keyfile);
+}
+
+static int Repo_set_keyfile(RepoObject* self, PyObject* value) {
+	const char* keyfile = NULL;
+
+	if (value != Py_None)
+		keyfile = PyUnicode_AsUTF8(value);
+
+	return pakfire_repo_set_keyfile(self->repo, keyfile);
+}
+
 static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
 	const char* filename = NULL;
 
@@ -364,6 +379,13 @@ static struct PyGetSetDef Repo_getsetters[] = {
 		(getter)Repo_get_baseurl,
 		(setter)Repo_set_baseurl,
 		"The base URL of this repository",
+		NULL
+	},
+	{
+		"keyfile",
+		(getter)Repo_get_keyfile,
+		(setter)Repo_set_keyfile,
+		NULL,
 		NULL
 	},
 	{
