@@ -181,7 +181,7 @@ static PyObject* Pakfire_get_key(PakfireObject* self, PyObject* args) {
 	if (!key)
 		Py_RETURN_NONE;
 
-	return new_key(self, key);
+	return new_key(&KeyType, key);
 }
 
 static PyObject* Pakfire_generate_key(PakfireObject* self, PyObject* args) {
@@ -193,7 +193,7 @@ static PyObject* Pakfire_generate_key(PakfireObject* self, PyObject* args) {
 	PakfireKey key = pakfire_key_generate(self->pakfire, userid);
 	assert(key);
 
-	return new_key(self, key);
+	return new_key(&KeyType, key);
 }
 
 static PyObject* Pakfire_import_key(PakfireObject* self, PyObject* args) {
