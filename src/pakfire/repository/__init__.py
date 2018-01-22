@@ -132,6 +132,7 @@ class Repositories(object):
 		repo = _pakfire.Repo(self.pakfire, name)
 		repo.enabled = _args.get("enabled", True)
 		repo.description = _args.get("description", None)
+		repo.baseurl = _args.get("baseurl", None)
 		repo.keyfile = _args.get("gpgkey", None)
 		repo.mirrorlist = _args.get("mirrors", None)
 
