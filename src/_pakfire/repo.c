@@ -189,6 +189,19 @@ static int Repo_set_mirrorlist(RepoObject* self, PyObject* value) {
 	return pakfire_repo_set_mirrorlist(self->repo, mirrorlist);
 }
 
+static PyObject* Repo_get_config(RepoObject* self) {
+	char* config = pakfire_repo_get_config(self->repo);
+
+	if (config) {
+		PyObject* obj = PyUnicode_FromString(config);
+		pakfire_free(config);
+
+		return obj;
+	}
+
+	Py_RETURN_NONE;
+}
+
 static PyObject* Repo_read_solv(RepoObject* self, PyObject* args) {
 	const char* filename = NULL;
 
@@ -368,6 +381,12 @@ static struct PyMethodDef Repo_methods[] = {
 		"clean",
 		(PyCFunction)Repo_clean,
 		METH_VARARGS,
+		NULL,
+	},
+	{
+		"get_config",
+		(PyCFunction)Repo_get_config,
+		METH_NOARGS,
 		NULL,
 	},
 	{

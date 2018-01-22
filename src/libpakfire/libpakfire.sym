@@ -227,6 +227,7 @@ global:
 	pakfire_repo_create;
 	pakfire_repo_get_baseurl;
 	pakfire_repo_get_cache;
+	pakfire_repo_get_config;
 	pakfire_repo_get_name;
 	pakfire_repo_get_enabled;
 	pakfire_repo_get_keyfile;

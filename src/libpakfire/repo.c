@@ -301,6 +301,40 @@ PAKFIRE_EXPORT int pakfire_repo_set_mirrorlist(PakfireRepo repo, const char* mir
 	return 0;
 }
 
+PAKFIRE_EXPORT char* pakfire_repo_get_config(PakfireRepo repo) {
+	if (pakfire_repo_is_installed_repo(repo) == 0)
+		return NULL;
+
+	char buffer[1024 * 4];
+	char* p = buffer;
+
+	// Headline
+	p += sprintf(p, "[repo:%s]\n", pakfire_repo_get_name(repo));
+
+	// Enabled
+	p += sprintf(p, "enabled = %d\n", pakfire_repo_get_enabled(repo));
+
+	// Base URL
+	const char* baseurl = pakfire_repo_get_baseurl(repo);
+	if (baseurl)
+		p += sprintf(p, "baseurl = %s\n", baseurl);
+
+	// Mirror List
+	const char* mirrorlist = pakfire_repo_get_mirrorlist(repo);
+	if (mirrorlist)
+		p += sprintf(p, "mirrors = %s\n", mirrorlist);
+
+	// Key File
+	const char* keyfile = pakfire_repo_get_keyfile(repo);
+	if (keyfile)
+		p += sprintf(p, "keyfile = %s\n", keyfile);
+
+	// Priority
+	p += sprintf(p, "priority = %d\n", pakfire_repo_get_priority(repo));
+
+	return pakfire_strdup(buffer);
+}
+
 PAKFIRE_EXPORT int pakfire_repo_is_installed_repo(PakfireRepo repo) {
 	PakfireRepo installed_repo = pakfire_get_installed_repo(repo->pakfire);
 

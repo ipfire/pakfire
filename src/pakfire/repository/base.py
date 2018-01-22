@@ -88,13 +88,6 @@ class RepositoryFactory(_pakfire.Repo):
 
 		return "\n\n".join(dumps)
 
-	def get_config(self):
-		"""
-			Return the configuration as a list of string which
-			can be written to a configuration file.
-		"""
-		pass
-
 
 class RepositoryDummy(RepositoryFactory):
 	"""

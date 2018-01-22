@@ -56,6 +56,8 @@ int pakfire_repo_set_keyfile(PakfireRepo repo, const char* keyfile);
 const char* pakfire_repo_get_mirrorlist(PakfireRepo repo);
 int pakfire_repo_set_mirrorlist(PakfireRepo repo, const char* mirrorlist);
 
+char* pakfire_repo_get_config(PakfireRepo repo);
+
 int pakfire_repo_is_installed_repo(PakfireRepo repo);
 
 int pakfire_repo_read_solv(PakfireRepo repo, const char* filename, int flags);

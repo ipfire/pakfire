@@ -268,27 +268,3 @@ class RepositoryRemote(base.RepositoryFactory):
 			grabber.increment_mirror(grabber)
 
 		return os.path.join(self.cache.path, cache_filename)
-
-	def get_config(self):
-		if self.enabled:
-			enabled = "1"
-		else:
-			enabled = "0"
-
-		lines = [
-			"[repo:%s]" % self.name,
-			"description = %s" % self.description,
-			"enabled = %s" % enabled,
-			"baseurl = %s" % self.baseurl,
-		]
-
-		mirrors = self.settings.get("mirrors", None)
-		if mirrors:
-			lines.append("mirrors = %s" % mirrors)
-
-		lines += [
-			#"gpgkey = %s" % self.keyfile,
-			"priority = %s" % self.priority,
-		]
-
-		return lines
