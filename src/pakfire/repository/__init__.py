@@ -26,11 +26,11 @@ import re
 import logging
 log = logging.getLogger("pakfire")
 
+from .. import _pakfire
 from .. import config
 from .. import packages
 
 from .local import RepositoryDir, RepositoryBuild
-from .remote import RepositoryRemote
 from .system import RepositorySystem
 
 from ..i18n import _
@@ -129,7 +129,12 @@ class Repositories(object):
 				# Replace the variable with its value.
 				v = v.replace("%%{%s}" % var, replaces.get(var, ""))
 
-		repo = RepositoryRemote(self.pakfire, **_args)
+		repo = _pakfire.Repo(self.pakfire, name)
+		repo.enabled = _args.get("enabled", True)
+		repo.description = _args.get("description", None)
+		repo.keyfile = _args.get("gpgkey", None)
+		repo.mirrorlist = _args.get("mirrors", None)
+
 		self.add_repo(repo)
 
 	def add_repo(self, repo):

@@ -160,7 +160,6 @@ pakfire_repository_PYTHON = \
 	src/pakfire/repository/database.py \
 	src/pakfire/repository/local.py \
 	src/pakfire/repository/metadata.py \
-	src/pakfire/repository/remote.py \
 	src/pakfire/repository/system.py
 
 pakfire_repositorydir = $(pythondir)/pakfire/repository
