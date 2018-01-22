@@ -58,34 +58,6 @@ class RepositoryRemote(base.RepositoryFactory):
 
 		return keyfile
 
-	@property
-	def priority(self):
-		priority = self.settings.get("priority", None)
-		if not priority is None:
-			# Try to concert the given input to an integer
-			# and return the value if possible.
-			try:
-				priority = int(priority)
-				return priority
-
-			except ValueError:
-				pass
-
-		# The default priority is 100.
-		priority = 100
-
-		url2priority = {
-			"file://" : 50,
-			"http://" : 75,
-		}
-
-		for url, prio in list(url2priority.items()):
-			if self.baseurl.startswith(url):
-				priority = prio
-				break
-
-		return priority
-
 	def make_downloader(self):
 		"""
 			Creates a downloader that can be used to download

@@ -206,8 +206,35 @@ PAKFIRE_EXPORT void pakfire_repo_set_enabled(PakfireRepo repo, int enabled) {
 	pakfire_pool_has_changed(repo->pakfire);
 }
 
+// Returns a default priority based on the repository configuration
+static int pakfire_repo_auto_priority(PakfireRepo repo) {
+	// The @system repository has a priority of zero
+	if (pakfire_repo_is_installed_repo(repo) == 0)
+		return 0;
+
+	if (repo->appdata->baseurl) {
+		// HTTPS
+		if (pakfire_string_startswith(repo->appdata->baseurl, "https://"))
+			return 75;
+
+		// HTTP
+		if (pakfire_string_startswith(repo->appdata->baseurl, "http://"))
+			return 75;
+
+		// Local path
+		if (pakfire_string_startswith(repo->appdata->baseurl, "dir://"))
+			return 50;
+	}
+
+	// Default to 100
+	return 100;
+}
+
 PAKFIRE_EXPORT int pakfire_repo_get_priority(PakfireRepo repo) {
-	return repo->repo->priority;
+	if (repo->repo->priority > 0)
+		return repo->repo->priority;
+
+	return pakfire_repo_auto_priority(repo);
 }
 
 PAKFIRE_EXPORT void pakfire_repo_set_priority(PakfireRepo repo, int priority) {

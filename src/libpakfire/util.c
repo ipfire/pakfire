@@ -95,6 +95,10 @@ char* pakfire_strdup(const char* s) {
 	return r;
 }
 
+int pakfire_string_startswith(const char* s, const char* prefix) {
+	return strncmp(s, prefix, strlen(prefix));
+}
+
 char* pakfire_format_size(double size) {
 	char string[STRING_SIZE];
 	const char* units[] = {" ", "k", "M", "G", "T", NULL};

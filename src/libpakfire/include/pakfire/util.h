@@ -36,6 +36,7 @@ void* pakfire_realloc(void* ptr, size_t size);
 void* pakfire_free(void* mem);
 
 char* pakfire_strdup(const char* s);
+int pakfire_string_startswith(const char* s, const char* prefix);
 
 char* pakfire_format_size(double size);
 char* pakfire_format_date(time_t t);
