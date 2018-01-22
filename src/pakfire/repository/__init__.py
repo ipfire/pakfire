@@ -71,14 +71,6 @@ class Repositories(object):
 		"""
 		return len([r for r in self if r.enabled])
 
-	def refresh(self):
-		"""
-			Refreshes all repositories
-		"""
-		for repo in self:
-			if repo.enabled:
-				repo.refresh()
-
 	@property
 	def distro(self):
 		return self.pakfire.distro

@@ -25,6 +25,7 @@ import string
 
 from . import _pakfire
 from . import distro
+from . import downloaders
 from . import filelist
 from . import packages
 from . import repository
@@ -88,7 +89,7 @@ class Pakfire(_pakfire.Pakfire):
 		self.config.dump()
 
 		# Refresh repositories
-		self.repos.refresh()
+		self.refresh_repositories()
 
 		return PakfireContext(self)
 
@@ -101,6 +102,17 @@ class Pakfire(_pakfire.Pakfire):
 			A shortcut that indicates if the system is running in offline mode.
 		"""
 		return self.config.get("downloader", "offline", False)
+
+	def refresh_repositories(self, force=False):
+		for repo in self.repos:
+			if not repo.enabled:
+				continue
+
+			if repo == self.installed_repo:
+				continue
+
+			d = downloaders.RepositoryDownloader(self, repo)
+			d.refresh(force=force)
 
 	def check_root_user(self):
 		if not os.getuid() == 0 or not os.getgid() == 0:

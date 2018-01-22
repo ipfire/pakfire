@@ -49,15 +49,6 @@ class RepositoryFactory(_pakfire.Repo):
 	def init(self, **kwargs):
 		pass # To be overwritten by inheriting classes
 
-	def refresh(self):
-		"""
-			Called to refresh the repository metadata.
-
-			This is probably only hand for remote repositories
-			that need to re-download data.
-		"""
-		pass
-
 	@property
 	def local(self):
 		"""

@@ -50,37 +50,7 @@ class RepositoryRemote(base.RepositoryFactory):
 		enabled = self.settings.get("enabled", True)
 		self.enabled = util.is_enabled(enabled)
 
-	def make_downloader(self):
-		"""
-			Creates a downloader that can be used to download
-			metadata, databases or packages from this repository.
-		"""
-		downloader = http.Client(baseurl=self.baseurl)
 
-		# Add any mirrors that we know of
-		for mirror in self.mirrorlist:
-			downloader.add_mirror(mirror.get("url"))
-
-		return downloader
-
-	def refresh(self, force=False):
-		# Don't do anything if running in offline mode
-		if self.pakfire.offline:
-			log.debug(_("Skipping refreshing %s since we are running in offline mode") % self)
-			return
-
-		# Refresh the mirror list
-		self._refresh_mirror_list(force=force)
-
-		# Refresh metadata
-		self._refresh_metadata(force=force)
-
-		# Refresh database
-		self._refresh_database()
-
-		# Read database
-		if self.database:
-			self.read_solv(self.database)
 
 	@property
 	def mirrorlist(self):
