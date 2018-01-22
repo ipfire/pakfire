@@ -90,7 +90,7 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name
 
 		// Allocate repository appdata
 		repo->appdata = repo->repo->appdata = \
-			calloc(1, sizeof(*repo->appdata));
+			pakfire_calloc(1, sizeof(*repo->appdata));
 
 		repo->appdata->repodata = repo_add_repodata(repo->repo,
 			REPO_EXTEND_SOLVABLES|REPO_LOCALPOOL|REPO_NO_INTERNALIZE|REPO_NO_LOCATION);
