@@ -253,7 +253,11 @@ PAKFIRE_EXPORT int pakfire_repo_set_baseurl(PakfireRepo repo, const char* baseur
 	if (repo->appdata->baseurl)
 		pakfire_free(repo->appdata->baseurl);
 
-	repo->appdata->baseurl = pakfire_strdup(baseurl);
+	if (baseurl)
+		repo->appdata->baseurl = pakfire_strdup(baseurl);
+	else
+		repo->appdata->baseurl = NULL;
+
 	return 0;
 }
 
