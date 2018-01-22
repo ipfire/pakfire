@@ -162,7 +162,10 @@ static int Repo_set_priority(RepoObject* self, PyObject* value) {
 static PyObject* Repo_get_baseurl(RepoObject* self) {
 	const char* baseurl = pakfire_repo_get_baseurl(self->repo);
 
-	return PyUnicode_FromString(baseurl);
+	if (baseurl)
+		return PyUnicode_FromString(baseurl);
+
+	Py_RETURN_NONE;
 }
 
 static int Repo_set_baseurl(RepoObject* self, PyObject* value) {
@@ -177,7 +180,10 @@ static int Repo_set_baseurl(RepoObject* self, PyObject* value) {
 static PyObject* Repo_get_keyfile(RepoObject* self) {
 	const char* keyfile = pakfire_repo_get_keyfile(self->repo);
 
-	return PyUnicode_FromString(keyfile);
+	if (keyfile)
+		return PyUnicode_FromString(keyfile);
+
+	Py_RETURN_NONE;
 }
 
 static int Repo_set_keyfile(RepoObject* self, PyObject* value) {
@@ -192,7 +198,10 @@ static int Repo_set_keyfile(RepoObject* self, PyObject* value) {
 static PyObject* Repo_get_mirrorlist(RepoObject* self) {
 	const char* mirrorlist = pakfire_repo_get_mirrorlist(self->repo);
 
-	return PyUnicode_FromString(mirrorlist);
+	if (mirrorlist)
+		return PyUnicode_FromString(mirrorlist);
+
+	Py_RETURN_NONE;
 }
 
 static int Repo_set_mirrorlist(RepoObject* self, PyObject* value) {
