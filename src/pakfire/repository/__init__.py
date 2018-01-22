@@ -29,7 +29,6 @@ log = logging.getLogger("pakfire")
 from .. import config
 from .. import packages
 
-from .base import RepositoryDummy
 from .local import RepositoryDir, RepositoryBuild
 from .remote import RepositoryRemote
 from .system import RepositorySystem
@@ -48,10 +47,6 @@ class Repositories(object):
 
 		# Place to store the repositories
 		self.__repos = {}
-
-		# Create a dummy repository
-		from . import base
-		self.dummy = base.RepositoryDummy(self.pakfire)
 
 		# Create the local repository.
 		self.local = self.pakfire.installed_repo = RepositorySystem(self.pakfire)

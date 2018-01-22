@@ -87,18 +87,3 @@ class RepositoryFactory(_pakfire.Repo):
 			dumps.append(dump)
 
 		return "\n\n".join(dumps)
-
-
-class RepositoryDummy(RepositoryFactory):
-	"""
-		Just a dummy repository that actually does nothing.
-	"""
-	def __init__(self, pakfire):
-		RepositoryFactory.__init__(self, pakfire, "dummy",
-			"This is a dummy repository.")
-
-	@property
-	def priority(self):
-		# This will never be used in the solving process, but still it needs
-		# a value.
-		return 0
