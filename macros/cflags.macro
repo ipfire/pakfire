@@ -1,6 +1,6 @@
 
 # Export CFLAGS + CXXFLAGS
-GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -Werror=format-security
+GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Werror=format-security
 GLOBAL_CFLAGS  += -fexceptions -fPIC -fstack-protector-strong -grecord-gcc-switches
 
 CFLAGS_i686     = -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables -fstack-clash-protection
