@@ -29,7 +29,6 @@ from .i18n import _
 log = logging.getLogger("pakfire.downloader")
 log.propagate = 1
 
-
 class Downloader(object):
 	pass
 
@@ -172,3 +171,44 @@ class RepositoryDownloader(Downloader):
 		# XXX compare checksum here
 		downloader.retrieve("repodata/%s" % self.metadata.database, filename=path,
 			message=_("%s: package database") % self.repo.name)
+
+	def download_package(self, pkg):
+		"""
+			Downloads a package to it's cache path
+		"""
+		downloader = self.make_downloader()
+
+		downloader.retrieve(pkg.filename, filename=pkg.cache_path,
+			message="%s" % pkg, checksum_algo="sha1", checksum=pkg.checksum)
+
+
+class TransactionDownloader(Downloader):
+	def __init__(self, pakfire, transaction):
+		self.pakfire = pakfire
+
+		# The transaction that we process
+		self.transaction = transaction
+
+		# Cache repository downloaders
+		self._repo_downloaders = {}
+
+	def _get_repo_downloader(self, repo):
+		try:
+			return self._repo_downloaders[repo]
+		except KeyError:
+			d = RepositoryDownloader(self.pakfire, repo)
+			self._repo_downloaders[repo] = d
+
+			return d
+
+	def download(self):
+		for step in self.transaction:
+			# Skip any steps that do not need a download
+			if not step.needs_download:
+				continue
+
+			# Get the downloader
+			downloader = self._get_repo_downloader(step.package.repo)
+
+			# Download the package
+			downloader.download_package(step.package)

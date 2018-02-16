@@ -35,6 +35,7 @@ from . import builder
 from . import client
 from . import config
 from . import daemon
+from . import downloaders
 from . import packages
 from . import repository
 from . import ui
@@ -254,6 +255,15 @@ class Cli(object):
 		for line in t.splitlines():
 			self.ui.message(line)
 
+	def _download_transaction(self, transaction):
+		"""
+			Downloads all packages required for this transaction
+		"""
+		d = downloaders.TransactionDownloader(self.pakfire, transaction)
+
+		# Run the download
+		d.download()
+
 	def _execute_transaction(self, transaction):
 		# Don't do anything if the transaction is empty
 		if len(transaction) == 0:
@@ -267,6 +277,9 @@ class Cli(object):
 		if not self.ui.confirm():
 			self.ui.message(_("Aborted by user"))
 			return
+
+		# Download transaction
+		self._download_transaction(transaction)
 
 		# Run the transaction
 		transaction.run()
