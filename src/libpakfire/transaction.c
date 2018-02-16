@@ -322,8 +322,10 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 		r = pakfire_step_run(step, action);
 
 		// End loop if action was unsuccessful
-		if (r)
+		if (r) {
+			DEBUG(transaction->pakfire, "Step %p failed with code %d\n", step, r);
 			break;
+		}
 	}
 
 	return r;
@@ -331,7 +333,6 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 
 PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	DEBUG(transaction->pakfire, "Running Transaction %p\n", transaction);
-
 	int r = 0;
 
 	// Verify steps
@@ -342,18 +343,23 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	// Execute all pre transaction actions
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_PRETRANS);
 	if (r)
-		return r;
+		goto ERROR;
 
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_EXECUTE);
 	if (r)
-		return r;
+		goto ERROR;
 
 	// Execute all post transaction actions
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_POSTTRANS);
 	if (r)
-		return r;
+		goto ERROR;
 
-	DEBUG(transaction->pakfire, "Transaction %p has finished successfully\n", transaction);
+	INFO(transaction->pakfire, "The transaction has finished successfully\n");
 
 	return 0;
+
+ERROR:
+	ERROR(transaction->pakfire, "The transaction was not executed successfully\n");
+
+	return r;
 }

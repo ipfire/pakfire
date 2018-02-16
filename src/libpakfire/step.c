@@ -238,7 +238,6 @@ static int pakfire_step_verify(PakfireStep step) {
 
 	// Verify the archive
 	pakfire_archive_verify_status_t status = pakfire_archive_verify(archive);
-
 	pakfire_archive_unref(archive);
 
 	return status;
@@ -367,5 +366,8 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 	}
 
 END:
+	if (r)
+		ERROR(step->pakfire, "Step has failed: %s\n", strerror(r));
+
 	return r;
 }
