@@ -383,6 +383,11 @@ class Client(object):
 							# Otherwise raise this error
 							raise e
 
+					# Make sure parent directory exists
+					dirname = os.path.dirname(filename)
+					if not os.path.exists(dirname):
+						os.makedirs(dirname)
+
 					# Downloaded succeeded, writing data to filesystem
 					with open(filename, "wb") as output:
 						shutil.copyfileobj(f, output)
