@@ -207,7 +207,7 @@ PAKFIRE_EXPORT int pakfire_step_needs_download(PakfireStep step) {
 		return false;
 
 	// Return false if package is in cache.
-	if (pakfire_package_is_cached(step->package) == 0)
+	if (pakfire_package_is_cached(step->package))
 		return false;
 
 	return true;

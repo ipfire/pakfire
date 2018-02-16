@@ -865,7 +865,7 @@ PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
 	int r = pakfire_access(path, NULL, R_OK);
 	pakfire_free(path);
 
-	return r;
+	return (r == 0);
 }
 
 PAKFIRE_EXPORT char* pakfire_package_get_cache_path(PakfirePackage pkg) {
