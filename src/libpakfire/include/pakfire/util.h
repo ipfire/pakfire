@@ -45,8 +45,8 @@ char* pakfire_path_join(const char* first, const char* second);
 
 char* pakfire_basename(const char* path);
 char* pakfire_dirname(const char* path);
-int pakfire_access(const char* dir, const char* file, int mode);
-int pakfire_mkdir(const char* path, mode_t mode);
+int pakfire_access(Pakfire pakfire, const char* dir, const char* file, int mode);
+int pakfire_mkdir(Pakfire pakfire, const char* path, mode_t mode);
 
 char* pakfire_sgets(char* str, int num, char** input);
 char* pakfire_remove_trailing_newline(char* str);

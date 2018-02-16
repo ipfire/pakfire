@@ -65,7 +65,7 @@ static void pakfire_package_add_self_provides(Pakfire pakfire, PakfirePackage pk
 PAKFIRE_EXPORT PakfirePackage pakfire_package_create(Pakfire pakfire, Id id) {
 	PakfirePackage pkg = pakfire_calloc(1, sizeof(*pkg));
 	if (pkg) {
-		DEBUG("Allocated Package at %p\n", pkg);
+		DEBUG(pakfire, "Allocated Package at %p\n", pkg);
 
 		pkg->pakfire = pakfire_ref(pakfire);
 		pkg->id = id;
@@ -90,12 +90,12 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(Pakfire pakfire, PakfireRe
 }
 
 static void pakfire_package_free(PakfirePackage pkg) {
+	DEBUG(pkg->pakfire, "Releasing Package at %p\n", pkg);
+	pakfire_unref(pkg->pakfire);
+
 	pakfire_archive_unref(pkg->archive);
 	pakfire_package_filelist_remove(pkg);
-	pakfire_unref(pkg->pakfire);
 	pakfire_free(pkg);
-
-	DEBUG("Released Package at %p\n", pkg);
 }
 
 PAKFIRE_EXPORT PakfirePackage pakfire_package_ref(PakfirePackage pkg) {
@@ -862,7 +862,7 @@ PAKFIRE_EXPORT int pakfire_package_is_cached(PakfirePackage pkg) {
 	char* path = pakfire_package_get_cache_path(pkg);
 
 	// Check if the file is readable
-	int r = pakfire_access(path, NULL, R_OK);
+	int r = pakfire_access(pkg->pakfire, path, NULL, R_OK);
 	pakfire_free(path);
 
 	return (r == 0);

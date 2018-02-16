@@ -48,7 +48,7 @@ struct _PakfireRequest {
 PAKFIRE_EXPORT PakfireRequest pakfire_request_create(Pakfire pakfire) {
 	PakfireRequest request = pakfire_calloc(1, sizeof(*request));
 	if (request) {
-		DEBUG("Allocated Request at %p\n", request);
+		DEBUG(pakfire, "Allocated Request at %p\n", request);
 		request->nrefs = 1;
 
 		request->pakfire = pakfire_ref(pakfire);
@@ -65,7 +65,7 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_ref(PakfireRequest request) {
 }
 
 static void pakfire_request_free(PakfireRequest request) {
-	pakfire_unref(request->pakfire);
+	DEBUG(request->pakfire, "Releasing Request at %p\n", request);
 
 	if (request->transaction)
 		transaction_free(request->transaction);
@@ -74,9 +74,9 @@ static void pakfire_request_free(PakfireRequest request) {
 		solver_free(request->solver);
 
 	queue_free(&request->queue);
-	pakfire_free(request);
 
-	DEBUG("Released Request at %p\n", request);
+	pakfire_unref(request->pakfire);
+	pakfire_free(request);
 }
 
 PAKFIRE_EXPORT PakfireRequest pakfire_request_unref(PakfireRequest request) {
@@ -88,6 +88,10 @@ PAKFIRE_EXPORT PakfireRequest pakfire_request_unref(PakfireRequest request) {
 
 	pakfire_request_free(request);
 	return NULL;
+}
+
+Pakfire pakfire_request_get_pakfire(PakfireRequest request) {
+	return pakfire_ref(request->pakfire);
 }
 
 Solver* pakfire_request_get_solver(PakfireRequest request) {
@@ -149,7 +153,7 @@ static int solve(PakfireRequest request, Queue* queue) {
 	// Save time when we finished solving
 	clock_t solving_end = clock();
 
-	DEBUG("Solved request in %.4fms\n",
+	DEBUG(request->pakfire, "Solved request in %.4fms\n",
 		(double)(solving_end - solving_start) * 1000 / CLOCKS_PER_SEC);
 
 	/* If the solving process was successful, we get the transaction

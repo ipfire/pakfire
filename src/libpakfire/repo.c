@@ -91,7 +91,7 @@ void pakfire_repo_free_all(Pakfire pakfire) {
 PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name) {
 	PakfireRepo repo = pakfire_calloc(1, sizeof(*repo));
 	if (repo) {
-		DEBUG("Allocated Repo at %p\n", repo);
+		DEBUG(pakfire, "Allocated Repo at %p\n", repo);
 		repo->nrefs = 1;
 
 		repo->pakfire = pakfire_ref(pakfire);
@@ -114,7 +114,7 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_create(Pakfire pakfire, const char* name
 PakfireRepo pakfire_repo_create_from_repo(Pakfire pakfire, Repo* r) {
 	PakfireRepo repo = pakfire_calloc(1, sizeof(*repo));
 	if (repo) {
-		DEBUG("Allocated Repo at %p\n", repo);
+		DEBUG(pakfire, "Allocated Repo at %p\n", repo);
 		repo->nrefs = 1;
 
 		repo->pakfire = pakfire_ref(pakfire);
@@ -134,10 +134,10 @@ PAKFIRE_EXPORT PakfireRepo pakfire_repo_ref(PakfireRepo repo) {
 }
 
 static void pakfire_repo_free(PakfireRepo repo) {
+	DEBUG(repo->pakfire, "Releasing Repo at %p\n", repo);
 	pakfire_unref(repo->pakfire);
 
 	pakfire_free(repo);
-	DEBUG("Released Repo at %p\n", repo);
 }
 
 PAKFIRE_EXPORT PakfireRepo pakfire_repo_unref(PakfireRepo repo) {

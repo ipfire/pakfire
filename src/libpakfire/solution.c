@@ -32,6 +32,7 @@
 #include <pakfire/util.h>
 
 struct _PakfireSolution {
+	Pakfire pakfire;
 	PakfireProblem problem;
 	Id id;
 	char** elements;
@@ -119,9 +120,12 @@ static void import_elements(PakfireSolution solution) {
 }
 
 PAKFIRE_EXPORT PakfireSolution pakfire_solution_create(PakfireProblem problem, Id id) {
+	Pakfire pakfire = pakfire_problem_get_pakfire(problem);
+
 	PakfireSolution solution = pakfire_calloc(1, sizeof(*solution));
 	if (solution) {
-		DEBUG("Allocated Solution at %p\n", solution);
+		DEBUG(pakfire, "Allocated Solution at %p\n", solution);
+		solution->pakfire = pakfire_ref(pakfire);
 		solution->nrefs = 1;
 
 		solution->problem = pakfire_problem_ref(problem);
@@ -130,6 +134,8 @@ PAKFIRE_EXPORT PakfireSolution pakfire_solution_create(PakfireProblem problem, I
 		// Extract information from solver
 		import_elements(solution);
 	}
+
+	pakfire_unref(pakfire);
 
 	return solution;
 }
@@ -141,6 +147,9 @@ PAKFIRE_EXPORT PakfireSolution pakfire_solution_ref(PakfireSolution solution) {
 }
 
 static void pakfire_solution_free(PakfireSolution solution) {
+	DEBUG(solution->pakfire, "Releasing Solution at %p\n", solution);
+	pakfire_unref(solution->pakfire);
+
 	if (solution->next)
 		pakfire_solution_unref(solution->next);
 
@@ -151,7 +160,6 @@ static void pakfire_solution_free(PakfireSolution solution) {
 			pakfire_free(*solution->elements++);
 
 	pakfire_free(solution);
-	DEBUG("Released Solution at %p\n", solution);
 }
 
 PAKFIRE_EXPORT PakfireSolution pakfire_solution_unref(PakfireSolution solution) {

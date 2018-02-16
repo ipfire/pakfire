@@ -74,6 +74,7 @@ int pakfire_request_verify(PakfireRequest request);
 
 #include <solv/solver.h>
 
+Pakfire pakfire_request_get_pakfire(PakfireRequest request);
 Solver* pakfire_request_get_solver(PakfireRequest request);
 
 #endif

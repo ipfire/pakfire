@@ -43,7 +43,7 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	if (!gpg_initialized) {
 		// Initialise gpgme
 		const char* version = gpgme_check_version(NULL);
-		DEBUG("Loaded gpgme %s\n", version);
+		DEBUG(pakfire, "Loaded gpgme %s\n", version);
 
 		// Check if we support GPG
 		error = gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
@@ -68,12 +68,12 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 	char* home = pakfire_path_join(path, "etc/pakfire/gnupg");
 
 	// Check if gpg directories exist
-	if (pakfire_access(home, NULL, R_OK) != 0) {
-		DEBUG("Creating GPG database at %s\n", home);
+	if (pakfire_access(pakfire, home, NULL, R_OK) != 0) {
+		DEBUG(pakfire, "Creating GPG database at %s\n", home);
 
-		int r = pakfire_mkdir(home, S_IRUSR|S_IWUSR|S_IXUSR);
+		int r = pakfire_mkdir(pakfire, home, S_IRUSR|S_IWUSR|S_IXUSR);
 		if (r) {
-			ERROR("Could not initialize the GPG database at %s\n", home);
+			ERROR(pakfire, "Could not initialize the GPG database at %s\n", home);
 			goto FAIL;
 		}
 	}
@@ -85,7 +85,7 @@ gpgme_ctx_t pakfire_get_gpgctx(Pakfire pakfire) {
 		goto FAIL;
 
 	gpgme_engine_info_t engine_info = gpgme_ctx_get_engine_info(ctx);
-	DEBUG("GPGME engine info: %s, home = %s\n",
+	DEBUG(pakfire, "GPGME engine info: %s, home = %s\n",
 		engine_info->file_name, engine_info->home_dir);
 
 	return ctx;
@@ -94,7 +94,7 @@ FAIL:
 	gpgme_release(ctx);
 
 	error_string = gpgme_strerror(error);
-	ERROR("%s\n", error_string);
+	ERROR(pakfire, "%s\n", error_string);
 
 	return NULL;
 }
@@ -116,7 +116,7 @@ static size_t pakfire_count_keys(Pakfire pakfire) {
 		gpgme_key_release(key);
 	}
 
-	DEBUG("%zu key(s) in keystore\n", count);
+	DEBUG(pakfire, "%zu key(s) in keystore\n", count);
 	gpgme_release(gpgctx);
 
 	return count;
@@ -188,7 +188,7 @@ PAKFIRE_EXPORT void pakfire_key_unref(PakfireKey key) {
 }
 
 static PakfireKey __pakfire_get_key(Pakfire pakfire, gpgme_ctx_t gpgctx, const char* fingerprint) {
-	DEBUG("Seaching for key with fingerprint %s\n", fingerprint);
+	DEBUG(pakfire, "Seaching for key with fingerprint %s\n", fingerprint);
 
 	PakfireKey key = NULL;
 	gpgme_key_t gpgkey = NULL;
@@ -201,11 +201,11 @@ static PakfireKey __pakfire_get_key(Pakfire pakfire, gpgme_ctx_t gpgctx, const c
 			break;
 
 		case GPG_ERR_EOF:
-			DEBUG("Nothing found\n");
+			DEBUG(pakfire, "Nothing found\n");
 			break;
 
 		default:
-			DEBUG("Could not find key: %s\n", gpgme_strerror(error));
+			DEBUG(pakfire, "Could not find key: %s\n", gpgme_strerror(error));
 			break;
 	}
 
@@ -315,7 +315,7 @@ PAKFIRE_EXPORT PakfireKey pakfire_key_generate(Pakfire pakfire, const char* user
 		DEFAULT_KEY_SIZE, 0, 0, NULL, flags);
 
 	if (error != GPG_ERR_NO_ERROR) {
-		printf("ERROR: %s\n", gpgme_strerror(error));
+		ERROR(pakfire, "%s\n", gpgme_strerror(error));
 		return NULL;
 	}
 
@@ -401,9 +401,9 @@ PAKFIRE_EXPORT PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data)
 		case GPG_ERR_NO_ERROR:
 			result = gpgme_op_import_result(gpgctx);
 
-			DEBUG("Keys considered   = %d\n", result->considered);
-			DEBUG("Keys imported     = %d\n", result->imported);
-			DEBUG("Keys not imported = %d\n", result->not_imported);
+			DEBUG(pakfire, "Keys considered   = %d\n", result->considered);
+			DEBUG(pakfire, "Keys imported     = %d\n", result->imported);
+			DEBUG(pakfire, "Keys not imported = %d\n", result->not_imported);
 
 			// Did we import any keys?
 			gpgme_import_status_t status = result->imports;
@@ -418,7 +418,7 @@ PAKFIRE_EXPORT PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data)
 				PakfireKey key = __pakfire_get_key(pakfire, gpgctx, status->fpr);
 				if (key) {
 					const char* fingerprint = pakfire_key_get_fingerprint(key);
-					INFO("Imported key %s\n", fingerprint);
+					INFO(pakfire, "Imported key %s\n", fingerprint);
 
 					// Append key to list
 					*list++ = key;
@@ -442,7 +442,7 @@ PAKFIRE_EXPORT PakfireKey* pakfire_key_import(Pakfire pakfire, const char* data)
 
 		// Fall through for any other errors
 		default:
-			ERROR("Failed with gpgme error: %s\n", gpgme_strerror(error));
+			ERROR(pakfire, "Failed with gpgme error: %s\n", gpgme_strerror(error));
 			break;
 	}
 

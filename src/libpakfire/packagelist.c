@@ -36,15 +36,17 @@
 #define BLOCK_SIZE 31
 
 struct _PakfirePackageList {
+	Pakfire pakfire;
 	PakfirePackage* elements;
 	size_t count;
 	int nrefs;
 };
 
-PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_create(void) {
+PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_create(Pakfire pakfire) {
 	PakfirePackageList list = pakfire_calloc(1, sizeof(*list));
 	if (list) {
-		DEBUG("Allocated PackageList at %p\n", list);
+		DEBUG(pakfire, "Allocated PackageList at %p\n", list);
+		list->pakfire = pakfire_ref(pakfire);
 		list->nrefs = 1;
 	}
 
@@ -58,14 +60,15 @@ PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_ref(PakfirePackageList lis
 }
 
 static void pakfire_packagelist_free(PakfirePackageList list) {
+	DEBUG(list->pakfire, "Releasing PackageList at %p\n", list);
+	pakfire_unref(list->pakfire);
+
 	for (unsigned int i = 0; i < list->count; i++) {
 		pakfire_package_unref(list->elements[i]);
 	}
 
 	pakfire_free(list->elements);
 	pakfire_free(list);
-
-	DEBUG("Released PackageList at %p\n", list);
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_unref(PakfirePackageList list) {
@@ -122,7 +125,7 @@ PAKFIRE_EXPORT void pakfire_packagelist_push_if_not_exists(PakfirePackageList li
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_packagelist_from_queue(Pakfire pakfire, Queue* q) {
-	PakfirePackageList list = pakfire_packagelist_create();
+	PakfirePackageList list = pakfire_packagelist_create(pakfire);
 
 	Pool* pool = pakfire_get_solv_pool(pakfire);
 	Id p, pp;

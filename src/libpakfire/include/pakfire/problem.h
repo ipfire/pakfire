@@ -39,6 +39,7 @@ PakfireSolution pakfire_problem_get_solutions(PakfireProblem problem);
 
 #include <solv/pooltypes.h>
 
+Pakfire pakfire_problem_get_pakfire(PakfireProblem problem);
 Id pakfire_problem_get_id(PakfireProblem problem);
 
 #endif

@@ -18,12 +18,15 @@
 #                                                                             #
 #############################################################################*/
 
+#include <ctype.h>
 #include <errno.h>
 #include <ftw.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <syslog.h>
 #include <unistd.h>
 
 #include <solv/evr.h>
@@ -60,8 +63,24 @@ struct _Pakfire {
 };
 
 PAKFIRE_EXPORT int pakfire_init() {
-	// Setup logging
-	pakfire_setup_logging();
+	return 0;
+}
+
+static int log_priority(const char* priority) {
+	char* end;
+
+	int prio = strtol(priority, &end, 10);
+	if (*end == '\0' || isspace(*end))
+		return prio;
+
+	if (strncmp(priority, "error", strlen("error")) == 0)
+		return LOG_ERR;
+
+	if (strncmp(priority, "info", strlen("info")) == 0)
+		return LOG_INFO;
+
+	if (strncmp(priority, "debug", strlen("debug")) == 0)
+		return LOG_DEBUG;
 
 	return 0;
 }
@@ -76,9 +95,16 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 			arch = system_machine();
 		pakfire->arch = pakfire_strdup(arch);
 
-		DEBUG("Pakfire initialized at %p\n", pakfire);
-		DEBUG("  arch = %s\n", pakfire_get_arch(pakfire));
-		DEBUG("  path = %s\n", pakfire_get_path(pakfire));
+		// Setup loggiing
+		pakfire->log_function = pakfire_log_syslog;
+
+		const char* env = secure_getenv("PAKFIRE_LOG");
+		if (env)
+			pakfire_log_set_priority(pakfire, log_priority(env));
+
+		DEBUG(pakfire, "Pakfire initialized at %p\n", pakfire);
+		DEBUG(pakfire, "  arch = %s\n", pakfire_get_arch(pakfire));
+		DEBUG(pakfire, "  path = %s\n", pakfire_get_path(pakfire));
 
 		// Initialize the pool
 		pakfire->pool = pool_create();
@@ -106,6 +132,8 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	if (--pakfire->nrefs > 0)
 		return pakfire;
 
+	DEBUG(pakfire, "Releasing Pakfire at %p\n", pakfire);
+
 	pakfire_repo_free_all(pakfire);
 	pool_free(pakfire->pool);
 	queue_free(&pakfire->installonly);
@@ -115,8 +143,6 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 	pakfire_free(pakfire->arch);
 
 	pakfire_free(pakfire);
-
-	DEBUG("Pakfire released at %p\n", pakfire);
 
 	return NULL;
 }
@@ -225,7 +251,7 @@ PAKFIRE_EXPORT void pakfire_set_installonly(Pakfire pakfire, const char** instal
 }
 
 static PakfirePackageList pakfire_pool_dataiterator(Pakfire pakfire, const char* what, int key, int flags) {
-	PakfirePackageList list = pakfire_packagelist_create();
+	PakfirePackageList list = pakfire_packagelist_create(pakfire);
 	pakfire_pool_apply_changes(pakfire);
 
 	int di_flags = 0;
@@ -252,7 +278,7 @@ static PakfirePackageList pakfire_pool_dataiterator(Pakfire pakfire, const char*
 
 static PakfirePackageList pakfire_search_name(Pakfire pakfire, const char* name, int flags) {
 	if (!flags) {
-		PakfirePackageList list = pakfire_packagelist_create();
+		PakfirePackageList list = pakfire_packagelist_create(pakfire);
 		pakfire_pool_apply_changes(pakfire);
 
 		Id id = pool_str2id(pakfire->pool, name, 0);
@@ -278,7 +304,7 @@ static PakfirePackageList pakfire_search_name(Pakfire pakfire, const char* name,
 
 static PakfirePackageList pakfire_search_provides(Pakfire pakfire, const char* provides, int flags) {
 	if (!flags) {
-		PakfirePackageList list = pakfire_packagelist_create();
+		PakfirePackageList list = pakfire_packagelist_create(pakfire);
 		pakfire_pool_apply_changes(pakfire);
 
 		Id id = pool_str2id(pakfire->pool, provides, 0);
@@ -325,12 +351,10 @@ PAKFIRE_EXPORT void pakfire_set_cache_path(Pakfire pakfire, const char* path) {
 
 	pakfire->cache_path = pakfire_strdup(path);
 
-	DEBUG("Set cache path to %s\n", pakfire->cache_path);
+	DEBUG(pakfire, "Set cache path to %s\n", pakfire->cache_path);
 }
 
 static int _unlink(const char* path, const struct stat* stat, int typeflag, struct FTW* ftwbuf) {
-	DEBUG("Deleting %s...\n", path);
-
 	return remove(path);
 }
 
@@ -360,7 +384,7 @@ PAKFIRE_EXPORT int pakfire_cache_stat(Pakfire pakfire, const char* path, struct 
 PAKFIRE_EXPORT int pakfire_cache_access(Pakfire pakfire, const char* path, int mode) {
 	char* cache_path = pakfire_get_cache_path(pakfire, path);
 
-	int r = pakfire_access(cache_path, NULL, mode);
+	int r = pakfire_access(pakfire, cache_path, NULL, mode);
 	pakfire_free(cache_path);
 
 	return r;
@@ -388,7 +412,7 @@ PAKFIRE_EXPORT FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const
 	// Ensure that the parent directory exists
 	char* cache_dirname = pakfire_dirname(cache_path);
 
-	int r = pakfire_mkdir(cache_dirname, S_IRUSR|S_IWUSR|S_IXUSR);
+	int r = pakfire_mkdir(pakfire, cache_dirname, S_IRUSR|S_IWUSR|S_IXUSR);
 	if (r)
 		goto FAIL;
 
@@ -400,4 +424,35 @@ FAIL:
 	pakfire_free(cache_dirname);
 
 	return f;
+}
+
+PAKFIRE_EXPORT pakfire_log_function_t pakfire_log_get_function(Pakfire pakfire) {
+	return pakfire->log_function;
+}
+
+PAKFIRE_EXPORT void pakfire_log_set_function(Pakfire pakfire, pakfire_log_function_t log_function) {
+	pakfire->log_function = log_function;
+}
+
+PAKFIRE_EXPORT int pakfire_log_get_priority(Pakfire pakfire) {
+	return pakfire->log_priority;
+}
+
+PAKFIRE_EXPORT void pakfire_log_set_priority(Pakfire pakfire, int priority) {
+	pakfire->log_priority = priority;
+}
+
+PAKFIRE_EXPORT void pakfire_log(Pakfire pakfire, int priority, const char* file, int line,
+		const char* fn, const char* format, ...) {
+	va_list args;
+
+	// Save errno
+	int saved_errno = errno;
+
+	va_start(args, format);
+	pakfire->log_function(priority, file, line, fn, format, args);
+	va_end(args);
+
+	// Restore errno
+	errno = saved_errno;
 }

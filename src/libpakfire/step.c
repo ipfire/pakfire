@@ -78,19 +78,22 @@ static pakfire_step_type_t get_type(Transaction* transaction, Id id) {
 }
 
 PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
+	Pakfire pakfire = pakfire_transaction_get_pakfire(transaction);
 	Transaction* t = pakfire_transaction_get_transaction(transaction);
 
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
 	if (step) {
-		DEBUG("Allocated Step at %p\n", step);
+		DEBUG(pakfire, "Allocated Step at %p\n", step);
+		step->pakfire = pakfire_ref(pakfire);
 		step->nrefs = 1;
 
-		step->pakfire = pakfire_transaction_get_pakfire(transaction);
 		step->type = get_type(t, id);
 
 		// Get the package
 		step->package = pakfire_package_create(step->pakfire, id);
 	}
+
+	pakfire_unref(pakfire);
 
 	return step;
 }
@@ -102,11 +105,11 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_ref(PakfireStep step) {
 }
 
 static void pakfire_step_free(PakfireStep step) {
+	DEBUG(step->pakfire, "Releasing Step at %p\n", step);
+
 	pakfire_package_unref(step->package);
 	pakfire_unref(step->pakfire);
 	pakfire_free(step);
-
-	DEBUG("Released Step at %p\n", step);
 }
 
 PAKFIRE_EXPORT PakfireStep pakfire_step_unref(PakfireStep step) {
@@ -224,7 +227,8 @@ static int pakfire_step_verify(PakfireStep step) {
 		char* nevra = pakfire_package_get_nevra(step->package);
 		char* cache_path = pakfire_package_get_cache_path(step->package);
 
-		ERROR("Could not open package archive for %s: %s\n", nevra, cache_path);
+		ERROR(step->pakfire, "Could not open package archive for %s: %s\n",
+			nevra, cache_path);
 
 		pakfire_free(nevra);
 		pakfire_free(cache_path);
@@ -253,7 +257,7 @@ static int pakfire_step_erase(PakfireStep step) {
 }
 
 PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_t action) {
-	DEBUG("Running Step %p (%s)\n", step, pakfire_action_type_string(action));
+	DEBUG(step->pakfire, "Running Step %p (%s)\n", step, pakfire_action_type_string(action));
 
 	pakfire_step_type_t type = pakfire_step_get_type(step);
 

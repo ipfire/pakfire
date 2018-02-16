@@ -38,7 +38,7 @@ struct _PakfireRelationList {
 PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_create(Pakfire pakfire) {
 	PakfireRelationList relationlist = pakfire_calloc(1, sizeof(*relationlist));
 	if (relationlist) {
-		DEBUG("Allocated RelationList at %p\n", relationlist);
+		DEBUG(pakfire, "Allocated RelationList at %p\n", relationlist);
 		relationlist->nrefs = 1;
 
 		relationlist->pakfire = pakfire_ref(pakfire);
@@ -55,12 +55,11 @@ PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_ref(PakfireRelationList 
 }
 
 static void pakfire_relationlist_free(PakfireRelationList relationlist) {
-	queue_free(&relationlist->queue);
-
+	DEBUG(relationlist->pakfire, "Releasing RelationList at %p\n", relationlist);
 	pakfire_unref(relationlist->pakfire);
-	pakfire_free(relationlist);
 
-	DEBUG("Released RelationList at %p\n", relationlist);
+	queue_free(&relationlist->queue);
+	pakfire_free(relationlist);
 }
 
 PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_unref(PakfireRelationList relationlist) {

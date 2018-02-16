@@ -23,17 +23,8 @@
 
 #include <syslog.h>
 
+#include <pakfire/pakfire.h>
 #include <pakfire/types.h>
-
-void pakfire_log_stderr(int priority, const char* file,
-		int line, const char* fn, const char* format, va_list args);
-void pakfire_log_syslog(int priority, const char* file,
-		int line, const char* fn, const char* format, va_list args);
-
-pakfire_log_function_t pakfire_log_get_function();
-void pakfire_log_set_function(pakfire_log_function_t func);
-int pakfire_log_get_priority();
-void pakfire_log_set_priority(int priority);
 
 void pakfire_log_stderr(int priority, const char* file,
 	int line, const char* fn, const char* format, va_list args);
@@ -42,31 +33,25 @@ void pakfire_log_syslog(int priority, const char* file,
 
 #ifdef PAKFIRE_PRIVATE
 
-typedef struct pakfire_logging_config {
-	pakfire_log_function_t function;
-	int priority;
-} pakfire_logging_config_t;
-
-void pakfire_setup_logging();
-void pakfire_log(int priority, const char *file,
+void pakfire_log(Pakfire pakfire, int priority, const char *file,
 	int line, const char *fn, const char *format, ...)
-	__attribute__((format(printf, 5, 6)));
+	__attribute__((format(printf, 6, 7)));
 
 // This function does absolutely nothing
-static inline void __attribute__((always_inline, format(printf, 1, 2)))
-	pakfire_log_null(const char *format, ...) {}
+static inline void __attribute__((always_inline, format(printf, 2, 3)))
+	pakfire_log_null(Pakfire pakfire, const char *format, ...) {}
 
-#define pakfire_log_condition(prio, arg...) \
+#define pakfire_log_condition(pakfire, prio, arg...) \
 	do { \
-		if (pakfire_log_get_priority() >= prio) \
-			pakfire_log(prio, __FILE__, __LINE__, __FUNCTION__, ## arg); \
+		if (pakfire_log_get_priority(pakfire) >= prio) \
+			pakfire_log(pakfire, prio, __FILE__, __LINE__, __FUNCTION__, ## arg); \
 	} while (0)
 
-#define INFO(arg...) pakfire_log_condition(LOG_INFO, ## arg)
-#define ERROR(arg...) pakfire_log_condition(LOG_ERR, ## arg)
+#define INFO(pakfire, arg...) pakfire_log_condition(pakfire, LOG_INFO, ## arg)
+#define ERROR(pakfire, arg...) pakfire_log_condition(pakfire, LOG_ERR, ## arg)
 
 #ifdef ENABLE_DEBUG
-#	define DEBUG(arg...) pakfire_log_condition(LOG_DEBUG, ## arg)
+#	define DEBUG(pakfire, arg...) pakfire_log_condition(pakfire, LOG_DEBUG, ## arg)
 #else
 #	define DEBUG pakfire_log_null
 #endif

@@ -18,78 +18,11 @@
 #                                                                             #
 #############################################################################*/
 
-#include <ctype.h>
-#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <syslog.h>
 
-#include <pakfire/logging.h>
-#include <pakfire/pakfire.h>
 #include <pakfire/private.h>
-
-static pakfire_logging_config_t conf = {
-	.function = pakfire_log_syslog,
-	.priority = LOG_ERR,
-};
-
-static int log_priority(const char* priority) {
-	char* end;
-
-	int prio = strtol(priority, &end, 10);
-	if (*end == '\0' || isspace(*end))
-		return prio;
-
-	if (strncmp(priority, "error", strlen("error")) == 0)
-		return LOG_ERR;
-
-	if (strncmp(priority, "info", strlen("info")) == 0)
-		return LOG_INFO;
-
-	if (strncmp(priority, "debug", strlen("debug")) == 0)
-		return LOG_DEBUG;
-
-	return 0;
-}
-
-void pakfire_setup_logging() {
-	const char* priority = secure_getenv("PAKFIRE_LOG");
-	if (priority)
-		pakfire_log_set_priority(log_priority(priority));
-}
-
-PAKFIRE_EXPORT pakfire_log_function_t pakfire_log_get_function() {
-	return conf.function;
-}
-
-PAKFIRE_EXPORT void pakfire_log_set_function(pakfire_log_function_t func) {
-	conf.function = func;
-}
-
-PAKFIRE_EXPORT int pakfire_log_get_priority() {
-	return conf.priority;
-}
-
-PAKFIRE_EXPORT void pakfire_log_set_priority(int priority) {
-	conf.priority = priority;
-}
-
-PAKFIRE_EXPORT void pakfire_log(int priority, const char* file, int line,
-		const char* fn, const char* format, ...) {
-	va_list args;
-
-	// Save errno
-	int saved_errno = errno;
-
-	va_start(args, format);
-	conf.function(priority, file, line, fn, format, args);
-	va_end(args);
-
-	// Restore errno
-	errno = saved_errno;
-}
 
 PAKFIRE_EXPORT void pakfire_log_stderr(int priority, const char* file,
 		int line, const char* fn, const char* format, va_list args) {

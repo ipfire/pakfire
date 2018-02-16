@@ -44,7 +44,7 @@ struct _PakfireTransaction {
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
 	if (transaction) {
-		DEBUG("Allocated Transaction at %p\n", transaction);
+		DEBUG(pakfire, "Allocated Transaction at %p\n", transaction);
 		transaction->nrefs = 1;
 
 		transaction->pakfire = pakfire_ref(pakfire);
@@ -78,6 +78,7 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_ref(PakfireTransaction tra
 }
 
 void pakfire_transaction_free(PakfireTransaction transaction) {
+	DEBUG(transaction->pakfire, "Releasing Transaction at %p\n", transaction);
 	pakfire_unref(transaction->pakfire);
 
 	// Release all steps
@@ -86,8 +87,6 @@ void pakfire_transaction_free(PakfireTransaction transaction) {
 
 	transaction_free(transaction->transaction);
 	pakfire_free(transaction);
-
-	DEBUG("Released Transaction at %p\n", transaction);
 }
 
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_unref(PakfireTransaction transaction) {
@@ -146,7 +145,7 @@ PAKFIRE_EXPORT PakfireStep pakfire_transaction_get_step(PakfireTransaction trans
 }
 
 PAKFIRE_EXPORT PakfirePackageList pakfire_transaction_get_packages(PakfireTransaction transaction, pakfire_step_type_t type) {
-	PakfirePackageList packagelist = pakfire_packagelist_create();
+	PakfirePackageList packagelist = pakfire_packagelist_create(transaction->pakfire);
 
 	PakfireStep* steps = transaction->steps;
 	while (*steps) {
@@ -306,7 +305,7 @@ PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, si
 	if (l > 0 && string[l] == '\n')
 		string[l] = '\0';
 
-	DEBUG("Transaction: %s\n", string);
+	DEBUG(transaction->pakfire, "Transaction: %s\n", string);
 
 	return string;
 }
@@ -331,7 +330,7 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 }
 
 PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
-	DEBUG("Running Transaction %p\n", transaction);
+	DEBUG(transaction->pakfire, "Running Transaction %p\n", transaction);
 
 	int r = 0;
 
@@ -354,7 +353,7 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	if (r)
 		return r;
 
-	DEBUG("Transaction %p has finished successfully\n", transaction);
+	DEBUG(transaction->pakfire, "Transaction %p has finished successfully\n", transaction);
 
 	return 0;
 }

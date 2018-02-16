@@ -47,7 +47,7 @@ struct _PakfireSelector {
 PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(Pakfire pakfire) {
 	PakfireSelector selector = pakfire_calloc(1, sizeof(*selector));
 	if (selector) {
-		DEBUG("Allocated Selector at %p\n", selector);
+		DEBUG(pakfire, "Allocated Selector at %p\n", selector);
 		selector->nrefs = 1;
 
 		selector->pakfire = pakfire_ref(pakfire);
@@ -68,10 +68,10 @@ PAKFIRE_EXPORT PakfireSelector pakfire_selector_ref(PakfireSelector selector) {
 }
 
 static void pakfire_selector_free(PakfireSelector selector) {
+	DEBUG(selector->pakfire, "Releasing Selector at %p\n", selector);
+
 	pakfire_unref(selector->pakfire);
 	pakfire_free(selector);
-
-	DEBUG("Released Selector at %p\n", selector);
 }
 
 PAKFIRE_EXPORT PakfireSelector pakfire_selector_unref(PakfireSelector selector) {

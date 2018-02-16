@@ -21,6 +21,7 @@
 #include <pakfire/constants.h>
 #include <pakfire/i18n.h>
 #include <pakfire/logging.h>
+#include <pakfire/pakfire.h>
 #include <pakfire/private.h>
 #include <pakfire/problem.h>
 #include <pakfire/request.h>
@@ -28,6 +29,7 @@
 #include <pakfire/util.h>
 
 struct _PakfireProblem {
+	Pakfire pakfire;
 	PakfireRequest request;
 	Id id;
 	char* string;
@@ -200,9 +202,12 @@ static char* to_string(PakfireProblem problem) {
 }
 
 PAKFIRE_EXPORT PakfireProblem pakfire_problem_create(PakfireRequest request, Id id) {
+	Pakfire pakfire = pakfire_request_get_pakfire(request);
+
 	PakfireProblem problem = pakfire_calloc(1, sizeof(*problem));
 	if (problem) {
-		DEBUG("Allocated Problem at %p\n", problem);
+		DEBUG(pakfire, "Allocated Problem at %p\n", problem);
+		problem->pakfire = pakfire_ref(pakfire);
 		problem->nrefs = 1;
 
 		problem->request = pakfire_request_ref(request);
@@ -211,6 +216,8 @@ PAKFIRE_EXPORT PakfireProblem pakfire_problem_create(PakfireRequest request, Id 
 		// Extract information from solver
 		problem->string = to_string(problem);
 	}
+
+	pakfire_unref(pakfire);
 
 	return problem;
 }
@@ -222,14 +229,16 @@ PAKFIRE_EXPORT PakfireProblem pakfire_problem_ref(PakfireProblem problem) {
 }
 
 static void pakfire_problem_free(PakfireProblem problem) {
+	DEBUG(problem->pakfire, "Releasing Problem at %p\n", problem);
+
 	pakfire_problem_unref(problem->next);
 	pakfire_request_unref(problem->request);
 
 	if (problem->string)
 		pakfire_free(problem->string);
 
+	pakfire_unref(problem->pakfire);
 	pakfire_free(problem);
-	DEBUG("Released Problem at %p\n", problem);
 }
 
 PAKFIRE_EXPORT PakfireProblem pakfire_problem_unref(PakfireProblem problem) {
@@ -241,6 +250,10 @@ PAKFIRE_EXPORT PakfireProblem pakfire_problem_unref(PakfireProblem problem) {
 
 	pakfire_problem_free(problem);
 	return NULL;
+}
+
+Pakfire pakfire_problem_get_pakfire(PakfireProblem problem) {
+	return pakfire_ref(problem->pakfire);
 }
 
 PAKFIRE_EXPORT PakfireProblem pakfire_problem_next(PakfireProblem problem) {

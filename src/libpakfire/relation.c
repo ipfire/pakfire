@@ -73,7 +73,7 @@ PAKFIRE_EXPORT PakfireRelation pakfire_relation_create(Pakfire pakfire, const ch
 PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_id(Pakfire pakfire, Id id) {
 	PakfireRelation relation = pakfire_calloc(1, sizeof(*relation));
 	if (relation) {
-		DEBUG("Allocated Relation at %p\n", relation);
+		DEBUG(pakfire, "Allocated Relation at %p\n", relation);
 		relation->nrefs = 1;
 
 		relation->pakfire = pakfire_ref(pakfire);
@@ -90,10 +90,10 @@ PAKFIRE_EXPORT PakfireRelation pakfire_relation_ref(PakfireRelation relation) {
 }
 
 static void pakfire_relation_free(PakfireRelation relation) {
+	DEBUG(relation->pakfire, "Releasing Relation at %p\n", relation);
+
 	pakfire_unref(relation->pakfire);
 	pakfire_free(relation);
-
-	DEBUG("Released Relation at %p\n", relation);
 }
 
 PAKFIRE_EXPORT PakfireRelation pakfire_relation_unref(PakfireRelation relation) {

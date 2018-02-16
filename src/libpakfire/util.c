@@ -156,23 +156,23 @@ char* pakfire_dirname(const char* path) {
 	return dirname(parent);
 }
 
-PAKFIRE_EXPORT int pakfire_access(const char* dir, const char* file, int mode) {
+PAKFIRE_EXPORT int pakfire_access(Pakfire pakfire, const char* dir, const char* file, int mode) {
 	char* path = pakfire_path_join(dir, file);
 
 	int r = access(path, mode);
 
 	if (r) {
 		if (mode & R_OK)
-			DEBUG("%s is not readable\n", path);
+			DEBUG(pakfire, "%s is not readable\n", path);
 
 		if (mode & W_OK)
-			DEBUG("%s is not writable\n", path);
+			DEBUG(pakfire, "%s is not writable\n", path);
 
 		if (mode & X_OK)
-			DEBUG("%s is not executable\n", path);
+			DEBUG(pakfire, "%s is not executable\n", path);
 
 		if (mode & F_OK)
-			DEBUG("%s does not exist\n", path);
+			DEBUG(pakfire, "%s does not exist\n", path);
 	}
 
 	pakfire_free(path);
@@ -180,7 +180,7 @@ PAKFIRE_EXPORT int pakfire_access(const char* dir, const char* file, int mode) {
 	return r;
 }
 
-int pakfire_mkdir(const char* path, mode_t mode) {
+int pakfire_mkdir(Pakfire pakfire, const char* path, mode_t mode) {
 	int r = 0;
 
 	if ((strcmp(path, "/") == 0) || (strcmp(path, ".") == 0))
@@ -188,9 +188,9 @@ int pakfire_mkdir(const char* path, mode_t mode) {
 
 	// If parent does not exists, we try to create it.
 	char* parent = pakfire_dirname(path);
-	r = pakfire_access(parent, NULL, F_OK);
+	r = pakfire_access(pakfire, parent, NULL, F_OK);
 	if (r)
-		r = pakfire_mkdir(parent, 0);
+		r = pakfire_mkdir(pakfire, parent, 0);
 
 	pakfire_free(parent);
 

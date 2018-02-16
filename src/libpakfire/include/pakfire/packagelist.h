@@ -25,7 +25,7 @@
 
 #include <pakfire/types.h>
 
-PakfirePackageList pakfire_packagelist_create(void);
+PakfirePackageList pakfire_packagelist_create(Pakfire pakfire);
 PakfirePackageList pakfire_packagelist_ref(PakfirePackageList list);
 PakfirePackageList pakfire_packagelist_unref(PakfirePackageList list);
 

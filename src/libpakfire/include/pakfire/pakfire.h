@@ -63,6 +63,13 @@ int pakfire_cache_stat(Pakfire pakfire, const char* path, struct stat* buffer);
 time_t pakfire_cache_age(Pakfire pakfire, const char* path);
 FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const char* flags);
 
+// Logging
+
+pakfire_log_function_t pakfire_log_get_function(Pakfire pakfire);
+void pakfire_log_set_function(Pakfire pakfire, pakfire_log_function_t log_function);
+int pakfire_log_get_priority(Pakfire pakfire);
+void pakfire_log_set_priority(Pakfire pakfire, int priority);
+
 #ifdef PAKFIRE_PRIVATE
 
 #include <solv/pool.h>
