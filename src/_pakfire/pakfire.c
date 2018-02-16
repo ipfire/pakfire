@@ -20,6 +20,7 @@
 
 #include <Python.h>
 
+#include <pakfire/logging.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/key.h>
@@ -66,6 +67,27 @@ static PyObject* Pakfire_repr(PakfireObject* self) {
     const char* arch = pakfire_get_arch(self->pakfire);
 
 	return PyUnicode_FromFormat("<_pakfire.Pakfire %s (%s)>", path, arch);
+}
+
+static PyObject* Pakfire_log(PakfireObject* self, PyObject* args, PyObject* kwds) {
+	char* kwlist[] = { "priority", "message", "filename", "lineno", "function", NULL };
+
+	int priority;
+	const char* message;
+
+	const char* filename = NULL;
+	int lineno = 0;
+	const char* function = NULL;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "is|sis", kwlist, &priority, &message,
+			&filename, &lineno, &function))
+		return NULL;
+
+	// Send message to the pakfire logger
+	if (pakfire_log_get_priority(self->pakfire) >= priority)
+		pakfire_log(self->pakfire, priority, filename, lineno, function, "%s\n", message);
+
+	Py_RETURN_NONE;
 }
 
 static PyObject* Pakfire_get_path(PakfireObject* self) {
@@ -345,6 +367,12 @@ static struct PyMethodDef Pakfire_methods[] = {
 	{
 		"whatprovides",
 		(PyCFunction)Pakfire_whatprovides,
+		METH_VARARGS|METH_KEYWORDS,
+		NULL
+	},
+	{
+		"_log",
+		(PyCFunction)Pakfire_log,
 		METH_VARARGS|METH_KEYWORDS,
 		NULL
 	},

@@ -33,10 +33,6 @@ void pakfire_log_syslog(int priority, const char* file,
 
 #ifdef PAKFIRE_PRIVATE
 
-void pakfire_log(Pakfire pakfire, int priority, const char *file,
-	int line, const char *fn, const char *format, ...)
-	__attribute__((format(printf, 6, 7)));
-
 // This function does absolutely nothing
 static inline void __attribute__((always_inline, format(printf, 2, 3)))
 	pakfire_log_null(Pakfire pakfire, const char *format, ...) {}

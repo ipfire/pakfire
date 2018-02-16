@@ -26,7 +26,12 @@
 
 PAKFIRE_EXPORT void pakfire_log_stderr(int priority, const char* file,
 		int line, const char* fn, const char* format, va_list args) {
-	fprintf(stderr, "pakfire: %s: ", fn);
+	fprintf(stderr, "pakfire: ");
+
+	// Optionally log the function name
+	if (fn)
+		fprintf(stderr, "%s: ", fn);
+
 	vfprintf(stderr, format, args);
 }
 

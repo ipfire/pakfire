@@ -65,6 +65,10 @@ FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const char* flags);
 
 // Logging
 
+void pakfire_log(Pakfire pakfire, int priority, const char *file,
+	int line, const char *fn, const char *format, ...)
+	__attribute__((format(printf, 6, 7)));
+
 pakfire_log_function_t pakfire_log_get_function(Pakfire pakfire);
 void pakfire_log_set_function(Pakfire pakfire, pakfire_log_function_t log_function);
 int pakfire_log_get_priority(Pakfire pakfire);

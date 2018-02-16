@@ -19,10 +19,4 @@
 #                                                                             #
 ###############################################################################
 
-from .constants import PAKFIRE_VERSION as __version__
-from .logger import setup_logging
-
-log = setup_logging()
-log.debug("Pakfire %s initialised" % __version__)
-
 from .base import Pakfire, PakfireBuilder, PakfireServer

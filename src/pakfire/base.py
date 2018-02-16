@@ -19,6 +19,7 @@
 #                                                                             #
 ###############################################################################
 
+import logging
 import os
 import random
 import string
@@ -27,12 +28,10 @@ from . import _pakfire
 from . import distro
 from . import downloaders
 from . import filelist
+from . import logger
 from . import packages
 from . import repository
 from . import util
-
-import logging
-log = logging.getLogger("pakfire")
 
 from .config import Config
 from .system import system
@@ -46,6 +45,9 @@ class Pakfire(_pakfire.Pakfire):
 
 	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None):
 		_pakfire.Pakfire.__init__(self, path, arch or system.native_arch)
+
+		# Initialise logging system
+		self.log = self._setup_logger()
 
 		# Default to system distribution
 		self.distro = distro or system.distro
@@ -69,6 +71,19 @@ class Pakfire(_pakfire.Pakfire):
 		repos_dir = self.make_path(CONFIG_REPOS_DIR)
 		if repos_dir:
 			self.repos.load_configuration(repos_dir)
+
+	def _setup_logger(self):
+		log = logging.getLogger("pakfire")
+		log.propagate = 0
+
+		# Always process all messages (include debug)
+		log.setLevel(logging.DEBUG)
+
+		# Pass everything down to libpakfire
+		handler = logger.PakfireLogHandler(self)
+		log.addHandler(handler)
+
+		return log
 
 	def make_path(self, path):
 		"""

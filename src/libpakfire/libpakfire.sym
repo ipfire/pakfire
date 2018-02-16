@@ -113,6 +113,7 @@ global:
 	pakfire_key_unref;
 
 	# log
+	pakfire_log;
 	pakfire_log_get_function;
 	pakfire_log_get_priority;
 	pakfire_log_set_function;

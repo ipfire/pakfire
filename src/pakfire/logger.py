@@ -19,43 +19,42 @@
 #                                                                             #
 ###############################################################################
 
+import logging
 import time
 
-import logging
-import logging.handlers
+class PakfireLogHandler(logging.Handler):
+	LOG_EMERG     = 0       #  system is unusable
+	LOG_ALERT     = 1       #  action must be taken immediately
+	LOG_CRIT      = 2       #  critical conditions
+	LOG_ERR       = 3       #  error conditions
+	LOG_WARNING   = 4       #  warning conditions
+	LOG_NOTICE    = 5       #  normal but significant condition
+	LOG_INFO      = 6       #  informational
+	LOG_DEBUG     = 7       #  debug-level messages
 
-from .config import config
+	priority_map = {
+		"DEBUG"    : LOG_DEBUG,
+		"INFO"     : LOG_INFO,
+		"WARNING"  : LOG_WARNING,
+		"ERROR"    : LOG_ERR,
+		"CRITICAL" : LOG_CRIT,
+	}
 
-def setup_logging(debug=None):
-	"""
-		This function initialized the logger that is enabled immediately
-	"""
-	# If debug is None, we read it from the configuration
-	if debug is None:
-		debug = config.get_bool("log", "debug", False)
+	def __init__(self, pakfire):
+		logging.Handler.__init__(self)
 
-	l = logging.getLogger("pakfire")
-	l.propagate = 0
+		self.pakfire = pakfire
 
-	# Set level of logger always to DEBUG.
-	l.setLevel(logging.DEBUG)
+	def emit(self, record):
+		line = self.format(record)
+		prio = self._get_priority(record.levelname)
 
-	# Remove all previous defined handlers.
-	l.handlers = []
+		self.pakfire._log(prio, line, filename=record.pathname,
+			lineno=record.lineno, function=record.funcName)
 
-	# Log to syslog
-	handler = logging.handlers.SysLogHandler("/dev/log")
-	l.addHandler(handler)
+	def _get_priority(self, level):
+		return self.priority_map.get(level, self.LOG_WARNING)
 
-	# Formatter
-	f = logging.Formatter("%(name)s: %(message)s")
-	handler.setFormatter(f)
-
-	# Configure debugging
-	if not debug:
-		handler.setLevel(logging.INFO)
-
-	return l
 
 class BuildFormatter(logging.Formatter):
 	def __init__(self):
