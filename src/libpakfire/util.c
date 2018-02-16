@@ -175,6 +175,8 @@ PAKFIRE_EXPORT int pakfire_access(const char* dir, const char* file, int mode) {
 			DEBUG("%s does not exist\n", path);
 	}
 
+	pakfire_free(path);
+
 	return r;
 }
 
