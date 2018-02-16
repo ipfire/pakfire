@@ -361,10 +361,10 @@ class Cli(object):
 				print(FORMAT % (repo.name, repo.enabled, repo.priority, len(repo)))
 
 	def handle_clean(self, ns):
-		print(_("Cleaning up everything..."))
+		self.ui.message(_("Cleaning up everything..."))
 
-		with self.pakfire(ns) as p:
-			p.clean()
+		p = self.pakfire(ns)
+		p.clean()
 
 	def handle_check(self, ns):
 		with self.pakfire(ns) as p:

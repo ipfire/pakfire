@@ -125,10 +125,9 @@ class Pakfire(_pakfire.Pakfire):
 			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
 
 	def clean(self):
-		log.debug("Cleaning up everything...")
-
-		# Clean up repository caches.
-		self.repos.clean()
+		# Clean up repository caches
+		for repo in self.repos:
+			repo.clean()
 
 	def build(self, makefile, resultdir, stages=None, **kwargs):
 		b = builder.Builder(self, makefile, resultdir, **kwargs)

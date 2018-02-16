@@ -18,6 +18,7 @@
 #                                                                             #
 #############################################################################*/
 
+#include <errno.h>
 #include <ftw.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -339,6 +340,10 @@ PAKFIRE_EXPORT int pakfire_cache_destroy(Pakfire pakfire, const char* path) {
 	// Completely delete the tree of files
 	int r = nftw(cache_path, _unlink, 64, FTW_DEPTH|FTW_PHYS);
 	pakfire_free(cache_path);
+
+	// It is okay if the path doesn't exist
+	if (r < 0 && errno == ENOENT)
+		r = 0;
 
 	return r;
 }
