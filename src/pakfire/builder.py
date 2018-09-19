@@ -321,6 +321,7 @@ class BuildEnviron(object):
 		# Search for the cgroup this process is currently running in.
 		parent_cgroup = cgroup.find_by_pid(os.getpid())
 		if not parent_cgroup:
+			self.cgroup = None
 			return
 
 		# Create our own cgroup inside the parent cgroup.
