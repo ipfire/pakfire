@@ -57,7 +57,7 @@ int test_extract(const test_t* t) {
 	assert_return(r == 0, EXIT_FAILURE);
 
 	// Check if test file from the archive exists
-	assert_return(pakfire_access(pakfire_get_path(t->pakfire),
+	assert_return(pakfire_access(t->pakfire, pakfire_get_path(t->pakfire),
 		TEST_PKG1_FILE, F_OK) == 0, EXIT_FAILURE);
 
 	pakfire_archive_unref(archive);
