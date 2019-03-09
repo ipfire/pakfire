@@ -105,6 +105,10 @@ CC_CHECK_FLAGS_APPEND([with_ldflags], [LDFLAGS], [\
 	-Wl,-z,now])
 AC_SUBST([OUR_LDFLAGS], $with_ldflags)
 
+# Bison & Flex
+AC_PROG_YACC
+AM_PROG_LEX
+
 # Python
 AM_PATH_PYTHON([3.6])
 

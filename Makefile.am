@@ -62,6 +62,8 @@ AM_LDFLAGS = $(OUR_LDFLAGS) \
 	-Wl,--gc-sections \
 	-Wl,--as-needed
 
+AM_YFLAGS = -d
+
 PAKFIRE_CPPFLAGS = -I$(top_srcdir)/src/libpakfire/include
 PAKFIRE_LIBS     = libpakfire.la
 
