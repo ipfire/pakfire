@@ -30,6 +30,7 @@ int num_lines;
 
 %%
 
+#.*$		{ /* ignore comments */ }
 [ \t]		{ return WHITESPACE; }
 \t			{ return TAB; }
 \n			{ num_lines++; return NEWLINE; }
