@@ -31,9 +31,6 @@ int testsuite_init() {
 	if (r)
 		return r;
 
-	// Log to stderr
-	pakfire_log_set_function(pakfire_log_stderr);
-
 	return 0;
 }
 
@@ -42,6 +39,9 @@ static int test_run(test_t* t) {
 
 	t->pakfire = pakfire_create(TEST_ROOTFS, NULL);
 	assert_return(t->pakfire, EXIT_FAILURE);
+
+	// Log to stderr
+	pakfire_log_set_function(t->pakfire, pakfire_log_stderr);
 
 	int r = t->func(t);
 	if (r)
