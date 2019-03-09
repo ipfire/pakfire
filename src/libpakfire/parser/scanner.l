@@ -28,27 +28,27 @@ int num_lines;
 #include "grammar.h"
 %}
 
-digit		[0-9]
-letter		[A-Za-z]
-underscore	_
-variable	{letter}({digit}|{letter}|{underscore})+
-whitespace	([ \t])+
+digit			[0-9]
+letter			[A-Za-z]
+underscore		_
+variable		{letter}({digit}|{letter}|{underscore})+
+whitespace		([ \t])+
 
 %%
 
-#.*$		{ /* ignore comments */ }
+#.*$			{ /* ignore comments */ }
 {whitespace}	{ return WHITESPACE; }
-\t			{ return TAB; }
-\n			{ num_lines++; return NEWLINE; }
+\t				{ return TAB; }
+\n				{ num_lines++; return NEWLINE; }
 
-"define"	{ return DEFINE; }
-"def"		{ return DEFINE; }
-"end"		{ return END; }
+"define"		{ return DEFINE; }
+"def"			{ return DEFINE; }
+"end"			{ return END; }
 
-{variable}	{ return VARIABLE; }
-[A-Za-z0-9]	{ return VALUE; }
+{variable}		{ return VARIABLE; }
+[A-Za-z0-9]		{ return VALUE; }
 
-"="			{ return ASSIGN; }
-"+="		{ return APPEND; }
+"="				{ return ASSIGN; }
+"+="			{ return APPEND; }
 
 %%
