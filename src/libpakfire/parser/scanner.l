@@ -25,6 +25,7 @@
 
 int num_lines;
 
+#include <pakfire/util.h>
 #include "grammar.h"
 %}
 
@@ -33,7 +34,7 @@ letter			[A-Za-z]
 underscore		_
 variable		{letter}({digit}|{letter}|{underscore})+
 whitespace		([ \t])+
-string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\]+
+string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\/]+
 
 %%
 
@@ -48,7 +49,14 @@ string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\]+
 "def"			{ return DEFINE; }
 "end"			{ return END; }
 
-{variable}		{ return VARIABLE; }
-{string}		{ return VALUE; }
+{variable}		{
+					yylval.string = pakfire_strdup(yytext);
+					return VARIABLE;
+				}
+
+{string}		{
+					yylval.string = pakfire_strdup(yytext);
+					return VALUE;
+				}
 
 %%

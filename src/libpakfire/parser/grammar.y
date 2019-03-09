@@ -42,19 +42,73 @@ static void yyerror(const char* s);
 %token END
 %token NEWLINE
 %token TAB
-%token VARIABLE
-%token VALUE
+%token <string>					VARIABLE
+%token <string>					VALUE
 %token WHITESPACE
+
+%type <string>					variable;
+%type <string>					value;
+
+%union {
+	char* string;
+}
 
 %%
 
-top				: top empty
-				| empty
-				;
+top							: top empty
+							| top block
+							| empty
+							| block
+							;
 
-empty			: WHITESPACE NEWLINE
-				| NEWLINE
-				;
+empty						: WHITESPACE NEWLINE
+							| NEWLINE
+							;
+
+// Optional whitespace
+whitespace					: WHITESPACE
+							| /* empty */
+							;
+
+variable					: VARIABLE
+							{
+								$$ = $1;
+							};
+
+value						: VALUE
+							| variable
+							{
+								$$ = $1;
+							}
+							| /* empty */
+							{
+								$$ = NULL;
+							};
+
+block_opening				: variable NEWLINE
+							{
+								printf("BLOCK OPEN: %s\n", $1);
+							};
+
+block_closing				: END NEWLINE
+							{
+								printf("BLOCK CLOSED\n");
+							}
+
+block						: block_opening assignments block_closing
+							{
+								printf("BLOCK FOUND\n");
+							};
+
+assignments					: assignments assignment
+							| assignments empty
+							| /* empty */
+							;
+
+assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
+							{
+								printf("ASSIGNMENT FOUND: %s = %s\n", $2, $6);
+							};
 
 %%
 
