@@ -28,16 +28,20 @@ int num_lines;
 #include "grammar.h"
 %}
 
+digit		[0-9]
+letter		[A-Za-z]
+underscore	_
+variable	{letter}({digit}|{letter}|{underscore})+
 whitespace	([ \t])+
 
 %%
 
 #.*$		{ /* ignore comments */ }
-whitespace	{ return WHITESPACE; }
+{whitespace}	{ return WHITESPACE; }
 \t			{ return TAB; }
 \n			{ num_lines++; return NEWLINE; }
 
-[A-Za-z]	{ return VARIABLE; }
+{variable}	{ return VARIABLE; }
 [A-Za-z0-9]	{ return VALUE; }
 
 "="			{ return ASSIGN; }
