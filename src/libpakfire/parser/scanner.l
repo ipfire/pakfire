@@ -41,14 +41,14 @@ whitespace	([ \t])+
 \t			{ return TAB; }
 \n			{ num_lines++; return NEWLINE; }
 
+"define"	{ return DEFINE; }
+"def"		{ return DEFINE; }
+"end"		{ return END; }
+
 {variable}	{ return VARIABLE; }
 [A-Za-z0-9]	{ return VALUE; }
 
 "="			{ return ASSIGN; }
 "+="		{ return APPEND; }
-
-"define"	{ return DEFINE; }
-"def"		{ return DEFINE; }
-"end"		{ return END; }
 
 %%
