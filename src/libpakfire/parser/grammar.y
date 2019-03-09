@@ -34,6 +34,9 @@ extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
 extern int yylex();
 extern int yyparse();
 void yyerror(const char* s);
+
+extern int num_lines;
+
 %}
 
 %token APPEND
@@ -55,6 +58,8 @@ top: NEWLINE
 int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
+	num_lines = 1;
+
 	YY_BUFFER_STATE buffer = yy_scan_bytes(data, len);
 	int r = yyparse();
 	yy_delete_buffer(buffer);
@@ -63,6 +68,5 @@ int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len)
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
-	abort();
+	fprintf(stderr, "Error (line %d): %s\n", num_lines, s);
 }

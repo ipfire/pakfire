@@ -23,6 +23,8 @@
 %{
 #define YY_DECL int yylex()
 
+int num_lines;
+
 #include "grammar.h"
 %}
 
