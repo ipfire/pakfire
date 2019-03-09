@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <pakfire/logging.h>
 #include <pakfire/types.h>
 
 #define YYERROR_VERBOSE 1
@@ -52,6 +53,8 @@ top: NEWLINE
 %%
 
 int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
+	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
+
 	YY_BUFFER_STATE buffer = yy_scan_bytes(data, len);
 	int r = yyparse();
 	yy_delete_buffer(buffer);

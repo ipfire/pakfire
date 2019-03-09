@@ -259,7 +259,8 @@ libpakfire_parser_la_CFLAGS = \
 libpakfire_parser_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/libpakfire/include \
-	-include $(top_builddir)/config.h
+	-include $(top_builddir)/config.h \
+	-DPAKFIRE_PRIVATE
 
 src/libpakfire/parser/scanner.c: src/libpakfire/parser/grammar.h
 
