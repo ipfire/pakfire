@@ -32,7 +32,7 @@ int num_lines;
 
 [ \t]		{ return WHITESPACE; }
 \t			{ return TAB; }
-\n			{ return NEWLINE; }
+\n			{ num_lines++; return NEWLINE; }
 
 [A-Za-z]	{ return VARIABLE; }
 [A-Za-z0-9]	{ return VALUE; }
