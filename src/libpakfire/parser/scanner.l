@@ -28,10 +28,12 @@ int num_lines;
 #include "grammar.h"
 %}
 
+whitespace	([ \t])+
+
 %%
 
 #.*$		{ /* ignore comments */ }
-[ \t]		{ return WHITESPACE; }
+whitespace	{ return WHITESPACE; }
 \t			{ return TAB; }
 \n			{ num_lines++; return NEWLINE; }
 
