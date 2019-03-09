@@ -84,7 +84,7 @@ struct payload_archive_data {
 
 static void configure_archive(struct archive* a) {
 	archive_read_support_filter_all(a);
-	archive_read_support_format_all(a);	
+	archive_read_support_format_all(a);
 }
 
 static int archive_open(PakfireArchive archive, struct archive** a) {
