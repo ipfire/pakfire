@@ -33,6 +33,7 @@ letter			[A-Za-z]
 underscore		_
 variable		{letter}({digit}|{letter}|{underscore})+
 whitespace		([ \t])+
+string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\]+
 
 %%
 
@@ -46,7 +47,7 @@ whitespace		([ \t])+
 "end"			{ return END; }
 
 {variable}		{ return VARIABLE; }
-[A-Za-z0-9]		{ return VALUE; }
+{string}		{ return VALUE; }
 
 "="				{ return ASSIGN; }
 "+="			{ return APPEND; }
