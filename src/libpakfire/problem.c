@@ -81,6 +81,7 @@ static char* to_string(PakfireProblem problem) {
 
 		case SOLVER_RULE_JOB_UNSUPPORTED:
 			snprintf(s, STRING_SIZE - 1, _("unsupported request"));
+			break;
 
 		case SOLVER_RULE_JOB_NOTHING_PROVIDES_DEP:
 			snprintf(s, STRING_SIZE - 1,
