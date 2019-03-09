@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <pakfire/types.h>
+
 #define YYERROR_VERBOSE 1
 
 typedef struct yy_buffer_state* YY_BUFFER_STATE;
@@ -49,7 +51,7 @@ top: NEWLINE
 
 %%
 
-int pakfire_parser_parse_metadata(const char* data, size_t len) {
+int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
 	YY_BUFFER_STATE buffer = yy_scan_bytes(data, len);
 	int r = yyparse();
 	yy_delete_buffer(buffer);

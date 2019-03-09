@@ -41,6 +41,7 @@
 #include <pakfire/key.h>
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
+#include <pakfire/parser.h>
 #include <pakfire/private.h>
 #include <pakfire/util.h>
 
@@ -358,7 +359,7 @@ static int pakfire_archive_parse_entry_metadata(PakfireArchive archive,
 	}
 
 	// Parse metadata file
-	r = pakfire_parser_parse_metadata(archive->pakfire, data, data_size);
+	r = pakfire_parser_parse_metadata(archive->pakfire, (const char*)data, data_size);
 
 	pakfire_free(data);
 

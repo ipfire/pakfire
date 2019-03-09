@@ -23,7 +23,9 @@
 
 #ifdef PAKFIRE_PRIVATE
 
-int pakfire_parser_parse_metadata(const char* data, size_t len);
+#include <pakfire/types.h>
+
+int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len);
 
 #endif /* PAKFIRE_PRIVATE */
 
