@@ -48,7 +48,13 @@ static void yyerror(const char* s);
 
 %%
 
-top: NEWLINE
+top				: top empty
+				| empty
+				;
+
+empty			: WHITESPACE NEWLINE
+				| NEWLINE
+				;
 
 %%
 
