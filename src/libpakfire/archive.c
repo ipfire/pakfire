@@ -357,11 +357,12 @@ static int pakfire_archive_parse_entry_metadata(PakfireArchive archive,
 		return 1;
 	}
 
-	#warning actually parse this
+	// Parse metadata file
+	r = pakfire_parser_parse_metadata(archive->pakfire, data, data_size);
 
 	pakfire_free(data);
 
-	return 0;
+	return r;
 }
 
 static int pakfire_archive_parse_entry_filelist(PakfireArchive archive,

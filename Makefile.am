@@ -70,6 +70,7 @@ PAKFIRE_LIBS     = libpakfire.la
 check_PROGRAMS =
 lib_LTLIBRARIES =
 libexec_PROGRAMS =
+noinst_LTLIBRARIES =
 pkgpyexec_LTLIBRARIES =
 pkginclude_HEADERS =
 
@@ -239,6 +240,24 @@ _pakfire_la_LIBADD = \
 
 # ------------------------------------------------------------------------------
 
+CLEANFILES += \
+	src/libpakfire/grammar.c \
+	src/libpakfire/grammar.h \
+	src/libpakfire/scanner.c
+
+noinst_LTLIBRARIES += \
+	libpakfire-parser.la
+
+libpakfire_parser_la_SOURCES = \
+	src/libpakfire/parser/grammar.h \
+	src/libpakfire/parser/grammar.y \
+	src/libpakfire/parser/scanner.l
+
+libpakfire_parser_la_CFLAGS = \
+	$(AM_CFLAGS)
+
+src/libpakfire/parser/scanner.c: src/libpakfire/parser/grammar.h
+
 lib_LTLIBRARIES += \
 	libpakfire.la
 
@@ -276,6 +295,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/package.h \
 	src/libpakfire/include/pakfire/packagelist.h \
 	src/libpakfire/include/pakfire/pakfire.h \
+	src/libpakfire/include/pakfire/parser.h \
 	src/libpakfire/include/pakfire/private.h \
 	src/libpakfire/include/pakfire/problem.h \
 	src/libpakfire/include/pakfire/relation.h \
@@ -307,6 +327,7 @@ libpakfire_la_LDFLAGS = \
 	-Wl,--version-script=$(top_srcdir)/src/libpakfire/libpakfire.sym
 
 libpakfire_la_LIBADD = \
+	libpakfire-parser.la \
 	$(ARCHIVE_LIBS) \
 	$(GPGME_LIBS) \
 	$(LIBGCRYPT_LIBS) \
@@ -314,7 +335,8 @@ libpakfire_la_LIBADD = \
 	$(SOLV_LIBS)
 
 libpakfire_la_DEPENDENCIES = \
-	src/libpakfire/libpakfire.sym
+	src/libpakfire/libpakfire.sym \
+	libpakfire-parser.la
 
 EXTRA_DIST += \
 	src/libpakfire/libpakfire.sym
