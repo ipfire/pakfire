@@ -39,8 +39,10 @@ string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\]+
 
 #.*$			{ /* ignore comments */ }
 {whitespace}	{ return WHITESPACE; }
-\t				{ return TAB; }
 \n				{ num_lines++; return NEWLINE; }
+
+"="				{ return ASSIGN; }
+"+="			{ return APPEND; }
 
 "define"		{ return DEFINE; }
 "def"			{ return DEFINE; }
@@ -48,8 +50,5 @@ string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\]+
 
 {variable}		{ return VARIABLE; }
 {string}		{ return VALUE; }
-
-"="				{ return ASSIGN; }
-"+="			{ return APPEND; }
 
 %%
