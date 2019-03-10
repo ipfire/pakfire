@@ -45,6 +45,8 @@ static void cleanup(void);
 #define NUM_DECLARATIONS 128
 static int pakfire_parser_add_declaration(const char* name, const char* value);
 static struct pakfire_parser_declaration* declarations[NUM_DECLARATIONS];
+
+char* current_block = NULL;
 %}
 
 %token APPEND
@@ -136,18 +138,16 @@ text						: text line
 
 block_opening				: variable NEWLINE
 							{
-								printf("BLOCK OPEN: %s\n", $1);
+								current_block = pakfire_strdup($1);
 							};
 
 block_closing				: END NEWLINE
 							{
-								printf("BLOCK CLOSED\n");
+								pakfire_free(current_block);
+								current_block = NULL;
 							}
 
-block						: block_opening assignments block_closing
-							{
-								printf("BLOCK FOUND\n");
-							};
+block						: block_opening assignments block_closing;
 
 assignments					: assignments assignment
 							| assignments empty
@@ -179,6 +179,12 @@ static void cleanup(void) {
 	for (unsigned int i = 0; i < NUM_DECLARATIONS; i++) {
 		pakfire_free(declarations[i]);
 	}
+
+	// Reset current_block
+	if (current_block) {
+		pakfire_free(current_block);
+		current_block = NULL;
+	}
 }
 
 static int pakfire_parser_add_declaration(const char* name, const char* value) {
@@ -198,8 +204,16 @@ static int pakfire_parser_add_declaration(const char* name, const char* value) {
 	if (!d)
 		return -1;
 
-	// Import name & value
-	d->name  = pakfire_strdup(name);
+	// Import name
+	if (current_block) {
+		int r = asprintf(&d->name, "%s.%s", current_block, name);
+		if (r < 0)
+			return r;
+	} else {
+		d->name = pakfire_strdup(name);
+	}
+
+	// Import value
 	d->value = pakfire_strdup(value);
 
 	DEBUG(pakfire, "New declaration: %s = %s\n", d->name, d->value);
