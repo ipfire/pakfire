@@ -46,6 +46,8 @@ static void yyerror(const char* s);
 %token WHITESPACE
 %token <string>					WORD
 
+%type <string>					line;
+%type <string>					text;
 %type <string>					variable;
 %type <string>					value;
 %type <string>					words;
@@ -89,7 +91,17 @@ words						: WORD
 							{
 								$$ = $1;
 							}
-							| words WHITESPACE WORD;
+							| words WHITESPACE WORD
+							| /* empty */;
+
+line						: whitespace words NEWLINE
+							{
+								printf("line = %s\n", $2);
+							};
+
+text						: text line
+							| line
+							| /* empty */;
 
 block_opening				: variable NEWLINE
 							{
@@ -108,6 +120,7 @@ block						: block_opening assignments block_closing
 
 assignments					: assignments assignment
 							| assignments empty
+							| assignments block_assignment
 							| /* empty */
 							;
 
@@ -115,6 +128,11 @@ assignment					: whitespace variable whitespace ASSIGN whitespace value whitespa
 							{
 								printf("ASSIGNMENT FOUND: %s = %s\n", $2, $6);
 							};
+
+block_assignment			: whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
+							{
+								printf("BLOCK ASSIGNMENT: %s: %s\n", $4, $6);
+							}
 
 %%
 
