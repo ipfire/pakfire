@@ -19,6 +19,8 @@
 #############################################################################*/
 
 %{
+#include <stdio.h>
+
 #include <pakfire/logging.h>
 #include <pakfire/types.h>
 
@@ -34,6 +36,9 @@ extern int yyparse();
 extern int num_lines;
 static Pakfire pakfire;
 static void yyerror(const char* s);
+
+static void cleanup(void);
+#define ABORT do { cleanup(); YYABORT; } while (0);
 
 %}
 
@@ -92,6 +97,13 @@ words						: WORD
 								$$ = $1;
 							}
 							| words WHITESPACE WORD
+							{
+								int r = asprintf(&$$, "%s %s", $1, $3);
+								if (r < 0) {
+									ERROR(pakfire, "Could not allocate memory");
+									ABORT;
+								}
+							}
 							| /* empty */
 							{
 								$$ = NULL;
@@ -99,10 +111,18 @@ words						: WORD
 
 line						: whitespace words NEWLINE
 							{
-								printf("line = %s\n", $2);
+								// Only forward words
+								$$ = $2;
 							};
 
 text						: text line
+							{
+								int r = asprintf(&$$, "%s\n%s", $1, $2);
+								if (r < 0) {
+									ERROR(pakfire, "Could not allocate memory");
+									ABORT;
+								}
+							}
 							| line
 							| /* empty */
 							{
@@ -141,6 +161,11 @@ block_assignment			: whitespace DEFINE WHITESPACE variable NEWLINE text whitespa
 							}
 
 %%
+
+static void cleanup(void) {
+	// Reset Pakfire pointer
+	pakfire = NULL;
+}
 
 int pakfire_parser_parse_metadata(Pakfire _pakfire, const char* data, size_t len) {
 	pakfire = _pakfire;
