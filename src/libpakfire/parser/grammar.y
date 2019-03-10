@@ -92,7 +92,10 @@ words						: WORD
 								$$ = $1;
 							}
 							| words WHITESPACE WORD
-							| /* empty */;
+							| /* empty */
+							{
+								$$ = NULL;
+							};
 
 line						: whitespace words NEWLINE
 							{
@@ -101,7 +104,10 @@ line						: whitespace words NEWLINE
 
 text						: text line
 							| line
-							| /* empty */;
+							| /* empty */
+							{
+								$$ = NULL;
+							};
 
 block_opening				: variable NEWLINE
 							{
