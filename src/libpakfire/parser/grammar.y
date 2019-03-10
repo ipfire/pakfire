@@ -34,6 +34,7 @@ extern int yyparse();
 extern int num_lines;
 static Pakfire pakfire;
 static void yyerror(const char* s);
+
 %}
 
 %token APPEND
@@ -42,12 +43,12 @@ static void yyerror(const char* s);
 %token END
 %token NEWLINE
 %token TAB
-%token <string>					VARIABLE
-%token <string>					VALUE
 %token WHITESPACE
+%token <string>					WORD
 
 %type <string>					variable;
 %type <string>					value;
+%type <string>					words;
 
 %union {
 	char* string;
@@ -70,13 +71,12 @@ whitespace					: WHITESPACE
 							| /* empty */
 							;
 
-variable					: VARIABLE
+variable					: WORD
 							{
 								$$ = $1;
 							};
 
-value						: VALUE
-							| variable
+value						: words
 							{
 								$$ = $1;
 							}
@@ -84,6 +84,12 @@ value						: VALUE
 							{
 								$$ = NULL;
 							};
+
+words						: WORD
+							{
+								$$ = $1;
+							}
+							| words WHITESPACE WORD;
 
 block_opening				: variable NEWLINE
 							{

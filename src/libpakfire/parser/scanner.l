@@ -32,9 +32,10 @@ int num_lines;
 digit			[0-9]
 letter			[A-Za-z]
 underscore		_
-variable		{letter}({digit}|{letter}|{underscore})+
+special			[/!@$%&*()+=:<>,;?_\.\[\]\-\\]+
 whitespace		([ \t])+
-string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\/]+
+
+word			({digit}|{letter}|{special})+
 
 %%
 
@@ -49,14 +50,9 @@ string			[a-zA-Z0-9`~!@#$%\^&*()_\-+=:\[\]<>,\.?\\/]+
 "def"			{ return DEFINE; }
 "end"			{ return END; }
 
-{variable}		{
+{word}			{
 					yylval.string = pakfire_strdup(yytext);
-					return VARIABLE;
-				}
-
-{string}		{
-					yylval.string = pakfire_strdup(yytext);
-					return VALUE;
+					return WORD;
 				}
 
 %%
