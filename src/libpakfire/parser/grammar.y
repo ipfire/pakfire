@@ -22,7 +22,9 @@
 #include <stdio.h>
 
 #include <pakfire/logging.h>
+#include <pakfire/parser.h>
 #include <pakfire/types.h>
+#include <pakfire/util.h>
 
 #define YYERROR_VERBOSE 1
 
@@ -40,6 +42,9 @@ static void yyerror(const char* s);
 static void cleanup(void);
 #define ABORT do { cleanup(); YYABORT; } while (0);
 
+#define NUM_DECLARATIONS 128
+static int pakfire_parser_add_declaration(const char* name, const char* value);
+static struct pakfire_parser_declaration* declarations[NUM_DECLARATIONS];
 %}
 
 %token APPEND
@@ -152,12 +157,16 @@ assignments					: assignments assignment
 
 assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
 							{
-								printf("ASSIGNMENT FOUND: %s = %s\n", $2, $6);
+								int r = pakfire_parser_add_declaration($2, $6);
+								if (r < 0)
+									ABORT;
 							};
 
 block_assignment			: whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
 							{
-								printf("BLOCK ASSIGNMENT: %s: %s\n", $4, $6);
+								int r = pakfire_parser_add_declaration($4, $6);
+								if (r < 0)
+									ABORT;
 							}
 
 %%
@@ -165,6 +174,37 @@ block_assignment			: whitespace DEFINE WHITESPACE variable NEWLINE text whitespa
 static void cleanup(void) {
 	// Reset Pakfire pointer
 	pakfire = NULL;
+
+	// Free all declarations
+	for (unsigned int i = 0; i < NUM_DECLARATIONS; i++) {
+		pakfire_free(declarations[i]);
+	}
+}
+
+static int pakfire_parser_add_declaration(const char* name, const char* value) {
+	struct pakfire_parser_declaration* d;
+	unsigned int i = 0;
+
+	while (i++ < NUM_DECLARATIONS && declarations[i])
+		i++;
+
+	if (i == NUM_DECLARATIONS) {
+		ERROR(pakfire, "No free declarations left\n");
+		return -1;
+	}
+
+	// Allocate a new declaration
+	declarations[i] = d = pakfire_calloc(1, sizeof(*d));
+	if (!d)
+		return -1;
+
+	// Import name & value
+	d->name  = pakfire_strdup(name);
+	d->value = pakfire_strdup(value);
+
+	DEBUG(pakfire, "New declaration: %s = %s\n", d->name, d->value);
+
+	return 0;
 }
 
 int pakfire_parser_parse_metadata(Pakfire _pakfire, const char* data, size_t len) {
