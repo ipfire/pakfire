@@ -153,7 +153,6 @@ block						: block_opening assignments block_closing;
 
 assignments					: assignments assignment
 							| assignments empty
-							| assignments block_assignment
 							| /* empty */
 							;
 
@@ -162,9 +161,8 @@ assignment					: whitespace variable whitespace ASSIGN whitespace value whitespa
 								int r = pakfire_parser_add_declaration($2, $6);
 								if (r < 0)
 									ABORT;
-							};
-
-block_assignment			: whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
+							}
+							| whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
 							{
 								int r = pakfire_parser_add_declaration($4, $6);
 								if (r < 0)
