@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+%parse-param {Pakfire pakfire}
+
 %{
 #include <stdio.h>
 
@@ -36,14 +38,13 @@ extern int yylex();
 extern int yyparse();
 
 extern int num_lines;
-static Pakfire pakfire;
-static void yyerror(const char* s);
+static void yyerror(Pakfire pakfire, const char* s);
 
 static void cleanup(void);
 #define ABORT do { cleanup(); YYABORT; } while (0);
 
 #define NUM_DECLARATIONS 128
-static int pakfire_parser_add_declaration(const char* name, const char* value);
+static int pakfire_parser_add_declaration(Pakfire pakfire, const char* name, const char* value);
 static struct pakfire_parser_declaration* declarations[NUM_DECLARATIONS];
 
 char* current_block = NULL;
@@ -159,13 +160,13 @@ assignment_or_empty			: assignment
 
 assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
 							{
-								int r = pakfire_parser_add_declaration($2, $6);
+								int r = pakfire_parser_add_declaration(pakfire, $2, $6);
 								if (r < 0)
 									ABORT;
 							}
 							| whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
 							{
-								int r = pakfire_parser_add_declaration($4, $6);
+								int r = pakfire_parser_add_declaration(pakfire, $4, $6);
 								if (r < 0)
 									ABORT;
 							}
@@ -173,9 +174,6 @@ assignment					: whitespace variable whitespace ASSIGN whitespace value whitespa
 %%
 
 static void cleanup(void) {
-	// Reset Pakfire pointer
-	pakfire = NULL;
-
 	// Free all declarations
 	for (unsigned int i = 0; i < NUM_DECLARATIONS; i++) {
 		pakfire_free(declarations[i]);
@@ -188,7 +186,7 @@ static void cleanup(void) {
 	}
 }
 
-static int pakfire_parser_add_declaration(const char* name, const char* value) {
+static int pakfire_parser_add_declaration(Pakfire pakfire, const char* name, const char* value) {
 	struct pakfire_parser_declaration* d;
 	unsigned int i = 0;
 
@@ -222,20 +220,18 @@ static int pakfire_parser_add_declaration(const char* name, const char* value) {
 	return 0;
 }
 
-int pakfire_parser_parse_metadata(Pakfire _pakfire, const char* data, size_t len) {
-	pakfire = _pakfire;
-
+int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
 	num_lines = 1;
 
 	YY_BUFFER_STATE buffer = yy_scan_bytes(data, len);
-	int r = yyparse();
+	int r = yyparse(pakfire);
 	yy_delete_buffer(buffer);
 
 	return r;
 }
 
-void yyerror(const char* s) {
+void yyerror(Pakfire pakfire, const char* s) {
 	ERROR(pakfire, "Error (line %d): %s\n", num_lines, s);
 }
