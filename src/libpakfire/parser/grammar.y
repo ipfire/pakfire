@@ -112,16 +112,15 @@ words						: WORD
 									ERROR(pakfire, "Could not allocate memory");
 									ABORT;
 								}
-							}
-							| /* empty */
-							{
-								$$ = NULL;
 							};
 
 line						: whitespace words NEWLINE
 							{
 								// Only forward words
 								$$ = $2;
+							}
+							| whitespace NEWLINE {
+								$$ = NULL;
 							};
 
 text						: text line
