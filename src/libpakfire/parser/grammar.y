@@ -150,10 +150,12 @@ block_closing				: END NEWLINE
 
 block						: block_opening assignments block_closing;
 
-assignments					: assignments assignment
-							| assignments empty
-							| /* empty */
+assignments					: assignments assignment_or_empty
+							| assignment_or_empty
 							;
+
+assignment_or_empty			: assignment
+							| empty;
 
 assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
 							{
