@@ -18,7 +18,7 @@
 #                                                                             #
 #############################################################################*/
 
-%parse-param {Pakfire pakfire}
+%parse-param {Pakfire pakfire} {struct pakfire_parser_declaration** declarations}
 
 %{
 #include <stdio.h>
@@ -38,14 +38,14 @@ extern int yylex();
 extern int yyparse();
 
 extern int num_lines;
-static void yyerror(Pakfire pakfire, const char* s);
+static void yyerror(Pakfire pakfire, struct pakfire_parser_declaration** declarations, const char* s);
 
 static void cleanup(void);
 #define ABORT do { cleanup(); YYABORT; } while (0);
 
 #define NUM_DECLARATIONS 128
-static int pakfire_parser_add_declaration(Pakfire pakfire, const char* name, const char* value);
-static struct pakfire_parser_declaration* declarations[NUM_DECLARATIONS];
+static int pakfire_parser_add_declaration(Pakfire pakfire,
+ 	struct pakfire_parser_declaration** delcarations, const char* name, const char* value);
 
 char* current_block = NULL;
 %}
@@ -160,13 +160,13 @@ assignment_or_empty			: assignment
 
 assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
 							{
-								int r = pakfire_parser_add_declaration(pakfire, $2, $6);
+								int r = pakfire_parser_add_declaration(pakfire, declarations, $2, $6);
 								if (r < 0)
 									ABORT;
 							}
 							| whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
 							{
-								int r = pakfire_parser_add_declaration(pakfire, $4, $6);
+								int r = pakfire_parser_add_declaration(pakfire, declarations, $4, $6);
 								if (r < 0)
 									ABORT;
 							}
@@ -174,11 +174,6 @@ assignment					: whitespace variable whitespace ASSIGN whitespace value whitespa
 %%
 
 static void cleanup(void) {
-	// Free all declarations
-	for (unsigned int i = 0; i < NUM_DECLARATIONS; i++) {
-		pakfire_free(declarations[i]);
-	}
-
 	// Reset current_block
 	if (current_block) {
 		pakfire_free(current_block);
@@ -186,7 +181,8 @@ static void cleanup(void) {
 	}
 }
 
-static int pakfire_parser_add_declaration(Pakfire pakfire, const char* name, const char* value) {
+static int pakfire_parser_add_declaration(Pakfire pakfire,
+		struct pakfire_parser_declaration** declarations, const char* name, const char* value) {
 	struct pakfire_parser_declaration* d;
 	unsigned int i = 0;
 
@@ -225,13 +221,17 @@ int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len)
 
 	num_lines = 1;
 
+	// Reserve some space for parsed declarations
+	struct pakfire_parser_declaration** declarations = \
+		pakfire_calloc(NUM_DECLARATIONS, sizeof(*declarations));
+
 	YY_BUFFER_STATE buffer = yy_scan_bytes(data, len);
-	int r = yyparse(pakfire);
+	int r = yyparse(pakfire, declarations);
 	yy_delete_buffer(buffer);
 
 	return r;
 }
 
-void yyerror(Pakfire pakfire, const char* s) {
+void yyerror(Pakfire pakfire, struct pakfire_parser_declaration** declarations, const char* s) {
 	ERROR(pakfire, "Error (line %d): %s\n", num_lines, s);
 }
