@@ -25,6 +25,7 @@
 
 int num_lines;
 
+#include <pakfire/parser.h>
 #include <pakfire/util.h>
 #include "grammar.h"
 %}
