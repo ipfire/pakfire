@@ -854,17 +854,17 @@ static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireA
 		return status;
 	}
 
+	// Get GPG context
+	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(archive->pakfire);
+
 	// Convert into gpgme data object
 	gpgme_data_t signed_text;
 	error = gpgme_data_new_from_mem(&signed_text, data, size, 0);
 	if (error != GPG_ERR_NO_ERROR) {
 		ERROR(archive->pakfire, "Could not load signed text: %s\n%s\n",
 			gpgme_strerror(status), data);
-		return -1;
+		goto ABORT;
 	}
-
-	// Get GPG context
-	gpgme_ctx_t gpgctx = pakfire_get_gpgctx(archive->pakfire);
 
 	// Try for each signature
 	while (signatures && *signatures) {
@@ -927,6 +927,8 @@ CLEANUP:
 	}
 
 	gpgme_data_release(signed_text);
+
+ABORT:
 	gpgme_release(gpgctx);
 
 	DEBUG(archive->pakfire, "Checksum verification status: %s\n",
