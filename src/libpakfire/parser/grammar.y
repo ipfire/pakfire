@@ -70,10 +70,12 @@ char* current_block = NULL;
 
 %%
 
-top							: top empty
-							| top block
+top							: top thing
+							| thing
+							;
+
+thing						: block
 							| empty
-							| block
 							;
 
 empty						: WHITESPACE NEWLINE
