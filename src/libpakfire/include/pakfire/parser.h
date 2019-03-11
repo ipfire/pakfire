@@ -30,7 +30,8 @@ struct pakfire_parser_declaration {
 	char* value;
 };
 
-int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len);
+struct pakfire_parser_declaration** pakfire_parser_parse_metadata(Pakfire pakfire,
+	const char* data, size_t len);
 
 #endif /* PAKFIRE_PRIVATE */
 

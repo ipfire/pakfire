@@ -359,11 +359,16 @@ static int pakfire_archive_parse_entry_metadata(PakfireArchive archive,
 	}
 
 	// Parse metadata file
-	r = pakfire_parser_parse_metadata(archive->pakfire, (const char*)data, data_size);
+	struct pakfire_parser_declaration** declarations = \
+		pakfire_parser_parse_metadata(archive->pakfire, (const char*)data, data_size);
 
 	pakfire_free(data);
 
-	return r;
+	// Error when nothing was returned
+	if (!declarations)
+		return 1;
+
+	return 0;
 }
 
 static int pakfire_archive_parse_entry_filelist(PakfireArchive archive,

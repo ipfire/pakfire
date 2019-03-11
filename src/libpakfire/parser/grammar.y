@@ -216,7 +216,7 @@ static int pakfire_parser_add_declaration(Pakfire pakfire,
 	return 0;
 }
 
-int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
+struct pakfire_parser_declaration** pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len) {
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
 	num_lines = 1;
@@ -229,7 +229,20 @@ int pakfire_parser_parse_metadata(Pakfire pakfire, const char* data, size_t len)
 	int r = yyparse(pakfire, declarations);
 	yy_delete_buffer(buffer);
 
-	return r;
+	// Cleanup declarations in case of an error
+	if (r) {
+		for (unsigned int i = 0; i < NUM_DECLARATIONS; i++) {
+			if (declarations[i])
+				pakfire_free(declarations[i]);
+		}
+
+		pakfire_free(declarations);
+
+		// Return nothing
+		return NULL;
+	}
+
+	return declarations;
 }
 
 void yyerror(Pakfire pakfire, struct pakfire_parser_declaration** declarations, const char* s) {
