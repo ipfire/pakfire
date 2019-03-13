@@ -18,27 +18,26 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_PARSER_H
-#define PAKFIRE_PARSER_H
-
-#ifdef PAKFIRE_PRIVATE
-
-#include <stddef.h>
-#include <stdio.h>
-
-#include <pakfire/types.h>
-
-struct pakfire_parser_declaration {
-	char* name;
-	char* value;
-};
-
-struct pakfire_parser_declaration** pakfire_parser_parse_metadata(Pakfire pakfire,
-	const char* data, size_t len);
+#include <pakfire/errno.h>
+#include <pakfire/parser.h>
+#include <pakfire/util.h>
 
 struct pakfire_parser_declaration** pakfire_parser_parse_metadata_from_file(
-	Pakfire pakfire, FILE* f);
+		Pakfire pakfire, FILE* f) {
+	char* data;
+	size_t len;
 
-#endif /* PAKFIRE_PRIVATE */
+	int r = pakfire_read_file_into_buffer(f, &data, &len);
+	if (r) {
+		pakfire_errno = r;
+		return NULL;
+	}
 
-#endif /* PAKFIRE_PARSER_H */
+	struct pakfire_parser_declaration** declarations = \
+		pakfire_parser_parse_metadata(pakfire, data, len);
+
+	if (data)
+		pakfire_free(data);
+
+	return declarations;
+}

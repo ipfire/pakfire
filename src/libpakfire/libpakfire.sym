@@ -208,6 +208,10 @@ global:
 	pakfire_packagelist_sort;
 	pakfire_packagelist_unref;
 
+	# parser
+	pakfire_parser_parse_metadata;
+	pakfire_parser_parse_metadata_from_file;
+
 	# problem
 	pakfire_problem_append;
 	pakfire_problem_create;

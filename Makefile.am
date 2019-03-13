@@ -251,6 +251,7 @@ noinst_LTLIBRARIES += \
 libpakfire_parser_la_SOURCES = \
 	src/libpakfire/parser/grammar.h \
 	src/libpakfire/parser/grammar.y \
+	src/libpakfire/parser/parser.c \
 	src/libpakfire/parser/scanner.l
 
 libpakfire_parser_la_CFLAGS = \
