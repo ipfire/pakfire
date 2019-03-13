@@ -20,6 +20,9 @@
 
 %parse-param {Pakfire pakfire} {struct pakfire_parser_declaration** declarations}
 
+// Generate verbose error messages
+%error-verbose
+
 %{
 #include <stdio.h>
 
@@ -29,6 +32,11 @@
 #include <pakfire/util.h>
 
 #define YYERROR_VERBOSE 1
+
+#define YYDEBUG 1
+#if ENABLE_DEBUG
+	int yydebug = 1;
+#endif
 
 typedef struct yy_buffer_state* YY_BUFFER_STATE;
 extern YY_BUFFER_STATE yy_scan_bytes(const char* buffer, size_t len);
