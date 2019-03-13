@@ -87,8 +87,7 @@ thing						: block
 							| empty
 							;
 
-empty						: WHITESPACE NEWLINE
-							| NEWLINE
+empty						: whitespace NEWLINE
 							;
 
 // Optional whitespace
