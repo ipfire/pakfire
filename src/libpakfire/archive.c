@@ -832,15 +832,14 @@ PAKFIRE_EXPORT PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireAr
 static pakfire_archive_verify_status_t pakfire_archive_verify_checksums(PakfireArchive archive) {
 	DEBUG(archive->pakfire, "Verifying checksums of %p\n", archive);
 
-	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
-
 	// Cannot validate anything if no signatures are available
 	PakfireArchiveSignature* signatures = pakfire_archive_get_signatures(archive);
 	if (!signatures) {
 		ERROR(archive->pakfire, "Archive %p does not have any signatures\n", archive);
-		return PAKFIRE_ARCHIVE_VERIFY_OK;
+		return PAKFIRE_ARCHIVE_VERIFY_NO_SIGNATURES;
 	}
 
+	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
 	const char* data = NULL;
 	size_t size = 0;
 	gpgme_error_t error;
