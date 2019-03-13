@@ -13,6 +13,7 @@
 /tests/libpakfire/archive
 /tests/libpakfire/key
 /tests/libpakfire/main
+/tests/libpakfire/makefile
 /tmp
 *.py[co]
 /*.tar.bz2

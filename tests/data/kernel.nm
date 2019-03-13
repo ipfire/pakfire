@@ -1,0 +1,458 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = kernel
+version    = 4.20
+release    = 12
+thisapp    = linux-%{version}
+
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Kernels
+url        = http://www.kernel.org/
+license    = GPLv2
+summary    = The Linux kernel.
+
+description
+	The kernel package contains the Linux kernel (vmlinuz), the core of any
+	Linux operating system. The kernel handles the basic functions
+	of the operating system: memory allocation, process allocation, device
+	input and output, etc.
+end
+
+# Version helper variables.
+localversion = %{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
+fullver      = %{version}-%{localversion}
+
+source_dl    = http://www.kernel.org/pub/linux/kernel/v4.x/
+sources      = %{thisapp}.tar.xz
+
+build
+	kernel_logo = /usr/share/pixmaps/kernel-logo.ppm
+
+	requires
+		asciidoc
+		bc
+		binutils >= 2.25
+		binutils-devel
+		bison
+		elfutils-devel
+		flex
+		gcc >= 4.9
+		gcc-plugin-devel
+		gettext
+		hostname
+		libunwind-devel
+		ncurses-devel
+		net-tools
+		newt-devel
+		pciutils-devel
+		perl
+		python-devel
+		openssl-devel
+		slang-devel
+		xmlto
+		xz
+
+		/sbin/depmod
+		%{kernel_logo}
+	end
+
+	# A list of kernels to build.
+	kernels =
+
+	kernel_arch = %{DISTRO_PLATFORM}
+	kernel_target = bzImage
+	kernel_image = arch/%{kernel_arch}/boot/%{kernel_target}
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		build_kernel_default = 1
+	end
+
+	if "%{DISTRO_ARCH}" == "aarch64"
+		build_kernel_default = 1
+
+		kernel_arch = arm64
+		kernel_target = Image.gz
+	end
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		# Build the default unified kernel.
+		build_kernel_default = 1
+
+		kernel_target = zImage
+	end
+
+	# mkimage is a requirement to build uImage images.
+	if "%{kernel_target}" == "uImage"
+		requires += u-boot-tools
+	end
+
+	# Build default kernel.
+	if "%{build_kernel_default}" == "1"
+		kernels += default
+	end
+
+	prepare_cmds
+		# Disable the colorize plugin.
+		# It's generally very nice but it clutters our
+		# logfiles.
+		sed -e "/^COLORIZE_PLUGIN_CFLAGS/d" \
+			-i Makefile
+
+		sed -e "s/\$(HOST_LFS_CFLAGS)/& -fPIC/g" -i Makefile
+
+		cp -vf %{kernel_logo} \
+			drivers/video/logo/logo_linux_clut224.ppm
+
+		# Get rid of unwanted files resulting from patch fuzz.
+		find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
+
+		# Remove unnecessary SCM files.
+		find . -name .gitignore -exec rm -f {} \; >/dev/null
+
+		# This prevents scripts/setlocalversion from mucking with our version numbers.
+		touch .scmversion
+
+		mkdir -pv configs
+
+		cd %{DIR_SOURCE}
+		configure_kernel() {
+			local flavour=${1}
+			local suffix
+			if [ "${flavour}" != "default" ]; then
+				suffix="-${flavour}"
+			fi
+
+			scripts/configure --kernel-dir=%{DIR_APP} \
+				merge %{DISTRO_ARCH} ${flavour} %{DIR_APP}/configs/config.${flavour}
+		}
+
+		# Generate configuration files for all kernels we are going to
+		# build.
+		for kernel in %{kernels}; do
+			configure_kernel ${kernel}
+		done
+	end
+
+	build
+		build_kernel() {
+			local flavour=${1}
+			local suffix
+			local localversion="%{localversion}"
+			local fullversion="%{fullver}"
+			if [ "${flavour}" != "default" ]; then
+				suffix="-${flavour}"
+				localversion="${localversion}.${flavour}"
+				fullversion="${fullversion}.${flavour}"
+			fi
+
+			# Label the build.
+			sed -i Makefile \
+				-e "s/^EXTRAVERSION.*/EXTRAVERSION = -${localversion}/"
+
+			# Clean up the source tree.
+			make mrproper
+
+			# Install configuration file.
+			cp configs/config.${flavour} .config
+			cat .config
+
+			# Run the build.
+			make ARCH=%{kernel_arch} olddefconfig >/dev/null
+			make ARCH=%{kernel_arch} %{kernel_target} modules \
+				KERNELRELEASE=${fullversion} %{PARALLELISMFLAGS}
+
+			# Compile Flattened Device Tree database
+			case "${DISTRO_ARCH}" in
+				aarch64|arm*)
+					make ARCH=%{kernel_arch} dtbs
+
+					mkdir -pv %{BUILDROOT}/boot/dtb-${fullversion}
+					for file in arch/arm/boot/dts/*.dtb; do
+						[ -e "${file}" ] || continue
+
+						install -m 644 ${file} %{BUILDROOT}/boot/dtb-${fullversion} || exit 1
+						rm -f ${file}
+					done
+					;;
+			esac
+
+			# Install the results.
+			mkdir -pv %{BUILDROOT}/boot %{BUILDROOT}/usr/lib/modules/${fullversion}
+			install -m 755 %{kernel_image} %{BUILDROOT}/boot/vmlinuz-${fullversion}
+			install -m 644 .config %{BUILDROOT}/boot/config-${fullversion}
+			install -m 644 System.map %{BUILDROOT}/boot/System.map-${fullversion}
+
+			# Create empty initramfs (20M).
+			dd if=/dev/zero of=%{BUILDROOT}/boot/initramfs-${fullversion}.img bs=1M count=20
+
+			# Install modules.
+			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT}/usr mod-fw= V=1 \
+				KERNELRELEASE=${fullversion} modules_install
+
+			# Create an empty settings file for dracut
+			mkdir -p %{BUILDROOT}/etc/ld.so.conf.d
+			echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
+				> %{BUILDROOT}/etc/ld.so.conf.d/kernel-${fullversion}.conf
+
+			# And now the scary looking part.
+			#
+			# Recreate source and build links.
+			rm -f %{BUILDROOT}/usr/lib/modules/${fullversion}/{build,source}
+			mkdir -p %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			ln -sf build %{BUILDROOT}/usr/lib/modules/${fullversion}/source
+
+			# Create dirs for extra modules.
+			mkdir -p %{BUILDROOT}/usr/lib/modules/${fullversion}/extra
+
+			cp --parents $(find -type f -name "Makefile*" -o -name "Kconfig*") \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp Module.symvers System.map \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			rm -rf %{BUILDROOT}/usr/lib/modules/${fullversion}/build/{Documentation,scripts,include}
+
+			cp .config %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp -a scripts %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			find %{BUILDROOT}/usr/lib/modules/${fullversion}/build/scripts -name "*.o" \
+				-exec rm -vf {} \;
+
+			cp -a --parents arch/%{kernel_arch}/include \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp -a include %{BUILDROOT}/usr/lib/modules/${fullversion}/build/include
+
+			# Make sure we can build external modules.
+			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/Makefile \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/linux/version.h
+			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/autoconf.h
+			cp %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/config/auto.conf
+
+			find %{BUILDROOT}/usr/lib/modules/${fullversion} -name "*.ko" -type f | \
+				xargs --no-run-if-empty chmod u+x
+
+			# Move all development files to /usr/src.
+			mkdir -p %{BUILDROOT}/usr/src/kernels
+			mv %{BUILDROOT}/usr/lib/modules/${fullversion}/build \
+				%{BUILDROOT}/usr/src/kernels/${fullversion}
+			ln -sf ../../../src/kernels/${fullversion} \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+
+			# Fix permissions.
+			find %{BUILDROOT}/usr/src/kernels -name "modules.order" \
+				-exec chmod 644 {} \;
+
+			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+
+			# remove device tree compiler because there are dead links
+			rm -rf %{BUILDROOT}/usr/src/kernels/*/scripts/dtc
+		}
+
+		for kernel in %{kernels}; do
+			build_kernel ${kernel}
+		done
+
+		# cpupower
+		chmod +x tools/power/cpupower/utils/version-gen.sh
+		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
+
+		pushd tools/thermal/tmon
+		make
+		popd
+	end
+
+	install
+		# When no kernels are configured, we create a default config
+		# which enables us to install at least the header files.
+		[ -n "%{kernels}" ] || make ARCH=%{kernel_arch} defconfig
+
+		# Install the header files
+		make ARCH=%{kernel_arch} INSTALL_HDR_PATH=dest headers_install
+		mkdir -pv %{BUILDROOT}/usr/include
+		find dest/include \( -name .install -o -name ..install.cmd \) -delete
+		cp -rv dest/include/* %{BUILDROOT}/usr/include
+
+		# Glibc provides these headers
+		rm -rfv %{BUILDROOT}/usr/include/scsi \
+			%{BUILDROOT}/usr/include/asm*/atomic.h \
+			%{BUILDROOT}/usr/include/asm*/io.h \
+			%{BUILDROOT}/usr/include/asm*/irq.h
+
+		# Remove all firmware files which are distributed by linux-firmware
+		rm -rfv %{BUILDROOT}/lib/firmware
+
+		# Install tools.
+		# cpupower
+		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
+			mandir=%{mandir} CPUFREQ_BENCH=false install
+
+		chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
+
+		# tmon
+		pushd tools/thermal/tmon
+		make INSTALL_ROOT=%{BUILDROOT} install
+		popd
+	end
+end
+
+packages
+	template KERNEL
+		kernel_name = kernel
+		kernel_release = %{fullver}
+
+		summary = The Linux kernel %{kernel_release}.
+
+		prerequires
+			/sbin/depmod
+		end
+
+		provides
+			kernel=%{kernel_release}
+		end
+
+		requires
+			dracut
+			grubby
+			linux-firmware
+		end
+
+		files
+			/boot/System.map-%{kernel_release}
+			/boot/dtb-%{kernel_release}
+			/boot/vmlinuz-%{kernel_release}
+			/boot/initramfs-%{kernel_release}.img
+			/etc/ld.so.conf.d/kernel-%{kernel_release}.conf
+			/usr/lib/modules/%{kernel_release}
+		end
+
+		_posttrans
+			/sbin/new-kernel-pkg --package %{kernel_name} --mkinitrd --dracut --depmod --update %{kernel_release}
+			/sbin/new-kernel-pkg --package %{kernel_name} --rpmposttrans %{kernel_release}
+		end
+
+		script posttransin
+			%{_posttrans}
+		end
+
+		script posttransup
+			%{_posttrans}
+		end
+
+		script postin
+			/sbin/new-kernel-pkg --package %{kernel_name} --install %{kernel_release}
+		end
+
+		script postup
+			/sbin/new-kernel-pkg --package %{kernel_name} --install %{kernel_release}
+		end
+
+		script preun
+			/sbin/new-kernel-pkg --rminitrd --rmmoddep --remove %{kernel_release}
+		end
+	end
+
+	template KERNELDEVEL
+		kernel_release = %{fullver}
+
+		summary = Development files of kernel-%{kernel_release}.
+		description
+			%{summary}
+
+			Install this package in order to compile modules for
+			kernel release %{kernel_release}.
+		end
+
+		provides
+			kernel-devel = %{thisver}
+		end
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
+
+		files
+			/usr/lib/modules/%{kernel_release}/build
+			/usr/lib/modules/%{kernel_release}/source
+			/usr/src/kernels/%{kernel_release}
+		end
+	end
+
+	if "%{build_kernel_default}" == "1"
+		if "%{DISTRO_ARCH}" == "armv7hl"
+			package kernel
+				template KERNEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+
+				# Replace the Exynos kernel.
+				obsoletes += kernel-exynos < %{kernel_release}
+				conflicts += kernel-exynos < %{kernel_release}
+
+				# Replace the OMAP kernel.
+				obsoletes += kernel-omap < %{kernel_release}
+				conflicts += kernel-omap < %{kernel_release}
+			end
+
+			package kernel-devel
+				template KERNELDEVEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+
+				# Replace the Exynos kernel.
+				obsoletes += kernel-exynos-devel < %{kernel_release}
+				conflicts += kernel-exynos-devel < %{kernel_release}
+
+				# Replace the OMAP kernel.
+				obsoletes += kernel-omap-devel < %{kernel_release}
+				conflicts += kernel-omap-devel < %{kernel_release}
+			end
+
+		else
+			package kernel
+				template KERNEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+			end
+
+			package kernel-devel
+				template KERNELDEVEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+			end
+		end
+	end
+
+	package kernel-headers
+		summary = Header files of the kernel release %{fullver}.
+		desciption = %{summary}
+
+		files
+			/usr/include
+		end
+	end
+
+	package kernel-tools
+		summary = Assortment of tools for the Linux kernel.
+		description = %{summary}
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
+
+		files
+			/
+			!/boot
+			!/usr/include
+			!/usr/lib/modules
+			!/usr/src
+			!/usr/src/debug
+			!/usr/lib/debug
+		end
+	end
+end
