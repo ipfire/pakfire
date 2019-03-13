@@ -22,6 +22,7 @@
 #define PAKFIRE_UTIL_H
 
 #include <stddef.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <time.h>
 
@@ -54,5 +55,7 @@ char* pakfire_remove_trailing_newline(char* str);
 const char* pakfire_action_type_string(pakfire_action_type_t type);
 
 void init_libgcrypt();
+
+int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t* len);
 
 #endif /* PAKFIRE_UTIL_H */

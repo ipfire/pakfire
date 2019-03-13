@@ -281,3 +281,40 @@ PAKFIRE_EXPORT const char* pakfire_action_type_string(pakfire_action_type_t type
 
 	return NULL;
 }
+
+PAKFIRE_EXPORT int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t* len) {
+	if (!f)
+		return -EBADF;
+
+	int r = fseek(f, 0, SEEK_END);
+	if (r)
+		return r;
+
+	// Save length of file
+	*len = ftell(f);
+
+	// Go back to the start
+	r = fseek(f, 0, SEEK_SET);
+	if (r)
+		return r;
+
+	// Allocate buffer
+	*buffer = pakfire_malloc((sizeof(**buffer) * *len) + 1);
+	if (!*buffer)
+		return -ENOMEM;
+
+	// Read content
+	fread(*buffer, *len, sizeof(**buffer), f);
+
+	// Check we encountered any errors
+	r = ferror(f);
+	if (r) {
+		pakfire_free(*buffer);
+		return r;
+	}
+
+	// Terminate the buffer
+	(*buffer)[*len] = '\0';
+
+	return 0;
+}
