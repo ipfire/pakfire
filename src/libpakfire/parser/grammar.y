@@ -83,8 +83,8 @@ top							: top thing
 							| thing
 							;
 
-thing						: block
-							| empty
+thing						: assignment_or_empty
+							| block
 							;
 
 empty						: whitespace NEWLINE
