@@ -74,6 +74,8 @@ char* current_block = NULL;
 %type <string>					value;
 %type <string>					words;
 
+%precedence WORD
+
 %left APPEND
 %left ASSIGN
 
@@ -87,8 +89,9 @@ top							: top thing
 							| thing
 							;
 
-thing						: assignment_or_empty
+thing						: assignment
 							| block
+							| empty
 							;
 
 empty						: whitespace NEWLINE
@@ -99,9 +102,9 @@ whitespace					: WHITESPACE
 							| /* empty */
 							;
 
-variable					: whitespace WORD whitespace
+variable					: WORD whitespace
 							{
-								$$ = $2;
+								$$ = $1;
 							};
 
 value						: whitespace words whitespace
@@ -157,13 +160,12 @@ block_closing				: END NEWLINE
 								current_block = NULL;
 							}
 
-block						: block_opening assignments block_closing;
+block						: block_opening block_assignments block_closing;
 
-assignments					: assignments assignment_or_empty
-							| assignment_or_empty
-							;
+block_assignments			: block_assignments block_assignment
+							| block_assignment;
 
-assignment_or_empty			: assignment
+block_assignment			: WHITESPACE assignment
 							| empty;
 
 assignment					: variable ASSIGN value NEWLINE
@@ -179,9 +181,9 @@ assignment					: variable ASSIGN value NEWLINE
 									ABORT;
 							}
 
-define						: whitespace DEFINE WHITESPACE variable NEWLINE
+define						: DEFINE WHITESPACE variable NEWLINE
 							{
-								$$ = $4;
+								$$ = $3;
 							}
 							| whitespace variable NEWLINE
 							{
