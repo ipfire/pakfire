@@ -160,7 +160,7 @@ block_closing				: END NEWLINE
 							{
 								pakfire_free(current_block);
 								current_block = NULL;
-							}
+							};
 
 block						: block_opening block_assignments block_closing;
 
@@ -181,7 +181,7 @@ assignment					: variable ASSIGN value NEWLINE
 								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $2);
 								if (r < 0)
 									ABORT;
-							}
+							};
 
 define						: DEFINE WHITESPACE variable NEWLINE
 							{
