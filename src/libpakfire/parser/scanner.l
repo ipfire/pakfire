@@ -54,6 +54,15 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 "def"			{ return DEFINE; }
 "end"			{ return END; }
 
+{quoted_string}	{
+					// Remove quotes
+					size_t len = strlen(yytext);
+					yytext[len-1] = '\0';
+
+					yylval.string = pakfire_strdup(yytext + 1);
+					return WORD;
+				}
+
 {word}			{
 					yylval.string = pakfire_strdup(yytext);
 					return WORD;
