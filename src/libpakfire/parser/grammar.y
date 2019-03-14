@@ -140,10 +140,7 @@ text						: text line
 								}
 							}
 							| line
-							| /* empty */
-							{
-								$$ = NULL;
-							};
+							;
 
 block_opening				: variable NEWLINE
 							{
