@@ -67,6 +67,7 @@ char* current_block = NULL;
 %token WHITESPACE
 %token <string>					WORD
 
+%type <string>					define;
 %type <string>					line;
 %type <string>					text;
 %type <string>					variable;
@@ -168,14 +169,23 @@ assignment					: variable ASSIGN value NEWLINE
 								if (r < 0)
 									ABORT;
 							}
-							| define WHITESPACE variable NEWLINE text whitespace END NEWLINE
+							| define text end
 							{
-								int r = pakfire_parser_add_declaration(pakfire, declarations, $3, $5);
+								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $2);
 								if (r < 0)
 									ABORT;
 							}
 
-define						: whitespace DEFINE;
+define						: whitespace DEFINE WHITESPACE variable NEWLINE
+							{
+								$$ = $4;
+							}
+							| whitespace variable NEWLINE
+							{
+								$$ = $2;
+							};
+
+end							: whitespace END NEWLINE;
 
 %%
 
