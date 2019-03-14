@@ -74,6 +74,9 @@ char* current_block = NULL;
 %type <string>					value;
 %type <string>					words;
 
+%left APPEND
+%left ASSIGN
+
 %union {
 	char* string;
 }
