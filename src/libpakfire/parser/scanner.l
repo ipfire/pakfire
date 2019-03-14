@@ -44,9 +44,11 @@ word			({digit}|{letter}|{special})+
 {whitespace}	{ return WHITESPACE; }
 \n				{ num_lines++; return NEWLINE; }
 
+"=="			{ return EQUALS; }
 "="				{ return ASSIGN; }
 "+="			{ return APPEND; }
 
+"if"			{ return IF; }
 "define"		{ return DEFINE; }
 "def"			{ return DEFINE; }
 "end"			{ return END; }

@@ -62,6 +62,8 @@ char* current_block = NULL;
 %token ASSIGN
 %token DEFINE
 %token END
+%token <string>					EQUALS
+%token IF
 %token NEWLINE
 %token TAB
 %token WHITESPACE
