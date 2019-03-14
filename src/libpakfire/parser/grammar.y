@@ -105,7 +105,7 @@ value						: whitespace words whitespace
 							{
 								$$ = $2;
 							}
-							| /* empty */
+							| whitespace
 							{
 								$$ = NULL;
 							};
