@@ -56,6 +56,8 @@ static void cleanup(void);
 #define NUM_DECLARATIONS 128
 static int pakfire_parser_add_declaration(Pakfire pakfire,
  	struct pakfire_parser_declaration** delcarations, const char* name, const char* value);
+static int pakfire_parser_append_declaration(Pakfire pakfire,
+	struct pakfire_parser_declaration** declarations, const char* name, const char* value);
 
 char* current_block = NULL;
 %}
@@ -184,6 +186,12 @@ assignment					: variable ASSIGN value NEWLINE
 								if (r < 0)
 									ABORT;
 							}
+							| variable APPEND value NEWLINE
+							{
+								int r = pakfire_parser_append_declaration(pakfire, declarations, $1, $3);
+								if (r < 0)
+									ABORT;
+							}
 							| define text end
 							{
 								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $2);
@@ -212,6 +220,42 @@ static void cleanup(void) {
 	}
 }
 
+static char* pakfire_parser_make_canonical_name(const char* name) {
+	char* buffer = NULL;
+
+	if (current_block) {
+		int r = asprintf(&buffer, "%s.%s", current_block, name);
+		if (r < 0)
+			return NULL;
+	} else {
+		buffer = pakfire_strdup(name);
+	}
+
+	return buffer;
+}
+
+static struct pakfire_parser_declaration* pakfire_parser_get_declaration(Pakfire pakfire,
+		struct pakfire_parser_declaration** declarations, const char* name) {
+	if (!declarations)
+		return NULL;
+
+	char* canonical_name = pakfire_parser_make_canonical_name(name);
+
+	struct pakfire_parser_declaration* d = *declarations;
+	while (d) {
+		if (strcmp(d->name, canonical_name) == 0) {
+			goto END;
+		}
+
+		d++;
+	}
+
+END:
+	pakfire_free(canonical_name);
+
+	return d;
+}
+
 static int pakfire_parser_add_declaration(Pakfire pakfire,
 		struct pakfire_parser_declaration** declarations, const char* name, const char* value) {
 	struct pakfire_parser_declaration* d;
@@ -230,19 +274,37 @@ static int pakfire_parser_add_declaration(Pakfire pakfire,
 	if (!d)
 		return -1;
 
-	// Import name
-	if (current_block) {
-		int r = asprintf(&d->name, "%s.%s", current_block, name);
-		if (r < 0)
-			return r;
-	} else {
-		d->name = pakfire_strdup(name);
-	}
-
-	// Import value
+	// Import name & value
+	d->name = pakfire_parser_make_canonical_name(name);
 	d->value = pakfire_strdup(value);
 
 	DEBUG(pakfire, "New declaration: %s = %s\n", d->name, d->value);
+
+	return 0;
+}
+
+static int pakfire_parser_append_declaration(Pakfire pakfire,
+		struct pakfire_parser_declaration** declarations, const char* name, const char* value) {
+	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(pakfire, declarations, name);
+
+	// Add the declaration if we could not find it
+	if (!d)
+		return pakfire_parser_add_declaration(pakfire, declarations, name, value);
+
+	char* buffer = NULL;
+
+	// Concat value
+	int r = asprintf(&buffer, "%s %s", d->value, value);
+	if (r < 0)
+		return r;
+
+	DEBUG(pakfire, "Appended declaration: %s = %s (was: %s)\n", d->name, buffer, d->value);
+
+	// Replace value in declaration
+	if (d->value)
+		pakfire_free(d->value);
+
+	d->value = buffer;
 
 	return 0;
 }
