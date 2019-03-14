@@ -153,6 +153,11 @@ text						: text line
 							| line
 							;
 
+if_stmt						: IF WHITESPACE WORD whitespace EQUALS whitespace WORD NEWLINE block_assignments end
+							{
+								printf("IF STATEMENT NOT EVALUATED, YET: %s %s %s\n", $3, $5, $7);
+							};
+
 block_opening				: variable NEWLINE
 							{
 								current_block = pakfire_strdup($1);
@@ -170,6 +175,7 @@ block_assignments			: block_assignments block_assignment
 							| block_assignment;
 
 block_assignment			: WHITESPACE assignment
+							| WHITESPACE if_stmt
 							| empty;
 
 assignment					: variable ASSIGN value NEWLINE
