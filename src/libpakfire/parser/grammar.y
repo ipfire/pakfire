@@ -95,14 +95,14 @@ whitespace					: WHITESPACE
 							| /* empty */
 							;
 
-variable					: WORD
+variable					: whitespace WORD whitespace
 							{
-								$$ = $1;
+								$$ = $2;
 							};
 
-value						: words
+value						: whitespace words whitespace
 							{
-								$$ = $1;
+								$$ = $2;
 							}
 							| /* empty */
 							{
@@ -162,18 +162,20 @@ assignments					: assignments assignment_or_empty
 assignment_or_empty			: assignment
 							| empty;
 
-assignment					: whitespace variable whitespace ASSIGN whitespace value whitespace NEWLINE
+assignment					: variable ASSIGN value NEWLINE
 							{
-								int r = pakfire_parser_add_declaration(pakfire, declarations, $2, $6);
+								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $3);
 								if (r < 0)
 									ABORT;
 							}
-							| whitespace DEFINE WHITESPACE variable NEWLINE text whitespace END NEWLINE
+							| define WHITESPACE variable NEWLINE text whitespace END NEWLINE
 							{
-								int r = pakfire_parser_add_declaration(pakfire, declarations, $4, $6);
+								int r = pakfire_parser_add_declaration(pakfire, declarations, $3, $5);
 								if (r < 0)
 									ABORT;
 							}
+
+define						: whitespace DEFINE;
 
 %%
 
