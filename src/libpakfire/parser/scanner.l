@@ -36,7 +36,8 @@ underscore		_
 special			[/'!@$%&*(){}+=:<>,;?_\.\[\]\-\\]+
 whitespace		([ \t])+
 
-word			({digit}|{letter}|{special})+
+quoted_string	\"([^\"])*\"
+word			({quoted_string}|({digit}|{letter}|{special})+)
 
 %%
 
