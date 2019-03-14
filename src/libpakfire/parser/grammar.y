@@ -18,6 +18,8 @@
 #                                                                             #
 #############################################################################*/
 
+%glr-parser
+
 %parse-param {Pakfire pakfire} {struct pakfire_parser_declaration** declarations}
 
 // Generate verbose error messages
@@ -100,8 +102,8 @@ empty						: whitespace NEWLINE
 							;
 
 // Optional whitespace
-whitespace					: WHITESPACE
-							| /* empty */
+whitespace					: WHITESPACE		%dprec 2
+							| /* empty */		%dprec 1
 							;
 
 variable					: WORD whitespace
