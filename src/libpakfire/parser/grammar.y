@@ -70,7 +70,6 @@ char* current_block = NULL;
 %token IF
 %token NEWLINE
 %token TAB
-%token WHITESPACE
 %token <string>					WORD
 
 %type <string>					define;
@@ -100,47 +99,33 @@ thing						: assignment
 							| empty
 							;
 
-empty						: whitespace NEWLINE
+empty						: NEWLINE
 							;
 
-// Optional whitespace
-whitespace					: WHITESPACE		%dprec 2
-							| /* empty */		%dprec 1
-							;
+variable					: WORD;
 
-variable					: WORD whitespace
-							{
-								$$ = $1;
-							};
-
-value						: whitespace words whitespace
-							{
-								$$ = $2;
-							}
-							| whitespace
+value						: words
+							| %empty
 							{
 								$$ = NULL;
 							};
 
 words						: WORD
+							| words WORD
 							{
-								$$ = $1;
-							}
-							| words WHITESPACE WORD
-							{
-								int r = asprintf(&$$, "%s %s", $1, $3);
+								int r = asprintf(&$$, "%s %s", $1, $2);
 								if (r < 0) {
 									ERROR(pakfire, "Could not allocate memory");
 									ABORT;
 								}
 							};
 
-line						: whitespace words NEWLINE
+line						: words NEWLINE
 							{
 								// Only forward words
-								$$ = $2;
+								$$ = $1;
 							}
-							| whitespace NEWLINE {
+							| NEWLINE {
 								$$ = NULL;
 							};
 
@@ -155,9 +140,9 @@ text						: text line
 							| line
 							;
 
-if_stmt						: IF WHITESPACE WORD whitespace EQUALS whitespace WORD NEWLINE block_assignments end
+if_stmt						: IF WORD EQUALS WORD NEWLINE block_assignments end
 							{
-								printf("IF STATEMENT NOT EVALUATED, YET: %s %s %s\n", $3, $5, $7);
+								printf("IF STATEMENT NOT EVALUATED, YET: %s %s\n", $2, $4);
 							};
 
 block_opening				: variable NEWLINE
@@ -176,8 +161,8 @@ block						: block_opening block_assignments block_closing;
 block_assignments			: block_assignments block_assignment
 							| block_assignment;
 
-block_assignment			: WHITESPACE assignment
-							| WHITESPACE if_stmt
+block_assignment			: assignment
+							| if_stmt
 							| empty;
 
 assignment					: variable ASSIGN value NEWLINE
@@ -199,16 +184,16 @@ assignment					: variable ASSIGN value NEWLINE
 									ABORT;
 							};
 
-define						: DEFINE WHITESPACE variable NEWLINE
-							{
-								$$ = $3;
-							}
-							| whitespace variable NEWLINE
+define						: DEFINE variable NEWLINE
 							{
 								$$ = $2;
+							}
+							| variable NEWLINE
+							{
+								$$ = $1;
 							};
 
-end							: whitespace END NEWLINE;
+end							: END NEWLINE;
 
 %%
 

@@ -42,7 +42,7 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 %%
 
 #.*$			{ /* ignore comments */ }
-{whitespace}	{ return WHITESPACE; }
+{whitespace}	{}
 \n				{ num_lines++; return NEWLINE; }
 
 "=="			{ return EQUALS; }
