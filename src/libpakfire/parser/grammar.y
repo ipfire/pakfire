@@ -68,7 +68,7 @@ char* current_block = NULL;
 %token							T_END
 %token <string>					T_EQUALS
 %token <string>					T_IF
-%token							T_NEWLINE
+%token							T_EOL
 %token <string>					T_WORD
 
 %type <string>					define;
@@ -99,7 +99,7 @@ thing						: assignment
 							| empty
 							;
 
-empty						: T_NEWLINE
+empty						: T_EOL
 							;
 
 variable					: T_WORD;
@@ -124,12 +124,12 @@ words						: word
 								}
 							};
 
-line						: words T_NEWLINE
+line						: words T_EOL
 							{
 								// Only forward words
 								$$ = $1;
 							}
-							| T_NEWLINE {
+							| T_EOL {
 								$$ = NULL;
 							};
 
@@ -144,17 +144,17 @@ text						: text line
 							| line
 							;
 
-if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_NEWLINE block_assignments end
+if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
 							{
 								printf("IF STATEMENT NOT EVALUATED, YET: %s %s\n", $2, $4);
 							};
 
-block_opening				: variable T_NEWLINE
+block_opening				: variable T_EOL
 							{
 								current_block = pakfire_strdup($1);
 							};
 
-block_closing				: T_END T_NEWLINE
+block_closing				: T_END T_EOL
 							{
 								pakfire_free(current_block);
 								current_block = NULL;
@@ -169,13 +169,13 @@ block_assignment			: assignment
 							| if_stmt
 							| empty;
 
-assignment					: variable T_ASSIGN value T_NEWLINE
+assignment					: variable T_ASSIGN value T_EOL
 							{
 								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $3);
 								if (r < 0)
 									ABORT;
 							}
-							| variable T_APPEND value T_NEWLINE
+							| variable T_APPEND value T_EOL
 							{
 								int r = pakfire_parser_append_declaration(pakfire, declarations, $1, $3);
 								if (r < 0)
@@ -188,16 +188,16 @@ assignment					: variable T_ASSIGN value T_NEWLINE
 									ABORT;
 							};
 
-define						: T_DEFINE variable T_NEWLINE
+define						: T_DEFINE variable T_EOL
 							{
 								$$ = $2;
 							}
-							| variable T_NEWLINE
+							| variable T_EOL
 							{
 								$$ = $1;
 							};
 
-end							: T_END T_NEWLINE;
+end							: T_END T_EOL;
 
 %%
 

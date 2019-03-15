@@ -43,7 +43,7 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 
 #.*$			{ /* ignore comments */ }
 {whitespace}	{}
-\n				{ num_lines++; return T_NEWLINE; }
+\n				{ num_lines++; return T_EOL; }
 
 "=="			{ return T_EQUALS; }
 "="				{ return T_ASSIGN; }
