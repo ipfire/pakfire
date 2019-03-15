@@ -64,14 +64,15 @@ char* current_block = NULL;
 
 %token							T_APPEND
 %token							T_ASSIGN
-%token							T_DEFINE
-%token							T_END
+%token <string>					T_DEFINE
+%token <string>					T_END
 %token <string>					T_EQUALS
 %token <string>					T_IF
 %token							T_EOL
 %token <string>					T_WORD
 
 %type <string>					define;
+%type <string>					keyword;
 %type <string>					line;
 %type <string>					text;
 %type <string>					variable;
@@ -110,9 +111,14 @@ value						: words
 								$$ = NULL;
 							};
 
+							// XXX T_DEFINE is sort of missing here, but adding it
+							// generates a highly ambiguous grammar
+keyword						: T_IF;
+
 							// IF can show up in values and therefore this
 							// hack is needed to parse those properly
-word						: T_WORD | T_IF;
+word						: T_WORD
+							| keyword;
 
 words						: word
 							| words word
