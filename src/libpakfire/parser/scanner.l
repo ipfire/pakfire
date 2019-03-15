@@ -33,7 +33,7 @@ int num_lines;
 digit			[0-9]
 letter			[A-Za-z]
 underscore		_
-special			[/'!@$%&*(){}+=:<>,;?_\.\[\]\-\\]+
+special			[/\"'!@$%&*(){}+=:<>,;_\?\.\[\]\-\\\|]+
 whitespace		([ \t])+
 
 quoted_string	\"([^\"])*\"
