@@ -50,8 +50,7 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 "+="			{ return APPEND; }
 
 "if"			{ return IF; }
-"define"		{ return DEFINE; }
-"def"			{ return DEFINE; }
+"def(ine)?"		{ return DEFINE; }
 "end"			{ return END; }
 
 {quoted_string}	{
