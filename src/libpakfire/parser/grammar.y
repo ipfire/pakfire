@@ -62,14 +62,14 @@ static int pakfire_parser_append_declaration(Pakfire pakfire,
 char* current_block = NULL;
 %}
 
-%token APPEND
-%token ASSIGN
-%token DEFINE
-%token END
-%token <string>					EQUALS
-%token <string>					IF
-%token NEWLINE
-%token <string>					WORD
+%token							T_APPEND
+%token							T_ASSIGN
+%token							T_DEFINE
+%token							T_END
+%token <string>					T_EQUALS
+%token <string>					T_IF
+%token							T_NEWLINE
+%token <string>					T_WORD
 
 %type <string>					define;
 %type <string>					line;
@@ -79,10 +79,10 @@ char* current_block = NULL;
 %type <string>					word;
 %type <string>					words;
 
-%precedence WORD
+%precedence T_WORD
 
-%left APPEND
-%left ASSIGN
+%left T_APPEND
+%left T_ASSIGN
 
 %union {
 	char* string;
@@ -99,10 +99,10 @@ thing						: assignment
 							| empty
 							;
 
-empty						: NEWLINE
+empty						: T_NEWLINE
 							;
 
-variable					: WORD;
+variable					: T_WORD;
 
 value						: words
 							| %empty
@@ -112,7 +112,7 @@ value						: words
 
 							// IF can show up in values and therefore this
 							// hack is needed to parse those properly
-word						: WORD | IF;
+word						: T_WORD | T_IF;
 
 words						: word
 							| words word
@@ -124,12 +124,12 @@ words						: word
 								}
 							};
 
-line						: words NEWLINE
+line						: words T_NEWLINE
 							{
 								// Only forward words
 								$$ = $1;
 							}
-							| NEWLINE {
+							| T_NEWLINE {
 								$$ = NULL;
 							};
 
@@ -144,17 +144,17 @@ text						: text line
 							| line
 							;
 
-if_stmt						: IF WORD EQUALS WORD NEWLINE block_assignments end
+if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_NEWLINE block_assignments end
 							{
 								printf("IF STATEMENT NOT EVALUATED, YET: %s %s\n", $2, $4);
 							};
 
-block_opening				: variable NEWLINE
+block_opening				: variable T_NEWLINE
 							{
 								current_block = pakfire_strdup($1);
 							};
 
-block_closing				: END NEWLINE
+block_closing				: T_END T_NEWLINE
 							{
 								pakfire_free(current_block);
 								current_block = NULL;
@@ -169,13 +169,13 @@ block_assignment			: assignment
 							| if_stmt
 							| empty;
 
-assignment					: variable ASSIGN value NEWLINE
+assignment					: variable T_ASSIGN value T_NEWLINE
 							{
 								int r = pakfire_parser_add_declaration(pakfire, declarations, $1, $3);
 								if (r < 0)
 									ABORT;
 							}
-							| variable APPEND value NEWLINE
+							| variable T_APPEND value T_NEWLINE
 							{
 								int r = pakfire_parser_append_declaration(pakfire, declarations, $1, $3);
 								if (r < 0)
@@ -188,16 +188,16 @@ assignment					: variable ASSIGN value NEWLINE
 									ABORT;
 							};
 
-define						: DEFINE variable NEWLINE
+define						: T_DEFINE variable T_NEWLINE
 							{
 								$$ = $2;
 							}
-							| variable NEWLINE
+							| variable T_NEWLINE
 							{
 								$$ = $1;
 							};
 
-end							: END NEWLINE;
+end							: T_END T_NEWLINE;
 
 %%
 

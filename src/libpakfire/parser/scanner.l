@@ -43,15 +43,15 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 
 #.*$			{ /* ignore comments */ }
 {whitespace}	{}
-\n				{ num_lines++; return NEWLINE; }
+\n				{ num_lines++; return T_NEWLINE; }
 
-"=="			{ return EQUALS; }
-"="				{ return ASSIGN; }
-"+="			{ return APPEND; }
+"=="			{ return T_EQUALS; }
+"="				{ return T_ASSIGN; }
+"+="			{ return T_APPEND; }
 
-"if"			{ return IF; }
-"def(ine)?"		{ return DEFINE; }
-"end"			{ return END; }
+"if"			{ return T_IF; }
+"def(ine)?"		{ return T_DEFINE; }
+"end"			{ return T_END; }
 
 {quoted_string}	{
 					// Remove quotes
@@ -59,12 +59,12 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 					yytext[len-1] = '\0';
 
 					yylval.string = pakfire_strdup(yytext + 1);
-					return WORD;
+					return T_WORD;
 				}
 
 {word}			{
 					yylval.string = pakfire_strdup(yytext);
-					return WORD;
+					return T_WORD;
 				}
 
 %%
