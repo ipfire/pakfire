@@ -69,7 +69,6 @@ char* current_block = NULL;
 %token <string>					EQUALS
 %token <string>					IF
 %token NEWLINE
-%token TAB
 %token <string>					WORD
 
 %type <string>					define;
