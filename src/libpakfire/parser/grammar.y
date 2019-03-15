@@ -67,7 +67,7 @@ char* current_block = NULL;
 %token DEFINE
 %token END
 %token <string>					EQUALS
-%token IF
+%token <string>					IF
 %token NEWLINE
 %token TAB
 %token <string>					WORD
@@ -77,6 +77,7 @@ char* current_block = NULL;
 %type <string>					text;
 %type <string>					variable;
 %type <string>					value;
+%type <string>					word;
 %type <string>					words;
 
 %precedence WORD
@@ -110,8 +111,12 @@ value						: words
 								$$ = NULL;
 							};
 
-words						: WORD
-							| words WORD
+							// IF can show up in values and therefore this
+							// hack is needed to parse those properly
+word						: WORD | IF;
+
+words						: word
+							| words word
 							{
 								int r = asprintf(&$$, "%s %s", $1, $2);
 								if (r < 0) {
