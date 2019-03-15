@@ -136,7 +136,7 @@ line						: words T_EOL
 								$$ = $1;
 							}
 							| T_EOL {
-								$$ = NULL;
+								$$ = "";
 							};
 
 text						: text line
