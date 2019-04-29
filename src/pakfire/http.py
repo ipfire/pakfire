@@ -221,7 +221,9 @@ class Client(object):
 		except urllib.error.HTTPError as e:
 			log.debug("HTTP Response: %s" % e.code)
 
-			if e.code == 403:
+			if e.code == 400:
+				raise BadRequestError()
+			elif e.code == 403:
 				raise ForbiddenError()
 			elif e.code == 404:
 				raise NotFoundError()
@@ -530,6 +532,13 @@ class DownloadError(errors.Error):
 
 
 class HTTPError(DownloadError):
+	pass
+
+
+class BadRequestError(HTTPError):
+	"""
+		HTTP Error 400 - Bad Request
+	"""
 	pass
 
 
