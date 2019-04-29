@@ -147,6 +147,8 @@ text						: text line
 							| line
 							;
 
+end							: T_END T_EOL;
+
 if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
 							{
 								printf("IF STATEMENT NOT EVALUATED, YET: %s %s\n", $2, $4);
@@ -157,7 +159,7 @@ block_opening				: variable T_EOL
 								current_block = pakfire_strdup($1);
 							};
 
-block_closing				: T_END T_EOL
+block_closing				: end
 							{
 								pakfire_free(current_block);
 								current_block = NULL;
@@ -199,8 +201,6 @@ define						: T_DEFINE variable T_EOL
 							{
 								$$ = $1;
 							};
-
-end							: T_END T_EOL;
 
 %%
 
