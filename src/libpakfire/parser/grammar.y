@@ -92,12 +92,9 @@ char* current_block = NULL;
 %%
 
 top							: %empty
-							| top thing
-							;
-
-thing						: assignment
-							| block
-							| empty
+							| top assignment
+							| top block
+							| top empty
 							;
 
 empty						: T_EOL
