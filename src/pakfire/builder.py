@@ -452,11 +452,12 @@ class BuilderContext(object):
 		# Get a reference to Pakfire
 		self.pakfire = self.builder.pakfire
 
-		# Architecture
-		self.arch = arches.Arch(self.pakfire.arch)
-
 		# Get a reference to the logger
 		self.log = self.builder.log
+
+	@property
+	def arch(self):
+		return self.pakfire.arch
 
 	@property
 	def environ(self):
