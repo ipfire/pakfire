@@ -91,8 +91,8 @@ char* current_block = NULL;
 
 %%
 
-top							: top thing
-							| thing
+top							: %empty
+							| top thing
 							;
 
 thing						: assignment
