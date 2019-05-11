@@ -389,43 +389,66 @@ PAKFIRE_EXPORT void pakfire_package_set_url(PakfirePackage pkg, const char* url)
 	pakfire_package_set_string(pkg, SOLVABLE_URL, url);
 }
 
-#warning the groups functions need to be refactored
-
 PAKFIRE_EXPORT const char** pakfire_package_get_groups(PakfirePackage pkg) {
 	const char* groups = pakfire_package_get_string(pkg, SOLVABLE_GROUP);
 
-	const char** grouplist = NULL;
-	char* group = strtok((char *)groups, " ");
+	// Return nothing when the string is empty
+	if (!groups)
+		return NULL;
 
-	int i = 0;
-	while (group != NULL) {
-		grouplist = realloc(grouplist, sizeof(char *) * ++i);
-		assert(grouplist);
-		grouplist[i - 1] = group;
+	// Copy string to stack and count spaces
+	char buffer[strlen(groups) + 2];
 
-		group = strtok(NULL, " ");
+	size_t count = 1;
+	for (unsigned int i = 0; i < strlen(groups) + 1; i++) {
+		buffer[i] = groups[i];
+
+		if (groups[i] == ' ') {
+			buffer[i] = '\0';
+			count++;
+		}
 	}
-	grouplist[i] = NULL;
+
+	// Allocate an array of sufficient size
+	const char** grouplist = pakfire_malloc(sizeof(const char*) * (count + 1));
+
+	// Copy strings to heap one by one
+	unsigned int i = 0;
+	char* p = buffer;
+	while (*p) {
+		grouplist[i++] = pakfire_strdup(p);
+
+		// Move pointer to the next string
+		p += strlen(p) + 1;
+	}
+
+	// Terminate array
+	grouplist[count] = NULL;
 
 	return grouplist;
 }
 
+static char* pakfire_package_make_group_string(const char** grouplist) {
+	char* s = NULL;
+
+	while (grouplist && *grouplist) {
+		if (s)
+			asprintf(&s, "%s %s", s, *grouplist);
+		else
+			asprintf(&s, "%s", *grouplist);
+
+		// Move pointer forward
+		grouplist++;
+	}
+
+	return s;
+}
+
 PAKFIRE_EXPORT void pakfire_package_set_groups(PakfirePackage pkg, const char** grouplist) {
-	char groups[2048] = "";
+	char* s = pakfire_package_make_group_string(grouplist);
 
-	if (grouplist) {
-		const char* group;
-		while ((group = *grouplist++) != NULL) {
-			if (groups[0])
-				strcat(groups, " ");
-
-			strcat(groups, group);
-		}
-		groups[sizeof(groups) - 1] = '\0';
-	} else
-		groups[0] = '\0';
-
-	pakfire_package_set_string(pkg, SOLVABLE_GROUP, (const char *)&groups);
+	pakfire_package_set_string(pkg, SOLVABLE_GROUP, s);
+	pakfire_free(s);
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_vendor(PakfirePackage pkg) {
@@ -772,7 +795,12 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 	pakfire_package_dump_add_lines(&string, _("Description"), description);
 
 	// Groups
-	#warning TODO groups
+	const char** groups = pakfire_package_get_groups(pkg);
+	if (groups) {
+		char* s = pakfire_package_make_group_string(groups);
+		pakfire_package_dump_add_lines(&string, _("Groups"), s);
+		pakfire_free(s);
+	}
 
 	// URL
 	const char* url = pakfire_package_get_url(pkg);
