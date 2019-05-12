@@ -389,7 +389,7 @@ PAKFIRE_EXPORT void pakfire_package_set_url(PakfirePackage pkg, const char* url)
 	pakfire_package_set_string(pkg, SOLVABLE_URL, url);
 }
 
-PAKFIRE_EXPORT const char** pakfire_package_get_groups(PakfirePackage pkg) {
+PAKFIRE_EXPORT char** pakfire_package_get_groups(PakfirePackage pkg) {
 	const char* groups = pakfire_package_get_string(pkg, SOLVABLE_GROUP);
 
 	// Return nothing when the string is empty
@@ -410,7 +410,7 @@ PAKFIRE_EXPORT const char** pakfire_package_get_groups(PakfirePackage pkg) {
 	}
 
 	// Allocate an array of sufficient size
-	const char** grouplist = pakfire_malloc(sizeof(const char*) * (count + 1));
+	char** grouplist = pakfire_malloc(sizeof(*grouplist) * (count + 1));
 
 	// Copy strings to heap one by one
 	unsigned int i = 0;
@@ -449,6 +449,30 @@ PAKFIRE_EXPORT void pakfire_package_set_groups(PakfirePackage pkg, const char** 
 
 	pakfire_package_set_string(pkg, SOLVABLE_GROUP, s);
 	pakfire_free(s);
+}
+
+PAKFIRE_EXPORT int pakfire_package_is_in_group(PakfirePackage pkg, const char* group) {
+	char** grouplist = pakfire_package_get_groups(pkg);
+	if (!grouplist)
+		return -1;
+
+	int ret = 1;
+
+	// Walk through all groups
+	while (*grouplist) {
+		// Check if the group name matches
+		if (strcmp(*grouplist, group) == 0) {
+			ret = 0;
+		}
+
+		// Free the element in the group list
+		pakfire_free(*grouplist);
+		grouplist++;
+	}
+
+	pakfire_free(grouplist);
+
+	return ret;
 }
 
 PAKFIRE_EXPORT const char* pakfire_package_get_vendor(PakfirePackage pkg) {
@@ -795,9 +819,9 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 	pakfire_package_dump_add_lines(&string, _("Description"), description);
 
 	// Groups
-	const char** groups = pakfire_package_get_groups(pkg);
+	char** groups = pakfire_package_get_groups(pkg);
 	if (groups) {
-		char* s = pakfire_package_make_group_string(groups);
+		char* s = pakfire_package_make_group_string((const char**)groups);
 		pakfire_package_dump_add_lines(&string, _("Groups"), s);
 		pakfire_free(s);
 	}

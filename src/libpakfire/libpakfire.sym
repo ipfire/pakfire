@@ -170,6 +170,7 @@ global:
 	pakfire_package_get_version;
 	pakfire_package_id;
 	pakfire_package_is_installed;
+	pakfire_package_is_in_group;
 	pakfire_package_ref;
 	pakfire_package_set_arch;
 	pakfire_package_set_buildhost;

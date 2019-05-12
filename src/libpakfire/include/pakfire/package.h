@@ -63,8 +63,9 @@ const char* pakfire_package_get_license(PakfirePackage pkg);
 void pakfire_package_set_license(PakfirePackage pkg, const char* license);
 const char* pakfire_package_get_url(PakfirePackage pkg);
 void pakfire_package_set_url(PakfirePackage pkg, const char* url);
-const char** pakfire_package_get_groups(PakfirePackage pkg);
+char** pakfire_package_get_groups(PakfirePackage pkg);
 void pakfire_package_set_groups(PakfirePackage pkg, const char** grouplist);
+int pakfire_package_is_in_group(PakfirePackage pkg, const char* group);
 const char* pakfire_package_get_vendor(PakfirePackage pkg);
 void pakfire_package_set_vendor(PakfirePackage pkg, const char* vendor);
 const char* pakfire_package_get_maintainer(PakfirePackage pkg);
@@ -131,6 +132,7 @@ enum pakfire_package_keynames {
     PAKFIRE_PKG_EPOCH,
     PAKFIRE_PKG_EVR,
     PAKFIRE_PKG_FILE,
+    PAKFIRE_PKG_GROUP,
     PAKFIRE_PKG_NAME,
     PAKFIRE_PKG_OBSOLETES,
     PAKFIRE_PKG_PROVIDES,

@@ -289,18 +289,20 @@ static void Package_set_url(PackageObject* self, PyObject* value) {
 }
 
 static PyObject* Package_get_groups(PackageObject* self) {
-	const char** groups = pakfire_package_get_groups(self->package);
+	char** groups = pakfire_package_get_groups(self->package);
 
 	PyObject* list = PyList_New(0);
-	const char* group;
+	char* group;
 
 	while ((group = *groups++) != NULL) {
 		PyObject* item = PyUnicode_FromString(group);
 		PyList_Append(list, item);
+		pakfire_free(group);
 
 		Py_DECREF(item);
 	}
 
+	pakfire_free(groups);
 	Py_INCREF(list);
 	return list;
 }

@@ -26,6 +26,7 @@
 #include <sys/personality.h>
 
 #include <solv/solver.h>
+#include <pakfire/package.h>
 
 #include "archive.h"
 #include "capabilities.h"
@@ -38,6 +39,7 @@
 #include "relation.h"
 #include "repo.h"
 #include "request.h"
+#include "selector.h"
 #include "solution.h"
 #include "step.h"
 #include "transaction.h"
@@ -147,6 +149,13 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	Py_INCREF(&RequestType);
 	PyModule_AddObject(module, "Request", (PyObject *)&RequestType);
 
+	// Selector
+	if (PyType_Ready(&SelectorType) < 0)
+		return NULL;
+
+	Py_INCREF(&SelectorType);
+	PyModule_AddObject(module, "Selector", (PyObject *)&SelectorType);
+
 	// Solution
 	if (PyType_Ready(&SolutionType) < 0)
 		return NULL;
@@ -205,6 +214,10 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	PyDict_SetItemString(d, "SEARCH_REGEX",		Py_BuildValue("i", SEARCH_REGEX));
 	PyDict_SetItemString(d, "SEARCH_FILES",		Py_BuildValue("i", SEARCH_FILES));
 	PyDict_SetItemString(d, "SEARCH_CHECKSUMS",	Py_BuildValue("i", SEARCH_CHECKSUMS));
+
+	// Add constants for packages
+	PyDict_SetItemString(d, "PAKFIRE_PKG_GROUP",	Py_BuildValue("i", PAKFIRE_PKG_GROUP));
+	PyDict_SetItemString(d, "PAKFIRE_EQ", Py_BuildValue("i", PAKFIRE_EQ));
 
 	// Add constants for rules
 	PyDict_SetItemString(d, "SOLVER_RULE_DISTUPGRADE",			Py_BuildValue("i", SOLVER_RULE_DISTUPGRADE));

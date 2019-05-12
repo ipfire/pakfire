@@ -41,6 +41,7 @@ struct _PakfireSelector {
 	PakfireFilter f_provides;
 	PakfireFilter f_evr;
 	PakfireFilter f_arch;
+	PakfireFilter f_group;
 	int nrefs;
 };
 
@@ -56,6 +57,7 @@ PAKFIRE_EXPORT PakfireSelector pakfire_selector_create(Pakfire pakfire) {
 		selector->f_name = NULL;
 		selector->f_evr = NULL;
 		selector->f_provides = NULL;
+		selector->f_group = NULL;
 	}
 
 	return selector;
@@ -89,6 +91,7 @@ static int pakfire_selector_valid_setting(int keyname, int cmp_type) {
 	switch (keyname) {
 		case PAKFIRE_PKG_ARCH:
 		case PAKFIRE_PKG_EVR:
+		case PAKFIRE_PKG_GROUP:
 		case PAKFIRE_PKG_VERSION:
 		case PAKFIRE_PKG_PROVIDES:
 			return cmp_type == PAKFIRE_EQ;
@@ -144,8 +147,15 @@ PAKFIRE_EXPORT int pakfire_selector_set(PakfireSelector selector, int keyname, i
 			filter = &selector->f_provides;
 			break;
 
+		case PAKFIRE_PKG_GROUP:
+			if (selector->f_group)
+				return PAKFIRE_E_SELECTOR;
+
+			filter = &selector->f_group;
+			break;
+
 		default:
-			return PAKFIRE_E_SELECTOR; 
+			return PAKFIRE_E_SELECTOR;
 	}
 
 	assert(filter);
@@ -291,13 +301,44 @@ static int filter_provides2queue(Pakfire pakfire, const PakfireFilter f, Queue* 
 	return 0;
 }
 
+static int filter_group2queue(Pakfire pakfire, const PakfireFilter f, Queue* queue) {
+	if (f == NULL)
+		return 0;
+
+	Pool* pool = pakfire_get_solv_pool(pakfire);
+	const char* name = f->match;
+	Dataiterator di;
+
+	switch (f->cmp_type) {
+		case PAKFIRE_EQ:
+			dataiterator_init(&di, pool, 0, 0, SOLVABLE_GROUP, name, SEARCH_SUBSTRING);
+
+			while (dataiterator_step(&di)) {
+				Solvable* s = pool->solvables + di.solvid;
+
+				if (queue_has(queue, SOLVABLE_NAME, s->name))
+					continue;
+
+				queue_push2(queue, SOLVER_SOLVABLE_NAME, s->name);
+			}
+
+			dataiterator_free(&di);
+			break;
+
+		default:
+			return 1;
+	}
+
+	return 0;
+}
+
 PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue* queue, int solver_action) {
 	int ret = 0;
 
 	Queue queue_selector;
 	queue_init(&queue_selector);
 
-	if (selector->f_name == NULL && selector->f_provides == NULL) {
+	if (selector->f_name == NULL && selector->f_provides == NULL && selector->f_group == NULL) {
 		// no name or provides in the selector is an erro
 		ret = PAKFIRE_E_SELECTOR;
 		goto finish;
@@ -318,6 +359,10 @@ PAKFIRE_EXPORT int pakfire_selector2queue(const PakfireSelector selector, Queue*
 		goto finish;
 
 	ret = filter_evr2queue(selector->pakfire, selector->f_evr, &queue_selector);
+	if (ret)
+		goto finish;
+
+	ret = filter_group2queue(selector->pakfire, selector->f_group, &queue_selector);
 	if (ret)
 		goto finish;
 

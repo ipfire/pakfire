@@ -233,6 +233,15 @@ class PakfireContext(object):
 		# XXX handle files and URLs
 
 		for req in requires:
+			# Handle groups
+			# TODO should move into libpakfire
+			if req.startswith("@"):
+				sel = _pakfire.Selector(self.pakfire)
+				sel.set(_pakfire.PAKFIRE_PKG_GROUP, _pakfire.PAKFIRE_EQ, req[1:])
+				request.install(sel)
+				continue
+
+			# Handle everything else
 			relation = _pakfire.Relation(self.pakfire, req)
 			request.install(relation)
 
