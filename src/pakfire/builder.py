@@ -35,6 +35,7 @@ from . import arch
 from . import base
 from . import cgroup
 from . import config
+from . import downloaders
 from . import logger
 from . import packages
 from . import repository
@@ -518,9 +519,21 @@ class BuilderContext(object):
 		# Logging
 		self.log.debug(_("Installing build requirements: %s") % ", ".join(packages))
 
-		# Initialise Pakfire and install all required packages
+		# Initialise Pakfire
 		with self.pakfire as p:
-			p.install(packages)
+			# Install all required packages
+			transaction = p.install(packages)
+
+			# Dump transaction to log
+			t = transaction.dump()
+			self.log.info(t)
+
+			# Download transaction
+			d = downloaders.TransactionDownloader(self.pakfire, transaction)
+			d.download()
+
+			# Run the transaction
+			transaction.run()
 
 	def build(self, package, private_network=True, shell=True):
 		package = self._prepare_package(package)
