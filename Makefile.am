@@ -352,7 +352,7 @@ check_PROGRAMS += \
 	tests/libpakfire/main \
 	tests/libpakfire/archive \
 	tests/libpakfire/key \
-	#tests/libpakfire/makefile
+	tests/libpakfire/makefile
 
 dist_tests_libpakfire_main_SOURCES = \
 	tests/libpakfire/main.c
@@ -386,16 +386,16 @@ tests_libpakfire_key_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 
-#dist_tests_libpakfire_makefile_SOURCES = \
-#	tests/libpakfire/makefile.c
-#
-#tests_libpakfire_makefile_CPPFLAGS = \
-#	$(TESTSUITE_CPPFLAGS) \
-#	-DPAKFIRE_PRIVATE
-#
-#tests_libpakfire_makefile_LDADD = \
-#	$(TESTSUITE_LDADD) \
-#	$(PAKFIRE_LIBS)
+dist_tests_libpakfire_makefile_SOURCES = \
+	tests/libpakfire/makefile.c
+
+tests_libpakfire_makefile_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS) \
+	-DPAKFIRE_PRIVATE
+
+tests_libpakfire_makefile_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
 
 # ------------------------------------------------------------------------------
 
