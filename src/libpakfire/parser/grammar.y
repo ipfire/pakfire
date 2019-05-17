@@ -72,7 +72,6 @@ char* current_block = NULL;
 %token <string>					T_WORD
 
 %type <string>					define;
-%type <string>					keyword;
 %type <string>					line;
 %type <string>					text;
 %type <string>					variable;
@@ -108,14 +107,9 @@ value						: words
 								$$ = NULL;
 							};
 
-							// XXX T_DEFINE is sort of missing here, but adding it
-							// generates a highly ambiguous grammar
-keyword						: T_IF;
-
 							// IF can show up in values and therefore this
 							// hack is needed to parse those properly
-word						: T_WORD
-							| keyword;
+word						: T_WORD;
 
 words						: word
 							| words word
@@ -196,10 +190,6 @@ assignment					: variable T_ASSIGN value T_EOL
 define						: T_DEFINE variable T_EOL
 							{
 								$$ = $2;
-							}
-							| variable T_EOL
-							{
-								$$ = $1;
 							};
 
 %%

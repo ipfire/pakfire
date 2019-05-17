@@ -18,7 +18,7 @@
 #                                                                             #
 #############################################################################*/
 
-%option nounput noinput noyywrap yylineno
+%option noinput noyywrap yylineno
 
 %{
 #define YY_DECL int yylex()
@@ -39,20 +39,59 @@ whitespace		([ \t])+
 quoted_string	\"([^\"])*\"
 word			({quoted_string}|({digit}|{letter}|{special})+)
 
+/*
+	Compatibility for the old python parser.
+
+	We automatically prepend "define" in front of some keywords, because
+	generally the language requires it.
+*/
+keywords		(description|{whitespace}(build(_cmds)?|install(_cmds)?|prepare_cmds|requires))
+
+%s DEFINE
+
 %%
 
 #.*$			{ /* ignore comments */ }
 {whitespace}	{}
 \n				{ num_lines++; return T_EOL; }
 
-"=="			{ return T_EQUALS; }
-"="				{ return T_ASSIGN; }
-"+="			{ return T_APPEND; }
+<INITIAL>^{keywords}$ {
+					// Determine the length of the string
+					size_t length = strlen("define ") + yyleng;
 
-"if"			{ return T_IF; }
-"define"		{ return T_DEFINE; }
-"def"			{ return T_DEFINE; }
-"end"			{ return T_END; }
+					// Make a copy because unput touches yytext
+					char* buffer = pakfire_malloc(length + 1);
+					snprintf(buffer, length + 1, "define %s", yytext);
+
+					// Put the whole string back onto the stack (backwards)
+					for (int i = length - 1; i >= 0; i--) {
+						unput(buffer[i]);
+					}
+
+					pakfire_free(buffer);
+				}
+
+<INITIAL>"=="	{ return T_EQUALS; }
+<INITIAL>"="	{ return T_ASSIGN; }
+<INITIAL>"+="	{ return T_APPEND; }
+
+<INITIAL>"if"	{ return T_IF; }
+<INITIAL>"define" {
+					BEGIN(DEFINE);
+					return T_DEFINE;
+				}
+<INITIAL>"def"	{
+					BEGIN(DEFINE);
+					return T_DEFINE;
+				}
+<INITIAL>"end"	{
+					return T_END;
+				}
+
+<DEFINE>"end"	{
+					BEGIN(0);
+					return T_END;
+				}
 
 {quoted_string}	{
 					// Remove quotes
