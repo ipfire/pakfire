@@ -32,14 +32,13 @@ int test_parse(const test_t* t) {
 	FILE* f = fopen(path, "r");
 	assert_return(f, EXIT_FAILURE);
 
-	struct pakfire_parser_declaration** declarations = \
-		pakfire_parser_parse_metadata_from_file(t->pakfire, f);
+	PakfireParser parser = pakfire_parser_create(t->pakfire);
 
-	// Check if we have found some declarations
-	assert_return(declarations, EXIT_FAILURE);
+	int r = pakfire_parser_read(parser, f);
+	assert_return(r == 0, EXIT_FAILURE);
 
 	// Try to retrieve some value
-	char* value = pakfire_parser_get(t->pakfire, declarations, "sources");
+	char* value = pakfire_parser_get(parser, "sources");
 	assert_return(value, EXIT_FAILURE);
 
 	printf("VALUE: sources = %s\n", value);
@@ -47,6 +46,8 @@ int test_parse(const test_t* t) {
 
 	// Cleanup
 	pakfire_free(path);
+
+	pakfire_parser_unref(parser);
 
 	return EXIT_SUCCESS;
 }

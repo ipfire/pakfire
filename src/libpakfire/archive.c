@@ -60,6 +60,7 @@ struct _PakfireArchive {
 
 	// metadata
 	int format;
+	PakfireParser parser;
 
 	PakfireFile filelist;
 	archive_checksum_t** checksums;
@@ -287,6 +288,7 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 		archive->nrefs = 1;
 
 		archive->format = -1;
+		archive->parser = pakfire_parser_create(pakfire);
 		archive->signatures = NULL;
 	}
 
@@ -319,6 +321,7 @@ static void pakfire_archive_free(PakfireArchive archive) {
 		pakfire_free(archive->signatures);
 	}
 
+	pakfire_parser_unref(archive->parser);
 	pakfire_unref(archive->pakfire);
 	pakfire_free(archive);
 }
@@ -354,21 +357,14 @@ static int pakfire_archive_parse_entry_metadata(PakfireArchive archive,
 	size_t data_size;
 
 	int r = archive_read(a, &data, &data_size);
-	if (r) {
-		return 1;
-	}
+	if (r)
+		return r;
 
 	// Parse metadata file
-	struct pakfire_parser_declaration** declarations = \
-		pakfire_parser_parse_metadata(archive->pakfire, (const char*)data, data_size);
-
+	r = pakfire_parser_parse_data(archive->parser, (const char*)data, data_size);
 	pakfire_free(data);
 
-	// Error when nothing was returned
-	if (!declarations)
-		return 1;
-
-	return 0;
+	return r;
 }
 
 static int pakfire_archive_parse_entry_filelist(PakfireArchive archive,

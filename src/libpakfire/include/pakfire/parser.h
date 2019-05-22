@@ -21,26 +21,30 @@
 #ifndef PAKFIRE_PARSER_H
 #define PAKFIRE_PARSER_H
 
-#ifdef PAKFIRE_PRIVATE
-
-#include <stddef.h>
 #include <stdio.h>
 
 #include <pakfire/types.h>
+
+PakfireParser pakfire_parser_create(Pakfire pakfire);
+PakfireParser pakfire_parser_unref(PakfireParser parser);
+int pakfire_parser_add_declaration(PakfireParser parser,
+		const char* name, const char* value);
+int pakfire_parser_append_declaration(PakfireParser parser,
+	const char* name, const char* value);
+char* pakfire_parser_get(PakfireParser parser, const char* name);
+
+int pakfire_parser_read(PakfireParser parser, FILE* f);
+
+#ifdef PAKFIRE_PRIVATE
+
+Pakfire pakfire_parser_get_pakfire(PakfireParser parser);
 
 struct pakfire_parser_declaration {
 	char* name;
 	char* value;
 };
 
-struct pakfire_parser_declaration** pakfire_parser_parse_metadata(Pakfire pakfire,
-	const char* data, size_t len);
-
-struct pakfire_parser_declaration** pakfire_parser_parse_metadata_from_file(
-	Pakfire pakfire, FILE* f);
-
-char* pakfire_parser_get(Pakfire pakfire,
-	struct pakfire_parser_declaration** declarations, const char* name);
+int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len);
 
 #endif /* PAKFIRE_PRIVATE */
 
