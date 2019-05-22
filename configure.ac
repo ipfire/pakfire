@@ -119,6 +119,7 @@ AC_CHECK_HEADERS([ \
 	assert.h \
 	ctypes.h \
 	math.h \
+	regex.h \
 	stdarg.h \
 	stdlib.h \
 	string.h \

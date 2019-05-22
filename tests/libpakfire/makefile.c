@@ -38,6 +38,13 @@ int test_parse(const test_t* t) {
 	// Check if we have found some declarations
 	assert_return(declarations, EXIT_FAILURE);
 
+	// Try to retrieve some value
+	char* value = pakfire_parser_get(t->pakfire, declarations, "sources");
+	assert_return(value, EXIT_FAILURE);
+
+	printf("VALUE: sources = %s\n", value);
+	pakfire_free(value);
+
 	// Cleanup
 	pakfire_free(path);
 

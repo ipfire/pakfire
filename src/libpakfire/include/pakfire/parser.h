@@ -39,6 +39,9 @@ struct pakfire_parser_declaration** pakfire_parser_parse_metadata(Pakfire pakfir
 struct pakfire_parser_declaration** pakfire_parser_parse_metadata_from_file(
 	Pakfire pakfire, FILE* f);
 
+char* pakfire_parser_get(Pakfire pakfire,
+	struct pakfire_parser_declaration** declarations, const char* name);
+
 #endif /* PAKFIRE_PRIVATE */
 
 #endif /* PAKFIRE_PARSER_H */
