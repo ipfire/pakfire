@@ -27,7 +27,7 @@
 
 PakfireParser pakfire_parser_create(Pakfire pakfire);
 PakfireParser pakfire_parser_unref(PakfireParser parser);
-int pakfire_parser_add_declaration(PakfireParser parser,
+int pakfire_parser_set_declaration(PakfireParser parser,
 		const char* name, const char* value);
 int pakfire_parser_append_declaration(PakfireParser parser,
 	const char* name, const char* value);

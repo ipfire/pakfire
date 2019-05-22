@@ -174,7 +174,7 @@ assignment					: variable T_ASSIGN value T_EOL
 								if (!name)
 									ABORT;
 
-								int r = pakfire_parser_add_declaration(parser, name, $3);
+								int r = pakfire_parser_set_declaration(parser, name, $3);
 								pakfire_free(name);
 
 								if (r < 0)
@@ -198,7 +198,7 @@ assignment					: variable T_ASSIGN value T_EOL
 								if (!name)
 									ABORT;
 
-								int r = pakfire_parser_add_declaration(parser, name, $2);
+								int r = pakfire_parser_set_declaration(parser, name, $2);
 								pakfire_free(name);
 
 								if (r < 0)

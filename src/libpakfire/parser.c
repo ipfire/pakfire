@@ -108,18 +108,31 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration(
 	return NULL;
 }
 
-PAKFIRE_EXPORT int pakfire_parser_add_declaration(PakfireParser parser,
+PAKFIRE_EXPORT int pakfire_parser_set_declaration(PakfireParser parser,
 		const char* name, const char* value) {
+	// Handle when name already exists
+	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
+	if (d) {
+		// Replace value
+		if (d->value)
+			pakfire_free(d->value);
+		d->value = pakfire_strdup(value);
+
+		DEBUG(parser->pakfire, "Updated declaration: %s = %s\n",
+			d->name, d->value);
+
+		// All done
+		return 0;
+	}
+
 	// Check if we have any space left
 	if (parser->next_declaration >= parser->num_declarations) {
 		ERROR(parser->pakfire, "No free declarations left\n");
 		return -1;
 	}
 
-	// XXX handle when name already exists
-
 	// Allocate a new declaration
-	struct pakfire_parser_declaration* d = pakfire_calloc(1, sizeof(*d));
+	d = pakfire_calloc(1, sizeof(*d));
 	if (!d)
 		return -1;
 
@@ -141,7 +154,7 @@ PAKFIRE_EXPORT int pakfire_parser_append_declaration(PakfireParser parser,
 
 	// Add the declaration if we could not find it
 	if (!d)
-		return pakfire_parser_add_declaration(parser, name, value);
+		return pakfire_parser_set_declaration(parser, name, value);
 
 	char* buffer = NULL;
 
