@@ -162,11 +162,18 @@ PAKFIRE_EXPORT int pakfire_parser_append_declaration(PakfireParser parser,
 	return 0;
 }
 
-static struct pakfire_parser_declaration* pakfire_parser_get_declaration_in_namespace(
-		PakfireParser parser, const char* namespace, const char* name) {
-	if (!namespace || !*namespace)
-		return pakfire_parser_get_declaration(parser, name);
+static void pakfire_parser_strip_namespace(char* s) {
+	char* pos = strrchr(s, '.');
 
+	if (pos)
+		s[pos - s] = '\0';
+	else
+		s[0] = '\0';
+}
+
+static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
+		PakfireParser parser, const char* namespace, const char* name) {
+	// Create a working copy of the namespace
 	char* n = pakfire_strdup(namespace);
 
 	size_t length = strlen(n) + strlen(name) + 1;
@@ -175,7 +182,7 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration_in_name
 	struct pakfire_parser_declaration* d = NULL;
 
 	while (1) {
-		if (n)
+		if (*n)
 			snprintf(buffer, length + 1, "%s.%s", n, name);
 		else
 			snprintf(buffer, length + 1, "%s", name);
@@ -189,26 +196,15 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration_in_name
 		if (d)
 			break;
 
-		// End if we have hit the root namespace
-		if (!n)
-			break;
-
 		/*
 			If we did not find a match, we will remove one level of the
 			namespace and try again...
 		*/
-		char* p = strrchr(n, '.');
-		if (p) {
-			n[p - n] = '\0';
-		} else {
-			pakfire_free(n);
-			n = NULL;
-		}
+		pakfire_parser_strip_namespace(n);
 	}
 
-	if (n)
-		pakfire_free(n);
 	pakfire_free(buffer);
+	pakfire_free(n);
 
 	return d;
 }
@@ -232,12 +228,9 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 		return NULL;
 	}
 
+	// Get namespace of variable we are expanding
 	char* namespace = pakfire_strdup(declaration->name);
-	char* p = strrchr(namespace, '.');
-	if (p)
-		namespace[p - namespace] = '\0';
-	else
-		namespace[0] = '\0';
+	pakfire_parser_strip_namespace(namespace);
 
 	// Create a working copy of the string we are expanding
 	char* buffer = pakfire_strdup(declaration->value);
@@ -267,7 +260,7 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 
 		// Search for a declaration of this variable
 		struct pakfire_parser_declaration* v =
-			pakfire_parser_get_declaration_in_namespace(parser, namespace, variable);
+			pakfire_parser_find_declaration(parser, namespace, variable);
 
 		DEBUG(parser->pakfire, "v = %p\n", v);
 
