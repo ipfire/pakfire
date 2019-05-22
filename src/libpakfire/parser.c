@@ -262,16 +262,13 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 		struct pakfire_parser_declaration* v =
 			pakfire_parser_find_declaration(parser, namespace, variable);
 
-		DEBUG(parser->pakfire, "v = %p\n", v);
-
 		const char* value = NULL;
 		if (v && v->value) {
-			DEBUG(parser->pakfire, "Replacing %%{%s} with %s = '%s'\n",
-				variable, v->name, value);
 			value = v->value;
-		} else {
-			DEBUG(parser->pakfire, "Replacing %%{%s} with an empty string\n", variable);
 		}
+
+		DEBUG(parser->pakfire, "Replacing %%{%s} with %s = '%s'\n",
+			variable, v->name, value);
 
 		// Reset offsets to the whole matched string
 		start = groups[0].rm_so; end = groups[0].rm_eo;
