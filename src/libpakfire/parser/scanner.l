@@ -25,6 +25,7 @@
 
 int num_lines;
 
+#include <ctype.h>
 #include <pakfire/parser.h>
 #include <pakfire/util.h>
 #include "grammar.h"
@@ -45,7 +46,8 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 	We automatically prepend "define" in front of some keywords, because
 	generally the language requires it.
 */
-keywords		(description|{whitespace}(build(_cmds)?|install(_cmds)?|prepare_cmds|requires))
+keywords		(description|{whitespace}(build(_cmds)?|files|install(_cmds)?|prepare_cmds|provides|(pre)?requires|_posttrans))
+template		{whitespace}template.*$
 
 %s DEFINE
 
@@ -54,6 +56,29 @@ keywords		(description|{whitespace}(build(_cmds)?|install(_cmds)?|prepare_cmds|r
 #.*$			{ /* ignore comments */ }
 {whitespace}	{}
 \n				{ num_lines++; return T_EOL; }
+
+<INITIAL>^{template} {
+					// Find the name of the template
+					char* name = NULL;
+					for (unsigned int i = yyleng; i > 0; i--) {
+						if (isspace(yytext[i]))
+							break;
+
+						name = yytext + i;
+					}
+
+					size_t length = strlen("template:") + strlen(name);
+
+					char* buffer = pakfire_malloc(length + 1);
+					snprintf(buffer, length + 1, "template:%s", name);
+
+					// Put the whole string back onto the stack (backwards)
+					for (int i = length - 1; i >= 0; i--) {
+						unput(buffer[i]);
+					}
+
+					pakfire_free(buffer);
+				}
 
 <INITIAL>^{keywords}$ {
 					// Determine the length of the string
