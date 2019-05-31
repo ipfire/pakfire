@@ -63,16 +63,17 @@ static PakfireParser new_parser(PakfireParser parent);
 static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2);
 
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
-	const char* val1, const char* val2, PakfireParser block);
+	const char* val1, const char* val2, PakfireParser if_block, PakfireParser else_block);
 
 %}
 
 %token							T_APPEND
 %token							T_ASSIGN
-%token <string>					T_DEFINE
-%token <string>					T_END
-%token <string>					T_EQUALS
-%token <string>					T_IF
+%token							T_DEFINE
+%token							T_END
+%token 							T_EQUALS
+%token							T_IF
+%token							T_ELSE
 %token							T_EOL
 %token <string>					T_WORD
 
@@ -172,10 +173,18 @@ text						: text line
 
 end							: T_END T_EOL;
 
-if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
+else						: T_ELSE T_EOL;
+
+if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments else block_assignments end
 							{
-								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6);
-								pakfire_parser_unref($6);
+								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $8);
+								//pakfire_parser_unref($6);
+								//pakfire_parser_unref($8);
+							}
+							| T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
+							{
+								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, NULL);
+								//pakfire_parser_unref($6);
 							};
 
 block_opening				: variable T_EOL
@@ -355,7 +364,7 @@ static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2) {
 }
 
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
-		const char* val1, const char* val2, PakfireParser block) {
+		const char* val1, const char* val2, PakfireParser if_block, PakfireParser else_block) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parser);
 
 	switch (op) {
@@ -364,20 +373,22 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 			break;
 	}
 
-	const char* namespace = current_block;
+	const char* namespace = (current_block) ? current_block : "";
 
 	// Expand values
 	char* v1 = pakfire_parser_expand(parser, namespace, val1);
 	char* v2 = pakfire_parser_expand(parser, namespace, val2);
 
-	PakfireParser result = NULL;
+	PakfireParser result;
 
 	switch (op) {
 		case OP_EQUALS:
 			DEBUG(pakfire, "  '%s' == '%s'?\n", v1, v2);
 
 			if (strcmp(v1, v2) == 0)
-				result = block;
+				result = if_block;
+			else
+				result = else_block;
 
 			break;
 	}
@@ -388,6 +399,8 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 	if (result)
 		result = pakfire_parser_ref(result);
+	else
+		result = new_parser(parser);
 
 	return result;
 }

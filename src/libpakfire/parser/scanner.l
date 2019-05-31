@@ -134,6 +134,8 @@ template		{whitespace}template.*$
 <INITIAL>"+="	{ return T_APPEND; }
 
 <INITIAL>"if"	{ return T_IF; }
+<INITIAL>"else"	{ return T_ELSE; }
+
 <INITIAL>"define" {
 					BEGIN(DEFINE);
 					return T_DEFINE;
