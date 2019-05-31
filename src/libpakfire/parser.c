@@ -41,42 +41,6 @@ struct _PakfireParser {
 	unsigned int num_declarations;
 };
 
-#if 0
-struct pakfire_parser_declarations** pakfire_parser_declarations(size_t num) {
-	struct pakfire_parser_declarations* declarations =
-		pakfire_calloc(1, sizeof(*declarations));
-
-
-		pakfire_calloc(num, sizeof(*declarations));
-
-
-
-	return declarations;
-}
-
-void pakfire_parser_declarations_free(struct pakfire_parser_declarations** declarations) {
-	for (unsigned int i = 0; i < declarations->num; i++) {
-		if (declarations->declarations[i])
-			pakfire_free(declarations->declarations[i]);
-	}
-
-	pakfire_free(declarations);
-}
-
-struct pakfire_parser_declaration* pakfire_parser_make_declaration(
-		enum pakfire_parser_declaration_operator operator, const char* name, const char* value) {
-	struct pakfire_parser_declaration* d = pakfire_calloc(1, sizeof(*d));
-
-	if (d) {
-		d->name  = pakfire_strdup(name);
-		d->value = pakfire_strdup(value);
-		d->operation = operator;
-	}
-
-	return d;
-}
-#endif
-
 PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parent) {
 	PakfireParser parser = pakfire_calloc(1, sizeof(*parser));
 	if (parser) {

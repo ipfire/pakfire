@@ -56,10 +56,6 @@ struct pakfire_parser_declarations {
 	unsigned int num;
 };
 
-struct pakfire_parser_declarations** pakfire_parser_declarations(size_t max);
-struct pakfire_parser_declaration* pakfire_parser_make_declaration(
-	enum pakfire_parser_declaration_operator operator, const char* name, const char* value);
-
 int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len);
 
 #endif /* PAKFIRE_PRIVATE */
