@@ -46,9 +46,11 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 	We automatically prepend "define" in front of some keywords, because
 	generally the language requires it.
 */
-keywords		(description|{whitespace}(build(_cmds)?|files|install(_cmds)?|prepare_cmds|provides|(pre)?requires|_posttrans))
-template		{whitespace}template.*$
+keywords		(description|{whitespace}(description|build(_cmds)?|files|filter_(provides|requires)|install(_cmds)?|prepare_cmds|provides|(pre)?requires|_posttrans))
+package			{whitespace}package.*$
 script			{whitespace}script.*$
+template		{whitespace}template.*$
+
 
 %s DEFINE
 
@@ -57,6 +59,29 @@ script			{whitespace}script.*$
 #.*$			{ /* ignore comments */ }
 {whitespace}	{}
 \n				{ num_lines++; return T_EOL; }
+
+<INITIAL>^{package} {
+					// Find the name of the package
+					char* name = NULL;
+					for (unsigned int i = yyleng; i > 0; i--) {
+						if (isspace(yytext[i]))
+							break;
+
+						name = yytext + i;
+					}
+
+					size_t length = strlen("package:") + strlen(name);
+
+					char* buffer = pakfire_malloc(length + 1);
+					snprintf(buffer, length + 1, "package:%s", name);
+
+					// Put the whole string back onto the stack (backwards)
+					for (int i = length - 1; i >= 0; i--) {
+						unput(buffer[i]);
+					}
+
+					pakfire_free(buffer);
+				}
 
 <INITIAL>^{template} {
 					// Find the name of the template
