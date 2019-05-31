@@ -32,7 +32,7 @@ int num_lines;
 
 static char* find_name(const char* s, const char* prefix) {
 	// Find the name of the package
-	char* name = NULL;
+	const char* name = NULL;
 	for (unsigned int i = strlen(s); i > 0; i--) {
 		if (isspace(s[i]))
 			break;
