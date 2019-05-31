@@ -209,6 +209,10 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 		if (d)
 			break;
 
+		// End if namespace is empty
+		if (!*n)
+			break;
+
 		/*
 			If we did not find a match, we will remove one level of the
 			namespace and try again...
