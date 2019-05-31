@@ -60,6 +60,8 @@ enum operator {
 };
 
 static PakfireParser new_parser(PakfireParser parent);
+static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2);
+
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	const char* val1, const char* val2, PakfireParser block);
 
@@ -82,7 +84,9 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %type <string>					word;
 %type <string>					words;
 
+%type <parser>					top;
 %type <parser>					assignment;
+%type <parser>					block;
 %type <parser>					block_assignments;
 %type <parser>					block_assignment;
 %type <parser>					if_stmt;
@@ -100,9 +104,21 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %%
 
 top							: %empty
+							{
+								$$ = new_parser(parser);
+							}
 							| top assignment
+							{
+								$$ = merge_parsers($1, $2);
+							}
 							| top block
+							{
+								$$ = merge_parsers($1, $2);
+							}
 							| top empty
+							{
+								$$ = $1;
+							}
 							;
 
 empty						: T_EOL
@@ -173,12 +189,14 @@ block_closing				: end
 								current_block = NULL;
 							};
 
-block						: block_opening block_assignments block_closing;
+block						: block_opening block_assignments block_closing
+							{
+								$$ = $2;
+							};
 
 block_assignments			: block_assignments block_assignment
 							{
-								$$ = pakfire_parser_merge($1, $2);
-								pakfire_parser_unref($2);
+								$$ = merge_parsers($1, $2);
 							}
 							| block_assignment;
 
@@ -324,6 +342,15 @@ static PakfireParser new_parser(PakfireParser parent) {
 	pakfire_unref(pakfire);
 
 	return parser;
+}
+
+static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2) {
+	PakfireParser p = pakfire_parser_merge(p1, p2);
+
+	// Parser 2 is now obsolete
+	pakfire_parser_unref(p2);
+
+	return p;
 }
 
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
