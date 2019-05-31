@@ -201,6 +201,7 @@ block_assignments			: block_assignments block_assignment
 							| block_assignment;
 
 block_assignment			: assignment
+							| block
 							| if_stmt
 							| empty
 							{
