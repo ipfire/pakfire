@@ -18,8 +18,6 @@
 #                                                                             #
 #############################################################################*/
 
-%glr-parser
-
 %parse-param {PakfireParser parser}
 
 // Generate verbose error messages
