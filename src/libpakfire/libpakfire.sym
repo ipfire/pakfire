@@ -211,9 +211,11 @@ global:
 
 	# parser
 	pakfire_parser_create;
+	pakfire_parser_expand;
 	pakfire_parser_get;
 	pakfire_parser_parse_data;
 	pakfire_parser_read;
+	pakfire_parser_ref;
 	pakfire_parser_unref;
 
 	# problem

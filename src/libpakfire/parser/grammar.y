@@ -56,6 +56,15 @@ static void cleanup(void);
 
 char* current_block = NULL;
 static char* pakfire_parser_make_canonical_name(const char* name);
+
+enum operator {
+	OP_EQUALS = 0,
+};
+
+static PakfireParser new_parser(PakfireParser parent);
+static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
+	const char* val1, const char* val2, PakfireParser block);
+
 %}
 
 %token							T_APPEND
@@ -75,12 +84,18 @@ static char* pakfire_parser_make_canonical_name(const char* name);
 %type <string>					word;
 %type <string>					words;
 
+%type <parser>					assignment;
+%type <parser>					block_assignments;
+%type <parser>					block_assignment;
+%type <parser>					if_stmt;
+
 %precedence T_WORD
 
 %left T_APPEND
 %left T_ASSIGN
 
 %union {
+	PakfireParser parser;
 	char* string;
 }
 
@@ -145,7 +160,8 @@ end							: T_END T_EOL;
 
 if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
 							{
-								printf("IF STATEMENT NOT EVALUATED, YET: %s %s\n", $2, $4);
+								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6);
+								pakfire_parser_unref($6);
 							};
 
 block_opening				: variable T_EOL
@@ -162,11 +178,18 @@ block_closing				: end
 block						: block_opening block_assignments block_closing;
 
 block_assignments			: block_assignments block_assignment
+							{
+								$$ = pakfire_parser_merge($1, $2);
+								pakfire_parser_unref($2);
+							}
 							| block_assignment;
 
 block_assignment			: assignment
 							| if_stmt
-							| empty;
+							| empty
+							{
+								$$ = new_parser(parser);
+							};
 
 assignment					: variable T_ASSIGN value T_EOL
 							{
@@ -174,11 +197,17 @@ assignment					: variable T_ASSIGN value T_EOL
 								if (!name)
 									ABORT;
 
-								int r = pakfire_parser_set_declaration(parser, name, $3);
+								// Allocate a new parser
+								// XXX should not inherit from parser
+								$$ = new_parser(parser);
+
+								int r = pakfire_parser_set_declaration($$, name, $3);
 								pakfire_free(name);
 
-								if (r < 0)
+								if (r < 0) {
+									pakfire_parser_unref($$);
 									ABORT;
+								}
 							}
 							| variable T_APPEND value T_EOL
 							{
@@ -186,11 +215,17 @@ assignment					: variable T_ASSIGN value T_EOL
 								if (!name)
 									ABORT;
 
-								int r = pakfire_parser_append_declaration(parser, name, $3);
+								// Allocate a new parser
+								// XXX should not inherit from parser
+								$$ = new_parser(parser);
+
+								int r = pakfire_parser_append_declaration($$, name, $3);
 								pakfire_free(name);
 
-								if (r < 0)
+								if (r < 0) {
+									pakfire_parser_unref($$);
 									ABORT;
+								}
 							}
 							| define text end
 							{
@@ -198,11 +233,17 @@ assignment					: variable T_ASSIGN value T_EOL
 								if (!name)
 									ABORT;
 
-								int r = pakfire_parser_set_declaration(parser, name, $2);
+								// Allocate a new parser
+								// XXX should not inherit from parser
+								$$ = new_parser(parser);
+
+								int r = pakfire_parser_set_declaration($$, name, $2);
 								pakfire_free(name);
 
-								if (r < 0)
+								if (r < 0) {
+									pakfire_parser_unref($$);
 									ABORT;
+								}
 							};
 
 define						: T_DEFINE variable T_EOL
@@ -256,4 +297,51 @@ void yyerror(PakfireParser parser, const char* s) {
 	ERROR(pakfire, "Error (line %d): %s\n", num_lines, s);
 
 	pakfire_unref(pakfire);
+}
+
+static PakfireParser new_parser(PakfireParser parent) {
+	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
+
+	PakfireParser parser = pakfire_parser_create(pakfire, parent);
+	pakfire_unref(pakfire);
+
+	return parser;
+}
+
+static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
+		const char* val1, const char* val2, PakfireParser block) {
+	Pakfire pakfire = pakfire_parser_get_pakfire(parser);
+
+	switch (op) {
+		case OP_EQUALS:
+			DEBUG(pakfire, "Evaluating if statement: %s == %s?\n", val1, val2);
+			break;
+	}
+
+	const char* namespace = current_block;
+
+	// Expand values
+	char* v1 = pakfire_parser_expand(parser, namespace, val1);
+	char* v2 = pakfire_parser_expand(parser, namespace, val2);
+
+	PakfireParser result = NULL;
+
+	switch (op) {
+		case OP_EQUALS:
+			DEBUG(pakfire, "  '%s' == '%s'?\n", v1, v2);
+
+			if (strcmp(v1, v2) == 0)
+				result = block;
+
+			break;
+	}
+
+	pakfire_unref(pakfire);
+	pakfire_free(v1);
+	pakfire_free(v2);
+
+	if (result)
+		result = pakfire_parser_ref(result);
+
+	return result;
 }

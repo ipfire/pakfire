@@ -288,7 +288,7 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_create(Pakfire pakfire) {
 		archive->nrefs = 1;
 
 		archive->format = -1;
-		archive->parser = pakfire_parser_create(pakfire);
+		archive->parser = pakfire_parser_create(pakfire, NULL);
 		archive->signatures = NULL;
 	}
 

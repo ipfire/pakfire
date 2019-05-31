@@ -25,13 +25,19 @@
 
 #include <pakfire/types.h>
 
-PakfireParser pakfire_parser_create(Pakfire pakfire);
+PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parser);
+PakfireParser pakfire_parser_ref(PakfireParser parser);
 PakfireParser pakfire_parser_unref(PakfireParser parser);
 int pakfire_parser_set_declaration(PakfireParser parser,
 		const char* name, const char* value);
 int pakfire_parser_append_declaration(PakfireParser parser,
 	const char* name, const char* value);
+
+char* pakfire_parser_expand(PakfireParser parser,
+	const char* namespace, const char* value);
 char* pakfire_parser_get(PakfireParser parser, const char* name);
+
+PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2);
 
 int pakfire_parser_read(PakfireParser parser, FILE* f);
 
@@ -43,6 +49,16 @@ struct pakfire_parser_declaration {
 	char* name;
 	char* value;
 };
+
+struct pakfire_parser_declarations {
+	struct pakfire_parser_declaration** declarations;
+	unsigned int next;
+	unsigned int num;
+};
+
+struct pakfire_parser_declarations** pakfire_parser_declarations(size_t max);
+struct pakfire_parser_declaration* pakfire_parser_make_declaration(
+	enum pakfire_parser_declaration_operator operator, const char* name, const char* value);
 
 int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len);
 

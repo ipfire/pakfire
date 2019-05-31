@@ -33,6 +33,7 @@
 
 struct _PakfireParser {
 	Pakfire pakfire;
+	struct _PakfireParser* parent;
 	int nrefs;
 
 	struct pakfire_parser_declaration** declarations;
@@ -40,10 +41,50 @@ struct _PakfireParser {
 	unsigned int num_declarations;
 };
 
-PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire) {
+#if 0
+struct pakfire_parser_declarations** pakfire_parser_declarations(size_t num) {
+	struct pakfire_parser_declarations* declarations =
+		pakfire_calloc(1, sizeof(*declarations));
+
+
+		pakfire_calloc(num, sizeof(*declarations));
+
+
+
+	return declarations;
+}
+
+void pakfire_parser_declarations_free(struct pakfire_parser_declarations** declarations) {
+	for (unsigned int i = 0; i < declarations->num; i++) {
+		if (declarations->declarations[i])
+			pakfire_free(declarations->declarations[i]);
+	}
+
+	pakfire_free(declarations);
+}
+
+struct pakfire_parser_declaration* pakfire_parser_make_declaration(
+		enum pakfire_parser_declaration_operator operator, const char* name, const char* value) {
+	struct pakfire_parser_declaration* d = pakfire_calloc(1, sizeof(*d));
+
+	if (d) {
+		d->name  = pakfire_strdup(name);
+		d->value = pakfire_strdup(value);
+		d->operation = operator;
+	}
+
+	return d;
+}
+#endif
+
+PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parent) {
 	PakfireParser parser = pakfire_calloc(1, sizeof(*parser));
 	if (parser) {
 		parser->pakfire = pakfire_ref(pakfire);
+
+		// Store a reference to the parent parser if we have one
+		if (parent)
+			parser->parent = pakfire_parser_ref(parent);
 
 		parser->num_declarations = NUM_DECLARATIONS;
 
@@ -53,6 +94,12 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire) {
 
 		parser->next_declaration = 0;
 	}
+
+	return parser;
+}
+
+PAKFIRE_EXPORT PakfireParser pakfire_parser_ref(PakfireParser parser) {
+	++parser->nrefs;
 
 	return parser;
 }
@@ -76,6 +123,7 @@ static void pakfire_parser_free(PakfireParser parser) {
 
 	pakfire_parser_free_declarations(parser->declarations, parser->num_declarations);
 
+	pakfire_parser_unref(parser->parent);
 	pakfire_unref(parser->pakfire);
 	pakfire_free(parser);
 }
@@ -104,6 +152,10 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration(
 		if (strcmp(d->name, name) == 0)
 			return d;
 	}
+
+	// If nothing was found, we will try finding a match in the parent parser
+	if (parser->parent)
+		return pakfire_parser_get_declaration(parser->parent, name);
 
 	return NULL;
 }
@@ -232,6 +284,25 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 	if (!declaration || !declaration->value)
 		return NULL;
 
+	// Get namespace of variable we are expanding
+	char* namespace = pakfire_strdup(declaration->name);
+	pakfire_parser_strip_namespace(namespace);
+
+	// Expand the value
+	char* buffer = pakfire_parser_expand(parser, namespace, declaration->value);
+
+	// Cleanup
+	pakfire_free(namespace);
+
+	return buffer;
+}
+
+PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser,
+		const char* namespace, const char* value) {
+	// Return NULL when the value is NULL
+	if (!value)
+		return NULL;
+
 	// Compile the regular expression
 	regex_t preg;
 	int r = regcomp(&preg, VARIABLE_PATTERN, REG_EXTENDED);
@@ -245,12 +316,8 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 		return NULL;
 	}
 
-	// Get namespace of variable we are expanding
-	char* namespace = pakfire_strdup(declaration->name);
-	pakfire_parser_strip_namespace(namespace);
-
 	// Create a working copy of the string we are expanding
-	char* buffer = pakfire_strdup(declaration->value);
+	char* buffer = pakfire_strdup(value);
 
 	const size_t max_groups = 2;
 	regmatch_t groups[max_groups];
@@ -281,11 +348,14 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 
 		const char* value = NULL;
 		if (v && v->value) {
-			value = v->value;
-		}
+			DEBUG(parser->pakfire, "Replacing %%{%s} with %s = '%s'\n",
+				variable, v->name, v->value);
 
-		DEBUG(parser->pakfire, "Replacing %%{%s} with %s = '%s'\n",
-			variable, v->name, value);
+			value = v->value;
+		} else {
+			DEBUG(parser->pakfire, "Replacing %%{%s} with an empty string\n",
+				variable);
+		}
 
 		// Reset offsets to the whole matched string
 		start = groups[0].rm_so; end = groups[0].rm_eo;
@@ -327,6 +397,21 @@ PAKFIRE_EXPORT char* pakfire_parser_get(PakfireParser parser, const char* name) 
 
 	// Otherwise return the expanded value
 	return pakfire_parser_expand_declaration(parser, d);
+}
+
+PAKFIRE_EXPORT PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2) {
+	DEBUG(parser1->pakfire, "Merging parsers %p and %p\n", parser1, parser2);
+
+	if (parser2) {
+		for (unsigned int i = 0; i < parser2->num_declarations; i++) {
+			struct pakfire_parser_declaration* d = parser2->declarations[i];
+
+			if (d)
+				pakfire_parser_set_declaration(parser1, d->name, d->value);
+		}
+	}
+
+	return parser1;
 }
 
 PAKFIRE_EXPORT int pakfire_parser_read(PakfireParser parser, FILE* f) {
