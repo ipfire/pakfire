@@ -29,6 +29,26 @@ int num_lines;
 #include <pakfire/parser.h>
 #include <pakfire/util.h>
 #include "grammar.h"
+
+static char* find_name(const char* s, const char* prefix) {
+	// Find the name of the package
+	char* name = NULL;
+	for (unsigned int i = strlen(s); i > 0; i--) {
+		if (isspace(s[i]))
+			break;
+
+		name = s + i;
+	}
+
+	// New length
+	size_t length = strlen(prefix) + strlen(name);
+
+	// Allocate a new buffer and write the string into it
+	char* buffer = pakfire_malloc(length + 1);
+	snprintf(buffer, length + 1, "%s%s", prefix, name);
+
+	return buffer;
+}
 %}
 
 digit			[0-9]
@@ -61,22 +81,10 @@ template		{whitespace}template.*$
 \n				{ num_lines++; return T_EOL; }
 
 <INITIAL>^{package} {
-					// Find the name of the package
-					char* name = NULL;
-					for (unsigned int i = yyleng; i > 0; i--) {
-						if (isspace(yytext[i]))
-							break;
-
-						name = yytext + i;
-					}
-
-					size_t length = strlen("package:") + strlen(name);
-
-					char* buffer = pakfire_malloc(length + 1);
-					snprintf(buffer, length + 1, "package:%s", name);
+					char* buffer = find_name(yytext, "package:");
 
 					// Put the whole string back onto the stack (backwards)
-					for (int i = length - 1; i >= 0; i--) {
+					for (int i = strlen(buffer) - 1; i >= 0; i--) {
 						unput(buffer[i]);
 					}
 
@@ -84,22 +92,10 @@ template		{whitespace}template.*$
 				}
 
 <INITIAL>^{template} {
-					// Find the name of the template
-					char* name = NULL;
-					for (unsigned int i = yyleng; i > 0; i--) {
-						if (isspace(yytext[i]))
-							break;
-
-						name = yytext + i;
-					}
-
-					size_t length = strlen("template:") + strlen(name);
-
-					char* buffer = pakfire_malloc(length + 1);
-					snprintf(buffer, length + 1, "template:%s", name);
+					char* buffer = find_name(yytext, "template:");
 
 					// Put the whole string back onto the stack (backwards)
-					for (int i = length - 1; i >= 0; i--) {
+					for (int i = strlen(buffer) - 1; i >= 0; i--) {
 						unput(buffer[i]);
 					}
 
@@ -107,22 +103,10 @@ template		{whitespace}template.*$
 				}
 
 <INITIAL>^{script} {
-					// Find the name of the template
-					char* name = NULL;
-					for (unsigned int i = yyleng; i > 0; i--) {
-						if (isspace(yytext[i]))
-							break;
-
-						name = yytext + i;
-					}
-
-					size_t length = strlen("define script:") + strlen(name);
-
-					char* buffer = pakfire_malloc(length + 1);
-					snprintf(buffer, length + 1, "define script:%s", name);
+					char* buffer = find_name(yytext, "define script:");
 
 					// Put the whole string back onto the stack (backwards)
-					for (int i = length - 1; i >= 0; i--) {
+					for (int i = strlen(buffer) - 1; i >= 0; i--) {
 						unput(buffer[i]);
 					}
 
