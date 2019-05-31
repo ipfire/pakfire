@@ -211,6 +211,7 @@ global:
 
 	# parser
 	pakfire_parser_create;
+	pakfire_parser_dump;
 	pakfire_parser_expand;
 	pakfire_parser_get;
 	pakfire_parser_parse_data;

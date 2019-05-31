@@ -393,3 +393,20 @@ PAKFIRE_EXPORT int pakfire_parser_read(PakfireParser parser, FILE* f) {
 
 	return r;
 }
+
+PAKFIRE_EXPORT char* pakfire_parser_dump(PakfireParser parser) {
+	char* s = NULL;
+
+	for (unsigned int i = 0; i < parser->num_declarations; i++) {
+		struct pakfire_parser_declaration* d = parser->declarations[i];
+
+		if (d) {
+			if (s)
+				asprintf(&s, "%s%-24s = %s\n", s, d->name, d->value);
+			else
+				asprintf(&s, "%-24s = %s\n", d->name, d->value);
+		}
+	}
+
+	return s;
+}

@@ -274,7 +274,7 @@ static char* pakfire_parser_make_canonical_name(const char* name) {
 }
 
 int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len) {
-	Pakfire pakfire = pakfire_parser_get_pakfire(parser);
+	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
 
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
@@ -294,8 +294,17 @@ int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len
 		parent = pakfire_parser_merge(parent, parser);
 	}
 
-	pakfire_unref(pakfire);
+	// Destroy the parser
 	pakfire_parser_unref(parser);
+
+	// Log what we have in the parent parser now
+	char* dump = pakfire_parser_dump(parent);
+
+	DEBUG(pakfire, "Status of the parser %p:\n%s\n", parent, dump);
+	pakfire_free(dump);
+
+	// Cleanup
+	pakfire_unref(pakfire);
 
 	return r;
 }

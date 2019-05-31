@@ -40,6 +40,7 @@ char* pakfire_parser_get(PakfireParser parser, const char* name);
 PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2);
 
 int pakfire_parser_read(PakfireParser parser, FILE* f);
+char* pakfire_parser_dump(PakfireParser parser);
 
 #ifdef PAKFIRE_PRIVATE
 
