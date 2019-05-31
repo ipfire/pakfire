@@ -36,12 +36,28 @@ struct _PakfireParser {
 	struct _PakfireParser* parent;
 	int nrefs;
 
+	char* namespace;
+
 	struct pakfire_parser_declaration** declarations;
 	unsigned int next_declaration;
 	unsigned int num_declarations;
 };
 
-PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parent) {
+static char* pakfire_parser_make_namespace(PakfireParser parent, const char* namespace) {
+	if (!namespace)
+		namespace = "";
+
+	char* buffer = NULL;
+
+	if (parent && *parent->namespace)
+		asprintf(&buffer, "%s.%s", parent->namespace, namespace);
+	else
+		buffer = pakfire_strdup(namespace);
+
+	return buffer;
+}
+
+PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parent, const char* namespace) {
 	PakfireParser parser = pakfire_calloc(1, sizeof(*parser));
 	if (parser) {
 		parser->pakfire = pakfire_ref(pakfire);
@@ -50,6 +66,9 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 		if (parent)
 			parser->parent = pakfire_parser_ref(parent);
 
+		// Make namespace
+		parser->namespace = pakfire_parser_make_namespace(parent, namespace);
+
 		parser->num_declarations = NUM_DECLARATIONS;
 
 		// Allocate a decent number of declarations
@@ -57,6 +76,9 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 			parser->num_declarations, sizeof(*parser->declarations));
 
 		parser->next_declaration = 0;
+
+		DEBUG(pakfire, "Allocated new parser at %p (%s)\n",
+			parser, parser->namespace);
 	}
 
 	return parser;
@@ -89,6 +111,7 @@ static void pakfire_parser_free(PakfireParser parser) {
 
 	pakfire_parser_unref(parser->parent);
 	pakfire_unref(parser->pakfire);
+	pakfire_free(parser->namespace);
 	pakfire_free(parser);
 }
 

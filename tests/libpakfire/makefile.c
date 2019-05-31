@@ -32,7 +32,7 @@ int test_parse(const test_t* t) {
 	FILE* f = fopen(path, "r");
 	assert_return(f, EXIT_FAILURE);
 
-	PakfireParser parser = pakfire_parser_create(t->pakfire, NULL);
+	PakfireParser parser = pakfire_parser_create(t->pakfire, NULL, NULL);
 
 	int r = pakfire_parser_read(parser, f);
 	assert_return(r == 0, EXIT_FAILURE);

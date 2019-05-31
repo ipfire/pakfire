@@ -312,7 +312,7 @@ int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
 	// Create a new sub-parser
-	PakfireParser parser = pakfire_parser_create(pakfire, parent);
+	PakfireParser parser = pakfire_parser_create(pakfire, parent, NULL);
 
 	num_lines = 1;
 
@@ -353,7 +353,7 @@ void yyerror(PakfireParser parser, const char* s) {
 static PakfireParser new_parser(PakfireParser parent) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
 
-	PakfireParser parser = pakfire_parser_create(pakfire, parent);
+	PakfireParser parser = pakfire_parser_create(pakfire, parent, current_block);
 	pakfire_unref(pakfire);
 
 	return parser;
