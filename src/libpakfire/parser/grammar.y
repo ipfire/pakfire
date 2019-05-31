@@ -207,14 +207,19 @@ block_assignments			: block_assignments block_assignment
 							{
 								$$ = merge_parsers($1, $2);
 							}
-							| block_assignment;
+							| block_assignment {
+								if ($1)
+									$$ = $1;
+								else
+									$$ = new_parser(parser);
+							};
 
 block_assignment			: assignment
 							| block
 							| if_stmt
 							| empty
 							{
-								$$ = new_parser(parser);
+								$$ = NULL;
 							};
 
 assignment					: variable T_ASSIGN value T_EOL
@@ -379,7 +384,7 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	char* v1 = pakfire_parser_expand(parser, namespace, val1);
 	char* v2 = pakfire_parser_expand(parser, namespace, val2);
 
-	PakfireParser result;
+	PakfireParser result = NULL;
 
 	switch (op) {
 		case OP_EQUALS:
@@ -399,8 +404,6 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 	if (result)
 		result = pakfire_parser_ref(result);
-	else
-		result = new_parser(parser);
 
 	return result;
 }
