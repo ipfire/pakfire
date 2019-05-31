@@ -273,10 +273,13 @@ static char* pakfire_parser_make_canonical_name(const char* name) {
 	return buffer;
 }
 
-int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len) {
+int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parser);
 
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
+
+	// Create a new sub-parser
+	PakfireParser parser = pakfire_parser_create(pakfire, parent);
 
 	num_lines = 1;
 
@@ -284,7 +287,15 @@ int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len
 	int r = yyparse(parser);
 	yy_delete_buffer(buffer);
 
+	// If everything was parsed successfully, we merge the sub-parser into
+	// the parent parser. That way, it will be untouched if something could
+	// not be successfully parsed.
+	if (r == 0) {
+		parent = pakfire_parser_merge(parent, parser);
+	}
+
 	pakfire_unref(pakfire);
+	pakfire_parser_unref(parser);
 
 	return r;
 }
