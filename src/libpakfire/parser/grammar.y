@@ -49,8 +49,7 @@ extern int yyparse();
 extern int num_lines;
 static void yyerror(PakfireParser parser, const char* s);
 
-static void cleanup(void);
-#define ABORT do { cleanup(); YYABORT; } while (0);
+#define ABORT do { YYABORT; } while (0);
 
 enum operator {
 	OP_EQUALS = 0,
@@ -240,9 +239,6 @@ define						: T_DEFINE variable T_EOL
 							};
 
 %%
-
-static void cleanup(void) {
-}
 
 int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
