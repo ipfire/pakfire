@@ -113,8 +113,18 @@ Pakfire pakfire_parser_get_pakfire(PakfireParser parser) {
 static void pakfire_parser_free_declarations(
 		struct pakfire_parser_declaration** declarations, unsigned int num) {
 	for (unsigned int i = 0; i < num; i++) {
-		if (declarations[i])
-			pakfire_free(declarations[i]);
+		struct pakfire_parser_declaration* d = declarations[i];
+
+		// If we hit NULL, this is the end
+		if (!d)
+			break;
+
+		// Free everything
+		if (d->name)
+			pakfire_free(d->name);
+		if (d->value)
+			pakfire_free(d->value);
+		pakfire_free(d);
 	}
 
 	pakfire_free(declarations);
