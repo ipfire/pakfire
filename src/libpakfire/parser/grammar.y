@@ -25,6 +25,7 @@
 
 %{
 #include <stdio.h>
+#include <time.h>
 
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
@@ -245,6 +246,9 @@ int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len
 
 	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
 
+	// Save start time
+	clock_t t_start = clock();
+
 	// Create a new sub-parser
 	PakfireParser parser = pakfire_parser_create(pakfire, parent, NULL);
 
@@ -261,6 +265,9 @@ int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len
 		parent = pakfire_parser_merge(parent, parser);
 	}
 
+	// Save end time
+	clock_t t_end = clock();
+
 	// Destroy the parser
 	pakfire_parser_unref(parser);
 
@@ -269,6 +276,10 @@ int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len
 
 	DEBUG(pakfire, "Status of the parser %p:\n%s\n", parent, dump);
 	pakfire_free(dump);
+
+	// Log time we needed to parse data
+	DEBUG(pakfire, "Parser finished in %.4fms\n",
+		(double)(t_end - t_start) * 1000 / CLOCKS_PER_SEC);
 
 	// Cleanup
 	pakfire_unref(pakfire);
