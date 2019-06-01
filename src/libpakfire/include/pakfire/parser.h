@@ -55,12 +55,6 @@ struct pakfire_parser_declaration {
 	char* value;
 };
 
-struct pakfire_parser_declarations {
-	struct pakfire_parser_declaration** declarations;
-	unsigned int next;
-	unsigned int num;
-};
-
 int pakfire_parser_parse_data(PakfireParser parser, const char* data, size_t len);
 
 #endif /* PAKFIRE_PRIVATE */
