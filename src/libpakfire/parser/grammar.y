@@ -84,10 +84,8 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 %type <parser>					top;
 %type <parser>					item;
-%type <parser>					assignment;
+%type <parser>					statement;
 %type <parser>					block;
-%type <parser>					block_assignments;
-%type <parser>					block_assignment;
 %type <parser>					if_stmt;
 
 %precedence T_WORD
@@ -112,7 +110,8 @@ top							: top item
 							}
 							;
 
-item						: assignment
+item						: statement
+							| if_stmt
 							| block
 							| empty {
 								$$ = NULL;
@@ -165,20 +164,27 @@ text						: text line
 							| line
 							;
 
-end							: T_END T_EOL;
+if							: T_IF;
 
 else						: T_ELSE T_EOL;
 
-if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments else block_assignments end
+end							: T_END T_EOL;
+
+if_stmt						: if variable T_EQUALS variable T_EOL top else top end
 							{
 								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $8);
 								//pakfire_parser_unref($6);
 								//pakfire_parser_unref($8);
 							}
-							| T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments end
+							| if variable T_EQUALS variable T_EOL top end
 							{
 								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, NULL);
 								//pakfire_parser_unref($6);
+							};
+
+block						: block_opening top block_closing
+							{
+								$$ = $2;
 							};
 
 block_opening				: variable T_EOL
@@ -193,26 +199,7 @@ block_closing				: end
 								parser = pakfire_parser_get_parent(parser);
 							};
 
-block						: block_opening block_assignments block_closing
-							{
-								$$ = $2;
-							};
-
-block_assignments			: block_assignments block_assignment
-							{
-								$$ = merge_parsers($1, $2);
-							}
-							| block_assignment;
-
-block_assignment			: assignment
-							| block
-							| if_stmt
-							| empty
-							{
-								$$ = NULL;
-							};
-
-assignment					: variable T_ASSIGN value T_EOL
+statement					: variable T_ASSIGN value T_EOL
 							{
 								// Allocate a new parser
 								$$ = new_parser(parser, NULL);
