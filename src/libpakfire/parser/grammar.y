@@ -204,12 +204,7 @@ block_assignments			: block_assignments block_assignment
 							{
 								$$ = merge_parsers($1, $2);
 							}
-							| block_assignment {
-								if ($1)
-									$$ = $1;
-								else
-									$$ = new_parser(parser, NULL);
-							};
+							| block_assignment;
 
 block_assignment			: assignment
 							| block
