@@ -312,6 +312,10 @@ PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser, const char* val
 	if (!value)
 		return NULL;
 
+	char* pos = strchr(value, '%');
+	if (!pos)
+		return pakfire_strdup(value);
+
 	// Compile the regular expression
 	regex_t preg;
 	int r = regcomp(&preg, VARIABLE_PATTERN, REG_EXTENDED);
