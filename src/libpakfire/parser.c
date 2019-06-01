@@ -224,31 +224,41 @@ PAKFIRE_EXPORT int pakfire_parser_set(PakfireParser parser, const char* name, co
 	return r;
 }
 
-PAKFIRE_EXPORT int pakfire_parser_append(PakfireParser parser,
-		const char* name, const char* value) {
+static const char* pakfire_parser_get_raw(PakfireParser parser, const char* name) {
 	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
 
-	// Add the declaration if we could not find it
-	if (!d)
-		return pakfire_parser_set_declaration(parser, name, value);
+	// Return a match
+	if (d)
+		return d->value;
 
+	// Search in parent parser if available
+	if (parser->parent)
+		return pakfire_parser_get_raw(parser->parent, name);
+
+	return NULL;
+}
+
+PAKFIRE_EXPORT int pakfire_parser_append(PakfireParser parser,
+		const char* name, const char* value) {
 	char* buffer = NULL;
 
+	// Fetch the value of the current declaration
+	const char* old_value = pakfire_parser_get_raw(parser, name);
+
+	// Set the new value when there is no old one
+	if (!old_value)
+		return pakfire_parser_set_declaration(parser, name, value);
+
 	// Concat value
-	int r = asprintf(&buffer, "%s %s", d->value, value);
+	int r = asprintf(&buffer, "%s %s", old_value, value);
 	if (r < 0)
 		return r;
 
-	DEBUG(parser->pakfire, "Appended declaration: %s = %s (was: %s)\n",
-		d->name, buffer, d->value);
+	// Set the new value
+	r = pakfire_parser_set_declaration(parser, name, buffer);
+	pakfire_free(buffer);
 
-	// Replace value in declaration
-	if (d->value)
-		pakfire_free(d->value);
-
-	d->value = buffer;
-
-	return 0;
+	return r;
 }
 
 static void pakfire_parser_strip_namespace(char* s) {
@@ -399,19 +409,6 @@ PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser, const char* val
 	regfree(&preg);
 
 	return buffer;
-}
-
-static const char* pakfire_parser_get_raw(PakfireParser parser, const char* name) {
-	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
-
-	if (d)
-		return d->value;
-
-	// Search in parent parser if available
-	if (parser->parent)
-		return pakfire_parser_get_raw(parser->parent, name);
-
-	return NULL;
 }
 
 PAKFIRE_EXPORT char* pakfire_parser_get(PakfireParser parser, const char* name) {
