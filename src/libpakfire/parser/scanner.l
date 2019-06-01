@@ -69,8 +69,12 @@ word			({quoted_string}|({digit}|{letter}|{special})+)
 keywords		(description|{whitespace}(description|build(_cmds)?|files|filter_(provides|requires)|install(_cmds)?|prepare_cmds|provides|(pre)?requires|_posttrans))
 package			{whitespace}package.*$
 script			{whitespace}script.*$
-template		{whitespace}template.*$
 
+/* Template definitions are indented once */
+template1		\ttemplate.*
+
+/* In a package block, the template line is indented more than once */
+template2		{whitespace}template.*
 
 %s DEFINE
 
@@ -91,8 +95,19 @@ template		{whitespace}template.*$
 					pakfire_free(buffer);
 				}
 
-<INITIAL>^{template} {
+<INITIAL>^{template1}$ {
 					char* buffer = find_name(yytext, "template:");
+
+					// Put the whole string back onto the stack (backwards)
+					for (int i = strlen(buffer) - 1; i >= 0; i--) {
+						unput(buffer[i]);
+					}
+
+					pakfire_free(buffer);
+				}
+
+<INITIAL>^{template2}$ {
+					char* buffer = find_name(yytext, "template = ");
 
 					// Put the whole string back onto the stack (backwards)
 					for (int i = strlen(buffer) - 1; i >= 0; i--) {
