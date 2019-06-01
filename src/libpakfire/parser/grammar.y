@@ -129,8 +129,6 @@ value						: words
 								$$ = NULL;
 							};
 
-							// IF can show up in values and therefore this
-							// hack is needed to parse those properly
 word						: T_WORD;
 
 words						: word
