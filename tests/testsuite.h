@@ -63,4 +63,13 @@ int testsuite_run(testsuite_t* ts);
 		} \
 	} while (0)
 
+#define assert_compare(string, value, r) \
+	do { \
+		if (strcmp(string, value) != 0) { \
+			LOG_ERROR("Failed assertion: " #string " != " #value " %s:%d %s\n", \
+				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
+			return r; \
+		} \
+	} while (0)
+
 #endif /* PAKFIRE_TESTSUITE_H */
