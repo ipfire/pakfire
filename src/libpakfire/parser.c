@@ -272,7 +272,7 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 	// Create a working copy of the namespace
 	char* n = pakfire_strdup(parser->namespace);
 
-	size_t length = (n) ? strlen(n) : 0 + strlen(name) + 1;
+	size_t length = ((n) ? strlen(n) : 0) + strlen(name) + 1;
 	char* buffer = pakfire_malloc(length + 1);
 
 	struct pakfire_parser_declaration* d = NULL;
@@ -293,7 +293,7 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 			break;
 
 		// End if namespace is empty
-		if (!*n)
+		if (!n || !*n)
 			break;
 
 		/*
@@ -304,7 +304,9 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 	}
 
 	pakfire_free(buffer);
-	pakfire_free(n);
+
+	if (n)
+		pakfire_free(n);
 
 	return d;
 }
