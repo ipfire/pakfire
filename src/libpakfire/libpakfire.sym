@@ -217,6 +217,7 @@ global:
 	pakfire_parser_expand;
 	pakfire_parser_get;
 	pakfire_parser_get_parent;
+	pakfire_parser_merge;
 	pakfire_parser_parse_data;
 	pakfire_parser_read;
 	pakfire_parser_ref;
