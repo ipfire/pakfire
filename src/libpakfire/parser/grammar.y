@@ -82,7 +82,7 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %type <string>					word;
 %type <string>					words;
 
-%type <parser>					top;
+%type <parser>					grammar;
 %type <parser>					item;
 %type <parser>					statement;
 %type <parser>					block;
@@ -100,14 +100,22 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 %%
 
-top							: top item
+top							: grammar
+							{
+								merge_parsers(parser, $1);
+
+								pakfire_parser_unref($1);
+							}
+							;
+
+grammar						: grammar item
 							{
 								$$ = merge_parsers($1, $2);
+
+								//pakfire_parser_unref($1);
+								//pakfire_parser_unref($2);
 							}
 							| item
-							{
-								$$ = merge_parsers(parser, $1);
-							}
 							;
 
 item						: statement
@@ -170,19 +178,19 @@ else						: T_ELSE T_EOL;
 
 end							: T_END T_EOL;
 
-if_stmt						: if variable T_EQUALS variable T_EOL top else top end
+if_stmt						: if variable T_EQUALS variable T_EOL grammar else grammar end
 							{
 								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $8);
 								//pakfire_parser_unref($6);
 								//pakfire_parser_unref($8);
 							}
-							| if variable T_EQUALS variable T_EOL top end
+							| if variable T_EQUALS variable T_EOL grammar end
 							{
 								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, NULL);
 								//pakfire_parser_unref($6);
 							};
 
-block						: block_opening top block_closing
+block						: block_opening grammar block_closing
 							{
 								$$ = $2;
 							};
