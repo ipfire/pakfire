@@ -44,15 +44,31 @@ struct _PakfireParser {
 };
 
 static char* pakfire_parser_make_namespace(PakfireParser parent, const char* namespace) {
-	if (!namespace)
-		namespace = "";
-
 	char* buffer = NULL;
 
-	if (parent && *parent->namespace)
-		asprintf(&buffer, "%s.%s", parent->namespace, namespace);
-	else
-		buffer = pakfire_strdup(namespace);
+	if (parent && parent->namespace) {
+		if (namespace)
+			asprintf(&buffer, "%s.%s", parent->namespace, namespace);
+		else
+			buffer = pakfire_strdup(parent->namespace);
+	} else {
+		if (namespace)
+			buffer = pakfire_strdup(namespace);
+	}
+
+	return buffer;
+}
+
+static char* pakfire_parser_make_canonical_name(PakfireParser parser, const char* name) {
+	char* buffer = NULL;
+
+	if (parser->namespace) {
+		int r = asprintf(&buffer, "%s.%s", parser->namespace, name);
+		if (r < 0)
+			return NULL;
+	} else {
+		buffer = pakfire_strdup(name);
+	}
 
 	return buffer;
 }
@@ -111,7 +127,8 @@ static void pakfire_parser_free(PakfireParser parser) {
 
 	pakfire_parser_unref(parser->parent);
 	pakfire_unref(parser->pakfire);
-	pakfire_free(parser->namespace);
+	if (parser->namespace)
+		pakfire_free(parser->namespace);
 	pakfire_free(parser);
 }
 
@@ -123,6 +140,13 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_unref(PakfireParser parser) {
 		return parser;
 
 	pakfire_parser_free(parser);
+	return NULL;
+}
+
+PAKFIRE_EXPORT PakfireParser pakfire_parser_get_parent(PakfireParser parser) {
+	if (parser->parent)
+		return pakfire_parser_ref(parser->parent);
+
 	return NULL;
 }
 
@@ -147,7 +171,7 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration(
 	return NULL;
 }
 
-PAKFIRE_EXPORT int pakfire_parser_set_declaration(PakfireParser parser,
+static int pakfire_parser_set_declaration(PakfireParser parser,
 		const char* name, const char* value) {
 	// Handle when name already exists
 	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
@@ -187,7 +211,16 @@ PAKFIRE_EXPORT int pakfire_parser_set_declaration(PakfireParser parser,
 	return 0;
 }
 
-PAKFIRE_EXPORT int pakfire_parser_append_declaration(PakfireParser parser,
+PAKFIRE_EXPORT int pakfire_parser_set(PakfireParser parser, const char* name, const char* value) {
+	char* canonical_name = pakfire_parser_make_canonical_name(parser, name);
+
+	int r = pakfire_parser_set_declaration(parser, canonical_name, value);
+	pakfire_free(canonical_name);
+
+	return r;
+}
+
+PAKFIRE_EXPORT int pakfire_parser_append(PakfireParser parser,
 		const char* name, const char* value) {
 	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
 
@@ -224,9 +257,9 @@ static void pakfire_parser_strip_namespace(char* s) {
 }
 
 static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
-		PakfireParser parser, const char* namespace, const char* name) {
+		PakfireParser parser, const char* name) {
 	// Create a working copy of the namespace
-	char* n = pakfire_strdup(namespace);
+	char* n = pakfire_strdup(parser->namespace);
 
 	size_t length = strlen(n) + strlen(name) + 1;
 	char* buffer = pakfire_malloc(length + 1);
@@ -276,7 +309,7 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 	pakfire_parser_strip_namespace(namespace);
 
 	// Expand the value
-	char* buffer = pakfire_parser_expand(parser, namespace, declaration->value);
+	char* buffer = pakfire_parser_expand(parser, declaration->value);
 
 	// Cleanup
 	pakfire_free(namespace);
@@ -284,8 +317,7 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 	return buffer;
 }
 
-PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser,
-		const char* namespace, const char* value) {
+PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser, const char* value) {
 	// Return NULL when the value is NULL
 	if (!value)
 		return NULL;
@@ -331,7 +363,7 @@ PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser,
 
 		// Search for a declaration of this variable
 		struct pakfire_parser_declaration* v =
-			pakfire_parser_find_declaration(parser, namespace, variable);
+			pakfire_parser_find_declaration(parser, variable);
 
 		const char* value = NULL;
 		if (v && v->value) {

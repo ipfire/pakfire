@@ -210,13 +210,16 @@ global:
 	pakfire_packagelist_unref;
 
 	# parser
+	pakfire_parser_append;
 	pakfire_parser_create;
 	pakfire_parser_dump;
 	pakfire_parser_expand;
 	pakfire_parser_get;
+	pakfire_parser_get_parent;
 	pakfire_parser_parse_data;
 	pakfire_parser_read;
 	pakfire_parser_ref;
+	pakfire_parser_set;
 	pakfire_parser_unref;
 
 	# problem

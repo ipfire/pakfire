@@ -52,14 +52,11 @@ static void yyerror(PakfireParser parser, const char* s);
 static void cleanup(void);
 #define ABORT do { cleanup(); YYABORT; } while (0);
 
-char* current_block = NULL;
-static char* pakfire_parser_make_canonical_name(const char* name);
-
 enum operator {
 	OP_EQUALS = 0,
 };
 
-static PakfireParser new_parser(PakfireParser parent);
+static PakfireParser new_parser(PakfireParser parent, const char* namespace);
 static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2);
 
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
@@ -106,7 +103,7 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 top							: %empty
 							{
-								$$ = new_parser(parser);
+								$$ = new_parser(parser, NULL);
 							}
 							| top assignment
 							{
@@ -189,13 +186,14 @@ if_stmt						: T_IF T_WORD T_EQUALS T_WORD T_EOL block_assignments else block_as
 
 block_opening				: variable T_EOL
 							{
-								current_block = pakfire_strdup($1);
+								// Create a new sub-parser which opens a new namespace
+								parser = new_parser(parser, $1);
 							};
 
 block_closing				: end
 							{
-								pakfire_free(current_block);
-								current_block = NULL;
+								// Move back to the parent parser
+								parser = pakfire_parser_get_parent(parser);
 							};
 
 block						: block_opening block_assignments block_closing
@@ -211,7 +209,7 @@ block_assignments			: block_assignments block_assignment
 								if ($1)
 									$$ = $1;
 								else
-									$$ = new_parser(parser);
+									$$ = new_parser(parser, NULL);
 							};
 
 block_assignment			: assignment
@@ -224,17 +222,10 @@ block_assignment			: assignment
 
 assignment					: variable T_ASSIGN value T_EOL
 							{
-								char* name = pakfire_parser_make_canonical_name($1);
-								if (!name)
-									ABORT;
-
 								// Allocate a new parser
-								// XXX should not inherit from parser
-								$$ = new_parser(parser);
+								$$ = new_parser(parser, NULL);
 
-								int r = pakfire_parser_set_declaration($$, name, $3);
-								pakfire_free(name);
-
+								int r = pakfire_parser_set($$, $1, $3);
 								if (r < 0) {
 									pakfire_parser_unref($$);
 									ABORT;
@@ -242,17 +233,10 @@ assignment					: variable T_ASSIGN value T_EOL
 							}
 							| variable T_APPEND value T_EOL
 							{
-								char* name = pakfire_parser_make_canonical_name($1);
-								if (!name)
-									ABORT;
-
 								// Allocate a new parser
-								// XXX should not inherit from parser
-								$$ = new_parser(parser);
+								$$ = new_parser(parser, NULL);
 
-								int r = pakfire_parser_append_declaration($$, name, $3);
-								pakfire_free(name);
-
+								int r = pakfire_parser_append($$, $1, $3);
 								if (r < 0) {
 									pakfire_parser_unref($$);
 									ABORT;
@@ -260,17 +244,10 @@ assignment					: variable T_ASSIGN value T_EOL
 							}
 							| define text end
 							{
-								char* name = pakfire_parser_make_canonical_name($1);
-								if (!name)
-									ABORT;
-
 								// Allocate a new parser
-								// XXX should not inherit from parser
-								$$ = new_parser(parser);
+								$$ = new_parser(parser, NULL);
 
-								int r = pakfire_parser_set_declaration($$, name, $2);
-								pakfire_free(name);
-
+								int r = pakfire_parser_set($$, $1, $2);
 								if (r < 0) {
 									pakfire_parser_unref($$);
 									ABORT;
@@ -285,25 +262,6 @@ define						: T_DEFINE variable T_EOL
 %%
 
 static void cleanup(void) {
-	// Reset current_block
-	if (current_block) {
-		pakfire_free(current_block);
-		current_block = NULL;
-	}
-}
-
-static char* pakfire_parser_make_canonical_name(const char* name) {
-	char* buffer = NULL;
-
-	if (current_block) {
-		int r = asprintf(&buffer, "%s.%s", current_block, name);
-		if (r < 0)
-			return NULL;
-	} else {
-		buffer = pakfire_strdup(name);
-	}
-
-	return buffer;
 }
 
 int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len) {
@@ -350,10 +308,10 @@ void yyerror(PakfireParser parser, const char* s) {
 	pakfire_unref(pakfire);
 }
 
-static PakfireParser new_parser(PakfireParser parent) {
+static PakfireParser new_parser(PakfireParser parent, const char* namespace) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
 
-	PakfireParser parser = pakfire_parser_create(pakfire, parent, current_block);
+	PakfireParser parser = pakfire_parser_create(pakfire, parent, namespace);
 	pakfire_unref(pakfire);
 
 	return parser;
@@ -378,11 +336,9 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 			break;
 	}
 
-	const char* namespace = (current_block) ? current_block : "";
-
 	// Expand values
-	char* v1 = pakfire_parser_expand(parser, namespace, val1);
-	char* v2 = pakfire_parser_expand(parser, namespace, val2);
+	char* v1 = pakfire_parser_expand(parser, val1);
+	char* v2 = pakfire_parser_expand(parser, val2);
 
 	PakfireParser result = NULL;
 

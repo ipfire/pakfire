@@ -29,13 +29,14 @@ PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParser parser,
 	const char* namespace);
 PakfireParser pakfire_parser_ref(PakfireParser parser);
 PakfireParser pakfire_parser_unref(PakfireParser parser);
-int pakfire_parser_set_declaration(PakfireParser parser,
+PakfireParser pakfire_parser_get_parent(PakfireParser parser);
+
+int pakfire_parser_set(PakfireParser parser,
 		const char* name, const char* value);
-int pakfire_parser_append_declaration(PakfireParser parser,
+int pakfire_parser_append(PakfireParser parser,
 	const char* name, const char* value);
 
-char* pakfire_parser_expand(PakfireParser parser,
-	const char* namespace, const char* value);
+char* pakfire_parser_expand(PakfireParser parser, const char* value);
 char* pakfire_parser_get(PakfireParser parser, const char* name);
 
 PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2);
