@@ -90,8 +90,8 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 			sizeof(parser->declarations) / sizeof(*parser->declarations);
 		parser->next_declaration = 0;
 
-		DEBUG(pakfire, "Allocated new parser at %p (%s)\n",
-			parser, parser->namespace);
+		DEBUG(pakfire, "Allocated new parser at %p (%s, %p)\n",
+			parser, parser->namespace, parser->parent);
 	}
 
 	return parser;
