@@ -38,9 +38,9 @@ struct _PakfireParser {
 
 	char* namespace;
 
-	struct pakfire_parser_declaration** declarations;
-	unsigned int next_declaration;
-	unsigned int num_declarations;
+	struct pakfire_parser_declaration* declarations[NUM_DECLARATIONS];
+	size_t next_declaration;
+	size_t num_declarations;
 };
 
 static char* pakfire_parser_make_namespace(PakfireParser parent, const char* namespace) {
@@ -86,12 +86,8 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 		// Make namespace
 		parser->namespace = pakfire_parser_make_namespace(parent, namespace);
 
-		parser->num_declarations = NUM_DECLARATIONS;
-
-		// Allocate a decent number of declarations
-		parser->declarations = pakfire_calloc(
-			parser->num_declarations, sizeof(*parser->declarations));
-
+		parser->num_declarations =
+			sizeof(parser->declarations) / sizeof(*parser->declarations);
 		parser->next_declaration = 0;
 
 		DEBUG(pakfire, "Allocated new parser at %p (%s)\n",
@@ -111,10 +107,9 @@ Pakfire pakfire_parser_get_pakfire(PakfireParser parser) {
 	return pakfire_ref(parser->pakfire);
 }
 
-static void pakfire_parser_free_declarations(
-		struct pakfire_parser_declaration** declarations, unsigned int num) {
-	for (unsigned int i = 0; i < num; i++) {
-		struct pakfire_parser_declaration* d = declarations[i];
+static void pakfire_parser_free_declarations(PakfireParser parser) {
+	for (unsigned int i = 0; i < parser->num_declarations; i++) {
+		struct pakfire_parser_declaration* d = parser->declarations[i];
 
 		// If we hit NULL, this is the end
 		if (!d)
@@ -127,19 +122,17 @@ static void pakfire_parser_free_declarations(
 			pakfire_free(d->value);
 		pakfire_free(d);
 	}
-
-	pakfire_free(declarations);
 }
 
 static void pakfire_parser_free(PakfireParser parser) {
 	DEBUG(parser->pakfire, "Releasing parser at %p\n", parser);
 
-	pakfire_parser_free_declarations(parser->declarations, parser->num_declarations);
+	pakfire_parser_free_declarations(parser);
+	if (parser->namespace)
+		pakfire_free(parser->namespace);
 
 	pakfire_parser_unref(parser->parent);
 	pakfire_unref(parser->pakfire);
-	if (parser->namespace)
-		pakfire_free(parser->namespace);
 	pakfire_free(parser);
 }
 
