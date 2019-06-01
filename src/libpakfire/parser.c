@@ -261,13 +261,13 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 	// Create a working copy of the namespace
 	char* n = pakfire_strdup(parser->namespace);
 
-	size_t length = strlen(n) + strlen(name) + 1;
+	size_t length = (n) ? strlen(n) : 0 + strlen(name) + 1;
 	char* buffer = pakfire_malloc(length + 1);
 
 	struct pakfire_parser_declaration* d = NULL;
 
 	while (1) {
-		if (*n)
+		if (n && *n)
 			snprintf(buffer, length + 1, "%s.%s", n, name);
 		else
 			snprintf(buffer, length + 1, "%s", name);
