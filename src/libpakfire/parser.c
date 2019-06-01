@@ -272,7 +272,7 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 		else
 			snprintf(buffer, length + 1, "%s", name);
 
-		DEBUG(parser->pakfire, "Looking up %s\n", buffer);
+		DEBUG(parser->pakfire, "Looking up %s in parser %p\n", buffer, parser);
 
 		// Lookup declaration
 		d = pakfire_parser_get_declaration(parser, buffer);
