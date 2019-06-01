@@ -432,13 +432,12 @@ PAKFIRE_EXPORT char* pakfire_parser_get(PakfireParser parser, const char* name) 
 PAKFIRE_EXPORT PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2) {
 	DEBUG(parser1->pakfire, "Merging parsers %p and %p\n", parser1, parser2);
 
-	if (parser2) {
-		for (unsigned int i = 0; i < parser2->num_declarations; i++) {
-			struct pakfire_parser_declaration* d = parser2->declarations[i];
+	for (unsigned int i = 0; i < parser2->num_declarations; i++) {
+		struct pakfire_parser_declaration* d = parser2->declarations[i];
+		if (!d)
+			break;
 
-			if (d)
-				pakfire_parser_set_declaration(parser1, d->name, d->value);
-		}
+		pakfire_parser_set_declaration(parser1, d->name, d->value);
 	}
 
 	return parser1;
