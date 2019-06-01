@@ -97,6 +97,10 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 	return parser;
 }
 
+PAKFIRE_EXPORT PakfireParser pakfire_parser_create_child(PakfireParser parser, const char* namespace) {
+	return pakfire_parser_create(parser->pakfire, parser, namespace);
+}
+
 PAKFIRE_EXPORT PakfireParser pakfire_parser_ref(PakfireParser parser) {
 	++parser->nrefs;
 

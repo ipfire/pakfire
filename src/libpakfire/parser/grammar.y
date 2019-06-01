@@ -56,9 +56,6 @@ enum operator {
 	OP_EQUALS = 0,
 };
 
-static PakfireParser new_parser(PakfireParser parent, const char* namespace);
-static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2);
-
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	const char* val1, const char* val2, PakfireParser if_block, PakfireParser else_block);
 
@@ -83,9 +80,6 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %type <string>					words;
 
 %type <parser>					grammar;
-%type <parser>					statements;
-%type <parser>					statement;
-%type <parser>					block;
 
 %type <parser>					if_stmt;
 %type <parser>					else_stmt;
@@ -103,18 +97,16 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %%
 
 grammar						: grammar statements
-							{
-								$$ = merge_parsers($1, $2);
-							}
 							| statements
+							{
+								$$ = parser;
+							}
 							;
 
 statements					: statement
 							| if_stmt
 							| block
-							| empty {
-								$$ = NULL;
-							};
+							| empty;
 
 empty						: T_EOL
 							;
@@ -166,7 +158,7 @@ text						: text line
 if							: T_IF
 							{
 								// Open a new block
-								parser = new_parser(parser, NULL);
+								parser = pakfire_parser_create_child(parser, NULL);
 							};
 
 else						: T_ELSE T_EOL
@@ -175,17 +167,23 @@ else						: T_ELSE T_EOL
 								parser = pakfire_parser_get_parent(parser);
 
 								// Open a new else block
-								parser = new_parser(parser, NULL);
+								parser = pakfire_parser_create_child(parser, NULL);
 							};
 
 end							: T_END T_EOL;
 
 if_stmt						: if variable T_EQUALS variable T_EOL grammar else_stmt end
 							{
-								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $7);
+								PakfireParser result = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $7);
 
 								// Close the whole if/else block
 								parser = pakfire_parser_get_parent(parser);
+
+								if (result)
+									pakfire_parser_merge(parser, result);
+
+								pakfire_parser_unref($6);
+								pakfire_parser_unref($7);
 							}
 							;
 
@@ -199,62 +197,41 @@ else_stmt					: else grammar
 							}
 							;
 
-block						: block_opening grammar block_closing
+block						: block_opening grammar end
 							{
-								$$ = $2;
+								// Move back to the parent parser
+								parser = pakfire_parser_get_parent(parser);
+
+								// Merge block into the parent parser
+								pakfire_parser_merge(parser, $2);
+
+								// Free block parser
+								pakfire_parser_unref($2);
 							};
 
 block_opening				: variable T_EOL
 							{
 								// Create a new sub-parser which opens a new namespace
-								parser = new_parser(parser, $1);
-							};
-
-block_closing				: end
-							{
-								// Move back to the parent parser
-								parser = pakfire_parser_get_parent(parser);
+								parser = pakfire_parser_create_child(parser, $1);
 							};
 
 statement					: variable T_ASSIGN value T_EOL
 							{
-								// Allocate a new parser
-								$$ = new_parser(parser, NULL);
-
-								// TODO We should not allocate the parser above,
-								// but if we don't the parser crashes for some
-								// random reason
-								$$ = parser;
-
-								int r = pakfire_parser_set($$, $1, $3);
-								if (r < 0) {
-									pakfire_parser_unref($$);
+								int r = pakfire_parser_set(parser, $1, $3);
+								if (r < 0)
 									ABORT;
-								}
 							}
 							| variable T_APPEND value T_EOL
 							{
-								// Allocate a new parser
-								$$ = new_parser(parser, NULL);
-								$$ = parser;
-
-								int r = pakfire_parser_append($$, $1, $3);
-								if (r < 0) {
-									pakfire_parser_unref($$);
+								int r = pakfire_parser_append(parser, $1, $3);
+								if (r < 0)
 									ABORT;
-								}
 							}
 							| define text end
 							{
-								// Allocate a new parser
-								$$ = new_parser(parser, NULL);
-								$$ = parser;
-
-								int r = pakfire_parser_set($$, $1, $2);
-								if (r < 0) {
-									pakfire_parser_unref($$);
+								int r = pakfire_parser_set(parser, $1, $2);
+								if (r < 0)
 									ABORT;
-								}
 							};
 
 define						: T_DEFINE variable T_EOL
@@ -311,37 +288,6 @@ void yyerror(PakfireParser parser, const char* s) {
 	pakfire_unref(pakfire);
 }
 
-static PakfireParser new_parser(PakfireParser parent, const char* namespace) {
-	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
-
-	PakfireParser parser = pakfire_parser_create(pakfire, parent, namespace);
-	pakfire_unref(pakfire);
-
-	return parser;
-}
-
-static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2) {
-	PakfireParser p = NULL;
-
-	if (p1 == p2)
-		return p1;
-
-	if (p1 && p2)
-		p = pakfire_parser_merge(p1, p2);
-	else if (p1)
-		p = p1;
-	else if (p2)
-		p = p2;
-
-	if (p)
-		pakfire_parser_ref(p);
-
-	pakfire_parser_unref(p1);
-	pakfire_parser_unref(p2);
-
-	return p;
-}
-
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 		const char* val1, const char* val2, PakfireParser if_block, PakfireParser else_block) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parser);
@@ -375,12 +321,6 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	pakfire_unref(pakfire);
 	pakfire_free(v1);
 	pakfire_free(v2);
-
-	if (result)
-		result = pakfire_parser_ref(result);
-
-	pakfire_parser_unref(if_block);
-	pakfire_parser_unref(else_block);
 
 	return result;
 }
