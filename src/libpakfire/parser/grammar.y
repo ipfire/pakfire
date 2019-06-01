@@ -83,7 +83,7 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %type <string>					words;
 
 %type <parser>					grammar;
-%type <parser>					item;
+%type <parser>					statements;
 %type <parser>					statement;
 %type <parser>					block;
 %type <parser>					if_stmt;
@@ -100,25 +100,14 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 %%
 
-top							: grammar
-							{
-								merge_parsers(parser, $1);
-
-								pakfire_parser_unref($1);
-							}
-							;
-
-grammar						: grammar item
+grammar						: grammar statements
 							{
 								$$ = merge_parsers($1, $2);
-
-								pakfire_parser_unref($1);
-								pakfire_parser_unref($2);
 							}
-							| item
+							| statements
 							;
 
-item						: statement
+statements					: statement
 							| if_stmt
 							| block
 							| empty {
@@ -307,6 +296,9 @@ static PakfireParser new_parser(PakfireParser parent, const char* namespace) {
 static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2) {
 	PakfireParser p = NULL;
 
+	if (p1 == p2)
+		return p1;
+
 	if (p1 && p2)
 		p = pakfire_parser_merge(p1, p2);
 	else if (p1)
@@ -315,7 +307,10 @@ static PakfireParser merge_parsers(PakfireParser p1, PakfireParser p2) {
 		p = p2;
 
 	if (p)
-		p = pakfire_parser_ref(p);
+		pakfire_parser_ref(p);
+
+	pakfire_parser_unref(p1);
+	pakfire_parser_unref(p2);
 
 	return p;
 }
