@@ -77,6 +77,7 @@ PAKFIRE_EXPORT PakfireParser pakfire_parser_create(Pakfire pakfire, PakfireParse
 	PakfireParser parser = pakfire_calloc(1, sizeof(*parser));
 	if (parser) {
 		parser->pakfire = pakfire_ref(pakfire);
+		parser->nrefs = 1;
 
 		// Store a reference to the parent parser if we have one
 		if (parent)
