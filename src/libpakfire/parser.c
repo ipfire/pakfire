@@ -168,10 +168,6 @@ static struct pakfire_parser_declaration* pakfire_parser_get_declaration(
 			return d;
 	}
 
-	// If nothing was found, we will try finding a match in the parent parser
-	if (parser->parent)
-		return pakfire_parser_get_declaration(parser->parent, name);
-
 	return NULL;
 }
 
@@ -301,19 +297,10 @@ static struct pakfire_parser_declaration* pakfire_parser_find_declaration(
 	if (n)
 		pakfire_free(n);
 
+	if (!d && parser->parent)
+		d = pakfire_parser_find_declaration(parser->parent, name);
+
 	return d;
-}
-
-static char* pakfire_parser_expand_declaration(PakfireParser parser,
-		const struct pakfire_parser_declaration* declaration) {
-	// Return NULL when the value of the declaration is NULL
-	if (!declaration || !declaration->value)
-		return NULL;
-
-	// Expand the value
-	char* buffer = pakfire_parser_expand(parser, declaration->value);
-
-	return buffer;
 }
 
 PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser, const char* value) {
@@ -406,19 +393,36 @@ PAKFIRE_EXPORT char* pakfire_parser_expand(PakfireParser parser, const char* val
 	return buffer;
 }
 
-PAKFIRE_EXPORT char* pakfire_parser_get(PakfireParser parser, const char* name) {
+static const char* pakfire_parser_get_raw(PakfireParser parser, const char* name) {
 	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
 
+	if (d)
+		return d->value;
+
+	// Search in parent parser if available
+	if (parser->parent)
+		return pakfire_parser_get_raw(parser->parent, name);
+
+	return NULL;
+}
+
+PAKFIRE_EXPORT char* pakfire_parser_get(PakfireParser parser, const char* name) {
+	const char* value = pakfire_parser_get_raw(parser, name);
+
 	// Return NULL when nothing was found
-	if (!d)
+	if (!value)
 		return NULL;
 
 	// Otherwise return the expanded value
-	return pakfire_parser_expand_declaration(parser, d);
+	return pakfire_parser_expand(parser, value);
 }
 
 PAKFIRE_EXPORT PakfireParser pakfire_parser_merge(PakfireParser parser1, PakfireParser parser2) {
 	DEBUG(parser1->pakfire, "Merging parsers %p and %p\n", parser1, parser2);
+
+	// Do not try to merge a parser with itself
+	if (parser1 == parser2)
+		return parser1;
 
 	for (unsigned int i = 0; i < parser2->num_declarations; i++) {
 		struct pakfire_parser_declaration* d = parser2->declarations[i];
