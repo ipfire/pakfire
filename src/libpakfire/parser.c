@@ -310,15 +310,8 @@ static char* pakfire_parser_expand_declaration(PakfireParser parser,
 	if (!declaration || !declaration->value)
 		return NULL;
 
-	// Get namespace of variable we are expanding
-	char* namespace = pakfire_strdup(declaration->name);
-	pakfire_parser_strip_namespace(namespace);
-
 	// Expand the value
 	char* buffer = pakfire_parser_expand(parser, declaration->value);
-
-	// Cleanup
-	pakfire_free(namespace);
 
 	return buffer;
 }
