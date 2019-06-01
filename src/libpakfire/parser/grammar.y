@@ -86,7 +86,9 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 %type <parser>					statements;
 %type <parser>					statement;
 %type <parser>					block;
+
 %type <parser>					if_stmt;
+%type <parser>					else_stmt;
 
 %precedence T_WORD
 
@@ -161,23 +163,41 @@ text						: text line
 							| line
 							;
 
-if							: T_IF;
+if							: T_IF
+							{
+								// Open a new block
+								parser = new_parser(parser, NULL);
+							};
 
-else						: T_ELSE T_EOL;
+else						: T_ELSE T_EOL
+							{
+								// Close the if block
+								parser = pakfire_parser_get_parent(parser);
+
+								// Open a new else block
+								parser = new_parser(parser, NULL);
+							};
 
 end							: T_END T_EOL;
 
-if_stmt						: if variable T_EQUALS variable T_EOL grammar else grammar end
+if_stmt						: if variable T_EQUALS variable T_EOL grammar else_stmt end
 							{
-								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $8);
-								pakfire_parser_unref($6);
-								pakfire_parser_unref($8);
+								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, $7);
+
+								// Close the whole if/else block
+								parser = pakfire_parser_get_parent(parser);
 							}
-							| if variable T_EQUALS variable T_EOL grammar end
+							;
+
+else_stmt					: else grammar
 							{
-								$$ = make_if_stmt(parser, OP_EQUALS, $2, $4, $6, NULL);
-								pakfire_parser_unref($6);
-							};
+								$$ = $2;
+							}
+							| %empty
+							{
+								$$ = NULL;
+							}
+							;
 
 block						: block_opening grammar block_closing
 							{
@@ -201,6 +221,11 @@ statement					: variable T_ASSIGN value T_EOL
 								// Allocate a new parser
 								$$ = new_parser(parser, NULL);
 
+								// TODO We should not allocate the parser above,
+								// but if we don't the parser crashes for some
+								// random reason
+								$$ = parser;
+
 								int r = pakfire_parser_set($$, $1, $3);
 								if (r < 0) {
 									pakfire_parser_unref($$);
@@ -211,6 +236,7 @@ statement					: variable T_ASSIGN value T_EOL
 							{
 								// Allocate a new parser
 								$$ = new_parser(parser, NULL);
+								$$ = parser;
 
 								int r = pakfire_parser_append($$, $1, $3);
 								if (r < 0) {
@@ -222,6 +248,7 @@ statement					: variable T_ASSIGN value T_EOL
 							{
 								// Allocate a new parser
 								$$ = new_parser(parser, NULL);
+								$$ = parser;
 
 								int r = pakfire_parser_set($$, $1, $2);
 								if (r < 0) {
@@ -325,6 +352,8 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 			break;
 	}
 
+	DEBUG(pakfire, "  parser = %p, if = %p, else = %p\n", parser, if_block, else_block);
+
 	// Expand values
 	char* v1 = pakfire_parser_expand(parser, val1);
 	char* v2 = pakfire_parser_expand(parser, val2);
@@ -349,6 +378,9 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 
 	if (result)
 		result = pakfire_parser_ref(result);
+
+	pakfire_parser_unref(if_block);
+	pakfire_parser_unref(else_block);
 
 	return result;
 }
