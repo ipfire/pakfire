@@ -34,8 +34,8 @@
 
 #define YYERROR_VERBOSE 1
 
-#define YYDEBUG 1
-#if ENABLE_DEBUG
+#define YYDEBUG 0
+#if ENABLE_DEBUG && YYDEBUG
 	int yydebug = 1;
 #endif
 
