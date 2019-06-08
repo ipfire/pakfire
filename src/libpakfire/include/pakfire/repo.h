@@ -21,6 +21,7 @@
 #ifndef PAKFIRE_REPO_H
 #define PAKFIRE_REPO_H
 
+#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 
