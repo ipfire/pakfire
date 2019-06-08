@@ -87,6 +87,8 @@ unsigned long long pakfire_package_get_installtime(PakfirePackage pkg);
 PakfireRelationList pakfire_package_get_provides(PakfirePackage pkg);
 void pakfire_package_set_provides(PakfirePackage pkg, PakfireRelationList relationlist);
 void pakfire_package_add_provides(PakfirePackage pkg, PakfireRelation relation);
+PakfireRelationList pakfire_package_get_prerequires(PakfirePackage pkg);
+void pakfire_package_set_prerequires(PakfirePackage pkg, PakfireRelationList relationlist);
 PakfireRelationList pakfire_package_get_requires(PakfirePackage pkg);
 void pakfire_package_set_requires(PakfirePackage pkg, PakfireRelationList relationlist);
 void pakfire_package_add_requires(PakfirePackage pkg, PakfireRelation relation);

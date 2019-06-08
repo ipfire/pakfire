@@ -157,6 +157,7 @@ global:
 	pakfire_package_get_nevra;
 	pakfire_package_get_obsoletes;
 	pakfire_package_get_pakfire;
+	pakfire_package_get_prerequires;
 	pakfire_package_get_provides;
 	pakfire_package_get_recommends;
 	pakfire_package_get_release;
@@ -188,6 +189,7 @@ global:
 	pakfire_package_set_maintainer;
 	pakfire_package_set_name;
 	pakfire_package_set_obsoletes;
+	pakfire_package_set_prerequires;
 	pakfire_package_set_provides;
 	pakfire_package_set_recommends;
 	pakfire_package_set_repo;
