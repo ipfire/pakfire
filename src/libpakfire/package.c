@@ -575,6 +575,10 @@ PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_prerequires(PakfirePackag
 	return NULL;
 }
 
+PAKFIRE_EXPORT void pakfire_package_set_prerequires(PakfirePackage pkg, PakfireRelationList relationlist) {
+	#warning TODO
+}
+
 PAKFIRE_EXPORT PakfireRelationList pakfire_package_get_requires(PakfirePackage pkg) {
 	return pakfire_package_get_relationlist(pkg, SOLVABLE_REQUIRES);
 }

@@ -48,6 +48,33 @@ PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_create(Pakfire pakfire) 
 	return relationlist;
 }
 
+PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_create_from_string(Pakfire pakfire, const char* s) {
+	PakfireRelationList relationlist = pakfire_relationlist_create(pakfire);
+	if (!relationlist)
+		return NULL;
+
+	// Split input by newline
+	char** list = pakfire_split_string(s, '\n');
+	if (!list)
+		return relationlist;
+
+	char** item = list;
+	while (*item) {
+		PakfireRelation rel = pakfire_relation_create_from_string(relationlist->pakfire, *item);
+		if (rel) {
+			pakfire_relationlist_add(relationlist, rel);
+			pakfire_relation_unref(rel);
+		}
+
+		//pakfire_free(*item);
+		item++;
+	}
+
+	pakfire_free(list);
+
+	return relationlist;
+}
+
 PAKFIRE_EXPORT PakfireRelationList pakfire_relationlist_ref(PakfireRelationList relationlist) {
 	relationlist->nrefs++;
 

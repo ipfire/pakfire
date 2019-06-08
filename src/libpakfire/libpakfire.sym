@@ -285,6 +285,7 @@ global:
 	pakfire_relationlist_add;
 	pakfire_relationlist_count;
 	pakfire_relationlist_create;
+	pakfire_relationlist_create_from_string;
 	pakfire_relationlist_get_clone;
 	pakfire_relationlist_ref;
 	pakfire_relationlist_unref;
@@ -353,6 +354,7 @@ global:
 	pakfire_access;
 	pakfire_free;
 	pakfire_get_errno;
+	pakfire_partition_string;
 	pakfire_path_join;
 	pakfire_read_file_into_buffer;
 	pakfire_split_string;

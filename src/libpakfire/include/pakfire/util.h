@@ -60,5 +60,6 @@ int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t* len);
 
 size_t pakfire_string_to_size(const char* s);
 char** pakfire_split_string(const char* s, char delim);
+void pakfire_partition_string(const char* s, const char* delim, char** s1, char** s2);
 
 #endif /* PAKFIRE_UTIL_H */

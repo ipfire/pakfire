@@ -24,6 +24,7 @@
 #include <pakfire/types.h>
 
 PakfireRelationList pakfire_relationlist_create(Pakfire pakfire);
+PakfireRelationList pakfire_relationlist_create_from_string(Pakfire pakfire, const char* s);
 
 PakfireRelationList pakfire_relationlist_ref(PakfireRelationList relationlist);
 PakfireRelationList pakfire_relationlist_unref(PakfireRelationList relationlist);

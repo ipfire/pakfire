@@ -38,6 +38,29 @@ struct _PakfireRelation {
 	int nrefs;
 };
 
+const char* delimiters[] = {
+	">=", ">", "<=", "<", "=", NULL,
+};
+
+static int cmp2type(const char* s) {
+	if (strcmp(s, ">=") == 0)
+		return PAKFIRE_GE;
+
+	if (strcmp(s, ">") == 0)
+		return PAKFIRE_GT;
+
+	if (strcmp(s, "<=") == 0)
+		return PAKFIRE_LE;
+
+	if (strcmp(s, "<") == 0)
+		return PAKFIRE_LT;
+
+	if (strcmp(s, "=") == 0)
+		return PAKFIRE_EQ;
+
+	return 0;
+}
+
 static int cmptype2relflags(int type) {
 	int flags = 0;
 
@@ -81,6 +104,36 @@ PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_id(Pakfire pakfire, 
 	}
 
 	return relation;
+}
+
+PAKFIRE_EXPORT PakfireRelation pakfire_relation_create_from_string(Pakfire pakfire, const char* s) {
+	DEBUG(pakfire, "Parsing relation from string: %s\n", s);
+
+	char* name;
+	char* evr;
+
+	const char** delim = delimiters;
+	while (*delim) {
+		pakfire_partition_string(s, *delim, &name, &evr);
+
+		// Nothing to do for no match
+		if (!name && !evr) {
+			delim++;
+			continue;
+		}
+
+		// Create new relation object
+		PakfireRelation rel = pakfire_relation_create(pakfire, name, cmp2type(*delim), evr);
+
+		// Cleanup
+		pakfire_free(name);
+		pakfire_free(evr);
+
+		return rel;
+	}
+
+	// No delimiter was found
+	return pakfire_relation_create(pakfire, s, 0, NULL);
 }
 
 PAKFIRE_EXPORT PakfireRelation pakfire_relation_ref(PakfireRelation relation) {

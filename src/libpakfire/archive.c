@@ -1207,5 +1207,57 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 		pakfire_package_set_buildtime(pkg, t);
 	}
 
+	// Relations
+
+	PakfireRelationList l;
+
+	char* prerequires = pakfire_archive_get(archive, "dependencies.prerequires");
+	if (prerequires) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, prerequires);
+		pakfire_package_set_prerequires(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(prerequires);
+	}
+
+	char* requires = pakfire_archive_get(archive, "dependencies.requires");
+	if (requires) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, requires);
+		pakfire_package_set_requires(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(requires);
+	}
+
+	char* provides = pakfire_archive_get(archive, "dependencies.provides");
+	if (provides) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, provides);
+		pakfire_package_set_provides(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(provides);
+	}
+
+	char* obsoletes = pakfire_archive_get(archive, "dependencies.obsoletes");
+	if (obsoletes) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, obsoletes);
+		pakfire_package_set_obsoletes(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(obsoletes);
+	}
+
+	char* recommends = pakfire_archive_get(archive, "dependencies.recommends");
+	if (recommends) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, recommends);
+		pakfire_package_set_recommends(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(recommends);
+	}
+
+	char* suggests = pakfire_archive_get(archive, "dependencies.suggests");
+	if (suggests) {
+		l = pakfire_relationlist_create_from_string(archive->pakfire, suggests);
+		pakfire_package_set_suggests(pkg, l);
+		pakfire_relationlist_unref(l);
+		pakfire_free(suggests);
+	}
+
 	return pkg;
 }

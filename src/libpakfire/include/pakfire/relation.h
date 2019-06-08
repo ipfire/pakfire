@@ -29,6 +29,7 @@
 
 PakfireRelation pakfire_relation_create(Pakfire pakfire, const char* name, int cmp_type, const char* evr);
 PakfireRelation pakfire_relation_create_from_id(Pakfire pakfire, Id id);
+PakfireRelation pakfire_relation_create_from_string(Pakfire pakfire, const char* s);
 
 PakfireRelation pakfire_relation_ref(PakfireRelation relation);
 PakfireRelation pakfire_relation_unref(PakfireRelation relation);
