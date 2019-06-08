@@ -29,6 +29,7 @@
 
 #include <lzma.h>
 
+#include <pakfire/archive.h>
 #include <pakfire/constants.h>
 #include <pakfire/errno.h>
 #include <pakfire/logging.h>
@@ -555,6 +556,10 @@ PAKFIRE_EXPORT PakfirePackage pakfire_repo_add_package(PakfireRepo repo) {
 	Id id = repo_add_solvable(repo->repo);
 
 	return pakfire_package_create(repo->pakfire, id);
+}
+
+PAKFIRE_EXPORT PakfirePackage pakfire_repo_add_archive(PakfireRepo repo, PakfireArchive archive) {
+	return pakfire_archive_make_package(archive, repo);
 }
 
 // Cache

@@ -288,7 +288,7 @@ class Cli(object):
 		with self.pakfire(ns) as p:
 			for pkg in p.info(ns.package):
 				s = pkg.dump(long=ns.verbose)
-				print(s)
+				self.ui.message(s)
 
 	def handle_search(self, ns):
 		with self.pakfire(ns) as p:

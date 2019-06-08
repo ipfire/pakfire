@@ -25,6 +25,7 @@
 #include <pakfire/repo.h>
 #include <pakfire/util.h>
 
+#include "archive.h"
 #include "package.h"
 #include "repo.h"
 
@@ -310,6 +311,23 @@ static PyObject* Repo__add_package(RepoObject* self, PyObject* args) {
 	return obj;
 }
 
+static PyObject* Repo_add_archive(RepoObject* self, PyObject* args) {
+	ArchiveObject* archive = NULL;
+
+	if (!PyArg_ParseTuple(args, "O!", &ArchiveType, &archive))
+		return NULL;
+
+	// Add package
+	PakfirePackage pkg = pakfire_repo_add_archive(self->repo, archive->archive);
+	assert(pkg);
+
+	// Create Python object
+	PyObject* obj = new_package(&PackageType, pkg);
+	pakfire_package_unref(pkg);
+
+	return obj;
+}
+
 static PyObject* Repo_cache_age(RepoObject* self, PyObject* args) {
 	const char* path = NULL;
 
@@ -469,6 +487,12 @@ static struct PyMethodDef Repo_methods[] = {
 	{
 		"_add_package",
 		(PyCFunction)Repo__add_package,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"add_archive",
+		(PyCFunction)Repo_add_archive,
 		METH_VARARGS,
 		NULL
 	},

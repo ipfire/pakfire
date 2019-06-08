@@ -232,6 +232,25 @@ PAKFIRE_EXPORT void pakfire_package_set_evr(PakfirePackage pkg, const char* evr)
 	s->evr = pool_str2id(pool, evr, 1);
 }
 
+PAKFIRE_EXPORT char* pakfire_package_join_evr(const char* e, const char* v, const char* r) {
+	size_t l = strlen(v) + strlen(r) + 2;
+
+	// Do not include epoch when it is zero
+	if (strncmp(e, "0", strlen("0")) == 0) {
+		e = NULL;
+	} else {
+		l += strlen(e);
+	}
+
+	char* buffer = pakfire_malloc(l + 1);
+	if (e)
+		snprintf(buffer, l + 1, "%s:%s.%s", e, v, r);
+	else
+		snprintf(buffer, l + 1, "%s.%s", v, r);
+
+	return buffer;
+}
+
 static void split_evr(Pool* pool, const char* evr_c, char** epoch, char** version, char** release) {
     char *e, *v, *r;
 

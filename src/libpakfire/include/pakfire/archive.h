@@ -43,6 +43,8 @@ PakfireArchive pakfire_archive_create(Pakfire pakfire);
 PakfireArchive pakfire_archive_ref(PakfireArchive archive);
 PakfireArchive pakfire_archive_unref(PakfireArchive archive);
 
+char* pakfire_archive_get(PakfireArchive archive, const char* key);
+
 PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path);
 
 int pakfire_archive_read(PakfireArchive archive, const char* filename,
@@ -64,6 +66,8 @@ PakfireArchiveSignature* pakfire_archive_get_signatures(PakfireArchive archive);
 PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature signature);
 void pakfire_archive_signature_unref(PakfireArchiveSignature signature);
 const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature);
+
+PakfirePackage pakfire_archive_make_package(PakfireArchive archive, PakfireRepo repo);
 
 #define PAKFIRE_ARCHIVE_FN_CHECKSUMS		"chksums"
 #define PAKFIRE_ARCHIVE_FN_FILELIST			"filelist"

@@ -40,6 +40,7 @@
 #include <pakfire/i18n.h>
 #include <pakfire/key.h>
 #include <pakfire/logging.h>
+#include <pakfire/package.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/parser.h>
 #include <pakfire/private.h>
@@ -528,6 +529,10 @@ static int pakfire_archive_read_metadata_entry(PakfireArchive archive, struct ar
 
 static int pakfire_archive_read_metadata(PakfireArchive archive, struct archive* a) {
 	return pakfire_archive_walk(archive, pakfire_archive_read_metadata_entry);
+}
+
+PAKFIRE_EXPORT char* pakfire_archive_get(PakfireArchive archive, const char* key) {
+	return pakfire_parser_get(archive->parser, key);
 }
 
 static int archive_copy_data(struct archive* in, struct archive* out) {
@@ -1075,4 +1080,102 @@ PAKFIRE_EXPORT const char* pakfire_archive_verify_strerror(pakfire_archive_verif
 	}
 
 	return NULL;
+}
+
+/*
+	Copy all metadata from this archive to the package object
+*/
+PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archive, PakfireRepo repo) {
+	char* name  = pakfire_archive_get(archive, "package.name");
+	char* arch = pakfire_archive_get(archive, "package.arch");
+
+	char* e = pakfire_archive_get(archive, "package.epoch");
+	char* v = pakfire_archive_get(archive, "package.version");
+	char* r = pakfire_archive_get(archive, "package.release");
+	char* evr = pakfire_package_join_evr(e, v, r);
+
+	PakfirePackage pkg = pakfire_package_create2(
+		archive->pakfire, repo, name, evr, arch
+	);
+
+	pakfire_free(name);
+	pakfire_free(arch);
+	pakfire_free(e);
+	pakfire_free(v);
+	pakfire_free(r);
+	pakfire_free(evr);
+
+#ifdef ENABLE_DEBUG
+	char* nevra = pakfire_package_get_nevra(pkg);
+	DEBUG(archive->pakfire, "Created package %s (%p) from archive %p\n",
+		nevra, pkg, archive);
+	pakfire_free(nevra);
+#endif
+
+	// Set UUID
+	char* uuid = pakfire_archive_get(archive, "package.uuid");
+	if (uuid) {
+		pakfire_package_set_uuid(pkg, uuid);
+		pakfire_free(uuid);
+	}
+
+	// Set groups
+#warning broken
+#if 0
+	char* groups = pakfire_archive_get(archive, "package.groups");
+	if (groups) {
+		pakfire_package_set_groups(pkg, groups);
+		pakfire_free(groups);
+	}
+#endif
+
+	// Set maintainer
+	char* maintainer = pakfire_archive_get(archive, "package.maintainer");
+	if (maintainer) {
+		pakfire_package_set_maintainer(pkg, maintainer);
+		pakfire_free(maintainer);
+	}
+
+	// Set URL
+	char* url = pakfire_archive_get(archive, "package.url");
+	if (url) {
+		pakfire_package_set_url(pkg, url);
+		pakfire_free(url);
+	}
+
+	// Set license
+	char* license = pakfire_archive_get(archive, "package.license");
+	if (license) {
+		pakfire_package_set_license(pkg, license);
+		pakfire_free(license);
+	}
+
+	// Set summary
+	char* summary = pakfire_archive_get(archive, "package.summary");
+	if (summary) {
+		pakfire_package_set_summary(pkg, summary);
+		pakfire_free(summary);
+	}
+
+	// Set description
+	char* description = pakfire_archive_get(archive, "package.description");
+	if (description) {
+		pakfire_package_set_description(pkg, description);
+		pakfire_free(description);
+	}
+
+	// XXX Get package size
+
+	// Get install size
+	char* size = pakfire_archive_get(archive, "package.size");
+	if (size) {
+		size_t s = pakfire_string_to_size(size);
+		pakfire_free(size);
+
+		pakfire_package_set_installsize(pkg, s);
+	}
+
+	// XXX more data to follow
+
+	return pkg;
 }

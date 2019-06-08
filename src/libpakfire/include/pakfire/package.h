@@ -45,6 +45,7 @@ const char* pakfire_package_get_name(PakfirePackage pkg);
 void pakfire_package_set_name(PakfirePackage pkg, const char* name);
 const char* pakfire_package_get_evr(PakfirePackage pkg);
 void pakfire_package_set_evr(PakfirePackage pkg, const char* evr);
+char* pakfire_package_join_evr(const char* e, const char* v, const char* r);
 unsigned long pakfire_package_get_epoch(PakfirePackage pkg);
 const char* pakfire_package_get_version(PakfirePackage pkg);
 const char* pakfire_package_get_release(PakfirePackage pkg);

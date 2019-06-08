@@ -201,19 +201,20 @@ class PakfireContext(object):
 
 		return request.solve(**kwargs)
 
-	def info(self, patterns):
+	def info(self, args):
 		pkgs = []
 
-		# For all patterns we run a single search which returns us a bunch
-		# of solvables which are transformed into Package objects.
-		for pattern in patterns:
-			if os.path.exists(pattern) and not os.path.isdir(pattern):
-				pkg = packages.open(self.pakfire, self.pakfire.repos.dummy, pattern)
-				if pkg:
+		with _pakfire.Repo(self.pakfire, "tmp", clean=True) as r:
+			for arg in args:
+				if os.path.exists(arg) and not os.path.isdir(arg):
+					archive = _pakfire.Archive(self.pakfire, arg)
+
+					# Add the archive to the repository
+					pkg = r.add_archive(archive)
 					pkgs.append(pkg)
 
-			else:
-				pkgs += self.pakfire.whatprovides(pattern, name_only=True)
+				else:
+					pkgs += self.pakfire.whatprovides(arg, name_only=True)
 
 		return sorted(pkgs)
 

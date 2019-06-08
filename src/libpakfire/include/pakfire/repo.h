@@ -69,6 +69,8 @@ int pakfire_repo_read_solv_fp(PakfireRepo repo, FILE *f, int flags);
 int pakfire_repo_write_solv(PakfireRepo repo, const char* filename, int flags);
 int pakfire_repo_write_solv_fp(PakfireRepo repo, FILE *f, int flags);
 
+PakfirePackage pakfire_repo_add_archive(PakfireRepo repo, PakfireArchive archive);
+
 // Cache
 
 int pakfire_repo_clean(PakfireRepo repo);

@@ -318,3 +318,13 @@ PAKFIRE_EXPORT int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t*
 
 	return 0;
 }
+
+PAKFIRE_EXPORT size_t pakfire_string_to_size(const char* s) {
+	size_t size;
+
+	int r = sscanf(s, "%zu", &size);
+	if (r == 1)
+		return size;
+
+	return 0;
+}
