@@ -1015,19 +1015,6 @@ PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, c
 	return NULL;
 }
 
-#if 0
-PakfireFile pakfire_package_filelist_append(PakfirePackage pkg) {
-	if (pkg->filelist) {
-		return pakfire_file_append(pkg->filelist);
-	}
-
-	PakfireFile file = pakfire_file_create();
-	pkg->filelist = file;
-
-	return file;
-}
-#endif
-
 PAKFIRE_EXPORT void pakfire_package_filelist_remove(PakfirePackage pkg) {
 	if (pkg->filelist)
 		pakfire_file_free_all(pkg->filelist);
