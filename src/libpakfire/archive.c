@@ -1123,6 +1123,12 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 	pakfire_free(nevra);
 #endif
 
+	// Set filename
+	const char* filename = pakfire_basename(archive->path);
+	if (filename) {
+		pakfire_package_set_filename(pkg, filename);
+	}
+
 	// Set UUID
 	char* uuid = pakfire_archive_get(archive, "package.uuid");
 	if (uuid) {
