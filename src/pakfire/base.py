@@ -43,7 +43,7 @@ class Pakfire(_pakfire.Pakfire):
 	__version__ = PAKFIRE_VERSION
 	mode = None
 
-	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None):
+	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None, offline=False):
 		_pakfire.Pakfire.__init__(self, path, "%s" % (arch or system.native_arch))
 
 		# Initialise logging system
@@ -51,6 +51,9 @@ class Pakfire(_pakfire.Pakfire):
 
 		# Default to system distribution
 		self.distro = distro or system.distro
+
+		# Offline
+		self.offline = offline
 
 		# Check if we are operating as the root user
 		self.check_root_user()
@@ -111,12 +114,16 @@ class Pakfire(_pakfire.Pakfire):
 	def __exit__(self, type, value, traceback):
 		pass
 
-	@property
-	def offline(self):
+	def get_offline(self):
 		"""
 			A shortcut that indicates if the system is running in offline mode.
 		"""
-		return self.config.get("downloader", "offline", False)
+		return self._offline or self.config.get("downloader", "offline", False)
+
+	def set_offline(self, offline):
+		self._offline = offline
+
+	offline = property(get_offline, set_offline)
 
 	def refresh_repositories(self, force=False):
 		for repo in self.repos:
