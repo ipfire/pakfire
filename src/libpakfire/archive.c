@@ -1265,5 +1265,12 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 		pakfire_free(suggests);
 	}
 
+	// Import filelist
+	PakfireFile file = pakfire_archive_get_filelist(archive);
+	while (file) {
+		pakfire_package_filelist_append(pkg, pakfire_file_get_name(file));
+		file = pakfire_file_get_next(file);
+	}
+
 	return pkg;
 }
