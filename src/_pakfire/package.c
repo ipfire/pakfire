@@ -289,9 +289,11 @@ static void Package_set_url(PackageObject* self, PyObject* value) {
 }
 
 static PyObject* Package_get_groups(PackageObject* self) {
-	char** groups = pakfire_package_get_groups(self->package);
+	const char* s = pakfire_package_get_groups(self->package);
 
 	PyObject* list = PyList_New(0);
+
+	char** groups = pakfire_split_string(s, ',');
 	char* group;
 
 	while ((group = *groups++) != NULL) {
@@ -303,28 +305,15 @@ static PyObject* Package_get_groups(PackageObject* self) {
 	}
 
 	pakfire_free(groups);
-	Py_INCREF(list);
+
 	return list;
 }
 
 static int Package_set_groups(PackageObject* self, PyObject* value) {
-	if (!PySequence_Check(value)) {
-		PyErr_SetString(PyExc_AttributeError, "Expected a sequence.");
-		return -1;
-	}
+	const char* groups = PyUnicode_AsUTF8(value);
 
-	const int length = PySequence_Length(value);
-	const char* groups[length + 1];
-
-	for (int i = 0; i < length; i++) {
-		PyObject* item = PySequence_GetItem(value, i);
-		groups[i] = PyUnicode_AsUTF8(item);
-
-		Py_DECREF(item);
-	}
-	groups[length] = NULL;
-
-	pakfire_package_set_groups(self->package, groups);
+	if (groups)
+		pakfire_package_set_groups(self->package, groups);
 
 	return 0;
 }

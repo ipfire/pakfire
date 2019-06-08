@@ -170,7 +170,6 @@ global:
 	pakfire_package_get_version;
 	pakfire_package_id;
 	pakfire_package_is_installed;
-	pakfire_package_is_in_group;
 	pakfire_package_join_evr;
 	pakfire_package_ref;
 	pakfire_package_set_arch;
@@ -355,6 +354,7 @@ global:
 	pakfire_get_errno;
 	pakfire_path_join;
 	pakfire_read_file_into_buffer;
+	pakfire_split_string;
 	pakfire_string_to_size;
 
 local:

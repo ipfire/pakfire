@@ -1120,14 +1120,11 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 	}
 
 	// Set groups
-#warning broken
-#if 0
 	char* groups = pakfire_archive_get(archive, "package.groups");
 	if (groups) {
 		pakfire_package_set_groups(pkg, groups);
 		pakfire_free(groups);
 	}
-#endif
 
 	// Set maintainer
 	char* maintainer = pakfire_archive_get(archive, "package.maintainer");

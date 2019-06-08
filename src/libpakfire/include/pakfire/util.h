@@ -59,5 +59,6 @@ void init_libgcrypt();
 int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t* len);
 
 size_t pakfire_string_to_size(const char* s);
+char** pakfire_split_string(const char* s, char delim);
 
 #endif /* PAKFIRE_UTIL_H */

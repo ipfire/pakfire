@@ -328,3 +328,36 @@ PAKFIRE_EXPORT size_t pakfire_string_to_size(const char* s) {
 
 	return 0;
 }
+
+PAKFIRE_EXPORT char** pakfire_split_string(const char* s, char delim) {
+	// Copy string to stack and count spaces
+	char buffer[strlen(s) + 2];
+
+	size_t count = 1;
+	for (unsigned int i = 0; i < strlen(s) + 1; i++) {
+		buffer[i] = s[i];
+
+		if (s[i] == delim) {
+			buffer[i] = '\0';
+			count++;
+		}
+	}
+
+	// Allocate an array of sufficient size
+	char** ret = pakfire_malloc(sizeof(*ret) * (count + 1));
+
+	// Copy strings to heap one by one
+	unsigned int i = 0;
+	char* p = buffer;
+	while (*p) {
+		ret[i++] = pakfire_strdup(p);
+
+		// Move pointer to the next string
+		p += strlen(p) + 1;
+	}
+
+	// Terminate array
+	ret[count] = NULL;
+
+	return ret;
+}
