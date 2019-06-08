@@ -227,9 +227,13 @@ PAKFIRE_EXPORT int pakfire_parser_set(PakfireParser parser, const char* name, co
 static const char* pakfire_parser_get_raw(PakfireParser parser, const char* name) {
 	struct pakfire_parser_declaration* d = pakfire_parser_get_declaration(parser, name);
 
-	// Return a match
-	if (d)
-		return d->value;
+	// Return a match when it actually contains a string
+	if (d) {
+		if (d->value && *d->value)
+			return d->value;
+
+		return NULL;
+	}
 
 	// Search in parent parser if available
 	if (parser->parent)
