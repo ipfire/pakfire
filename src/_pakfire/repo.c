@@ -55,12 +55,14 @@ static void Repo_dealloc(RepoObject* self) {
 static int Repo_init(RepoObject* self, PyObject* args, PyObject* kwds) {
 	PakfireObject* pakfire;
 	const char* name;
+	int clean = 0;
 
-	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &name))
+	if (!PyArg_ParseTuple(args, "O!s|i", &PakfireType, &pakfire, &name, &clean))
 		return -1;
 
 	// Create a new repository
 	self->repo = pakfire_repo_create(pakfire->pakfire, name);
+	self->clean = clean;
 
 	return 0;
 }
@@ -376,7 +378,46 @@ static PyObject* Repo_clean(RepoObject* self, PyObject* args) {
 	Py_RETURN_NONE;
 }
 
+static PyObject* Repo_enter(RepoObject* self) {
+	Py_INCREF(self);
+
+	return (PyObject*)self;
+}
+
+static PyObject* Repo_exit(RepoObject* self, PyObject* args) {
+	PyObject* type;
+	PyObject* value;
+	PyObject* traceback;
+
+	if (!PyArg_ParseTuple(args, "OOO", &type, &value, &traceback))
+		return NULL;
+
+	// Automatically cleanup the repository
+	if (self->clean) {
+		int r = pakfire_repo_clean(self->repo);
+
+		if (r) {
+			PyErr_SetFromErrno(PyExc_OSError);
+			return NULL;
+		}
+	}
+
+	Py_RETURN_NONE;
+}
+
 static struct PyMethodDef Repo_methods[] = {
+	{
+		"__enter__",
+		(PyCFunction)Repo_enter,
+		METH_NOARGS,
+		NULL
+	},
+	{
+		"__exit__",
+		(PyCFunction)Repo_exit,
+		METH_VARARGS,
+		NULL
+	},
 	{
 		"cache_age",
 		(PyCFunction)Repo_cache_age,

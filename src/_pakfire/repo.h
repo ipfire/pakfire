@@ -30,6 +30,7 @@
 typedef struct {
     PyObject_HEAD
     PakfireRepo repo;
+    int clean;
 } RepoObject;
 
 extern PyTypeObject RepoType;
