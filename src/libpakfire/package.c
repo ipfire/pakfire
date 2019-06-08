@@ -242,9 +242,9 @@ PAKFIRE_EXPORT char* pakfire_package_join_evr(const char* e, const char* v, cons
 
 	char* buffer = pakfire_malloc(l + 1);
 	if (e)
-		snprintf(buffer, l + 1, "%s:%s.%s", e, v, r);
+		snprintf(buffer, l + 1, "%s:%s-%s", e, v, r);
 	else
-		snprintf(buffer, l + 1, "%s.%s", v, r);
+		snprintf(buffer, l + 1, "%s-%s", v, r);
 
 	return buffer;
 }
