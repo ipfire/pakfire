@@ -1184,7 +1184,28 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 		pakfire_package_set_installsize(pkg, s);
 	}
 
-	// XXX more data to follow
+	// Set vendor
+	char* vendor = pakfire_archive_get(archive, "distribution.vendor");
+	if (vendor) {
+		pakfire_package_set_vendor(pkg, vendor);
+		pakfire_free(vendor);
+	}
+
+	// Set build host
+	char* buildhost = pakfire_archive_get(archive, "build.host");
+	if (buildhost) {
+		pakfire_package_set_buildhost(pkg, buildhost);
+		pakfire_free(buildhost);
+	}
+
+	// Set build time
+	char* buildtime = pakfire_archive_get(archive, "build.time");
+	if (buildtime) {
+		unsigned long long t = strtoull(buildtime, NULL, 10);
+		pakfire_free(buildtime);
+
+		pakfire_package_set_buildtime(pkg, t);
+	}
 
 	return pkg;
 }
