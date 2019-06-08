@@ -34,8 +34,8 @@ log = logging.getLogger("pakfire")
 from .constants import *
 from .i18n import _
 
-# Import binary version of version_compare and capability functions
-from ._pakfire import get_capabilities, set_capabilities, personality
+# Import binary version of capability functions
+from ._pakfire import get_capabilities, personality
 
 def cli_is_interactive():
 	"""

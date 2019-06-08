@@ -92,12 +92,6 @@ class InnerTarFile(tarfile.TarFile):
 		else:
 			target = "/%s" % member.name
 
-		# ...and then apply the capabilities.
-		caps = member.pax_headers.get("PAKFIRE.capabilities", None)
-		if caps:
-			log.debug("Restoring capabilities for /%s: %s" % (member.name, caps))
-			util.set_capabilities(target, caps)
-
 
 class InnerTarFileXz(InnerTarFile):
 	@classmethod

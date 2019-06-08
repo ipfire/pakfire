@@ -71,37 +71,3 @@ get_capabilities(PyObject *self, PyObject *args) {
 
 	return ret;
 }
-
-PyObject *
-set_capabilities(PyObject *self, PyObject *args) {
-	const char *filename;
-	const char *input;
-	char *exception = NULL;
-	char buf[STRING_SIZE];
-	cap_t cap_d;
-	int ret;
-
-	if (!PyArg_ParseTuple(args, "ss", &filename, &input)) {
-		/* XXX raise exception */
-		return NULL;
-	}
-
-	snprintf(buf, STRING_SIZE - 1, "= %s", input);
-	cap_d = cap_from_text(buf);
-	if (cap_d == NULL) {
-		PyErr_SetString(PyExc_ValueError, "Could not read capability string.");
-		return NULL;
-	}
-
-	ret = cap_set_file(filename, cap_d);
-	cap_free(cap_d);
-
-	if (ret != 0) {
-		snprintf(exception, STRING_SIZE - 1, "Failed to set capabilities on file %s (%s).",
-			filename, strerror(errno));
-		PyErr_SetString(PyExc_RuntimeError, exception);
-		return NULL;
-	}
-
-	return Py_BuildValue("i", ret);
-}

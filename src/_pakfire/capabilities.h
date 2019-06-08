@@ -24,6 +24,5 @@
 #include <Python.h>
 
 extern PyObject *get_capabilities(PyObject *self, PyObject *args);
-extern PyObject *set_capabilities(PyObject *self, PyObject *args);
 
 #endif /* PYTHON_PAKFIRE_CAPS_H */
