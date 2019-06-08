@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include <pakfire/archive.h>
+#include <pakfire/repo.h>
 #include <pakfire/util.h>
 
 #include "../testsuite.h"
@@ -65,13 +66,32 @@ int test_extract(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
+int test_import(const test_t* t) {
+	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
+
+	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
+	pakfire_free(path);
+
+	PakfireRepo repo = pakfire_repo_create(t->pakfire, "tmp");
+	assert_return(repo, EXIT_FAILURE);
+
+	PakfirePackage pkg = pakfire_repo_add_archive(repo, archive);
+	assert_return(pkg, EXIT_FAILURE);
+
+	pakfire_repo_unref(repo);
+	pakfire_archive_unref(archive);
+
+	return EXIT_SUCCESS;
+}
+
 int main(int argc, char** argv) {
 	testsuite_init();
 
-	testsuite_t* ts = testsuite_create(2);
+	testsuite_t* ts = testsuite_create(3);
 
 	testsuite_add_test(ts, "test_open", test_open);
 	testsuite_add_test(ts, "test_extract", test_extract);
+	testsuite_add_test(ts, "test_import", test_import);
 
 	return testsuite_run(ts);
 }
