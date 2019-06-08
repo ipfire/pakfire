@@ -43,6 +43,9 @@ static int test_run(test_t* t) {
 	// Log to stderr
 	pakfire_log_set_function(t->pakfire, pakfire_log_stderr);
 
+	// Enable debug logging
+	pakfire_log_set_priority(t->pakfire, LOG_DEBUG);
+
 	int r = t->func(t);
 	if (r)
 		LOG("Test failed with error code: %d\n", r);
