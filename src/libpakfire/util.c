@@ -144,16 +144,22 @@ PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 	return buffer;
 }
 
-char* pakfire_basename(const char* path) {
+const char* pakfire_basename(const char* path) {
 	char* name = pakfire_strdup(path);
 
-	return basename(name);
+	const char* r = basename(name);
+	pakfire_free(name);
+
+	return r;
 }
 
-char* pakfire_dirname(const char* path) {
+const char* pakfire_dirname(const char* path) {
 	char* parent = pakfire_strdup(path);
 
-	return dirname(parent);
+	const char* r = dirname(parent);
+	pakfire_free(parent);
+
+	return r;
 }
 
 PAKFIRE_EXPORT int pakfire_access(Pakfire pakfire, const char* dir, const char* file, int mode) {
@@ -187,12 +193,10 @@ int pakfire_mkdir(Pakfire pakfire, const char* path, mode_t mode) {
 		return 0;
 
 	// If parent does not exists, we try to create it.
-	char* parent = pakfire_dirname(path);
+	const char* parent = pakfire_dirname(path);
 	r = pakfire_access(pakfire, parent, NULL, F_OK);
 	if (r)
 		r = pakfire_mkdir(pakfire, parent, 0);
-
-	pakfire_free(parent);
 
 	if (r)
 		return r;

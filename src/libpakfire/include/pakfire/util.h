@@ -44,8 +44,8 @@ char* pakfire_format_date(time_t t);
 
 char* pakfire_path_join(const char* first, const char* second);
 
-char* pakfire_basename(const char* path);
-char* pakfire_dirname(const char* path);
+const char* pakfire_basename(const char* path);
+const char* pakfire_dirname(const char* path);
 int pakfire_access(Pakfire pakfire, const char* dir, const char* file, int mode);
 int pakfire_mkdir(Pakfire pakfire, const char* path, mode_t mode);
 
