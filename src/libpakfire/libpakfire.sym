@@ -50,6 +50,7 @@ global:
 	pakfire_archive_get_format;
 	pakfire_archive_get_path;
 	pakfire_archive_get_signatures;
+	pakfire_archive_get_size;
 	pakfire_archive_open;
 	pakfire_archive_read;
 	pakfire_archive_ref;

@@ -67,6 +67,7 @@ PakfireArchiveSignature pakfire_archive_signature_ref(PakfireArchiveSignature si
 void pakfire_archive_signature_unref(PakfireArchiveSignature signature);
 const char* pakfire_archive_signature_get_data(PakfireArchiveSignature signature);
 
+size_t pakfire_archive_get_size(PakfireArchive archive);
 PakfirePackage pakfire_archive_make_package(PakfireArchive archive, PakfireRepo repo);
 
 #define PAKFIRE_ARCHIVE_FN_CHECKSUMS		"chksums"

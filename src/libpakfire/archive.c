@@ -58,6 +58,7 @@ typedef struct archive_checksum {
 struct _PakfireArchive {
 	Pakfire pakfire;
 	char* path;
+	struct stat stat;
 
 	// metadata
 	int format;
@@ -639,9 +640,15 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* 
 	PakfireArchive archive = pakfire_archive_create(pakfire);
 	archive->path = pakfire_strdup(path);
 
+	// Stat the file and store the result
+	int r = stat(archive->path, &archive->stat);
+	if (r) {
+		goto error;
+	}
+
 	// Open the archive file for reading.
 	struct archive* a;
-	int r = archive_open(archive, &a);
+	r = archive_open(archive, &a);
 	if (r) {
 		pakfire_errno = r;
 		goto error;
@@ -1082,6 +1089,10 @@ PAKFIRE_EXPORT const char* pakfire_archive_verify_strerror(pakfire_archive_verif
 	return NULL;
 }
 
+PAKFIRE_EXPORT size_t pakfire_archive_get_size(PakfireArchive archive) {
+	return archive->stat.st_size;
+}
+
 /*
 	Copy all metadata from this archive to the package object
 */
@@ -1161,7 +1172,8 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 		pakfire_free(description);
 	}
 
-	// XXX Get package size
+	// Get package size
+	pakfire_package_set_downloadsize(pkg, pakfire_archive_get_size(archive));
 
 	// Get install size
 	char* size = pakfire_archive_get(archive, "package.size");
