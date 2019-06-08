@@ -224,7 +224,8 @@ _pakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(PYTHON_DEVEL_CFLAGS) \
 	$(CAP_CFLAGS) \
-	$(SOLV_CFLAGS)
+	$(SOLV_CFLAGS) \
+	-Wno-cast-function-type
 
 _pakfire_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
