@@ -48,11 +48,13 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 	if (!PyArg_ParseTuple(args, "s|s", &path, &arch))
 		return -1;
 
+	// Create a new Pakfire instance
     self->pakfire = pakfire_create(path, arch);
-    if (!self->pakfire)
-        return -1;
 
-	return 0;
+	if (self->pakfire)
+		return 0;
+	else
+		return -1;
 }
 
 static void Pakfire_dealloc(PakfireObject* self) {
