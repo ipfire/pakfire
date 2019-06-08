@@ -803,7 +803,7 @@ class CliKey(Cli):
 			help=_("Export the secret key"))
 		export.set_defaults(func=self.handle_export)
 
-		# import 
+		# import
 		_import = subparsers.add_parser("import", help=_("Import a key from file"))
 		_import.add_argument("filename", nargs="+", help=_("Filename of that key to import"))
 		_import.set_defaults(func=self.handle_import)

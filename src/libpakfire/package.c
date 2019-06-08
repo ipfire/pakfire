@@ -56,9 +56,7 @@ static Pool* pakfire_package_get_solv_pool(PakfirePackage pkg) {
 
 static void pakfire_package_add_self_provides(Pakfire pakfire, PakfirePackage pkg, const char* name, const char* evr) {
 	PakfireRelation relation = pakfire_relation_create(pakfire, name, PAKFIRE_EQ, evr);
-
 	pakfire_package_add_provides(pkg, relation);
-
 	pakfire_relation_unref(relation);
 }
 
