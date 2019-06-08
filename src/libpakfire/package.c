@@ -816,14 +816,18 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 
 	// Description
 	const char* description = pakfire_package_get_description(pkg);
-	pakfire_package_dump_add_lines(&string, _("Description"), description);
+	if (description)
+		pakfire_package_dump_add_lines(&string, _("Description"), description);
 
 	// Groups
 	char** groups = pakfire_package_get_groups(pkg);
 	if (groups) {
 		char* s = pakfire_package_make_group_string((const char**)groups);
-		pakfire_package_dump_add_lines(&string, _("Groups"), s);
-		pakfire_free(s);
+
+		if (s) {
+			pakfire_package_dump_add_lines(&string, _("Groups"), s);
+			pakfire_free(s);
+		}
 	}
 
 	// URL
