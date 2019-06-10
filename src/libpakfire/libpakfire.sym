@@ -49,9 +49,11 @@ global:
 	pakfire_archive_extraction_path;
 	pakfire_archive_get_filelist;
 	pakfire_archive_get_format;
+	pakfire_archive_get_pakfire;
 	pakfire_archive_get_path;
 	pakfire_archive_get_signatures;
 	pakfire_archive_get_size;
+	pakfire_archive_make_package;
 	pakfire_archive_open;
 	pakfire_archive_read;
 	pakfire_archive_ref;

@@ -340,6 +340,10 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_unref(PakfireArchive archive) {
 	return NULL;
 }
 
+PAKFIRE_EXPORT Pakfire pakfire_archive_get_pakfire(PakfireArchive archive) {
+	return pakfire_ref(archive->pakfire);
+}
+
 static int pakfire_archive_parse_entry_format(PakfireArchive archive,
 		struct archive* a, struct archive_entry* e) {
 	char format[10];

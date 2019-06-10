@@ -21,10 +21,13 @@
 #include <Python.h>
 
 #include <pakfire/archive.h>
+#include <pakfire/package.h>
+#include <pakfire/repo.h>
 #include <pakfire/util.h>
 
 #include "archive.h"
 #include "errors.h"
+#include "package.h"
 
 static PyObject* Archive_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
 	ArchiveObject* self = (ArchiveObject *)type->tp_alloc(type, 0);
@@ -148,11 +151,39 @@ static PyObject* Archive_extract(ArchiveObject* self, PyObject* args) {
 	Py_RETURN_NONE;
 }
 
+static PyObject* Archive_get_package(ArchiveObject* self) {
+	Pakfire pakfire = pakfire_archive_get_pakfire(self->archive);
+
+	PakfireRepo repo = pakfire_repo_create(pakfire, "dummy");
+	if (!repo)
+		return NULL;
+
+	// Make the package
+	PakfirePackage pkg = pakfire_archive_make_package(self->archive, repo);
+
+	// Make the Python object
+	PyObject* ret = new_package(&PackageType, pkg);
+	printf("ret = %p\n", ret);
+
+	// Cleanup
+	pakfire_package_unref(pkg);
+	pakfire_repo_unref(repo);
+	pakfire_unref(pakfire);
+
+	return ret;
+}
+
 static struct PyMethodDef Archive_methods[] = {
 	{
 		"extract",
 		(PyCFunction)Archive_extract,
 		METH_VARARGS,
+		NULL
+	},
+	{
+		"get_package",
+		(PyCFunction)Archive_get_package,
+		METH_NOARGS,
 		NULL
 	},
 	{

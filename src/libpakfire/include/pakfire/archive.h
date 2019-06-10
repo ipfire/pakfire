@@ -43,6 +43,7 @@ typedef enum pakfire_archive_flags {
 PakfireArchive pakfire_archive_create(Pakfire pakfire);
 PakfireArchive pakfire_archive_ref(PakfireArchive archive);
 PakfireArchive pakfire_archive_unref(PakfireArchive archive);
+Pakfire pakfire_archive_get_pakfire(PakfireArchive archive);
 
 char* pakfire_archive_get(PakfireArchive archive, const char* key);
 
