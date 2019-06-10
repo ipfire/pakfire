@@ -126,7 +126,35 @@ static PyObject* Archive_get_signatures(ArchiveObject* self) {
 	return list;
 }
 
+static PyObject* Archive_extract(ArchiveObject* self, PyObject* args) {
+	const char* target = NULL;
+
+	if (!PyArg_ParseTuple(args, "|z", &target))
+		return NULL;
+
+	// Make extraction path
+	char* prefix = pakfire_archive_extraction_path(self->archive, target);
+
+	// Extract payload
+	int r = pakfire_archive_extract(self->archive, prefix, PAKFIRE_ARCHIVE_USE_PAYLOAD);
+	pakfire_free(prefix);
+
+	// Throw an exception on error
+	if (r) {
+		PyErr_SetFromErrno(PyExc_OSError);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
 static struct PyMethodDef Archive_methods[] = {
+	{
+		"extract",
+		(PyCFunction)Archive_extract,
+		METH_VARARGS,
+		NULL
+	},
 	{
 		"read",
 		(PyCFunction)Archive_read,

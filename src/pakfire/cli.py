@@ -388,37 +388,7 @@ class Cli(object):
 
 	def handle_extract(self, ns):
 		with self.pakfire(ns) as p:
-			# Open all packages.
-			pkgs = []
-			for pkg in ns.package:
-				pkg = packages.open(self, None, pkg)
-				pkgs.append(pkg)
-
-			target_prefix = ns.target
-
-			# Search for binary packages.
-			binary_packages = any([p.type == "binary" for p in pkgs])
-			source_packages = any([p.type == "source" for p in pkgs])
-
-			if binary_packages and source_packages:
-				raise Error(_("Cannot extract mixed package types"))
-
-			if binary_packages and not target_prefix:
-				raise Error(_("You must provide an install directory with --target=..."))
-
-			elif source_packages and not target_prefix:
-				target_prefix = "/usr/src/packages/"
-
-			if target_prefix == "/":
-				raise Error(_("Cannot extract to /."))
-
-			for pkg in pkgs:
-				if pkg.type == "binary":
-					target_dir = target_prefix
-				elif pkg.type == "source":
-					target_dir = os.path.join(target_prefix, pkg.friendly_name)
-
-				pkg.extract(message=_("Extracting"), prefix=target_dir)
+			p.extract(ns.package, target=ns.target)
 
 
 class CliBuilder(Cli):

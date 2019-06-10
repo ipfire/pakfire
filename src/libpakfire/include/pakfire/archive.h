@@ -36,7 +36,8 @@ typedef enum pakfire_archive_verify_status {
 } pakfire_archive_verify_status_t;
 
 typedef enum pakfire_archive_flags {
-	PAKFIRE_ARCHIVE_USE_PAYLOAD = 1 << 0,
+	PAKFIRE_ARCHIVE_USE_PAYLOAD				= 1 << 0,
+	PAKFIRE_ARCHIVE_ADD_FILENAME_PREFIX		= 1 << 1,
 } pakfire_archive_flags_t;
 
 PakfireArchive pakfire_archive_create(Pakfire pakfire);
@@ -50,6 +51,7 @@ PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* path);
 int pakfire_archive_read(PakfireArchive archive, const char* filename,
 	void** data, size_t* data_size, int flags);
 int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flags);
+char* pakfire_archive_extraction_path(PakfireArchive archive, const char* target);
 
 const char* pakfire_archive_get_path(PakfireArchive archive);
 

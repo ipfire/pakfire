@@ -44,6 +44,7 @@
 #include <pakfire/pakfire.h>
 #include <pakfire/parser.h>
 #include <pakfire/private.h>
+#include <pakfire/repo.h>
 #include <pakfire/util.h>
 
 #define BLOCKSIZE	1024 * 1024 // 1MB
@@ -731,6 +732,36 @@ out:
 	return r;
 }
 
+PAKFIRE_EXPORT char* pakfire_archive_extraction_path(PakfireArchive archive, const char* target) {
+	PakfireRepo repo = pakfire_repo_create(archive->pakfire, "dummy");
+
+	// Read package metadata
+	PakfirePackage pkg = pakfire_archive_make_package(archive, repo);
+	if (!pkg) {
+		pakfire_repo_unref(repo);
+		return NULL;
+	}
+
+	const char* arch = pakfire_package_get_arch(pkg);
+	int is_source = (strcmp(arch, "src") == 0);
+
+	// Use a good default for source packages
+	if (is_source && !target)
+		target = "/usr/src/packages";
+
+	char* nevra = pakfire_package_get_nevra(pkg);
+
+	// Append package name and version to path
+	char* prefix = pakfire_path_join(target, nevra);
+
+	// Cleanup
+	pakfire_package_unref(pkg);
+	pakfire_repo_unref(repo);
+	pakfire_free(nevra);
+
+	return prefix;
+}
+
 PAKFIRE_EXPORT int pakfire_archive_extract(PakfireArchive archive, const char* prefix, int flags) {
 	struct archive* a;
 	struct archive* pa = NULL;
@@ -742,6 +773,8 @@ PAKFIRE_EXPORT int pakfire_archive_extract(PakfireArchive archive, const char* p
 	}
 
 	int use_payload = (flags & PAKFIRE_ARCHIVE_USE_PAYLOAD);
+
+	DEBUG(archive->pakfire, "Extracting %s to %s\n", archive->path, prefix);
 
 	if (use_payload)
 		pa = archive_open_payload(a);

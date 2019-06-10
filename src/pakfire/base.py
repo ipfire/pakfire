@@ -233,6 +233,25 @@ class PakfireContext(object):
 	def search(self, pattern):
 		return self.pakfire.search(pattern)
 
+	def extract(self, filenames, target=None):
+		if target and target == "/":
+			raise ValueError("Cannot extract to: %s" % target)
+
+		archives = []
+
+		# Open all archives
+		for filename in filenames:
+			a = _pakfire.Archive(self.pakfire, filename)
+			archives.append(a)
+
+		# Nothing to do when no archives where opened
+		if not archives:
+			return
+
+		# Extract them all
+		for archive in archives:
+			archive.extract(target)
+
 	# Transactions
 
 	def install(self, requires, **kwargs):
