@@ -46,7 +46,6 @@ struct _PakfirePackage {
 	Pakfire pakfire;
 	Id id;
 	PakfireFile filelist;
-	PakfireArchive archive;
 	int nrefs;
 };
 
@@ -91,7 +90,6 @@ static void pakfire_package_free(PakfirePackage pkg) {
 	DEBUG(pkg->pakfire, "Releasing Package at %p\n", pkg);
 	pakfire_unref(pkg->pakfire);
 
-	pakfire_archive_unref(pkg->archive);
 	pakfire_package_filelist_remove(pkg);
 	pakfire_free(pkg);
 }
@@ -892,15 +890,13 @@ PAKFIRE_EXPORT char* pakfire_package_get_cache_path(PakfirePackage pkg) {
 }
 
 PAKFIRE_EXPORT PakfireArchive pakfire_package_get_archive(PakfirePackage pkg) {
-	// Return the package if it has already been opened
-	if (pkg->archive)
-		return pakfire_archive_ref(pkg->archive);
-
 	// Otherwise open the archive from the cache
 	char* path = pakfire_package_get_cache_path(pkg);
-	PakfireArchive archive = pakfire_archive_open(pkg->pakfire, path);
+	if (!path)
+		return NULL;
 
-	// Free resources
+	// Open archive
+	PakfireArchive archive = pakfire_archive_open(pkg->pakfire, path);
 	pakfire_free(path);
 
 	return archive;

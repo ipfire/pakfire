@@ -38,6 +38,7 @@
 struct _PakfireStep {
 	Pakfire pakfire;
 	PakfirePackage package;
+	PakfireArchive archive;
 	pakfire_step_type_t type;
 	int nrefs;
 };
@@ -108,6 +109,7 @@ static void pakfire_step_free(PakfireStep step) {
 	DEBUG(step->pakfire, "Releasing Step at %p\n", step);
 
 	pakfire_package_unref(step->package);
+	pakfire_archive_unref(step->archive);
 	pakfire_unref(step->pakfire);
 	pakfire_free(step);
 }
@@ -222,8 +224,8 @@ static int pakfire_step_verify(PakfireStep step) {
 		return 1;
 
 	// Fetch the archive
-	PakfireArchive archive = pakfire_package_get_archive(step->package);
-	if (!archive) {
+	step->archive = pakfire_package_get_archive(step->package);
+	if (!step->archive) {
 		char* nevra = pakfire_package_get_nevra(step->package);
 		char* cache_path = pakfire_package_get_cache_path(step->package);
 
@@ -237,8 +239,13 @@ static int pakfire_step_verify(PakfireStep step) {
 	}
 
 	// Verify the archive
-	pakfire_archive_verify_status_t status = pakfire_archive_verify(archive);
-	pakfire_archive_unref(archive);
+	pakfire_archive_verify_status_t status = pakfire_archive_verify(step->archive);
+
+	// Log error
+	if (status) {
+		const char* error = pakfire_archive_verify_strerror(status);
+		ERROR(step->pakfire, "Archive verification failed: %s\n", error);
+	}
 
 	return status;
 }
