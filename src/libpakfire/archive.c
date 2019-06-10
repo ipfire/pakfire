@@ -560,13 +560,9 @@ static int archive_copy_data(struct archive* in, struct archive* out) {
 	return 0;
 }
 
-static int archive_extract(struct archive* a, const char* prefix) {
+static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefix) {
 	struct archive_entry* entry;
 	int r;
-
-#if 0
-	DEBUG("Extracting archive to %s\n", prefix);
-#endif
 
 	struct archive* ext = archive_write_disk_new();
 
@@ -600,9 +596,7 @@ static int archive_extract(struct archive* a, const char* prefix) {
 		char* pathname = pakfire_path_join(prefix, archive_pathname);
 		archive_entry_set_pathname(entry, pathname);
 
-#if 0
-		DEBUG("Extracting /%s (%zu bytes)\n", pathname, size);
-#endif
+		DEBUG(pakfire, "Extracting %s (%zu bytes)\n", pathname, size);
 		pakfire_free(pathname);
 
 		r = archive_write_header(ext, entry);
@@ -779,7 +773,7 @@ PAKFIRE_EXPORT int pakfire_archive_extract(PakfireArchive archive, const char* p
 	if (use_payload)
 		pa = archive_open_payload(a);
 
-	r = archive_extract(use_payload ? pa : a,
+	r = archive_extract(archive->pakfire, use_payload ? pa : a,
 		prefix ? prefix : pakfire_get_path(archive->pakfire));
 
 	if (pa)
