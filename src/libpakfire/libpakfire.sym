@@ -278,6 +278,7 @@ global:
 	# relation
 	pakfire_relation_create;
 	pakfire_relation_create_from_id;
+	pakfire_relation_create_from_string;
 	pakfire_relation_get_id;
 	pakfire_relation_providers;
 	pakfire_relation_ref;

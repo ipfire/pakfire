@@ -55,16 +55,14 @@ static void Relation_dealloc(RelationObject* self) {
 
 static int Relation_init(RelationObject* self, PyObject* args, PyObject* kwds) {
 	PakfireObject* pakfire;
-	const char* name;
-	const char* evr = NULL;
-	int cmp_type = 0;
+	const char* relation;
 
-	if (!PyArg_ParseTuple(args, "O!s|is", &PakfireType, &pakfire, &name, &cmp_type, &evr))
+	if (!PyArg_ParseTuple(args, "O!s", &PakfireType, &pakfire, &relation))
 		return -1;
 
-	self->relation = pakfire_relation_create(pakfire->pakfire, name, cmp_type, evr);
+	self->relation = pakfire_relation_create_from_string(pakfire->pakfire, relation);
 	if (!self->relation) {
-		PyErr_Format(PyExc_ValueError, "No such relation: %s", name);
+		PyErr_Format(PyExc_ValueError, "No such relation: %s", relation);
 		return -1;
 	}
 
