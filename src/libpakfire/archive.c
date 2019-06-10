@@ -661,6 +661,9 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* 
 		goto error;
 	}
 
+	// Close archive
+	archive_close(a);
+
 	return archive;
 
 error:
