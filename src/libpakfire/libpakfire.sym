@@ -354,6 +354,8 @@ global:
 
 	# util
 	pakfire_access;
+	pakfire_basename;
+	pakfire_dirname;
 	pakfire_free;
 	pakfire_get_errno;
 	pakfire_partition_string;

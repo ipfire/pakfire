@@ -354,7 +354,8 @@ check_PROGRAMS += \
 	tests/libpakfire/archive \
 	tests/libpakfire/key \
 	tests/libpakfire/makefile \
-	tests/libpakfire/parser
+	tests/libpakfire/parser \
+	tests/libpakfire/util
 
 dist_tests_libpakfire_main_SOURCES = \
 	tests/libpakfire/main.c
@@ -406,6 +407,16 @@ tests_libpakfire_parser_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS)
 
 tests_libpakfire_parser_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+dist_tests_libpakfire_util_SOURCES = \
+	tests/libpakfire/util.c
+
+tests_libpakfire_util_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_util_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 
