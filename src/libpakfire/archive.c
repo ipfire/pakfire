@@ -1097,8 +1097,14 @@ PAKFIRE_EXPORT size_t pakfire_archive_get_size(PakfireArchive archive) {
 	Copy all metadata from this archive to the package object
 */
 PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archive, PakfireRepo repo) {
-	char* name  = pakfire_archive_get(archive, "package.name");
-	char* arch = pakfire_archive_get(archive, "package.arch");
+	char* name = pakfire_archive_get(archive, "package.name");
+	char* type = pakfire_archive_get(archive, "package.type");
+	char* arch = NULL;
+
+	// Get arch for source packages
+	if (strcmp(type, "binary") == 0) {
+		arch = pakfire_archive_get(archive, "package.arch");
+	}
 
 	char* e = pakfire_archive_get(archive, "package.epoch");
 	char* v = pakfire_archive_get(archive, "package.version");
@@ -1106,15 +1112,17 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 	char* evr = pakfire_package_join_evr(e, v, r);
 
 	PakfirePackage pkg = pakfire_package_create2(
-		archive->pakfire, repo, name, evr, arch
+		archive->pakfire, repo, name, evr, (arch) ? arch : "src"
 	);
 
 	pakfire_free(name);
-	pakfire_free(arch);
+	pakfire_free(type);
 	pakfire_free(e);
 	pakfire_free(v);
 	pakfire_free(r);
 	pakfire_free(evr);
+	if (arch)
+		pakfire_free(arch);
 
 #ifdef ENABLE_DEBUG
 	char* nevra = pakfire_package_get_nevra(pkg);
