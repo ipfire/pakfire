@@ -133,6 +133,9 @@ char* pakfire_format_date(time_t t) {
 PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 	char* buffer;
 
+	if (!first)
+		return pakfire_strdup(second);
+
 	if (!second)
 		return pakfire_strdup(first);
 
