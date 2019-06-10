@@ -297,7 +297,7 @@ class Cli(object):
 				if pkg.name.endswith("-debuginfo"):
 					continue
 
-				print("%-24s: %s" % (pkg.name, pkg.summary))
+				self.ui.message("%-24s: %s" % (pkg.name, pkg.summary))
 
 	def handle_update(self, ns, check=False):
 		with self.pakfire(ns) as p:
