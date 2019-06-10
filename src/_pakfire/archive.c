@@ -175,10 +175,33 @@ static PyObject* Archive_get_package(ArchiveObject* self) {
 	return ret;
 }
 
+static PyObject* Archive_get(ArchiveObject* self, PyObject* args) {
+	const char* key = NULL;
+
+	if (!PyArg_ParseTuple(args, "|s", &key))
+		return NULL;
+
+	char* value = pakfire_archive_get(self->archive, key);
+
+	if (!value)
+		Py_RETURN_NONE;
+
+	PyObject* ret = PyUnicode_FromString(value);
+	pakfire_free(value);
+
+	return ret;
+}
+
 static struct PyMethodDef Archive_methods[] = {
 	{
 		"extract",
 		(PyCFunction)Archive_extract,
+		METH_VARARGS,
+		NULL
+	},
+	{
+		"get",
+		(PyCFunction)Archive_get,
 		METH_VARARGS,
 		NULL
 	},

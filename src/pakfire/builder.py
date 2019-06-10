@@ -536,19 +536,12 @@ class BuilderContext(object):
 			transaction.run()
 
 	def build(self, package, private_network=True, shell=True):
-		package = self._prepare_package(package)
-		assert package
+		archive = _pakfire.Archive(self.pakfire, package)
+
+		requires = archive.get("dependencies.requires")
 
 		# Setup the environment including any build dependencies
-		self.setup(install=package.requires)
-
-	def _prepare_package(self, package):
-		# Check if the file exists
-		if not os.path.exists(package):
-			raise FileNotFoundError(package)
-
-		# Try opening the package
-		return packages.open(self.pakfire, None, package)
+		self.setup(install=requires.splitlines())
 
 	def shell(self, install=[]):
 		if not util.cli_is_interactive():
