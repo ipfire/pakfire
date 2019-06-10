@@ -95,7 +95,7 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 			arch = system_machine();
 		pakfire->arch = pakfire_strdup(arch);
 
-		// Setup loggiing
+		// Setup logging
 		pakfire->log_function = pakfire_log_syslog;
 
 		const char* env = secure_getenv("PAKFIRE_LOG");
