@@ -1000,8 +1000,8 @@ PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, c
 
 	Id handle = pakfire_package_get_handle(pkg);
 
-	const char* dirname  = pakfire_dirname(filename);
-	const char* basename = pakfire_basename(filename);
+	char* dirname  = pakfire_dirname(filename);
+	char* basename = pakfire_basename(filename);
 
 	Id did = repodata_str2dir(repodata, dirname, 1);
 	if (!did)
@@ -1011,6 +1011,8 @@ PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, c
 		SOLVABLE_FILELIST, did, basename);
 
 	pakfire_repo_unref(repo);
+	pakfire_free(dirname);
+	pakfire_free(basename);
 
 	return NULL;
 }

@@ -410,7 +410,7 @@ PAKFIRE_EXPORT FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const
 	char* cache_path = pakfire_get_cache_path(pakfire, path);
 
 	// Ensure that the parent directory exists
-	const char* cache_dirname = pakfire_dirname(cache_path);
+	char* cache_dirname = pakfire_dirname(cache_path);
 
 	int r = pakfire_mkdir(pakfire, cache_dirname, S_IRUSR|S_IWUSR|S_IXUSR);
 	if (r)
@@ -421,6 +421,7 @@ PAKFIRE_EXPORT FILE* pakfire_cache_open(Pakfire pakfire, const char* path, const
 
 FAIL:
 	pakfire_free(cache_path);
+	pakfire_free(cache_dirname);
 
 	return f;
 }

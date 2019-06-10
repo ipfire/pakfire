@@ -144,19 +144,25 @@ PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 	return buffer;
 }
 
-const char* pakfire_basename(const char* path) {
+PAKFIRE_EXPORT char* pakfire_basename(const char* path) {
 	char* name = pakfire_strdup(path);
 
 	const char* r = basename(name);
+	if (r)
+		r = pakfire_strdup(r);
+
 	pakfire_free(name);
 
 	return r;
 }
 
-const char* pakfire_dirname(const char* path) {
+PAKFIRE_EXPORT char* pakfire_dirname(const char* path) {
 	char* parent = pakfire_strdup(path);
 
 	const char* r = dirname(parent);
+	if (r)
+		r = pakfire_strdup(r);
+
 	pakfire_free(parent);
 
 	return r;
@@ -193,13 +199,18 @@ int pakfire_mkdir(Pakfire pakfire, const char* path, mode_t mode) {
 		return 0;
 
 	// If parent does not exists, we try to create it.
-	const char* parent = pakfire_dirname(path);
+	char* parent = pakfire_dirname(path);
 	r = pakfire_access(pakfire, parent, NULL, F_OK);
 	if (r)
 		r = pakfire_mkdir(pakfire, parent, 0);
 
+	pakfire_free(parent);
+
+	// Exit if parent directory could not be created
 	if (r)
 		return r;
+
+	DEBUG(pakfire, "Creating directory %s\n", path);
 
 	// Finally, create the directory we want.
 	r = mkdir(path, mode);

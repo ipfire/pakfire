@@ -1124,9 +1124,10 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 #endif
 
 	// Set filename
-	const char* filename = pakfire_basename(archive->path);
+	char* filename = pakfire_basename(archive->path);
 	if (filename) {
 		pakfire_package_set_filename(pkg, filename);
+		pakfire_free(filename);
 	}
 
 	// Set UUID
