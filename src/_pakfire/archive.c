@@ -52,8 +52,10 @@ static int Archive_init(ArchiveObject* self, PyObject* args, PyObject* kwds) {
 		return -1;
 
 	self->archive = pakfire_archive_open(pakfire->pakfire, filename);
-	if (!self->archive)
+	if (!self->archive) {
+		PyErr_SetFromErrno(PyExc_OSError);
 		return -1;
+	}
 
 	return 0;
 }

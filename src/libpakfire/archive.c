@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <gpgme.h>
 #include <stdlib.h>
@@ -99,6 +100,10 @@ static int archive_open(PakfireArchive archive, struct archive** a) {
 	if (archive_read_open_filename(*a, archive->path, BLOCKSIZE) == ARCHIVE_OK) {
 		return 0;
 	}
+
+	// Log error message
+	const char* error = archive_error_string(*a);
+	DEBUG(archive->pakfire, "Could not open archive: %s\n", error);
 
 	archive_read_free(*a);
 	*a = NULL;
@@ -631,6 +636,11 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* 
 	// Stat the file and store the result
 	int r = stat(archive->path, &archive->stat);
 	if (r) {
+		pakfire_errno = errno;
+
+		ERROR(pakfire, "Could not stat %s: %s\n",
+			archive->path, strerror(pakfire_errno));
+
 		goto error;
 	}
 
@@ -638,14 +648,16 @@ PAKFIRE_EXPORT PakfireArchive pakfire_archive_open(Pakfire pakfire, const char* 
 	struct archive* a;
 	r = archive_open(archive, &a);
 	if (r) {
-		pakfire_errno = r;
+		pakfire_errno = PAKFIRE_E_PKG_INVALID;
 		goto error;
 	}
 
 	// Parse all entries in the archive.
 	r = pakfire_archive_read_metadata(archive, a);
 	if (r) {
-		pakfire_errno = r;
+		ERROR(pakfire, "Could not read metadata from %s\n", archive->path);
+
+		pakfire_errno = PAKFIRE_E_PKG_INVALID;
 		goto error;
 	}
 
