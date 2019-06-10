@@ -105,7 +105,11 @@ class RepositoryDownloader(Downloader):
 		downloader = http.Client()
 
 		# Download a new mirror list
-		mirrorlist = downloader.get(self.repo.mirrorlist, decode="json")
+		try:
+			mirrorlist = downloader.get(self.repo.mirrorlist, decode="json")
+		except http.DownloadError as e:
+			log.warning("Could not download mirrorlist for %s: %s" % (self.repo, e))
+			return
 
 		# Write new list to disk
 		with self.repo.cache_open("mirrors", "w") as f:
