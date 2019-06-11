@@ -255,7 +255,20 @@ static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script)
 }
 
 static int pakfire_step_extract(PakfireStep step) {
-	return 0; // TODO
+	if (!step->archive) {
+		ERROR(step->pakfire, "Archive was not opened\n");
+		return -1;
+	}
+
+	// Extract payload to the root of the Pakfire instance
+	int r = pakfire_archive_extract(step->archive, NULL, PAKFIRE_ARCHIVE_USE_PAYLOAD);
+	if (r) {
+		char* nevra = pakfire_package_get_nevra(step->package);
+		ERROR(step->pakfire, "Could not extract package %s: %d\n", nevra, r);
+		pakfire_free(nevra);
+	}
+
+	return r;
 }
 
 static int pakfire_step_erase(PakfireStep step) {
