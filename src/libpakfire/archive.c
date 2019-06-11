@@ -616,6 +616,17 @@ static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefi
 		DEBUG(pakfire, "Extracting %s (%zu bytes)\n", pathname, size);
 		pakfire_free(pathname);
 
+		// Update hardlink targets
+		const char* hardlink = archive_entry_hardlink(entry);
+		if (hardlink) {
+			// Make new hardlink target relative to prefix
+			char* h = pakfire_path_join(prefix, hardlink);
+
+			// Update the entry
+			archive_entry_set_hardlink(entry, h);
+			pakfire_free(h);
+		}
+
 		// Create file
 		r = archive_write_header(ext, entry);
 		if (r != ARCHIVE_OK) {
