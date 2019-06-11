@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include <pakfire/archive.h>
+#include <pakfire/package.h>
 #include <pakfire/repo.h>
 #include <pakfire/util.h>
 
@@ -79,6 +80,7 @@ int test_import(const test_t* t) {
 	assert_return(pkg, EXIT_FAILURE);
 
 	pakfire_repo_unref(repo);
+	pakfire_package_unref(pkg);
 	pakfire_archive_unref(archive);
 
 	return EXIT_SUCCESS;
