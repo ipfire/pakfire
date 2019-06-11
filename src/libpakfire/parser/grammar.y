@@ -244,7 +244,8 @@ define						: T_DEFINE variable T_EOL
 int pakfire_parser_parse_data(PakfireParser parent, const char* data, size_t len) {
 	Pakfire pakfire = pakfire_parser_get_pakfire(parent);
 
-	DEBUG(pakfire, "Parsing the following data:\n%s\n", data);
+	DEBUG(pakfire, "Parsing the following data (%zu):\n%.*s\n",
+		len, (int)len, data);
 
 	// Save start time
 	clock_t t_start = clock();
