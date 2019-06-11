@@ -78,6 +78,48 @@ static pakfire_step_type_t get_type(Transaction* transaction, Id id) {
 	}
 }
 
+static const char* pakfire_step_script_filename(pakfire_script_type script) {
+	switch (script) {
+		case PAKFIRE_SCRIPT_PREIN:
+			return "scriptlets/prein";
+
+		case PAKFIRE_SCRIPT_PREUN:
+			return "scriptlets/preun";
+
+		case PAKFIRE_SCRIPT_PREUP:
+			return "scriptlets/preup";
+
+		case PAKFIRE_SCRIPT_PRETRANSIN:
+			return "scriptlets/pretansin";
+
+		case PAKFIRE_SCRIPT_PRETRANSUN:
+			return "scriptlets/pretransun";
+
+		case PAKFIRE_SCRIPT_PRETRANSUP:
+			return "scriptlets/pretransup";
+
+		case PAKFIRE_SCRIPT_POSTIN:
+			return "scriptlets/postin";
+
+		case PAKFIRE_SCRIPT_POSTUN:
+			return "scriptlets/postun";
+
+		case PAKFIRE_SCRIPT_POSTUP:
+			return "scriptlets/postup";
+
+		case PAKFIRE_SCRIPT_POSTTRANSIN:
+			return "scriptlets/posttransin";
+
+		case PAKFIRE_SCRIPT_POSTTRANSUN:
+			return "scriptlets/posttransun";
+
+		case PAKFIRE_SCRIPT_POSTTRANSUP:
+			return "scriptlets/posttransup";
+	}
+
+	return NULL;
+}
+
 PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
 	Pakfire pakfire = pakfire_transaction_get_pakfire(transaction);
 	Transaction* t = pakfire_transaction_get_transaction(transaction);
@@ -251,7 +293,27 @@ static int pakfire_step_verify(PakfireStep step) {
 }
 
 static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script) {
-	return 0; // XXX
+	const char* script_filename = pakfire_step_script_filename(script);
+
+	DEBUG(step->pakfire, "Looking for script %s\n", script_filename);
+
+	void* data;
+	size_t size;
+
+	// Read script from archive
+	int r = pakfire_archive_read(step->archive, script_filename, &data, &size, 0);
+	if (r == 1) {
+		DEBUG(step->pakfire, "Could not find script %s\n", script_filename);
+		return 0;
+	}
+
+	// Found a script!
+	DEBUG(step->pakfire, "Found script %s (%zu):\n%.*s",
+		script_filename, size, (int)size, (const char*)data);
+
+	// XXX need to run it
+
+	return 0;
 }
 
 static int pakfire_step_extract(PakfireStep step) {
