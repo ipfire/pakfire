@@ -150,7 +150,7 @@ PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 PAKFIRE_EXPORT char* pakfire_basename(const char* path) {
 	char* name = pakfire_strdup(path);
 
-	const char* r = basename(name);
+	char* r = basename(name);
 	if (r)
 		r = pakfire_strdup(r);
 
@@ -162,7 +162,7 @@ PAKFIRE_EXPORT char* pakfire_basename(const char* path) {
 PAKFIRE_EXPORT char* pakfire_dirname(const char* path) {
 	char* parent = pakfire_strdup(path);
 
-	const char* r = dirname(parent);
+	char* r = dirname(parent);
 	if (r)
 		r = pakfire_strdup(r);
 
