@@ -272,7 +272,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 		// Verify this step
 		case PAKFIRE_ACTION_VERIFY:
 			r = pakfire_step_verify(step);
-			goto END;
+			break;
 
 		// Run the pre-transaction scripts
 		case PAKFIRE_ACTION_PRETRANS:
@@ -295,7 +295,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_IGNORE:
 					break;
 			}
-			goto END;
+			break;
 
 		// Run the post-transaction scripts
 		case PAKFIRE_ACTION_POSTTRANS:
@@ -318,7 +318,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_IGNORE:
 					break;
 			}
-			goto END;
+			break;
 
 		// Execute the action of this script
 		case PAKFIRE_ACTION_EXECUTE:
@@ -327,11 +327,11 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_REINSTALL:
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREIN);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_extract(step);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTIN);
 					break;
@@ -340,11 +340,11 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_DOWNGRADE:
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUP);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_extract(step);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUP);
 					break;
@@ -353,11 +353,11 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_OBSOLETE:
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUN);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_erase(step);
 					if (r)
-						goto END;
+						break;
 
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUN);
 					break;
@@ -365,14 +365,13 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_
 				case PAKFIRE_STEP_IGNORE:
 					break;
 			}
-			goto END;
+			break;
 
 		// Do nothing
 		case PAKFIRE_ACTION_NOOP:
-			goto END;
+			break;
 	}
 
-END:
 	if (r)
 		ERROR(step->pakfire, "Step has failed: %s\n", strerror(r));
 
