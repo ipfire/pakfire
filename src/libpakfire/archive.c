@@ -630,8 +630,8 @@ static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefi
 		// Create file
 		r = archive_write_header(ext, entry);
 		if (r != ARCHIVE_OK) {
-			ERROR(pakfire, "Could not extract file %s: %s\n",
-				pathname, archive_error_string(ext));
+			ERROR(pakfire, "Could not extract file /%s: %s\n",
+				archive_pathname, archive_error_string(ext));
 			break;
 		}
 
@@ -644,6 +644,26 @@ static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefi
 
 		// Commit to disk
 		r = archive_write_finish_entry(ext);
+		switch (r) {
+			case ARCHIVE_OK:
+				continue;
+
+			// A retry of this action might be successful
+			case ARCHIVE_RETRY:
+				r = archive_write_finish_entry(ext);
+				break;
+
+			case ARCHIVE_WARN:
+				DEBUG(pakfire, "/%s: %s\n",
+					archive_pathname, archive_error_string(ext));
+				continue;
+
+			case ARCHIVE_FAILED:
+				ERROR(pakfire, "/%s: %s\n",
+					archive_pathname, archive_error_string(ext));
+				break;
+		}
+
 		if (r != ARCHIVE_OK)
 			break;
 	}
