@@ -392,7 +392,6 @@ PAKFIRE_EXPORT void pakfire_partition_string(const char* s, const char* delim, c
 
 	// Length of string before delim
 	size_t l = p - s;
-	printf("%zu\n", l);
 
 	*s1 = pakfire_malloc(l);
 	snprintf(*s1, l, "%s", s);
