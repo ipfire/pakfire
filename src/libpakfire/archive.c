@@ -546,7 +546,7 @@ PAKFIRE_EXPORT char* pakfire_archive_get(PakfireArchive archive, const char* key
 	return pakfire_parser_get(archive->parser, key);
 }
 
-static int archive_copy_data(struct archive* in, struct archive* out) {
+static int archive_copy_data(Pakfire pakfire, struct archive* in, struct archive* out) {
 	int r;
 	const void* buff;
 
@@ -558,12 +558,20 @@ static int archive_copy_data(struct archive* in, struct archive* out) {
 		if (r == ARCHIVE_EOF)
 			break;
 
-		if (r != ARCHIVE_OK)
+		if (r != ARCHIVE_OK) {
+			ERROR(pakfire, "Could not read data from archive: %s\n",
+				archive_error_string(in));
+
 			return r;
+		}
 
 		r = archive_write_data_block(out, buff, size, offset);
-		if (r != ARCHIVE_OK)
+		if (r != ARCHIVE_OK) {
+			ERROR(pakfire, "Could not write data to disk: %s\n",
+				archive_error_string(out));
+
 			return r;
+		}
 	}
 
 	return 0;
@@ -594,7 +602,7 @@ static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefi
 
 		// Reached the end of the archive.
 		if (r == ARCHIVE_EOF) {
-			r = 0;
+			r = ARCHIVE_OK;
 			break;
 		}
 
@@ -608,21 +616,27 @@ static int archive_extract(Pakfire pakfire, struct archive* a, const char* prefi
 		DEBUG(pakfire, "Extracting %s (%zu bytes)\n", pathname, size);
 		pakfire_free(pathname);
 
+		// Create file
 		r = archive_write_header(ext, entry);
-		if (r != ARCHIVE_OK)
-			goto out;
-
-		if (size > 0) {
-			r = archive_copy_data(a, ext);
-
-			if (r != ARCHIVE_OK)
-				goto out;
+		if (r != ARCHIVE_OK) {
+			ERROR(pakfire, "Could not extract file %s: %s\n",
+				pathname, archive_error_string(ext));
+			break;
 		}
 
+		// Copy payload
+		if (size > 0) {
+			r = archive_copy_data(pakfire, a, ext);
+			if (r != ARCHIVE_OK)
+				break;
+		}
+
+		// Commit to disk
 		r = archive_write_finish_entry(ext);
+		if (r != ARCHIVE_OK)
+			break;
 	}
 
-out:
 	archive_write_close(ext);
 	archive_write_free(ext);
 
