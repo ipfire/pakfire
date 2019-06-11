@@ -59,6 +59,8 @@ enum operator {
 static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	const char* val1, const char* val2, PakfireParser if_block, PakfireParser else_block);
 
+static PakfireParser make_child(PakfireParser parent, const char* namespace);
+
 %}
 
 %token							T_APPEND
@@ -158,7 +160,7 @@ text						: text line
 if							: T_IF
 							{
 								// Open a new block
-								parser = pakfire_parser_create_child(parser, NULL);
+								parser = make_child(parser, NULL);
 							};
 
 else						: T_ELSE T_EOL
@@ -167,7 +169,7 @@ else						: T_ELSE T_EOL
 								parser = pakfire_parser_get_parent(parser);
 
 								// Open a new else block
-								parser = pakfire_parser_create_child(parser, NULL);
+								parser = make_child(parser, NULL);
 							};
 
 end							: T_END T_EOL;
@@ -212,7 +214,7 @@ block						: block_opening grammar end
 block_opening				: variable T_EOL
 							{
 								// Create a new sub-parser which opens a new namespace
-								parser = pakfire_parser_create_child(parser, $1);
+								parser = make_child(parser, $1);
 							};
 
 statement					: variable T_ASSIGN value T_EOL
@@ -331,4 +333,11 @@ static PakfireParser make_if_stmt(PakfireParser parser, const enum operator op,
 	pakfire_free(v2);
 
 	return result;
+}
+
+static PakfireParser make_child(PakfireParser parent, const char* namespace) {
+	PakfireParser parser = pakfire_parser_create_child(parent, namespace);
+	pakfire_parser_unref(parent);
+
+	return parser;
 }
