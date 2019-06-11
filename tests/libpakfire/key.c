@@ -69,6 +69,8 @@ int test_import(const test_t* t) {
 	const char* fingerprint = pakfire_key_get_fingerprint(key);
 	assert_return(strcmp(fingerprint, TEST_KEY_FINGERPRINT) == 0, EXIT_FAILURE);
 
+	pakfire_key_unref(key);
+
 	return EXIT_SUCCESS;
 }
 
@@ -86,8 +88,9 @@ int test_export(const test_t* t) {
 	assert_return(data, EXIT_FAILURE);
 
 	LOG("Exported key:\n%s\n", data);
-
 	pakfire_free(data);
+
+	pakfire_key_unref(key);
 
 	return EXIT_SUCCESS;
 }
