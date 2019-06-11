@@ -51,7 +51,13 @@ static int test_run(test_t* t) {
 		LOG("Test failed with error code: %d\n", r);
 
 	// Release pakfire
-	pakfire_unref(t->pakfire);
+	t->pakfire = pakfire_unref(t->pakfire);
+
+	// Check if Pakfire was actually released
+	if (t->pakfire) {
+		LOG("Error: Pakfire instance was not released\n");
+		return 1;
+	}
 
 	return r;
 }
