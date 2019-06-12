@@ -18,7 +18,10 @@
 #                                                                             #
 #############################################################################*/
 
+#include <errno.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include <solv/pooltypes.h>
 #include <solv/transaction.h>
@@ -292,6 +295,78 @@ static int pakfire_step_verify(PakfireStep step) {
 	return status;
 }
 
+static int pakfire_script_check_shell(const char* data, const size_t size) {
+	const char* interpreter = "#!/bin/sh";
+
+	// data must be long enough
+	if (size <= strlen(interpreter))
+		return 0;
+
+	// If the string begins with the interpreter, this is a match
+	if (strncmp(data, interpreter, strlen(interpreter)) == 0)
+		return 1;
+
+	return 0;
+}
+
+static int pakfire_step_run_shell_script(PakfireStep step, const char* data, const size_t size) {
+	// Write the scriptlet to disk
+	char* path = pakfire_path_join(pakfire_get_path(step->pakfire), "/tmp/.pakfire-scriptlet.XXXXXX");
+
+	int r;
+
+	// Open a temporary file
+	int fd = mkstemp(path);
+	if (fd < 0) {
+		ERROR(step->pakfire, "Could not open a temporary file: %s\n",
+			strerror(errno));
+
+		r = errno;
+	}
+
+	// Write data
+	ssize_t bytes_written = write(fd, data, size);
+	if (bytes_written < (ssize_t)size) {
+		ERROR(step->pakfire, "Could not write script to file %s: %s\n",
+			path, strerror(errno));
+
+		r = errno;
+		goto out;
+	}
+
+	// Make the script executable
+	r = fchmod(fd, S_IRUSR|S_IWUSR|S_IXUSR);
+	if (r) {
+		ERROR(step->pakfire, "Could not set executable permissions on %s: %s\n",
+			path, strerror(errno));
+
+		r = errno;
+		goto out;
+	}
+
+	// Close file
+	r = close(fd);
+	if (r) {
+		ERROR(step->pakfire, "Could not close script file %s: %s\n",
+			path, strerror(errno));
+
+		r = errno;
+		goto out;
+	}
+
+	// Run the script
+	INFO(step->pakfire, "XXX Running %s\n", path);
+
+out:
+	// Remove script from disk
+	unlink(path);
+
+	// Cleanup
+	pakfire_free(path);
+
+	return r;
+}
+
 static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script) {
 	const char* script_filename = pakfire_step_script_filename(script);
 
@@ -311,7 +386,17 @@ static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script)
 	DEBUG(step->pakfire, "Found script %s (%zu):\n%.*s",
 		script_filename, size, (int)size, (const char*)data);
 
-	// XXX need to run it
+	r = 0;
+
+	// Detect what kind of script this is and run it
+	if (pakfire_script_check_shell(data, size)) {
+		r = pakfire_step_run_shell_script(step, data, size);
+	} else {
+		ERROR(step->pakfire, "Script is of an unknown kind\n");
+	}
+
+	// Cleanup
+	pakfire_free(data);
 
 	return 0;
 }
