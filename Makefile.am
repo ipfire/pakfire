@@ -271,6 +271,7 @@ lib_LTLIBRARIES += \
 libpakfire_la_SOURCES = \
 	src/libpakfire/archive.c \
 	src/libpakfire/errno.c \
+	src/libpakfire/execute.c \
 	src/libpakfire/file.c \
 	src/libpakfire/filter.c \
 	src/libpakfire/key.c \
@@ -295,6 +296,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/archive.h \
 	src/libpakfire/include/pakfire/constants.h \
 	src/libpakfire/include/pakfire/errno.h \
+	src/libpakfire/include/pakfire/execute.h \
 	src/libpakfire/include/pakfire/file.h \
 	src/libpakfire/include/pakfire/filter.h \
 	src/libpakfire/include/pakfire/i18n.h \
@@ -352,6 +354,7 @@ EXTRA_DIST += \
 check_PROGRAMS += \
 	tests/libpakfire/main \
 	tests/libpakfire/archive \
+	tests/libpakfire/execute \
 	tests/libpakfire/key \
 	tests/libpakfire/makefile \
 	tests/libpakfire/parser \
@@ -375,6 +378,16 @@ tests_libpakfire_archive_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS)
 
 tests_libpakfire_archive_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+tests_libpakfire_execute_SOURCES = \
+	tests/libpakfire/execute.c
+
+tests_libpakfire_execute_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_execute_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 

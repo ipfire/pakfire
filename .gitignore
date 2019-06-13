@@ -11,6 +11,7 @@
 /src/systemd/*.service
 /tests/.root
 /tests/libpakfire/archive
+/tests/libpakfire/execute
 /tests/libpakfire/key
 /tests/libpakfire/main
 /tests/libpakfire/makefile

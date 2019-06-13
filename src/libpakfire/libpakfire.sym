@@ -26,6 +26,7 @@ global:
 	pakfire_cache_stat;
 	pakfire_count_packages;
 	pakfire_create;
+	pakfire_execute;
 	pakfire_get_arch;
 	pakfire_get_cache_path;
 	pakfire_get_installed_repo;
@@ -365,6 +366,7 @@ global:
 	pakfire_get_errno;
 	pakfire_partition_string;
 	pakfire_path_join;
+	pakfire_path_relpath;
 	pakfire_read_file_into_buffer;
 	pakfire_split_string;
 	pakfire_string_to_size;

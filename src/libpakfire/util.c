@@ -147,6 +147,14 @@ PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 	return buffer;
 }
 
+PAKFIRE_EXPORT const char* pakfire_path_relpath(const char* root, const char* path) {
+	if (pakfire_string_startswith(path, root) == 0) {
+		return path + strlen(root);
+	}
+
+	return NULL;
+}
+
 PAKFIRE_EXPORT char* pakfire_basename(const char* path) {
 	char* name = pakfire_strdup(path);
 

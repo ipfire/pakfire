@@ -28,6 +28,7 @@
 
 #include <pakfire/archive.h>
 #include <pakfire/constants.h>
+#include <pakfire/execute.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pakfire.h>
@@ -310,10 +311,13 @@ static int pakfire_script_check_shell(const char* data, const size_t size) {
 }
 
 static int pakfire_step_run_shell_script(PakfireStep step, const char* data, const size_t size) {
-	// Write the scriptlet to disk
-	char* path = pakfire_path_join(pakfire_get_path(step->pakfire), "/tmp/.pakfire-scriptlet.XXXXXX");
+	const char* root = pakfire_get_path(step->pakfire);
 
+	// Write the scriptlet to disk
+	char* path = pakfire_path_join(root, "tmp/.pakfire-scriptlet.XXXXXX");
 	int r;
+
+	DEBUG(step->pakfire, "Writing script to %s\n", path);
 
 	// Open a temporary file
 	int fd = mkstemp(path);
@@ -354,8 +358,15 @@ static int pakfire_step_run_shell_script(PakfireStep step, const char* data, con
 		goto out;
 	}
 
+	const char* command = path;
+	if (root)
+		command = pakfire_path_relpath(root, path);
+
 	// Run the script
-	INFO(step->pakfire, "XXX Running %s\n", path);
+	r = pakfire_execute(step->pakfire, command, NULL, 0);
+	if (r) {
+		DEBUG(step->pakfire, "Script return code: %d\n", r);
+	}
 
 out:
 	// Remove script from disk
