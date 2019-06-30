@@ -412,6 +412,24 @@ static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script)
 	return 0;
 }
 
+static int pakfire_run_ldconfig(PakfireStep step) {
+	const char* ldconfig = "/usr/sbin/ldconfig";
+
+	int r = -1;
+
+	// XXX check if package has some files that require to run ldconfig
+
+	const char* path = pakfire_get_path(step->pakfire);
+
+	if (pakfire_access(step->pakfire, path, ldconfig + 1, X_OK) == 0) {
+		r = pakfire_execute(step->pakfire, ldconfig, NULL, 0);
+
+		DEBUG(step->pakfire, "ldconfig returned %d\n", r);
+	}
+
+	return r;
+}
+
 static int pakfire_step_extract(PakfireStep step) {
 	if (!step->archive) {
 		ERROR(step->pakfire, "Archive was not opened\n");
@@ -426,10 +444,16 @@ static int pakfire_step_extract(PakfireStep step) {
 		pakfire_free(nevra);
 	}
 
+	// Update the runtime linker cache
+	pakfire_run_ldconfig(step);
+
 	return r;
 }
 
 static int pakfire_step_erase(PakfireStep step) {
+	// Update the runtime linker cache after all files have been removed
+	pakfire_run_ldconfig(step);
+
 	return 0; // TODO
 }
 
