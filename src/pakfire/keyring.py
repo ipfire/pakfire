@@ -20,9 +20,13 @@
 ###############################################################################
 
 import datetime
-import gpgme
 import io
 import os
+
+try:
+	import gpgme
+except ImportError:
+	import gpg as gpgme
 
 import logging
 log = logging.getLogger("pakfire")
