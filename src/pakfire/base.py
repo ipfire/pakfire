@@ -27,7 +27,6 @@ import string
 from . import _pakfire
 from . import distro
 from . import downloaders
-from . import filelist
 from . import logger
 from . import packages
 from . import repository
