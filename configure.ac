@@ -49,6 +49,8 @@ LT_INIT([disable-static])
 
 IT_PROG_INTLTOOL([0.40.0])
 
+XGETTEXT="${XGETTEXT} --keyword=_:1,2 --keyword=N_:1,2 --no-location"
+
 GETTEXT_PACKAGE=pakfire
 AC_SUBST(GETTEXT_PACKAGE)
 
