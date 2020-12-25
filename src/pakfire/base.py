@@ -144,7 +144,7 @@ class Pakfire(_pakfire.Pakfire):
 		ret = os.path.exists("/etc/ipfire-release")
 
 		if not ret:
-			raise NotAnIPFireSystemError("You can run pakfire only on an IPFire system")
+			raise NotIPFireError("You can run pakfire only on an IPFire system")
 
 	def clean(self):
 		# Clean up repository caches

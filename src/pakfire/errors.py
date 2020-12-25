@@ -65,7 +65,7 @@ class FileError(Error):
 class FileNotFoundError(Error):
 	pass
 
-class NotAnIPFireSystemError(Error):
+class NotIPFireError(Error):
 	pass
 
 class OfflineModeError(Error):
