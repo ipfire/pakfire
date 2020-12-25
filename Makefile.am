@@ -83,8 +83,12 @@ DISTCHECK_CONFIGURE_FLAGS = \
 clean-local: clean-local-check
 
 .PHONY: update-po
-update-po:
+update-po: po/POTFILES.in
 	$(MAKE) -C po update-po
+
+po/POTFILES.in: Makefile
+	find $(abs_srcdir)/src | \
+		grep -E "\.(c|in|py)$$" | sed -e "s@$(abs_srcdir)/@@g" | LC_COLLATE=C sort > $@
 
 # ------------------------------------------------------------------------------
 
