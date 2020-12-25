@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-13 15:10+0100\n"
+"POT-Creation-Date: 2020-12-25 11:18+0000\n"
 "PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: robert lasic <robertlasic@gmail.com>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/mstremer/ipfire/"
@@ -23,397 +23,307 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
 
-#: ../src/libpakfire/archive.c:1025
 msgid "Verify OK"
 msgstr ""
 
-#: ../src/libpakfire/archive.c:1028
 msgid "Error performing validation"
 msgstr ""
 
-#: ../src/libpakfire/archive.c:1031
 #, fuzzy
 msgid "Invalid signature"
 msgstr "%s nu au semnături valide"
 
-#: ../src/libpakfire/archive.c:1034
 #, fuzzy
 msgid "Signature expired"
 msgstr "Semnături"
 
-#: ../src/libpakfire/archive.c:1037
 #, fuzzy
 msgid "Key expired"
 msgstr "Această cheie a expirat!"
 
-#: ../src/libpakfire/archive.c:1040
 msgid "Key unknown"
 msgstr ""
 
-#: ../src/libpakfire/key.c:478
 #, fuzzy
 msgid "Expires"
 msgstr "Expiră: %s"
 
-#: ../src/libpakfire/package.c:715 ../src/pakfire/packages/base.py:99
 msgid "Name"
 msgstr "Nume"
 
-#: ../src/libpakfire/package.c:719 ../src/libpakfire/transaction.c:217
-#: ../src/pakfire/packages/base.py:110 ../src/pakfire/transaction.py:426
 msgid "Version"
 msgstr "Versiune"
 
-#: ../src/libpakfire/package.c:723 ../src/pakfire/packages/base.py:111
 msgid "Release"
 msgstr "Lansare"
 
-#: ../src/libpakfire/package.c:727 ../src/libpakfire/transaction.c:219
-#: ../src/pakfire/packages/base.py:115 ../src/pakfire/transaction.py:425
 msgid "Size"
 msgstr "Dimensiune"
 
-#: ../src/libpakfire/package.c:732 ../src/pakfire/packages/base.py:119
 msgid "Installed size"
 msgstr "Dimensiune instalată"
 
-#: ../src/libpakfire/package.c:737
 #, fuzzy
 msgid "Download size"
 msgstr "Dimensiunea totala descărcată: %s "
 
-#: ../src/libpakfire/package.c:743 ../src/pakfire/packages/base.py:125
 msgid "Repo"
 msgstr "Repo"
 
-#: ../src/libpakfire/package.c:750 ../src/pakfire/packages/base.py:128
 msgid "Summary"
 msgstr "Sumar"
 
-#: ../src/libpakfire/package.c:754 ../src/pakfire/packages/base.py:134
 msgid "Description"
 msgstr "Descriere"
 
-#: ../src/libpakfire/package.c:761 ../src/pakfire/packages/base.py:130
+msgid "Groups"
+msgstr "Grupuri"
+
 msgid "URL"
 msgstr "URL"
 
-#: ../src/libpakfire/package.c:765 ../src/pakfire/packages/base.py:131
 msgid "License"
 msgstr "Licență"
 
-#: ../src/libpakfire/package.c:770 ../src/pakfire/packages/base.py:141
 msgid "Maintainer"
 msgstr "Responsabilul"
 
-#: ../src/libpakfire/package.c:774 ../src/pakfire/packages/base.py:143
 msgid "Vendor"
 msgstr "Furnizor"
 
-#: ../src/libpakfire/package.c:778 ../src/pakfire/packages/base.py:145
 msgid "UUID"
 msgstr "UUID"
 
-#: ../src/libpakfire/package.c:782 ../src/pakfire/packages/base.py:147
 msgid "Build date"
 msgstr "Data Creare"
 
-#: ../src/libpakfire/package.c:786 ../src/pakfire/packages/base.py:148
 msgid "Build host"
 msgstr "Creare gazda (host)"
 
-#: ../src/libpakfire/package.c:790 ../src/pakfire/packages/base.py:155
 msgid "Provides"
 msgstr "Furnizează"
 
-#: ../src/libpakfire/package.c:796 ../src/pakfire/packages/base.py:165
 msgid "Requires"
 msgstr "Necesită"
 
-#: ../src/libpakfire/package.c:802 ../src/pakfire/packages/base.py:170
 msgid "Conflicts"
 msgstr "Conflicte"
 
-#: ../src/libpakfire/package.c:808 ../src/pakfire/packages/base.py:175
 msgid "Obsoletes"
 msgstr "Învechite"
 
-#: ../src/libpakfire/package.c:814 ../src/pakfire/packages/base.py:180
 msgid "Recommends"
 msgstr "Recomandări"
 
-#: ../src/libpakfire/package.c:820 ../src/pakfire/packages/base.py:185
 msgid "Suggests"
 msgstr "Sugestii"
 
-#: ../src/libpakfire/package.c:828
 #, fuzzy
 msgid "Filelist"
 msgstr "Fişier"
 
-#: ../src/libpakfire/problem.c:47
 #, c-format
 msgid "%s does not belong to a distupgrade repository"
 msgstr "%s nu aparțin depozitului de actualizare."
 
-#: ../src/libpakfire/problem.c:54
 #, c-format
 msgid "%s has inferior architecture"
 msgstr "%s are arhitectură inferioară"
 
-#: ../src/libpakfire/problem.c:61
 #, c-format
 msgid "problem with installed package %s"
 msgstr "Problemă cu pachetul de instalare %s"
 
-#: ../src/libpakfire/problem.c:67
 #, c-format
 msgid "conflicting requests"
 msgstr "Cerințe în conflict"
 
-#: ../src/libpakfire/problem.c:71
 #, fuzzy, c-format
 msgid "unsupported request"
 msgstr "Arcurile suportate"
 
-#: ../src/libpakfire/problem.c:75
 #, c-format
 msgid "nothing provides requested %s"
 msgstr "Nimic nu asigură cererea %s"
 
-#: ../src/libpakfire/problem.c:81
 #, fuzzy, c-format
 msgid "package %s does not exist"
 msgstr "pachetul %s nu este instalat"
 
-#: ../src/libpakfire/problem.c:87
 #, c-format
 msgid "%s is provided by the system"
 msgstr ""
 
-#: ../src/libpakfire/problem.c:93
 #, c-format
 msgid "some dependency problem"
 msgstr "probleme de dependințe"
 
-#: ../src/libpakfire/problem.c:99
 #, fuzzy, c-format
 msgid "cannot install the best update candidate for package %s"
 msgstr "Nu se pot instala ambele %s și %s"
 
-#: ../src/libpakfire/problem.c:103
 #, fuzzy, c-format
 msgid "cannot install the best candidate for the job"
 msgstr "Nu se pot instala ambele %s și %s"
 
-#: ../src/libpakfire/problem.c:108
 #, c-format
 msgid "package %s is not installable"
 msgstr "pachetul %s nu este instalat"
 
-#: ../src/libpakfire/problem.c:115
 #, c-format
 msgid "nothing provides %s needed by %s"
 msgstr "Nimic nu asigură %s cerut de %s"
 
-#: ../src/libpakfire/problem.c:122
 #, c-format
 msgid "cannot install both %s and %s"
 msgstr "Nu se pot instala ambele %s și %s"
 
-#: ../src/libpakfire/problem.c:129
 #, c-format
 msgid "package %s conflicts with %s provided by %s"
 msgstr "pachetul %s în conflict cu %s asigurat de %s"
 
-#: ../src/libpakfire/problem.c:137
 #, c-format
 msgid "package %s obsoletes %s provided by %s"
 msgstr "pachet %s depășit %s asigurat de %s "
 
-#: ../src/libpakfire/problem.c:145
 #, c-format
 msgid "installed package %s obsoletes %s provided by %s"
 msgstr "pachetul instalat %s depășit %s asigurat de %s"
 
-#: ../src/libpakfire/problem.c:153
 #, c-format
 msgid "package %s implicitely obsoletes %s provided by %s"
 msgstr "pachetul %s implicit depășit %s asigurat de %s"
 
-#: ../src/libpakfire/problem.c:161
 #, c-format
 msgid "package %s requires %s, but none of the providers can be installed"
 msgstr "pachetul %s necesită %s, dar nici un provider nu se poate instala"
 
-#: ../src/libpakfire/problem.c:168
 #, c-format
 msgid "package %s conflicts with %s provided by itself"
 msgstr "pachetul %s în conflict cu %s asigurat de el însuși"
 
-#: ../src/libpakfire/problem.c:175
 #, fuzzy, c-format
 msgid "both package %s and %s obsolete %s"
 msgstr "pachet %s depășit %s asigurat de %s "
 
-#: ../src/libpakfire/problem.c:184
 #, c-format
 msgid "bad rule type"
 msgstr "tip regulă greșită"
 
 #. XXX pool_job2str must be localised
-#: ../src/libpakfire/solution.c:54
 #, fuzzy, c-format
 msgid "do not ask to %s"
 msgstr "nu bloca %s"
 
-#: ../src/libpakfire/solution.c:61
 #, c-format
 msgid "keep %s despite the inferior architecture"
 msgstr "pastreaza %s  în ciuda arhitecturii inferioare"
 
-#: ../src/libpakfire/solution.c:64
 #, c-format
 msgid "install %s despite the inferior architecture"
 msgstr "instaleaza %s in ciuda arhitecturii inferioare "
 
-#: ../src/libpakfire/solution.c:71
 #, c-format
 msgid "keep obsolete %s"
 msgstr "pastreaza  invechite  %s"
 
-#: ../src/libpakfire/solution.c:74
 #, fuzzy, c-format
 msgid "install %s"
 msgstr "nu instala %s"
 
-#: ../src/libpakfire/solution.c:81
 #, fuzzy, c-format
 msgid "keep old %s"
 msgstr "pastreaza  invechite  %s"
 
-#: ../src/libpakfire/solution.c:84
 #, fuzzy, c-format
 msgid "install %s despite the old version"
 msgstr "instaleaza %s in ciuda arhitecturii inferioare "
 
-#: ../src/libpakfire/solution.c:88
 #, fuzzy, c-format
 msgid "allow deinstallation of %s"
 msgstr "nu interzice instalarea a %s"
 
-#: ../src/libpakfire/solution.c:92
 #, c-format
 msgid "allow replacement of %s with %s"
 msgstr "permite inlocuirea %s  cu %s"
 
-#: ../src/libpakfire/solution.c:96
 #, c-format
 msgid "bad solution element"
 msgstr ""
 
-#: ../src/libpakfire/transaction.c:198
 #, fuzzy
 msgid "package(s)"
 msgstr "pachet"
 
-#: ../src/libpakfire/transaction.c:215 ../src/pakfire/transaction.py:423
 msgid "Package"
 msgstr "Pachet"
 
-#: ../src/libpakfire/transaction.c:216 ../src/pakfire/packages/base.py:107
-#: ../src/pakfire/transaction.py:422
 msgid "Arch"
 msgstr "Arc"
 
-#: ../src/libpakfire/transaction.c:218 ../src/pakfire/cli.py:355
-#: ../src/pakfire/transaction.py:424
 msgid "Repository"
 msgstr "Depozit"
 
-#: ../src/libpakfire/transaction.c:225 ../src/libpakfire/transaction.c:241
-#: ../src/pakfire/transaction.py:440
 msgid "Installing:"
 msgstr "Se instalează:"
 
-#: ../src/libpakfire/transaction.c:227 ../src/libpakfire/transaction.c:242
-#: ../src/pakfire/transaction.py:441
 msgid "Reinstalling:"
 msgstr "Reinstalare:"
 
-#: ../src/libpakfire/transaction.c:229 ../src/libpakfire/transaction.c:243
-#: ../src/pakfire/transaction.py:442
 msgid "Updating:"
 msgstr "Se Actualizează:"
 
-#: ../src/libpakfire/transaction.c:231 ../src/libpakfire/transaction.c:244
-#: ../src/pakfire/transaction.py:443
 msgid "Downgrading:"
 msgstr "Downgrading:"
 
-#: ../src/libpakfire/transaction.c:233 ../src/libpakfire/transaction.c:245
-#: ../src/pakfire/transaction.py:444
 msgid "Removing:"
 msgstr "Se Înlătură:"
 
-#: ../src/libpakfire/transaction.c:235 ../src/libpakfire/transaction.c:246
 #, fuzzy
 msgid "Obsoleting:"
 msgstr "Învechite"
 
 #. Summary
-#. Append the transaction summary
-#: ../src/libpakfire/transaction.c:238 ../src/pakfire/transaction.py:454
 msgid "Transaction Summary"
 msgstr "Sumar tranzacție"
 
-#: ../src/libpakfire/transaction.c:252
 #, fuzzy
 msgid "Total Download Size"
 msgstr "Dimensiunea totala descărcată: %s "
 
-#: ../src/libpakfire/transaction.c:258
 #, fuzzy
 msgid "Installed Size"
 msgstr "Dimensiune instalată"
 
-#: ../src/libpakfire/transaction.c:258
 #, fuzzy
 msgid "Freed Size"
 msgstr "Dimensiunea eliberata: %s"
 
-#: ../src/pakfire/actions.py:69
 #, python-format
 msgid "%s has got no signatures"
 msgstr "%s nu au semnături"
 
-#: ../src/pakfire/actions.py:75
 #, python-format
 msgid "%s has got no valid signatures"
 msgstr "%s nu au semnături valide"
 
-#: ../src/pakfire/actions.py:235
 msgid "Could not handle scriptlet of unknown type. Skipping."
 msgstr "Nu s-a putut folosi scriptlet de tip necunoscut. Se sare peste."
 
-#: ../src/pakfire/actions.py:238
 msgid "Executing scriptlet..."
 msgstr "Execuție scriptlet python..."
 
-#: ../src/pakfire/actions.py:244
 #, python-format
 msgid "Cannot run scriptlet because no interpreter is available: %s"
 msgstr ""
 "Nu se poate executa scriptul deoarece nici un interpret nu este disponibil: "
 "%s"
 
-#: ../src/pakfire/actions.py:248
 #, python-format
 msgid "Cannot run scriptlet because the interpreter is not executable: %s"
 msgstr ""
 "Nu se poate executa scriptul deoarece interpretul  nu este executabil : %s"
 
-#: ../src/pakfire/actions.py:287
 #, python-format
 msgid ""
 "The scriptlet returned an error:\n"
@@ -422,12 +332,10 @@ msgstr ""
 "Scriptul a returnat o eroare:⏎\n"
 "%s"
 
-#: ../src/pakfire/actions.py:290
 #, python-format
 msgid "The scriptlet ran more than %s seconds and was killed."
 msgstr "Scriptul a rulat mai mult de %s secunde si a fost  terminat "
 
-#: ../src/pakfire/actions.py:294
 #, python-format
 msgid ""
 "The scriptlet returned with an unhandled error:\n"
@@ -439,796 +347,628 @@ msgstr ""
 #. This functions creates a fork with then chroots into the
 #. pakfire root if necessary and then compiles the given scriptlet
 #. code and runs it.
-#: ../src/pakfire/actions.py:308
 msgid "Executing python scriptlet..."
 msgstr "Execuție scriptlet python..."
 
-#: ../src/pakfire/actions.py:333
 #, python-format
 msgid "Exception occured: %s"
 msgstr "A avut loc o excepție: %s"
 
-#: ../src/pakfire/actions.py:406 ../src/pakfire/actions.py:453
-#: ../src/pakfire/actions.py:463 ../src/pakfire/actions.py:484
 #, python-format
 msgid "Running transaction test for %s"
 msgstr "Executarea tranzactiei in test %s"
 
-#: ../src/pakfire/actions.py:416
 msgid "Reinstalling"
 msgstr "Se reinstalează"
 
-#: ../src/pakfire/actions.py:418
 msgid "Updating"
 msgstr "Actualizează"
 
-#: ../src/pakfire/actions.py:420
 msgid "Downgrading"
 msgstr "Downgrading"
 
-#: ../src/pakfire/actions.py:422
 msgid "Installing"
 msgstr "Se instalează"
 
-#: ../src/pakfire/actions.py:470
 msgid "Cleanup"
 msgstr "Curăţare"
 
-#: ../src/pakfire/actions.py:472
 msgid "Removing"
 msgstr "Eliminarea"
 
-#: ../src/pakfire/base.py:130
 msgid "Build command has failed."
 msgstr "Constructia comenzi a esuat."
 
-#: ../src/pakfire/base.py:274
 #, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" pachetul nu pare sa fie instalat."
 
-#: ../src/pakfire/base.py:288 ../src/pakfire/cli.py:259
-#: ../src/pakfire/transaction.py:413
 msgid "Nothing to do"
 msgstr "Nimic de facut "
 
-#: ../src/pakfire/base.py:322
 msgid "You have not set the distribution for which you want to build."
 msgstr "Nu ai setat distributia pentru ceia ce  vrei sa faci ."
 
-#: ../src/pakfire/base.py:323
 msgid "Please do so in builder.conf or on the CLI."
 msgstr "Te rog fa asa in builder.conf sau in terminal "
 
-#: ../src/pakfire/base.py:324
 msgid "Distribution configuration is missing."
 msgstr "Configuratia distributiei lipseste."
 
-#: ../src/pakfire/base.py:401
 msgid "New repository"
 msgstr "Depozit nou"
 
-#: ../src/pakfire/builder.py:106
 #, fuzzy, python-format
 msgid "Cannot build for %s on this host"
 msgstr "Nu pot construi pentru %s pe acest host."
 
 #. Install all packages.
-#: ../src/pakfire/builder.py:501 ../src/pakfire/builder.py:724
 msgid "Install packages needed for build..."
 msgstr "Instalarea pachetelor necesare constructiei..."
 
 #. Logging
-#: ../src/pakfire/builder.py:518
 #, python-format
 msgid "Installing build requirements: %s"
 msgstr ""
 
 #. Log the package information.
-#: ../src/pakfire/builder.py:601
 msgid "Package information:"
 msgstr "Informatia despre pachet :"
 
-#: ../src/pakfire/builder.py:729 ../src/pakfire/cli.py:407
 msgid "Extracting"
 msgstr "Extragerea"
 
-#: ../src/pakfire/builder.py:847
 msgid "You cannot run a build when no package was given."
 msgstr ""
 "Imposibil de executat o  constructie  atunci când nu a fost dat nici un "
 "pachet."
 
-#: ../src/pakfire/builder.py:851
 #, python-format
 msgid "Could not find makefile in build root: %s"
 msgstr "Nu pot gasi fisierul make in root'ul construit : %s"
 
-#: ../src/pakfire/builder.py:881
 msgid "Build failed"
 msgstr "Construire esuata."
 
-#: ../src/pakfire/builder.py:884
 msgid "Build interrupted"
 msgstr "Creere întreruptă"
 
-#: ../src/pakfire/builder.py:890
 msgid "Build failed."
 msgstr "Construire esuata."
 
 #. End here in case of an error.
-#: ../src/pakfire/builder.py:906
 msgid "The build command failed. See logfile for details."
 msgstr "Constructia comenzi a esuat . Vezi fisierul log pentru detalii."
 
-#: ../src/pakfire/builder.py:909
 msgid "Running installation test..."
 msgstr "Testul de instalare rulează..."
 
-#: ../src/pakfire/builder.py:915
 msgid "Installation test succeeded."
 msgstr "Testul de instalarea s-a făcut cu succes."
 
 #. Create a progressbar.
-#: ../src/pakfire/builder.py:934
 msgid "Signing packages..."
 msgstr "Se semnează pachetele..."
 
-#: ../src/pakfire/builder.py:968
 msgid "Dumping package information:"
 msgstr "Informatii  despre cosul de gunoi al pachetelor: "
 
 #. Package the result.
 #. Make all these little package from the build environment.
-#: ../src/pakfire/builder.py:1101
 msgid "Creating packages:"
 msgstr "Crearea pachetelor:"
 
 #. Execute the buildscript of this stage.
-#: ../src/pakfire/builder.py:1115
 #, python-format
 msgid "Running stage %s:"
 msgstr "Execută etapa %s:"
 
-#: ../src/pakfire/builder.py:1133
 #, python-format
 msgid "Could not remove static libraries: %s"
 msgstr "Nu pot sterge librariile statice : %s"
 
-#: ../src/pakfire/builder.py:1139
 msgid "Compressing man pages did not complete successfully."
 msgstr "Compresarea paginilor manual nu sa incheiat cu succes."
 
-#: ../src/pakfire/builder.py:1159
 msgid "Extracting debuginfo did not complete with success. Aborting build."
 msgstr "Extragerea debuginfo a esuat . Parasire constructie ."
 
-#: ../src/pakfire/cli.py:54
 #, fuzzy
 msgid "Pakfire command line interface"
 msgstr "Linia de comandă Packfire"
 
-#: ../src/pakfire/cli.py:62
 #, fuzzy
 msgid "The path where pakfire should operate in"
 msgstr "Calea unde pakfire ar trebui să opereze. "
 
 #. check
-#: ../src/pakfire/cli.py:65
 #, fuzzy
 msgid "Check the system for any errors"
 msgstr "Verificarea sistemului de toate erorile."
 
-#: ../src/pakfire/cli.py:70
 #, fuzzy
 msgid "Check, if there are any updates available"
 msgstr "Verificaţi dacă există actualizări disponibile."
 
-#: ../src/pakfire/cli.py:73 ../src/pakfire/cli.py:161
 #, fuzzy
 msgid "Exclude package from update"
 msgstr "Exclude pachetul de actualizare."
 
-#: ../src/pakfire/cli.py:75 ../src/pakfire/cli.py:163
 #, fuzzy
 msgid "Allow changing the architecture of packages"
 msgstr "Schimbarea arhitecturii pachetului nepermisă."
 
-#: ../src/pakfire/cli.py:77 ../src/pakfire/cli.py:165
 #, fuzzy
 msgid "Allow downgrading of packages"
 msgstr "Permite schimbarea furnizorului depachete."
 
-#: ../src/pakfire/cli.py:79 ../src/pakfire/cli.py:90 ../src/pakfire/cli.py:167
 #, fuzzy
 msgid "Allow changing the vendor of packages"
 msgstr "Permite schimbarea furnizorului depachete."
 
 #. clean
-#: ../src/pakfire/cli.py:82 ../src/pakfire/cli.py:452
 #, fuzzy
 msgid "Cleanup all temporary files"
 msgstr "Curăță toate fișierele temporare."
 
 #. downgrade
-#: ../src/pakfire/cli.py:86
 #, fuzzy
 msgid "Downgrade one or more packages"
 msgstr "Renuntati la actualizare-a unuia sau mai multor pachete"
 
-#: ../src/pakfire/cli.py:88
 #, fuzzy
 msgid "Give a name of a package to downgrade"
 msgstr "Numeste un pachet pentru downgrade ."
 
-#: ../src/pakfire/cli.py:92
 #, fuzzy
 msgid "Disallow changing the architecture of packages"
 msgstr "Schimbarea arhitecturii pachetului nepermisă."
 
 #. extract
-#: ../src/pakfire/cli.py:97 ../src/pakfire/cli.py:464
 #, fuzzy
 msgid "Extract a package to a directory"
 msgstr "Extrage pachet în director."
 
-#: ../src/pakfire/cli.py:99 ../src/pakfire/cli.py:466
 #, fuzzy
 msgid "Give name of the file to extract"
 msgstr "Dă nume fișierului extras"
 
-#: ../src/pakfire/cli.py:101 ../src/pakfire/cli.py:468
 #, fuzzy
 msgid "Target directory where to extract to"
 msgstr "Director țintă unde se extrage."
 
-#: ../src/pakfire/cli.py:106 ../src/pakfire/cli.py:473
 #, fuzzy
 msgid "Print some information about the given package(s)"
 msgstr "Imprimă informații despre pachetul dat."
 
-#: ../src/pakfire/cli.py:108
 #, fuzzy
 msgid "Give at least the name of one package"
 msgstr "Numește cel puțin un pachet."
 
-#: ../src/pakfire/cli.py:113
 #, fuzzy
 msgid "Install one or more packages to the system"
 msgstr "Instalează unul sau mai multe pachete în system."
 
-#: ../src/pakfire/cli.py:115
 #, fuzzy
 msgid "Give name of at least one package to install"
 msgstr "Numește cel puțin un pachet pentru instalare."
 
-#: ../src/pakfire/cli.py:117
 #, fuzzy
 msgid "Don't install recommended packages"
 msgstr "Nu instala pachetele recomandate."
 
-#: ../src/pakfire/cli.py:122 ../src/pakfire/cli.py:480
 #, fuzzy
 msgid "Get a list of packages that provide a given file or feature"
 msgstr "Lista de pachete care oferă un fișier sau o proprietate."
 
-#: ../src/pakfire/cli.py:123 ../src/pakfire/cli.py:482
 #, fuzzy
 msgid "File or feature to search for"
 msgstr "Fișier sau proprietate pentru căutare."
 
-#: ../src/pakfire/cli.py:128
 #, fuzzy
 msgid "Reinstall one or more packages"
 msgstr "Reinstalati unu sau mai multe pachete."
 
-#: ../src/pakfire/cli.py:130
 #, fuzzy
 msgid "Give name of at least one package to reinstall"
 msgstr "Datimi macar numele unui pachet pentru al reinstala."
 
-#: ../src/pakfire/cli.py:135
 #, fuzzy
 msgid "Remove one or more packages from the system"
 msgstr "Înlătură unul sau mai multe pachete din system."
 
-#: ../src/pakfire/cli.py:137
 #, fuzzy
 msgid "Give name of at least one package to remove"
 msgstr "Numește cel puțin un pachet pentru dezinstalare."
 
-#: ../src/pakfire/cli.py:142 ../src/pakfire/cli.py:487
 #, fuzzy
 msgid "List all currently enabled repositories"
 msgstr "Lista tuturor depozitelor."
 
 #. search
-#: ../src/pakfire/cli.py:146 ../src/pakfire/cli.py:491
 #, fuzzy
 msgid "Search for a given pattern"
 msgstr "Caută modelul dat."
 
-#: ../src/pakfire/cli.py:147 ../src/pakfire/cli.py:492
 #, fuzzy
 msgid "A pattern to search for"
 msgstr "Un model pentru căutare."
 
-#: ../src/pakfire/cli.py:152
 #, fuzzy
 msgid "Sync all installed with the latest one in the distribution"
 msgstr "Sincronizeaza-le pe cele instalate cu ultimul din distributie"
 
-#: ../src/pakfire/cli.py:157
 #, fuzzy
 msgid "Update the whole system or one specific package"
 msgstr "Actualizează întreg sistemul sau un pachet specific. "
 
-#: ../src/pakfire/cli.py:159
 #, fuzzy
 msgid "Give a name of a package to update or leave emtpy for all"
 msgstr "Numește un pachet pentru actualizare sau lasă gol pentru toate."
 
-#: ../src/pakfire/cli.py:177
 msgid "Enable verbose output."
 msgstr "Activează ieșirea detaliată."
 
-#: ../src/pakfire/cli.py:180
 msgid "Path to a configuration file to load."
 msgstr "Calea către un fișier de configurare pentru încărcare."
 
-#: ../src/pakfire/cli.py:183
 msgid "Disable a repository temporarily."
 msgstr "Dezactivează temporar un depozit."
 
-#: ../src/pakfire/cli.py:186
 msgid "Enable a repository temporarily."
 msgstr "Activează un depozit temporar."
 
-#: ../src/pakfire/cli.py:190
 msgid "Run pakfire in offline mode."
 msgstr "Ruleaza pakfire in mod offline."
 
-#: ../src/pakfire/cli.py:213
 msgid "Received keyboard interupt (Ctrl-C). Exiting."
 msgstr ""
 
-#: ../src/pakfire/cli.py:219
 #, fuzzy
 msgid "One or more dependencies could not been resolved"
 msgstr "Una sau mai multe dependenţe nu au  fost rezolvate."
 
-#: ../src/pakfire/cli.py:229
 msgid "Possible solutions are:"
 msgstr ""
 
-#: ../src/pakfire/cli.py:240
 #, fuzzy
 msgid "An error has occured when running Pakfire"
 msgstr "A aparut o eroare le descarcarea  fisierelor "
 
-#: ../src/pakfire/cli.py:242
 #, python-format
 msgid "%s: %s"
 msgstr ""
 
-#: ../src/pakfire/cli.py:267
 msgid "Aborted by user"
 msgstr ""
 
-#: ../src/pakfire/cli.py:355
 msgid "Enabled"
 msgstr "Activat"
 
-#: ../src/pakfire/cli.py:355
 msgid "Priority"
 msgstr "Prioritate"
 
-#: ../src/pakfire/cli.py:355
 msgid "Packages"
 msgstr "Pachete"
 
-#: ../src/pakfire/cli.py:363
 msgid "Cleaning up everything..."
 msgstr "Curăță tot..."
 
-#: ../src/pakfire/cli.py:373
 #, fuzzy
 msgid "Everything okay"
 msgstr "Totul e bine ."
 
-#: ../src/pakfire/cli.py:390
-msgid "Cannot extract mixed package types"
-msgstr "Nu se pot extrage tipuri de pachete mixte"
-
-#: ../src/pakfire/cli.py:393
-msgid "You must provide an install directory with --target=..."
-msgstr "Trebuie să atribui un director de instalare cu --target=..."
-
-#: ../src/pakfire/cli.py:399
-msgid "Cannot extract to /."
-msgstr "Nu se poate extrage în /."
-
-#: ../src/pakfire/cli.py:417
 #, fuzzy
 msgid "You cannot run pakfire-builder in a pakfire chroot"
 msgstr "Nu poti rula pakfire-builder in pakfire chroot."
 
-#: ../src/pakfire/cli.py:421
 #, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Interfață pakfire constructor linie de comandă."
 
-#: ../src/pakfire/cli.py:430
 #, fuzzy
 msgid "Run pakfire for the given architecture"
 msgstr "Rulează pakfire pentru arhitectura dată."
 
-#: ../src/pakfire/cli.py:432
 msgid "Choose the distribution configuration to use for build"
 msgstr "Alege configurația distribuției pentru a o folosi la creere"
 
 #. build
-#: ../src/pakfire/cli.py:435
 #, fuzzy
 msgid "Build one or more packages"
 msgstr "Crează unul sau mai multe pachete."
 
-#: ../src/pakfire/cli.py:437
 #, fuzzy
 msgid "Give name of at least one package to build"
 msgstr "Numește cel puțin un pachet pentru creare."
 
-#: ../src/pakfire/cli.py:441 ../src/pakfire/cli.py:461
 #, fuzzy
 msgid "Path were the output files should be copied to"
 msgstr "Calea unde fișierul va fi copiat."
 
-#: ../src/pakfire/cli.py:443
 #, fuzzy
 msgid "Mode to run in. Is either 'release' or 'development' (default)"
 msgstr "Mod de funcționare. este ori  'lansare' ori 'dezvoltare' (default)."
 
-#: ../src/pakfire/cli.py:445
 #, fuzzy
 msgid "Run a shell after a successful build"
 msgstr "Dupa o constructie reusita executa un shell,"
 
-#: ../src/pakfire/cli.py:447
 #, fuzzy
 msgid "Do not perform the install test"
 msgstr "Nu executa testul de instalare."
 
-#: ../src/pakfire/cli.py:449 ../src/pakfire/cli.py:503
 #, fuzzy
 msgid "Disable network in container"
 msgstr "Dezactivare retea izolata"
 
 #. dist
-#: ../src/pakfire/cli.py:456
 #, fuzzy
 msgid "Generate a source package"
 msgstr "Generează un fișier sursă."
 
-#: ../src/pakfire/cli.py:457
 #, fuzzy
 msgid "Give name(s) of a package(s)"
 msgstr "Denumește pachet(e)."
 
-#: ../src/pakfire/cli.py:475
 msgid "Give at least the name of one package."
 msgstr "Numește cel puțin un pachet."
 
 #. shell
-#: ../src/pakfire/cli.py:496
 #, fuzzy
 msgid "Go into a build shell"
 msgstr "Intră în shell."
 
-#: ../src/pakfire/cli.py:497
 #, fuzzy
 msgid "Give name of a package"
 msgstr "Numește un pachet."
 
-#: ../src/pakfire/cli.py:501 ../src/pakfire/cli.py:586
 msgid "Mode to run in. Is either 'release' or 'development' (default)."
 msgstr "Mod de funcționare. este ori  'lansare' ori 'dezvoltare' (default)."
 
 #. update
-#: ../src/pakfire/cli.py:506
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Actualizează index pachete. "
 
-#: ../src/pakfire/cli.py:557
 msgid "Pakfire builder command line interface."
 msgstr "Interfață pakfire constructor linie de comandă."
 
-#: ../src/pakfire/cli.py:576
 msgid "Build one or more packages."
 msgstr "Crează unul sau mai multe pachete."
 
-#: ../src/pakfire/cli.py:578
 msgid "Give name of at least one package to build."
 msgstr "Numește cel puțin un pachet pentru creare."
 
-#: ../src/pakfire/cli.py:582
 msgid "Build the package for the given architecture."
 msgstr "Crează pachetul pentru arhitectura dată."
 
-#: ../src/pakfire/cli.py:584
 msgid "Path were the output files should be copied to."
 msgstr "Calea unde fișierul va fi copiat."
 
-#: ../src/pakfire/cli.py:588
 msgid "Do not verify build dependencies."
 msgstr "Nu verifica dependintele construite "
 
-#: ../src/pakfire/cli.py:590
 msgid "Only run the prepare stage."
 msgstr "Rulează doar testul pregătit."
 
-#: ../src/pakfire/cli.py:626
 #, fuzzy
 msgid "Pakfire client command line interface"
 msgstr "Linia de comanda a clientului Pakfire. "
 
-#: ../src/pakfire/cli.py:628
 msgid "sub-command help"
 msgstr ""
 
 #. build
-#: ../src/pakfire/cli.py:634
 #, fuzzy
 msgid "Build a package remote"
 msgstr "Construieste un pachet de la distanta."
 
-#: ../src/pakfire/cli.py:635
 #, fuzzy
 msgid "Package(s) to build"
 msgstr "Pachet(e) pentru semnat."
 
-#: ../src/pakfire/cli.py:639
 #, fuzzy
 msgid "Build the package(s) for the given architecture only"
 msgstr "Crează pachetul pentru arhitectura dată."
 
-#: ../src/pakfire/cli.py:643
 #, fuzzy
 msgid "Check the connection to the hub"
 msgstr "Verificati conecsiunea cu hubul ."
 
 #. upload
-#: ../src/pakfire/cli.py:647
 #, fuzzy
 msgid "Upload a file to the build service"
 msgstr "Esti autentificat serciciului constructii"
 
-#: ../src/pakfire/cli.py:648
 #, fuzzy
 msgid "Filename"
 msgstr "Nume fisier: %s"
 
 #. watch-build
-#: ../src/pakfire/cli.py:652
 msgid "Watch the status of a build"
 msgstr ""
 
-#: ../src/pakfire/cli.py:653 ../src/pakfire/packages/base.py:146
 msgid "Build ID"
 msgstr "Creare ID"
 
 #. watch-job
-#: ../src/pakfire/cli.py:657
 msgid "Watch the status of a job"
 msgstr ""
 
-#: ../src/pakfire/cli.py:658
 msgid "Job ID"
 msgstr ""
 
-#: ../src/pakfire/cli.py:710
 msgid "Connection OK"
 msgstr ""
 
-#: ../src/pakfire/cli.py:745
 #, fuzzy
 msgid "Pakfire daemon command line interface"
 msgstr "Linia de comanda a daemunului pakfire "
 
-#: ../src/pakfire/cli.py:771
 #, fuzzy
 msgid "Pakfire key command line interface"
 msgstr "Linia de comandă Packfire"
 
 #. delete
-#: ../src/pakfire/cli.py:779
 #, fuzzy
 msgid "Delete a key from the local keyring"
 msgstr "Șterge o cheie din legătura de chei locală."
 
-#: ../src/pakfire/cli.py:780
 #, fuzzy
 msgid "The fingerprint of the key to delete"
 msgstr "ID-ul cheii pentru ștergere."
 
 #. export
-#: ../src/pakfire/cli.py:784
 #, fuzzy
 msgid "Export a key to a file"
 msgstr "Exportă o cheie în fișier."
 
-#: ../src/pakfire/cli.py:786
 #, fuzzy
 msgid "The fingerprint of the key to export"
 msgstr "ID-ul cheii pentru exportare."
 
-#: ../src/pakfire/cli.py:787
 #, fuzzy
 msgid "Write the key to this file"
 msgstr "Scrie cheia în acest fișier."
 
-#: ../src/pakfire/cli.py:789
 msgid "Export the secret key"
 msgstr ""
 
 #. import
 #. generate
-#: ../src/pakfire/cli.py:793 ../src/pakfire/cli.py:798
 #, fuzzy
 msgid "Import a key from file"
 msgstr "Incarcat din fisierele:"
 
-#: ../src/pakfire/cli.py:794
 #, fuzzy
 msgid "Filename of that key to import"
 msgstr "Numele cheii pentru import."
 
-#: ../src/pakfire/cli.py:800
 #, fuzzy
 msgid "The real name of the owner of this key"
 msgstr "Numele detinatorului ."
 
-#: ../src/pakfire/cli.py:802
 #, fuzzy
 msgid "The email address of the owner of this key"
 msgstr "Adresaemail a detinatorului ."
 
 #. list
-#: ../src/pakfire/cli.py:806
 #, fuzzy
 msgid "List all imported keys"
 msgstr "Listează toate cheile importate."
 
-#: ../src/pakfire/cli.py:814
 msgid "Sign one or more packages."
 msgstr "Semnează unul sau mai multe pachete."
 
-#: ../src/pakfire/cli.py:816
 msgid "Key that is used sign the package(s)."
 msgstr "Cheie care este folosită pentru semnarea de pachet(e)"
 
-#: ../src/pakfire/cli.py:818
 msgid "Package(s) to sign."
 msgstr "Pachet(e) pentru semnat."
 
-#: ../src/pakfire/cli.py:824
 msgid "Verify one or more packages."
 msgstr "Verifică unul sau mai multe pachete."
 
-#: ../src/pakfire/cli.py:828
 msgid "Package(s) to verify."
 msgstr "Pachet(e) pentru verificat."
 
-#: ../src/pakfire/cli.py:834
 msgid "Generating the key may take a moment..."
 msgstr "Generarea cheii poate sa dureze un moment..."
 
-#: ../src/pakfire/cli.py:851
 #, fuzzy, python-format
 msgid "Could not find key with fingerprint %s"
 msgstr "Nu pot gasi fisierul make in root'ul construit : %s"
 
-#: ../src/pakfire/cli.py:903
 #, python-format
 msgid "Signing %s..."
 msgstr "Se semnează %s..."
 
-#: ../src/pakfire/cli.py:925
 #, python-format
 msgid "Verifying %s..."
 msgstr "Se verifică %s..."
 
-#: ../src/pakfire/cli.py:935
 msgid "This signature is valid."
 msgstr "Semnătura este validă."
 
-#: ../src/pakfire/cli.py:938
 msgid "Unknown key"
 msgstr "Cheie necunoscută"
 
-#: ../src/pakfire/cli.py:939
 msgid "Could not check if this signature is valid."
 msgstr "Nu s-a putut verifica dacă această semnătură este validă."
 
-#: ../src/pakfire/cli.py:942
 #, python-format
 msgid "Created: %s"
 msgstr "Creat: %s"
 
-#: ../src/pakfire/cli.py:946
 #, python-format
 msgid "Expires: %s"
 msgstr "Expiră: %s"
 
-#: ../src/pakfire/client.py:189
 #, fuzzy, python-format
 msgid "Score: %s"
 msgstr "Sectiune : %s"
 
-#: ../src/pakfire/client.py:190
 #, fuzzy, python-format
 msgid "Priority: %s"
 msgstr "Prioritate"
 
-#: ../src/pakfire/client.py:277
 #, python-format
 msgid "on %s"
 msgstr ""
 
-#: ../src/pakfire/client.py:280
 #, python-format
 msgid "in %s"
 msgstr ""
 
-#: ../src/pakfire/client.py:299
 #, fuzzy, python-format
 msgid "Builder: %s"
 msgstr "Construit: %(name)s"
 
-#: ../src/pakfire/compress.py:85 ../src/pakfire/compress.py:95
 #, python-format
 msgid "Given algorithm '%s' is not supported."
 msgstr "Algoritmul dat '%s' nu e suportat ."
 
-#: ../src/pakfire/config.py:88
 msgid "Configuration:"
 msgstr "Configuratie :"
 
-#: ../src/pakfire/config.py:91
 #, python-format
 msgid "Section: %s"
 msgstr "Sectiune : %s"
 
-#: ../src/pakfire/daemon.py:116
 msgid "Shutting down..."
 msgstr "Oprire sistem..."
 
-#: ../src/pakfire/daemon.py:120
 msgid "Restarting keepalive process"
 msgstr "Restartare proces obligatoriu"
 
-#: ../src/pakfire/daemon.py:182
 #, python-format
 msgid "Terminating worker process: %s"
 msgstr "Oprire proces obligatoriu: %s"
 
-#: ../src/pakfire/daemon.py:326
 msgid "Sending builder information to hub..."
 msgstr "Se trimite informatie lucrator catre hub..."
 
-#: ../src/pakfire/errors.py:32
+#, fuzzy, python-format
+msgid "Skipping refreshing %s since we are running in offline mode"
+msgstr "Se continuă deoarece se rulează în modul permisiv."
+
+msgid "The downloaded metadata was less recent than the current one."
+msgstr "Datele descărcate sunt mai puțin recente decât cele curente."
+
+#, python-format
+msgid "%s: package database"
+msgstr "%s: pachet bază de date"
+
 msgid "An unhandled error occured."
 msgstr "A apărut o eroare netratată."
 
-#: ../src/pakfire/errors.py:48
 msgid "Could not compress/decompress data."
 msgstr "Nu pot compresa /decompresa date ."
 
-#: ../src/pakfire/errors.py:59
 msgid "An error occured when pakfire tried to download files."
 msgstr "A aparut o eroare le descarcarea  fisierelor "
 
-#: ../src/pakfire/errors.py:72
 msgid ""
 "The requested action cannot be done on offline mode.\n"
 "Please connect your system to the network, remove --offline from the command "
@@ -1238,19 +978,15 @@ msgstr ""
 "conectaţi sistemul la reţea, eliminati  modulul offline din  linia de "
 "comandă/consola şi încercaţi din nou."
 
-#: ../src/pakfire/errors.py:84
 msgid "Running pakfire-build in a pakfire container?"
 msgstr "Nu poti rula pakfire-builder in pakfire chroot."
 
-#: ../src/pakfire/errors.py:96 ../src/pakfire/transaction.py:509
 msgid "Transaction test was not successful"
 msgstr "Tranzacţie de testare nu a avut succes"
 
-#: ../src/pakfire/errors.py:160
 msgid "Generic XMLRPC error."
 msgstr "XMLRPC eroare generică."
 
-#: ../src/pakfire/errors.py:164
 msgid ""
 "You are forbidden to perform this action. Maybe you need to check your "
 "credentials."
@@ -1258,367 +994,275 @@ msgstr ""
 "Îți este interzis să execuți această funcție. Poate trebuie să-ți verifici "
 "acreditările."
 
-#: ../src/pakfire/errors.py:168
 msgid "A request could not be fulfilled by the server."
 msgstr "O cerere nu s-a putut îndeplini de către server."
 
-#: ../src/pakfire/errors.py:172
 msgid "Could not find the requested URL."
 msgstr "Nu s-a putut găsi URL cerut."
 
-#: ../src/pakfire/errors.py:176
 msgid "An unforseable problem on the XML-RPC transport connection occured."
 msgstr "O problemă neprevăzută a avut loc la conexiunea de transport  XML-RPC."
 
-#: ../src/pakfire/http.py:138
 #, fuzzy, python-format
 msgid "Selected mirror: %s"
 msgstr "Sectiune : %s"
 
-#: ../src/pakfire/http.py:142 ../src/pakfire/http.py:156
 msgid "No more mirrors to try"
 msgstr ""
 
-#: ../src/pakfire/http.py:158
 #, python-format
 msgid "Skipping mirror %s"
 msgstr ""
 
-#: ../src/pakfire/http.py:359
 msgid "Invalid checksum"
 msgstr ""
 
-#: ../src/pakfire/i18n.py:54
 #, python-format
 msgid "%(commas)s and %(last)s"
 msgstr "%(commas)s si %(last)s"
 
-#: ../src/pakfire/packages/base.py:129
-msgid "Groups"
-msgstr "Grupuri"
-
-#: ../src/pakfire/packages/base.py:150
 msgid "Signatures"
 msgstr "Semnături"
 
-#: ../src/pakfire/packages/base.py:160
 msgid "Pre-requires"
 msgstr "Necesitati "
 
-#: ../src/pakfire/packages/base.py:193
 msgid "File"
 msgstr "Fişier"
 
-#: ../src/pakfire/packages/base.py:383
 msgid "Not set"
 msgstr "ne setat "
 
-#: ../src/pakfire/packages/base.py:573
 #, python-format
 msgid "Config file saved as %s."
 msgstr "Fişier de configurare salvat %s."
 
-#: ../src/pakfire/packages/base.py:578
 #, python-format
 msgid "Preserving datafile '/%s'"
 msgstr "Păstrare fișier date '/%s'"
 
-#: ../src/pakfire/packages/file.py:82
 #, python-format
 msgid "Filename: %s"
 msgstr "Nume fisier: %s"
 
-#: ../src/pakfire/packages/file.py:186
 #, python-format
 msgid "File in archive is missing in file metadata: %s. Skipping."
 msgstr "Fişierul din arhiva lipseşte în fișierul de metadate: %s.  Sar peste."
 
-#: ../src/pakfire/packages/file.py:242
 #, python-format
 msgid "Config file created as %s"
 msgstr "Fisierul de configurare creat %s"
 
-#: ../src/pakfire/packages/file.py:247
 #, python-format
 msgid "Don't overwrite already existing datafile '/%s'"
 msgstr "Nu suprascrie fișierul de date '/%s' deja existent"
 
-#: ../src/pakfire/packages/file.py:261
 #, python-format
 msgid "Could not remove file: /%s"
 msgstr "Nu pot sterge fisierul : /%s"
 
-#: ../src/pakfire/packages/lexer.py:756
 #, python-format
 msgid "Template does not exist: %s"
 msgstr "Sablonul nu exista : %s"
 
-#: ../src/pakfire/packages/make.py:80
 msgid "Package name is undefined."
 msgstr "Numele pachetului e nedefinit ."
 
-#: ../src/pakfire/packages/make.py:83
 msgid "Package version is undefined."
 msgstr "Versiunea pachetului e nedefinita."
 
-#: ../src/pakfire/packages/make.py:461
 #, python-format
 msgid "Searching for automatic dependencies for %s..."
 msgstr "Caut dependintele automate pentru %s..."
 
-#: ../src/pakfire/packages/make.py:515
 #, python-format
 msgid "Regular experession is invalid and has been skipped: %s"
 msgstr "Expresiile uzuale sunt invalide si am sarit peste : %s"
 
 #. Let the user know what has been done.
-#: ../src/pakfire/packages/make.py:531
 #, python-format
 msgid "Filter '%(pattern)s' filtered %(dep)s."
 msgstr "Filtrare '%(pattern)s' filtrate %(dep)s."
 
 #. Load progressbar.
-#: ../src/pakfire/packages/packager.py:397
-#: ../src/pakfire/packages/packager.py:714
 msgid "Packaging"
 msgstr "pachete"
 
-#: ../src/pakfire/packages/packager.py:742
 #, python-format
 msgid "Building source package %s:"
 msgstr "Construirea pachetelor sursa %s:"
 
-#: ../src/pakfire/packages/tar.py:87
 #, python-format
 msgid "Could not extract file: /%(src)s - %(dst)s"
 msgstr "Nu pot extrage fisierul : /%(src)s - %(dst)s"
 
-#: ../src/pakfire/repository/database.py:120
 msgid "The format of the database is not supported by this version of pakfire."
 msgstr "Formatul de date nu este acceptat de această versiune de pakfire."
 
-#: ../src/pakfire/repository/database.py:229
 #, python-format
 msgid "Cannot use database with version greater than %s."
 msgstr "Nu pot utiliza o baza de date cu o versiune mai mare decat %s."
 
-#: ../src/pakfire/repository/database.py:231
 #, python-format
 msgid "Migrating database from format %(old)s to %(new)s."
 msgstr "Migrarea bazei de date din formatul  %(old)s in %(new)s."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:121
 #, python-format
 msgid "%s: Adding packages..."
 msgstr "%s: Adăugare pachete..."
 
 #. Make a nice progress bar.
-#: ../src/pakfire/repository/local.py:227
 msgid "Compressing database..."
 msgstr "Compresez databaza ...."
 
 #. Create progress bar.
-#: ../src/pakfire/repository/local.py:285
 #, python-format
 msgid "%s: Reading packages..."
 msgstr "%s: Citire pachete..."
 
-#: ../src/pakfire/repository/remote.py:107
-#, fuzzy, python-format
-msgid "Skipping refreshing %s since we are running in offline mode"
-msgstr "Se continuă deoarece se rulează în modul permisiv."
-
-#: ../src/pakfire/repository/remote.py:193
-msgid "The downloaded metadata was less recent than the current one."
-msgstr "Datele descărcate sunt mai puțin recente decât cele curente."
-
-#: ../src/pakfire/repository/remote.py:224
-#, python-format
-msgid "%s: package database"
-msgstr "%s: pachet bază de date"
-
-#: ../src/pakfire/repository/remote.py:267
-#, python-format
-msgid "Cannot download this file in offline mode: %s"
-msgstr "Nu pot descărca acest fişier în modul offline: %s"
-
-#: ../src/pakfire/repository/remote.py:273
-#, python-format
-msgid "Could not download %s: %s"
-msgstr "Nu s-a putut descărca %s: %s"
-
-#: ../src/pakfire/repository/remote.py:298
-msgid "The checksum of the downloaded file did not match."
-msgstr ""
-"Verificarea fisierelor descarcate /checksum  a raportat o eroare. Fisierele "
-"nu se potrivesc."
-
-#: ../src/pakfire/repository/remote.py:299
-#, python-format
-msgid "Expected %(good)s but got %(bad)s."
-msgstr "Așteptat %(good)s dar primit %(bad)s."
-
-#: ../src/pakfire/repository/remote.py:300
-msgid "Trying an other mirror."
-msgstr "Incerc o alta adresa ."
-
 #. Create a progressbar.
-#: ../src/pakfire/repository/system.py:56
 msgid "Loading installed packages"
 msgstr "Încărcare pachete instalate"
 
-#: ../src/pakfire/shell.py:84
 #, python-format
 msgid "Executing command: %s in %s"
 msgstr "Se execută comanda: %s în %s"
 
-#: ../src/pakfire/shell.py:123
 #, python-format
 msgid "Command exceeded timeout (%(timeout)d): %(command)s"
 msgstr "Timeout execuție comandă: (%(timeout)d): %(command)s"
 
-#: ../src/pakfire/shell.py:129
 #, python-format
 msgid "Child returncode was: %s"
 msgstr "Codul întors de la copil: %s"
 
-#: ../src/pakfire/shell.py:132
 #, python-format
 msgid "Command failed: %s"
 msgstr "Comandă eșuată: %s"
 
-#: ../src/pakfire/system.py:122
 msgid "Could not be determined"
 msgstr "Nu a putut fi determinat "
 
-#: ../src/pakfire/transaction.py:90
-#, python-format
-msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
-msgstr "fișier %(name)s din %(pkg1)s este în conflict cu pachetul %(pkg2)s"
-
-#: ../src/pakfire/transaction.py:96
-#, python-format
-msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
-msgstr "fișier %(name)s din %(pkg)s este în conflict cu fișierele %(pkgs)s"
-
-#: ../src/pakfire/transaction.py:102
-#, python-format
-msgid "file %(name)s causes the transaction test to fail for an unknown reason"
-msgstr ""
-"fișier %(name)s cauzează căderea testului de tranzacție pentru un motiv "
-"necunoscut"
-
-#: ../src/pakfire/transaction.py:110
-#, python-format
-msgid ""
-"There is not enough space left on %(name)s. Need at least %(size)s to "
-"perform transaction."
-msgstr ""
-"Nu este suficient spatiu in %(name)s.  E nevoie de cel putin %(size)s pentru "
-"a efectua tranzacţia"
-
-#: ../src/pakfire/transaction.py:354
-#, python-format
-msgid "Not enough space to download %s of packages."
-msgstr "Spatiu insuficient pentru a descarca %s de pachete "
-
-#: ../src/pakfire/transaction.py:357
-msgid "Downloading packages:"
-msgstr "Descărcare pachete."
-
-#: ../src/pakfire/transaction.py:462
-msgid "package"
-msgstr "pachet"
-
-#: ../src/pakfire/transaction.py:467
-#, python-format
-msgid "Total download size: %s"
-msgstr "Dimensiunea totala descărcată: %s "
-
-#: ../src/pakfire/transaction.py:471
-#, python-format
-msgid "Installed size: %s"
-msgstr "Dimensiunea instalata: %s"
-
-#: ../src/pakfire/transaction.py:473
-#, python-format
-msgid "Freed size: %s"
-msgstr "Dimensiunea eliberata: %s"
-
-#: ../src/pakfire/transaction.py:484
-msgid "Is this okay?"
+#, fuzzy
+msgid "Is this okay? [y/N]"
 msgstr "Este în regulă?"
 
-#: ../src/pakfire/transaction.py:490
-msgid "Running Transaction Test"
-msgstr "Rularea Tranzactiei Test"
-
-#: ../src/pakfire/transaction.py:502
-msgid "Transaction Test Succeeded"
-msgstr "Tranzacţie de testare a reusit"
-
-#: ../src/pakfire/transaction.py:535
-msgid "Verifying signatures..."
-msgstr "Se verifică semnăturile..."
-
-#: ../src/pakfire/transaction.py:571
-#, python-format
-msgid "Found %s signature error(s)!"
-msgstr "Găsit %s erori de semnătură!"
-
-#: ../src/pakfire/transaction.py:576
-msgid "Going on because we are running in permissive mode."
-msgstr "Se continuă deoarece se rulează în modul permisiv."
-
-#: ../src/pakfire/transaction.py:577
-msgid "This is dangerous!"
-msgstr "Acesta este periculos!"
-
-#: ../src/pakfire/transaction.py:617
-msgid "Running transaction"
-msgstr "Executarea tranzactiei"
-
-#: ../src/pakfire/ui/progressbar.py:221
 #, fuzzy, python-format
 msgid "Error: %s"
 msgstr "Expiră: %s"
 
-#: ../src/pakfire/ui/progressbar.py:236
 #, python-format
 msgid "Elapsed Time: %s"
 msgstr "Timp scurs: %s"
 
-#: ../src/pakfire/ui/progressbar.py:258 ../src/pakfire/ui/progressbar.py:265
 msgid "ETA"
 msgstr "ETA"
 
-#: ../src/pakfire/ui/progressbar.py:261
 msgid "Time"
 msgstr "Timp"
 
-#: ../src/pakfire/util.py:64
 #, python-format
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-#: ../src/pakfire/util.py:193
 msgid "Killing orphans..."
 msgstr "Curatarea  pachetelor incomplete..."
 
-#: ../src/pakfire/util.py:200
 #, python-format
 msgid "Process ID %s is still running in chroot. Killing..."
 msgstr "ID de proces %s ruleaza in chroot. Terminare....."
 
-#: ../src/pakfire/util.py:212
 msgid "Waiting for processes to terminate..."
 msgstr "Asteptand sa se termine procesul "
 
-#: ../src/pakfire/ui/cli.py:51
-#, fuzzy
-msgid "Is this okay? [y/N]"
-msgstr "Este în regulă?"
+#~ msgid "Cannot extract mixed package types"
+#~ msgstr "Nu se pot extrage tipuri de pachete mixte"
+
+#~ msgid "You must provide an install directory with --target=..."
+#~ msgstr "Trebuie să atribui un director de instalare cu --target=..."
+
+#~ msgid "Cannot extract to /."
+#~ msgstr "Nu se poate extrage în /."
+
+#~ msgid "Cannot download this file in offline mode: %s"
+#~ msgstr "Nu pot descărca acest fişier în modul offline: %s"
+
+#~ msgid "Could not download %s: %s"
+#~ msgstr "Nu s-a putut descărca %s: %s"
+
+#~ msgid "The checksum of the downloaded file did not match."
+#~ msgstr ""
+#~ "Verificarea fisierelor descarcate /checksum  a raportat o eroare. "
+#~ "Fisierele nu se potrivesc."
+
+#~ msgid "Expected %(good)s but got %(bad)s."
+#~ msgstr "Așteptat %(good)s dar primit %(bad)s."
+
+#~ msgid "Trying an other mirror."
+#~ msgstr "Incerc o alta adresa ."
+
+#~ msgid ""
+#~ "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
+#~ msgstr "fișier %(name)s din %(pkg1)s este în conflict cu pachetul %(pkg2)s"
+
+#~ msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
+#~ msgstr "fișier %(name)s din %(pkg)s este în conflict cu fișierele %(pkgs)s"
+
+#~ msgid ""
+#~ "file %(name)s causes the transaction test to fail for an unknown reason"
+#~ msgstr ""
+#~ "fișier %(name)s cauzează căderea testului de tranzacție pentru un motiv "
+#~ "necunoscut"
+
+#~ msgid ""
+#~ "There is not enough space left on %(name)s. Need at least %(size)s to "
+#~ "perform transaction."
+#~ msgstr ""
+#~ "Nu este suficient spatiu in %(name)s.  E nevoie de cel putin %(size)s "
+#~ "pentru a efectua tranzacţia"
+
+#~ msgid "Not enough space to download %s of packages."
+#~ msgstr "Spatiu insuficient pentru a descarca %s de pachete "
+
+#~ msgid "Downloading packages:"
+#~ msgstr "Descărcare pachete."
+
+#~ msgid "package"
+#~ msgstr "pachet"
+
+#~ msgid "Total download size: %s"
+#~ msgstr "Dimensiunea totala descărcată: %s "
+
+#~ msgid "Installed size: %s"
+#~ msgstr "Dimensiunea instalata: %s"
+
+#~ msgid "Freed size: %s"
+#~ msgstr "Dimensiunea eliberata: %s"
+
+#~ msgid "Is this okay?"
+#~ msgstr "Este în regulă?"
+
+#~ msgid "Running Transaction Test"
+#~ msgstr "Rularea Tranzactiei Test"
+
+#~ msgid "Transaction Test Succeeded"
+#~ msgstr "Tranzacţie de testare a reusit"
+
+#~ msgid "Verifying signatures..."
+#~ msgstr "Se verifică semnăturile..."
+
+#~ msgid "Found %s signature error(s)!"
+#~ msgstr "Găsit %s erori de semnătură!"
+
+#~ msgid "Going on because we are running in permissive mode."
+#~ msgstr "Se continuă deoarece se rulează în modul permisiv."
+
+#~ msgid "This is dangerous!"
+#~ msgstr "Acesta este periculos!"
+
+#~ msgid "Running transaction"
+#~ msgstr "Executarea tranzactiei"
 
 #~ msgid "do not keep %s installed"
 #~ msgstr "nu păstra %s instalat"
