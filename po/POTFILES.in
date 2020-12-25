@@ -42,7 +42,6 @@ src/libpakfire_preload/uname.c
 src/pakfire/__init__.py
 src/pakfire/__version__.py
 src/pakfire/__version__.py.in
-src/pakfire/actions.py
 src/pakfire/arch.py
 src/pakfire/base.py
 src/pakfire/builder.py
