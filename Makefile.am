@@ -597,7 +597,6 @@ TESTS_ENVIRONMENT = \
 
 dist_check_SCRIPTS = \
 	tests/python/test.py
-#	tests/module-load.py
 
 TESTS = \
 	$(check_PROGRAMS) \
