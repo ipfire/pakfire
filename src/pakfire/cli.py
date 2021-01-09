@@ -190,7 +190,7 @@ class Cli(object):
 				help=_("Run pakfire in offline mode."))
 
 	def pakfire(self, ns):
-		p = base.Pakfire(offline=ns.offline)
+		p = base.Pakfire(path=ns.root, offline=ns.offline)
 
 		# Disable repositories.
 		for repo_name in ns.disable_repo:
