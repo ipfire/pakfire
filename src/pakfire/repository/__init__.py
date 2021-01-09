@@ -107,7 +107,7 @@ class Repositories(object):
 		# Handle variable expansion.
 		replaces = {
 			"name" : name,
-			"arch" : self.pakfire.arch,
+			"arch" : "%s" % self.pakfire.arch,
 		}
 
 		for k, v in list(_args.items()):
