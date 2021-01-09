@@ -595,7 +595,8 @@ TESTS_ENVIRONMENT = \
 	PYTHONPATH="$(top_srcdir)/.libs:$(top_srcdir)/src" \
 	topdir="$(shell pwd)"
 
-#dist_check_SCRIPTS = \
+dist_check_SCRIPTS = \
+	tests/python/test.py
 #	tests/module-load.py
 
 TESTS = \
