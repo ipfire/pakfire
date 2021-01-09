@@ -121,25 +121,6 @@ class Builder(object):
 		if self.settings.get("private_network", None):
 			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNET)
 
-		# Create Pakfire instance
-		self.pakfire = base.Pakfire(path=self.path, config=self.config, distro=self.config.distro, arch=arch)
-
-	def __del__(self):
-		"""
-			Releases build environment and clean up
-		"""
-		# Umount the build environment
-		self._umountall()
-
-		# Destroy the pakfire instance
-		del self.pakfire
-
-		# Unlock build environment
-		self.unlock()
-
-		# Delete everything
-		self._destroy()
-
 	def __enter__(self):
 		self.log.debug("Entering %s" % self.path)
 
@@ -148,7 +129,7 @@ class Builder(object):
 			self._mountall()
 		except OSError as e:
 			if e.errno == 30: # Read-only FS
-				raise BuildError("Buildroot is read-only: %s" % self.pakfire.path)
+				raise BuildError("Buildroot is read-only: %s" % self.path)
 
 			# Raise all other errors
 			raise
@@ -188,6 +169,15 @@ class Builder(object):
 
 		else:
 			util.orphans_kill(self.path)
+
+		# Umount the build environment
+		self._umountall()
+
+		# Unlock build environment
+		self.unlock()
+
+		# Delete everything
+		self._destroy()
 
 	def setup_logging(self, logfile):
 		if logfile:
@@ -450,11 +440,18 @@ class BuilderContext(object):
 	def __init__(self, builder):
 		self.builder = builder
 
-		# Get a reference to Pakfire
-		self.pakfire = self.builder.pakfire
-
 		# Get a reference to the logger
 		self.log = self.builder.log
+
+		# Initialise Pakfire instance
+		self.pakfire = base.Pakfire(
+			path=self.builder.path,
+			config=self.builder.config,
+			distro=self.builder.config.distro,
+			arch=self.builder.arch,
+		)
+
+		self.setup()
 
 	@property
 	def arch(self):
