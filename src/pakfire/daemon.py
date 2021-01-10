@@ -492,7 +492,8 @@ class PakfireWorker(multiprocessing.Process):
 			# Create pakfire instance.
 			p = None
 			try:
-				p = pakfire.base.PakfireBuilder(config=config, arch=job.arch)
+				# PakfireBuilder has been removed
+				#p = pakfire.base.PakfireBuilder(config=config, arch=job.arch)
 
 				# Download the source package.
 				client = http.Client()
