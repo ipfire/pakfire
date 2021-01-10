@@ -96,8 +96,6 @@ int test_export(const test_t* t) {
 }
 
 int main(int argc, char** argv) {
-	testsuite_init();
-
 	testsuite_t* ts = testsuite_create(3);
 
 	testsuite_add_test(ts, "test_init", test_init);

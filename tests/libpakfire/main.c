@@ -38,8 +38,6 @@ static int test_path(const test_t* t) {
 }
 
 int main(int argc, char** argv) {
-	testsuite_init();
-
 	testsuite_t* ts = testsuite_create(2);
 
 	testsuite_add_test(ts, "test_init", test_init);
