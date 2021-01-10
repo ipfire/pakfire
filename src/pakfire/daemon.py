@@ -515,8 +515,8 @@ class PakfireWorker(multiprocessing.Process):
 						raise DownloadError("Hash check did not succeed.")
 
 				# Create a new instance of a build environment.
-				build = pakfire.builder.BuildEnviron(p, tmpfile,
-					release_build=True, build_id=job.id, logfile=logfile)
+				#build = pakfire.builder.BuildEnviron(p, tmpfile,
+				#	release_build=True, build_id=job.id, logfile=logfile)
 
 				try:
 					# Create the build environment.
