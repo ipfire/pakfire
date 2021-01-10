@@ -140,8 +140,11 @@ PAKFIRE_EXPORT const char* pakfire_arch_native() {
 }
 
 PAKFIRE_EXPORT int pakfire_arch_is_compatible(const char* name, const char* compatible_arch) {
-	const struct pakfire_arch* arch = pakfire_arch_find(name);
+	// Every architecture is compatible with itself
+	if (strcmp(name, compatible_arch) == 0)
+		return 1;
 
+	const struct pakfire_arch* arch = pakfire_arch_find(name);
 	if (!arch)
 		return 0;
 
