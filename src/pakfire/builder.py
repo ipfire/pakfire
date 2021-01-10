@@ -64,7 +64,7 @@ BUILD_LOG_HEADER = """
 """
 
 class Builder(object):
-	def __init__(self, package=None, arch=None, build_id=None, logfile=None, **kwargs):
+	def __init__(self, arch=None, build_id=None, logfile=None, **kwargs):
 		self.config = config.Config("general.conf", "builder.conf")
 
 		distro_name = self.config.get("builder", "distro", None)
