@@ -40,7 +40,6 @@ from .i18n import _
 
 class Pakfire(_pakfire.Pakfire):
 	__version__ = PAKFIRE_VERSION
-	mode = None
 
 	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None, offline=False):
 		_pakfire.Pakfire.__init__(self, path, arch)
@@ -58,7 +57,7 @@ class Pakfire(_pakfire.Pakfire):
 		self.check_root_user()
 
 		# check if we are actually running on an ipfire system
-		if not self.mode and self.path == "/":
+		if self.path == "/":
 			self.check_is_ipfire()
 
 		# Load configuration
@@ -354,8 +353,6 @@ class PakfireContext(object):
 
 
 class PakfireBuilder(Pakfire):
-	mode = "builder"
-
 	def __init__(self, distro_name=None, *args, **kwargs):
 		self.distro_name = distro_name
 
@@ -451,8 +448,6 @@ class PakfireBuilder(Pakfire):
 
 
 class PakfireServer(Pakfire):
-	mode = "server"
-
 	def repo_create(self, path, input_paths, name=None, key_id=None, type="binary"):
 		assert type in ("binary", "source",)
 
@@ -474,4 +469,4 @@ class PakfireServer(Pakfire):
 
 
 class PakfireKey(Pakfire):
-	mode = "key"
+	pass

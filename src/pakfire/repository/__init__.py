@@ -30,7 +30,7 @@ from .. import _pakfire
 from .. import config
 from .. import packages
 
-from .local import RepositoryDir, RepositoryBuild
+from .local import RepositoryDir
 from .system import RepositorySystem
 
 from ..i18n import _
@@ -51,11 +51,6 @@ class Repositories(object):
 		# Create the local repository.
 		self.local = self.pakfire.installed_repo = RepositorySystem(self.pakfire)
 		self.add_repo(self.local)
-
-		# If we running in build mode, we include our local build repository.
-		if self.pakfire.mode == "builder":
-			self.local_build = RepositoryBuild(self.pakfire)
-			self.add_repo(self.local_build)
 
 		self._load_from_configuration(self.pakfire.config)
 
