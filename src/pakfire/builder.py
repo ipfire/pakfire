@@ -462,10 +462,6 @@ class BuilderContext(object):
 
 			# Sanitize language.
 			"LANG" : os.environ.setdefault("LANG", "en_US.UTF-8"),
-
-			# Set the container that we can detect, if we are inside a
-			# chroot.
-			"container" : "pakfire-builder",
 		})
 
 		# Inherit environment from distro

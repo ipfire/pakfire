@@ -110,10 +110,6 @@ install-exec-local:
 		$(LN_S) -vf pakfire pakfire-daemon && \
 		$(LN_S) -vf pakfire pakfire-key
 
-	$(MKDIR_P) $(DESTDIR)/$(scriptsdir)
-	cd $(DESTDIR)/$(scriptsdir) && \
-		$(LN_S) -vf ../../bin/pakfire builder
-
 # ------------------------------------------------------------------------------
 
 pakfire_PYTHON = \

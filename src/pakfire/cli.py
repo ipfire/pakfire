@@ -391,14 +391,6 @@ class Cli(object):
 
 
 class CliBuilder(Cli):
-	def __init__(self):
-		Cli.__init__(self)
-
-		# Check if we are already running in a pakfire container. In that
-		# case, we cannot start another pakfire-builder.
-		if os.environ.get("container", None) == "pakfire-builder":
-			raise PakfireContainerError(_("You cannot run pakfire-builder in a pakfire chroot"))
-
 	def parse_cli(self):
 		parser = argparse.ArgumentParser(
 			description = _("Pakfire builder command line interface"),
@@ -528,71 +520,6 @@ class CliBuilder(Cli):
 
 	def handle_provides(self):
 		Cli.handle_provides(self, int=True)
-
-
-class CliBuilderIntern(Cli):
-	def __init__(self):
-		self.parser = argparse.ArgumentParser(
-			description = _("Pakfire builder command line interface."),
-		)
-		self._add_common_arguments(self.parser)
-
-		# Add sub-commands.
-		self.sub_commands = self.parser.add_subparsers()
-
-		self.parse_command_build()
-
-		# Finally parse all arguments from the command line and save them.
-		self.args = self.parser.parse_args()
-
-		self.action2func = {
-			"build"       : self.handle_build,
-		}
-
-	def parse_command_build(self):
-		# Implement the "build" command.
-		sub_build = self.sub_commands.add_parser("build",
-			help=_("Build one or more packages."))
-		sub_build.add_argument("package", nargs=1,
-			help=_("Give name of at least one package to build."))
-		sub_build.add_argument("action", action="store_const", const="build")
-
-		sub_build.add_argument("-a", "--arch",
-			help=_("Build the package for the given architecture."))
-		sub_build.add_argument("--resultdir", nargs="?",
-			help=_("Path were the output files should be copied to."))
-		sub_build.add_argument("-m", "--mode", nargs="?", default="development",
-			help=_("Mode to run in. Is either 'release' or 'development' (default)."))
-		sub_build.add_argument("--nodeps", action="store_true",
-			help=_("Do not verify build dependencies."))
-		sub_build.add_argument("--prepare", action="store_true",
-			help=_("Only run the prepare stage."))
-
-	def handle_build(self):
-		# Get the package descriptor from the command line options
-		pkg = self.args.package[0]
-
-		# Check, if we got a regular file
-		if os.path.exists(pkg):
-			pkg = os.path.abspath(pkg)
-		else:
-			raise FileNotFoundError(pkg)
-
-		# Create pakfire instance.
-		c = config.ConfigBuilder()
-		p = base.Pakfire(arch = self.args.arch, config = c)
-
-		# Disable all repositories.
-		if self.args.nodeps:
-			p.repos.disable_repo("*")
-
-		# Limit stages that are to be run.
-		if self.args.prepare:
-			stages = ["prepare"]
-		else:
-			stages = None
-
-		p.build(pkg, resultdir=self.args.resultdir, stages=stages)
 
 
 class CliClient(Cli):
