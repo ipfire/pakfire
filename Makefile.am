@@ -351,6 +351,7 @@ EXTRA_DIST += \
 
 check_PROGRAMS += \
 	tests/libpakfire/main \
+	tests/libpakfire/arch \
 	tests/libpakfire/archive \
 	tests/libpakfire/execute \
 	tests/libpakfire/key \
@@ -366,6 +367,16 @@ tests_libpakfire_main_CPPFLAGS = \
 	-DTEST_ROOTFS=\"$(TEST_ROOTFS)\"
 
 tests_libpakfire_main_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+tests_libpakfire_arch_SOURCES = \
+	tests/libpakfire/arch.c
+
+tests_libpakfire_arch_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_arch_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 

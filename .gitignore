@@ -10,6 +10,7 @@
 /src/scripts/extract-debuginfo
 /src/systemd/*.service
 /tests/.root
+/tests/libpakfire/arch
 /tests/libpakfire/archive
 /tests/libpakfire/execute
 /tests/libpakfire/key
