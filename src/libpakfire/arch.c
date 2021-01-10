@@ -76,11 +76,14 @@ static const struct pakfire_arch PAKFIRE_ARCHES[] = {
 		.name = "armv5tel",
 		.platform = "arm",
 	},
-	NULL,
 };
 
 static const struct pakfire_arch* pakfire_arch_find(const char* name) {
-	for (const struct pakfire_arch* arch = PAKFIRE_ARCHES; arch; arch++) {
+	const size_t length = sizeof(PAKFIRE_ARCHES) / sizeof(*PAKFIRE_ARCHES);
+
+	for (unsigned int i = 0; i < length; i++) {
+		const struct pakfire_arch* arch = &PAKFIRE_ARCHES[i];
+
 		if (strcmp(arch->name, name) == 0)
 			return arch;
 	}
