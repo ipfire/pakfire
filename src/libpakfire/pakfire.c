@@ -63,10 +63,6 @@ struct _Pakfire {
 	int nrefs;
 };
 
-PAKFIRE_EXPORT int pakfire_init() {
-	return 0;
-}
-
 static int log_priority(const char* priority) {
 	char* end;
 

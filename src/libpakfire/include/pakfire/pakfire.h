@@ -28,8 +28,6 @@
 
 #include <pakfire/types.h>
 
-int pakfire_init();
-
 Pakfire pakfire_create(const char* path, const char* arch);
 
 Pakfire pakfire_ref(Pakfire pakfire);

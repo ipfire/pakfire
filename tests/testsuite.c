@@ -25,15 +25,6 @@
 
 const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
 
-int testsuite_init() {
-	// Initialize the pakfire library
-	int r = pakfire_init();
-	if (r)
-		return r;
-
-	return 0;
-}
-
 static int test_run(test_t* t) {
 	LOG("running %s\n", t->name);
 

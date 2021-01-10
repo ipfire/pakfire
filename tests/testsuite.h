@@ -44,7 +44,6 @@ typedef struct testsuite {
 	size_t left;
 } testsuite_t;
 
-int testsuite_init();
 testsuite_t* testsuite_create(size_t n);
 int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func);
 int testsuite_run(testsuite_t* ts);
