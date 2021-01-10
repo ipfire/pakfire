@@ -42,7 +42,6 @@
 #include <pakfire/pakfire.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
-#include <pakfire/system.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 

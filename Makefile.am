@@ -291,7 +291,6 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/selector.c \
 	src/libpakfire/solution.c \
 	src/libpakfire/step.c \
-	src/libpakfire/system.c \
 	src/libpakfire/transaction.c \
 	src/libpakfire/util.c
 
@@ -319,7 +318,6 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/selector.h \
 	src/libpakfire/include/pakfire/solution.h \
 	src/libpakfire/include/pakfire/step.h \
-	src/libpakfire/include/pakfire/system.h \
 	src/libpakfire/include/pakfire/transaction.h \
 	src/libpakfire/include/pakfire/types.h \
 	src/libpakfire/include/pakfire/util.h
