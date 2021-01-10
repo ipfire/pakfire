@@ -26,7 +26,10 @@
 #include <sys/personality.h>
 
 #include <solv/solver.h>
+
+#include <pakfire/arch.h>
 #include <pakfire/package.h>
+#include <pakfire/util.h>
 
 #include "archive.h"
 #include "capabilities.h"
@@ -45,6 +48,26 @@
 #include "transaction.h"
 #include "util.h"
 
+static PyObject* _pakfire_native_arch() {
+	const char* arch = pakfire_arch_native();
+	if (!arch)
+		Py_RETURN_NONE;
+
+	return PyUnicode_FromString(arch);
+}
+
+static PyObject* _pakfire_arch_supported_by_host(PyObject* self, PyObject* args) {
+	const char* name = NULL;
+
+	if (!PyArg_ParseTuple(args, "s", &name))
+		return NULL;
+
+	if (pakfire_arch_supported_by_host(name))
+		Py_RETURN_TRUE;
+
+	Py_RETURN_FALSE;
+}
+
 static PyMethodDef pakfireModuleMethods[] = {
 	{"performance_index", (PyCFunction)performance_index, METH_VARARGS, NULL},
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
@@ -52,6 +75,8 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
 	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
 	{"unshare", (PyCFunction)_unshare, METH_VARARGS, NULL},
+	{"native_arch", (PyCFunction)_pakfire_native_arch, METH_NOARGS, NULL },
+	{"arch_supported_by_host", (PyCFunction)_pakfire_arch_supported_by_host, METH_VARARGS, NULL },
 	{ NULL, NULL, 0, NULL }
 };
 

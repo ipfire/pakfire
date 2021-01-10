@@ -119,7 +119,6 @@ install-exec-local:
 pakfire_PYTHON = \
 	src/pakfire/__init__.py \
 	src/pakfire/__version__.py \
-	src/pakfire/arch.py \
 	src/pakfire/base.py \
 	src/pakfire/builder.py \
 	src/pakfire/cgroup.py \
@@ -272,6 +271,7 @@ lib_LTLIBRARIES += \
 	libpakfire.la
 
 libpakfire_la_SOURCES = \
+	src/libpakfire/arch.c \
 	src/libpakfire/archive.c \
 	src/libpakfire/errno.c \
 	src/libpakfire/execute.c \
@@ -296,6 +296,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/util.c
 
 pkginclude_HEADERS += \
+	src/libpakfire/include/pakfire/arch.h \
 	src/libpakfire/include/pakfire/archive.h \
 	src/libpakfire/include/pakfire/constants.h \
 	src/libpakfire/include/pakfire/errno.h \

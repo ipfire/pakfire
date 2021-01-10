@@ -31,7 +31,6 @@ import time
 import uuid
 
 from . import _pakfire
-from . import arch
 from . import base
 from . import cgroup
 from . import config
@@ -100,10 +99,10 @@ class Builder(object):
 		self._lock = None
 
 		# Architecture to build for
-		self.arch = arch or system.arch
+		self.arch = arch or _pakfire.native_arch()
 
 		# Check if this host can build the requested architecture.
-		if not system.host_supports_arch(self.arch):
+		if not _pakfire.arch_supported_by_host(self.arch):
 			raise BuildError(_("Cannot build for %s on this host") % self.arch)
 
 		# Initialize a cgroup (if supported)
@@ -454,10 +453,6 @@ class BuilderContext(object):
 		self.setup()
 
 	@property
-	def arch(self):
-		return self.pakfire.arch
-
-	@property
 	def environ(self):
 		env = MINIMAL_ENVIRONMENT.copy()
 		env.update({
@@ -487,11 +482,10 @@ class BuilderContext(object):
 
 		# Fake UTS_MACHINE, when we cannot use the personality syscall and
 		# if the host architecture is not equal to the target architecture.
-		if not self.arch.personality and \
-				not system.native_arch == self.arch.name:
+		if not _pakfire.native_arch() == self.pakfire.arch:
 			env.update({
 				"LD_PRELOAD"  : "/usr/lib/libpakfire_preload.so",
-				"UTS_MACHINE" : self.arch.name,
+				"UTS_MACHINE" : self.pakfire.arch,
 			})
 
 		return env

@@ -45,7 +45,7 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 	const char* path = NULL;
     const char* arch = NULL;
 
-	if (!PyArg_ParseTuple(args, "s|s", &path, &arch))
+	if (!PyArg_ParseTuple(args, "s|z", &path, &arch))
 		return -1;
 
 	// Create a new Pakfire instance

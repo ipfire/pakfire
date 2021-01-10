@@ -29,7 +29,6 @@ import sys
 import tempfile
 import time
 
-from . import arch
 from . import base
 from . import builder
 from . import client
@@ -493,11 +492,7 @@ class CliBuilder(Cli):
 		return parser.parse_args()
 
 	def builder(self, ns):
-		a = arch.Arch(ns.arch or system.native_arch)
-
-		b = builder.Builder(arch=a)
-
-		return b
+		return builder.Builder(arch=ns.arch)
 
 	def handle_build(self, ns):
 		package, = ns.package

@@ -24,7 +24,6 @@ import os
 import socket
 import tempfile
 
-from . import arch
 from . import distro
 from . import shell
 
@@ -38,9 +37,6 @@ class System(object):
 		the system this software is running on.
 	"""
 	def __init__(self):
-		# Load the system's native architecture
-		self.arch = arch.Arch(self.native_arch)
-
 		# Load the system's distribution
 		self.distro = distro.Distribution()
 
@@ -53,27 +49,6 @@ class System(object):
 			hn = "%s.localdomain" % hn
 
 		return hn
-
-	@property
-	def native_arch(self):
-		"""
-			Return the native architecture of the host we
-			are running on.
-		"""
-		return os.uname()[4]
-
-	@property
-	def supported_arches(self):
-		"""
-			Check what architectures can be built on this host.
-		"""
-		return self.arch.compatible_arches
-
-	def host_supports_arch(self, arch):
-		"""
-			Check if this host can build for the target architecture "arch".
-		"""
-		return self.arch.is_compatible_with(arch)
 
 	@property
 	def cpu_count(self):
@@ -418,7 +393,6 @@ class Mountpoint(object):
 if __name__ == "__main__":
 	print("Hostname", system.hostname)
 	print("Arch", system.arch)
-	print("Supported arches", system.supported_arches)
 
 	print("CPU Model", system.cpu_model)
 	print("CPU count", system.cpu_count)

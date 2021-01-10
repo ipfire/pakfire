@@ -43,7 +43,7 @@ class Pakfire(_pakfire.Pakfire):
 	mode = None
 
 	def __init__(self, path="/", config=None, arch=None, distro=None, cache_path=None, offline=False):
-		_pakfire.Pakfire.__init__(self, path, "%s" % (arch or system.native_arch))
+		_pakfire.Pakfire.__init__(self, path, arch)
 
 		# Initialise logging system
 		self.log = self._setup_logger()

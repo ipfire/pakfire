@@ -15,6 +15,7 @@ import pakfire.util
 
 from .system import system
 
+from . import _pakfire
 from . import base
 from . import config
 from . import http
@@ -329,7 +330,7 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 			# CPU info
 			"cpu_model"       : system.cpu_model,
 			"cpu_count"       : system.cpu_count,
-			"cpu_arch"        : system.native_arch,
+			"cpu_arch"        : _pakfire.native_arch(),
 			"cpu_bogomips"    : system.cpu_bogomips,
 
 			# Memory + swap
@@ -339,9 +340,6 @@ class PakfireDaemonKeepalive(multiprocessing.Process):
 			# Pakfire + OS
 			"pakfire_version" : PAKFIRE_VERSION,
 			"os_name"         : system.distro.pretty_name,
-
-			# Supported arches
-			"supported_arches" : ",".join(system.supported_arches),
 		}
 		self.hub._request("/builders/info", method="POST", data=data)
 

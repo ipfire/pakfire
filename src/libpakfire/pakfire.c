@@ -34,6 +34,7 @@
 #include <solv/poolarch.h>
 #include <solv/queue.h>
 
+#include <pakfire/arch.h>
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
@@ -86,13 +87,21 @@ static int log_priority(const char* priority) {
 }
 
 PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
+	// Default to the native architecture
+	if (!arch)
+		arch = pakfire_arch_native();
+
+	// Check if the architecture is supported
+	if (!pakfire_arch_supported(arch))
+		return NULL;
+
 	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
 	if (pakfire) {
 		pakfire->nrefs = 1;
 
 		pakfire->path = pakfire_strdup(path);
-		if (!arch)
-			arch = system_machine();
+
+		// Set architecture
 		pakfire->arch = pakfire_strdup(arch);
 
 		// Setup logging

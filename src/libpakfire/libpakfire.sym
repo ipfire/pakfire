@@ -43,6 +43,14 @@ global:
 	pakfire_version_compare;
 	pakfire_whatprovides;
 
+	# arch
+	pakfire_arch_is_compatible;
+	pakfire_arch_machine;
+	pakfire_arch_native;
+	pakfire_arch_platform;
+	pakfire_arch_supported;
+	pakfire_arch_supported_by_host;
+
 	# archive
 	pakfire_archive_count_signatures;
 	pakfire_archive_create;
