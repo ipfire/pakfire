@@ -19,4 +19,4 @@
 #                                                                             #
 ###############################################################################
 
-from .base import Pakfire, PakfireBuilder, PakfireServer
+from .base import Pakfire, PakfireServer
