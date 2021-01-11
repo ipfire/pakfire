@@ -37,7 +37,7 @@ struct pakfire_execute_env {
     const char* root;
     const char* command;
     const char** argv;
-    char* envp[20];
+    const char** envp;
 };
 
 static int pakfire_execute_fork(Pakfire pakfire, struct pakfire_execute_env* env) {
@@ -55,13 +55,14 @@ static int pakfire_execute_fork(Pakfire pakfire, struct pakfire_execute_env* env
     }
 
     // exec() command
-    r = execve(env->command, (char**)env->argv, env->envp);
+    r = execve(env->command, (char**)env->argv, (char**)env->envp);
 
     // We should not get here
     return errno;
 }
 
-PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* command, const char** argv, int flags) {
+PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* command, const char** argv,
+		const char** envp, int flags) {
     struct pakfire_execute_env env;
 
     // Setup environment
@@ -70,9 +71,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* command, const c
 
     env.command = command;
     env.argv = argv;
-
-    // Reset environnment
-    env.envp[0] = NULL;
+    env.envp = envp;
 
     // Fork this process
     pid_t pid = fork();

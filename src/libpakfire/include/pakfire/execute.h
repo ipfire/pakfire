@@ -23,6 +23,7 @@
 
 #include <pakfire/types.h>
 
-int pakfire_execute(Pakfire pakfire, const char* command, const char** argv, int flags);
+int pakfire_execute(Pakfire pakfire, const char* command, const char** argv,
+	const char** envp, int flags);
 
 #endif /* PAKFIRE_EXECUTE_H */

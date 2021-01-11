@@ -363,7 +363,7 @@ static int pakfire_step_run_shell_script(PakfireStep step, const char* data, con
 		command = pakfire_path_relpath(root, path);
 
 	// Run the script
-	r = pakfire_execute(step->pakfire, command, NULL, 0);
+	r = pakfire_execute(step->pakfire, command, NULL, NULL, 0);
 	if (r) {
 		DEBUG(step->pakfire, "Script return code: %d\n", r);
 	}
@@ -422,7 +422,7 @@ static int pakfire_run_ldconfig(PakfireStep step) {
 	const char* path = pakfire_get_path(step->pakfire);
 
 	if (pakfire_access(step->pakfire, path, ldconfig + 1, X_OK) == 0) {
-		r = pakfire_execute(step->pakfire, ldconfig, NULL, 0);
+		r = pakfire_execute(step->pakfire, ldconfig, NULL, NULL, 0);
 
 		DEBUG(step->pakfire, "ldconfig returned %d\n", r);
 	}

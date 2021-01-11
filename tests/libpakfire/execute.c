@@ -28,7 +28,7 @@
 int test_does_not_exist(const test_t* t) {
 	const char* cmd = "/usr/bin/does-not-exist";
 
-	int r = pakfire_execute(t->pakfire, cmd, NULL, 0);
+	int r = pakfire_execute(t->pakfire, cmd, NULL, NULL, 0);
 	assert_return(r != 0, EXIT_FAILURE);
 
 	return EXIT_SUCCESS;
