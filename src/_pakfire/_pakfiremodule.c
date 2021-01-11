@@ -102,6 +102,10 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 	Py_INCREF(PyExc_BadSignatureError);
 	PyModule_AddObject(module, "BadSignatureError", PyExc_BadSignatureError);
 
+	PyExc_CommandExecutionError = PyErr_NewException("_pakfire.CommandExecutionError", NULL, NULL);
+	Py_INCREF(PyExc_CommandExecutionError);
+	PyModule_AddObject(module, "CommandExecutionError", PyExc_CommandExecutionError);
+
 	PyExc_DependencyError = PyErr_NewException("_pakfire.DependencyError", NULL, NULL);
 	Py_INCREF(PyExc_DependencyError);
 	PyModule_AddObject(module, "DependencyError", PyExc_DependencyError);

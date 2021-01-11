@@ -20,3 +20,6 @@
 ###############################################################################
 
 from .base import Pakfire, PakfireServer
+
+# Import Exceptions
+from ._pakfire import CommandExecutionError

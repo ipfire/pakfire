@@ -25,6 +25,7 @@
 
 // Exceptions
 PyObject* PyExc_BadSignatureError;
+PyObject* PyExc_CommandExecutionError;
 PyObject* PyExc_DependencyError;
 
 #endif /* PYTHON_PAKFIRE_ERRORS_H */

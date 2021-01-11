@@ -20,6 +20,8 @@
 
 #include <Python.h>
 
+#include <pakfire/constants.h>
+#include <pakfire/execute.h>
 #include <pakfire/logging.h>
 #include <pakfire/packagelist.h>
 #include <pakfire/pakfire.h>
@@ -27,6 +29,7 @@
 #include <pakfire/repo.h>
 #include <pakfire/util.h>
 
+#include "errors.h"
 #include "key.h"
 #include "pakfire.h"
 #include "repo.h"
@@ -329,7 +332,126 @@ static Py_ssize_t Pakfire_len(PakfireObject* self) {
 	return pakfire_count_packages(self->pakfire);
 }
 
+static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* kwds) {
+	char* kwlist[] = {"command", "environ", NULL};
+
+	PyObject* command = NULL;
+	PyObject* environ = NULL;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|O", kwlist, &command, &environ))
+		return NULL;
+
+	// Check if command is a list
+	if (!PyList_Check(command)) {
+		PyErr_SetString(PyExc_TypeError, "command must be a list");
+		return NULL;
+	}
+
+	ssize_t command_length = PyList_Size(command);
+
+	// Check if command is not empty
+	if (command_length == 0) {
+		PyErr_SetString(PyExc_ValueError, "command is empty");
+		return NULL;
+	}
+
+	// All arguments in command must be strings
+	for (unsigned int i = 0; i < command_length; i++) {
+		PyObject* item = PyList_GET_ITEM(command, i);
+
+		if (!PyUnicode_Check(item)) {
+			PyErr_Format(PyExc_TypeError, "Item %u in command is not a string", i);
+			return NULL;
+		}
+	}
+
+	ssize_t environ_length = 0;
+	PyObject* key;
+	PyObject* value;
+	Py_ssize_t p = 0;
+
+	if (environ) {
+		// Check if environ is a dictionary
+		if (!PyDict_Check(environ)) {
+			PyErr_SetString(PyExc_TypeError, "environ must be a dictionary");
+			return NULL;
+		}
+
+		// All keys and values must be strings
+		while (PyDict_Next(environ, &p, &key, &value)) {
+			if (!PyUnicode_Check(key) || !PyUnicode_Check(value)) {
+				PyErr_SetString(PyExc_TypeError, "Environment contains a non-string object");
+				return NULL;
+			}
+		}
+
+		environ_length = PyDict_Size(environ);
+	}
+
+	// All inputs look fine
+
+	const char* argv[command_length + 1];
+	char* envp[environ_length + 1];
+
+	// Parse arguments
+	for (unsigned int i = 0; i < command_length; i++) {
+		PyObject* item = PyList_GET_ITEM(command, i);
+		argv[i] = PyUnicode_AsUTF8(item);
+	}
+
+	// Parse environ
+	if (environ) {
+		unsigned int i = 0;
+		p = 0;
+
+		while (PyDict_Next(environ, &p, &key, &value)) {
+			int r = asprintf(&envp[i], "%s=%s", PyUnicode_AsUTF8(key), PyUnicode_AsUTF8(value));
+
+			// Handle errors
+			if (r < 0) {
+				envp[i] = NULL;
+
+				// Cleanup
+				for (unsigned int i = 0; envp[i]; i++)
+					free(envp[i]);
+
+				return PyErr_NoMemory();
+			}
+		}
+	}
+
+	// Terminate argv and envp
+	argv[command_length] = NULL;
+	envp[environ_length] = NULL;
+
+	// Execute command
+	int r = pakfire_execute(self->pakfire, argv[0], argv, 0);
+
+	// Cleanup
+	for (unsigned int i = 0; envp[i]; i++)
+		free(envp[i]);
+
+	// Raise exception when the command failed
+	if (r) {
+		PyObject* code = PyLong_FromLong(r);
+
+		PyErr_SetObject(PyExc_CommandExecutionError, code);
+		Py_DECREF(code);
+
+		return NULL;
+	}
+
+	// Return nothing
+	Py_RETURN_NONE;
+}
+
 static struct PyMethodDef Pakfire_methods[] = {
+	{
+		"execute",
+		(PyCFunction)Pakfire_execute,
+		METH_VARARGS|METH_KEYWORDS,
+		NULL
+	},
 	{
 		"generate_key",
 		(PyCFunction)Pakfire_generate_key,
