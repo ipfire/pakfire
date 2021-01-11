@@ -117,7 +117,7 @@ pakfire_PYTHON = \
 	src/pakfire/__version__.py \
 	src/pakfire/base.py \
 	src/pakfire/builder.py \
-	src/pakfire/cgroup.py \
+	src/pakfire/cgroups.py \
 	src/pakfire/client.py \
 	src/pakfire/cli.py \
 	src/pakfire/compress.py \

@@ -32,7 +32,7 @@ import uuid
 
 from . import _pakfire
 from . import base
-from . import cgroup as cgroups
+from . import cgroups
 from . import config
 from . import downloaders
 from . import logger

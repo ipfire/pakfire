@@ -3,7 +3,7 @@
 import os
 import unittest
 
-import pakfire.cgroup as cgroups
+import pakfire.cgroups as cgroups
 
 class Test(unittest.TestCase):
 	def setUp(self):
