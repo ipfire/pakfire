@@ -30,8 +30,6 @@
 #include <pakfire/private.h>
 #include <pakfire/types.h>
 
-#define STACK_SIZE 1024
-
 struct pakfire_execute_env {
     Pakfire pakfire;
     const char* root;
