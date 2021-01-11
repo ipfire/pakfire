@@ -603,6 +603,7 @@ TESTS_ENVIRONMENT = \
 
 dist_check_SCRIPTS = \
 	tests/python/cgroups.py \
+	tests/python/execute.py \
 	tests/python/test.py
 
 TESTS = \
