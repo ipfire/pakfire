@@ -186,35 +186,6 @@ def text_wrap(s, length=65):
 	#return "\n".join(lines)
 	return lines
 
-def orphans_kill(root, killsig=signal.SIGTERM):
-	"""
-		kill off anything that is still chrooted.
-	"""
-	log.debug(_("Killing orphans..."))
-
-	killed = False
-	for fn in [d for d in os.listdir("/proc") if d.isdigit()]:
-		try:
-			r = os.readlink("/proc/%s/root" % fn)
-			if os.path.realpath(root) == os.path.realpath(r):
-				log.warning(_("Process ID %s is still running in chroot. Killing...") % fn)
-				killed = True
-
-				pid = int(fn, 10)
-				os.kill(pid, killsig)
-				os.waitpid(pid, 0)
-		except OSError as e:
-			pass
-
-	# If something was killed, wait a couple of seconds to make sure all file descriptors
-	# are closed and we can proceed with umounting the filesystems.
-	if killed:
-		log.warning(_("Waiting for processes to terminate..."))
-		time.sleep(3)
-
-		# Calling ourself again to make sure all processes were killed.
-		orphans_kill(root, killsig=killsig)
-
 def scriptlet_interpreter(scriptlet):
 	"""
 		This function returns the interpreter of a scriptlet.

@@ -32,7 +32,7 @@ import uuid
 
 from . import _pakfire
 from . import base
-from . import cgroup
+from . import cgroup as cgroups
 from . import config
 from . import downloaders
 from . import logger
@@ -105,8 +105,8 @@ class Builder(object):
 		if not _pakfire.arch_supported_by_host(self.arch):
 			raise BuildError(_("Cannot build for %s on this host") % self.arch)
 
-		# Initialize a cgroup (if supported)
-		self.cgroup = self.make_cgroup()
+		# Initialize cgroups
+		self.cgroup = self._make_cgroup()
 
 		# Unshare namepsace.
 		# If this fails because the kernel has no support for CLONE_NEWIPC or CLONE_NEWUTS,
@@ -148,26 +148,11 @@ class Builder(object):
 		self.log.debug("Leaving %s" % self.path)
 
 		# Kill all remaining processes in the build environment
-		if self.cgroup:
-			# Move the builder process out of the cgroup.
-			self.cgroup.migrate_task(self.cgroup.parent, os.getpid())
+		self.cgroup.killall()
 
-			# Kill all still running processes in the cgroup.
-			self.cgroup.kill_and_wait()
-
-			# Remove cgroup and all parent cgroups if they are empty.
-			self.cgroup.destroy()
-
-			parent = self.cgroup.parent
-			while parent:
-				if not parent.is_empty(recursive=True):
-					break
-
-				parent.destroy()
-				parent = parent.parent
-
-		else:
-			util.orphans_kill(self.path)
+		# Destroy the cgroup
+		self.cgroup.destroy()
+		self.cgroup = None
 
 		# Umount the build environment
 		self._umountall()
@@ -197,25 +182,21 @@ class Builder(object):
 			# If no logile was given, we use the root logger.
 			self.log = logging.getLogger("pakfire")
 
-	def make_cgroup(self):
+	def _make_cgroup(self):
 		"""
-			Initialize cgroup (if the system supports it).
+			Initialises a cgroup so that we can enforce resource limits
+			and can identify processes belonging to this build environment.
 		"""
-		if not cgroup.supported():
-			return
+		# Find our current group
+		parent = cgroups.get_own_group()
 
-		# Search for the cgroup this process is currently running in.
-		parent_cgroup = cgroup.find_by_pid(os.getpid())
-		if not parent_cgroup:
-			return
+		# Create a sub-group
+		cgroup = parent.create_subgroup("pakfire-%s" % self.build_id)
 
-		# Create our own cgroup inside the parent cgroup.
-		c = parent_cgroup.create_child_cgroup("pakfire/builder/%s" % self.build_id)
+		# Make this process join the new group
+		cgroup.attach_self()
 
-		# Attach the pakfire-builder process to the group.
-		c.attach()
-
-		return c
+		return cgroup
 
 	def lock(self):
 		filename = os.path.join(self.path, ".lock")
