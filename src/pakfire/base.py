@@ -149,19 +149,6 @@ class Pakfire(_pakfire.Pakfire):
 		for repo in self.repos:
 			repo.clean()
 
-	def build(self, makefile, resultdir, stages=None, **kwargs):
-		b = builder.Builder(self, makefile, resultdir, **kwargs)
-
-		try:
-			b.build(stages=stages)
-
-		except Error:
-			raise BuildError(_("Build command has failed."))
-
-		else:
-			# If the build was successful, cleanup all temporary files.
-			b.cleanup()
-
 	def dist(self, pkg, resultdir):
 		pkg = packages.Makefile(self, pkg)
 
