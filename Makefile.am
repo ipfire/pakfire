@@ -602,6 +602,7 @@ TESTS_ENVIRONMENT = \
 	topdir="$(shell pwd)"
 
 dist_check_SCRIPTS = \
+	tests/python/cgroups.py \
 	tests/python/test.py
 
 TESTS = \
