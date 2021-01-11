@@ -431,8 +431,6 @@ class BuilderContext(object):
 			arch=self.builder.arch,
 		)
 
-		self.setup()
-
 	@property
 	def environ(self):
 		env = MINIMAL_ENVIRONMENT.copy()
@@ -467,24 +465,10 @@ class BuilderContext(object):
 
 		return env
 
-	def setup(self, install=None):
-		self.log.info(_("Install packages needed for build..."))
-
-		packages = [
-			"@Build",
-		]
-
-		# If we have ccache enabled, we need to extract it
-		# to the build chroot
-		if self.builder.settings.get("enable_ccache"):
-			packages.append("ccache")
-
-		# Install additional packages
-		if install:
-			packages += install
-
-		# Logging
-		self.log.debug(_("Installing build requirements: %s") % ", ".join(packages))
+	def _install(self, packages):
+		self.log.debug(_("Installing packages in build environment:"))
+		for package in packages:
+			self.log.debug("	%s" % package)
 
 		# Initialise Pakfire
 		with self.pakfire as p:
@@ -503,12 +487,25 @@ class BuilderContext(object):
 			transaction.run()
 
 	def build(self, package, private_network=True, shell=True):
+		# Install build environment
+		packages = [
+			"@Build",
+		]
+
+		# If we have ccache enabled, we need to install it, too
+		if self.builder.settings.get("enable_ccache"):
+			packages.append("ccache")
+
+		# Open the package archive
 		archive = _pakfire.Archive(self.pakfire, package)
 
 		requires = archive.get("dependencies.requires")
+		packages += requires.splitlines()
 
 		# Setup the environment including any build dependencies
-		self.setup(install=requires.splitlines())
+		self._install(packages)
+
+		# XXX perform build
 
 	def shell(self, install=[]):
 		if not util.cli_is_interactive():
@@ -516,9 +513,7 @@ class BuilderContext(object):
 			return
 
 		# Install our standard shell packages
-		install += SHELL_PACKAGES
-
-		self.setup(install=install)
+		self._install(SHELL_PACKAGES + install)
 
 		command = "/usr/sbin/chroot %s %s %s" % (self.chrootPath(), SHELL_SCRIPT)
 
