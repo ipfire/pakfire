@@ -31,36 +31,26 @@ PAKFIRE_LEAST_COMPATIBLE_VERSION = PAKFIRE_VERSION
 PAKFIRE_HUB = "https://pakfirehub.ipfire.org/"
 
 SYSCONFDIR = "/etc"
-SCRIPT_DIR = "/usr/lib/pakfire"
 
 CONFIG_DIR = os.path.join(SYSCONFDIR, "pakfire")
 CONFIG_REPOS_DIR = os.path.join(CONFIG_DIR, "repos")
 CONFIG_DISTRO_DIR = os.path.join(CONFIG_DIR, "distros")
 
-KEYRING_DIR = os.path.join(CONFIG_DIR, "gnupg")
-
 CACHE_DIR = "/var/cache/pakfire"
 CCACHE_CACHE_DIR = os.path.join(CACHE_DIR, "ccache")
-CACHE_ENVIRON_DIR = os.path.join(CACHE_DIR, "environments")
-REPO_CACHE_DIR = os.path.join(CACHE_DIR, "downloads")
 
-LOCAL_BUILD_REPO_PATH = "/var/lib/pakfire/local"
 LOCAL_TMP_PATH = "/var/tmp"
 
 PACKAGES_DB_DIR = "var/lib/pakfire"
 PACKAGES_DB = os.path.join(PACKAGES_DB_DIR, "packages.db")
 PACKAGES_SOLV = os.path.join(PACKAGES_DB_DIR, "packages.solv")
-REPOSITORY_DB = "index.db"
 
 BUFFER_SIZE = 102400
-
-MIRRORLIST_MAXSIZE = 1024**2
 
 MACRO_FILE_DIR = "/usr/lib/pakfire/macros"
 MACRO_EXTENSION = ".macro"
 
 METADATA_FORMAT = 0
-METADATA_DOWNLOAD_LIMIT = 1024**2
 METADATA_DOWNLOAD_PATH  = "repodata"
 METADATA_DOWNLOAD_FILE  = "repomd.json"
 METADATA_DATABASE_FILE  = "packages.solv"
@@ -82,9 +72,6 @@ SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
 SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
-
-TIME_10M = 10
-TIME_24H = 60*24
 
 ORPHAN_DIRECTORIES = [
 	"lib", "lib64", "usr/lib", "usr/lib64", "libexec", "usr/libexec",
@@ -181,20 +168,6 @@ end
 """
 PACKAGE_INFO_DESCRIPTION_LINE = PACKAGE_INFO_DEPENDENCY_LINE = "\t\t%s"
 
-# XXX make this configurable in pakfire.conf
-PAKFIRE_MULTIINSTALL = [
-	"kernel",
-	"kernel-exynos",
-	"kernel-kirkwood",
-	"kernel-legacy",
-	"kernel-omap",
-	"kernel-versatile",
-	"kernel-devel",
-]
-
-SCRIPTLET_INTERPRETER = "/bin/sh"
-SCRIPTLET_TIMEOUT = 60 * 15
-
 SCRIPTS = (
 	"pretransin",
 	"pretransun",
@@ -216,8 +189,6 @@ SCRIPTS_PREREQUIRES = (
 	"preup",
 	"postup",
 )
-
-LDCONFIG = "/sbin/ldconfig"
 
 CONFIG_FILE_SUFFIX_NEW  = ".paknew"
 CONFIG_FILE_SUFFIX_SAVE = ".paksave"
