@@ -126,12 +126,14 @@ AC_CHECK_HEADERS([ \
 	stdlib.h \
 	string.h \
 	syslog.h \
+	sys/personality.h \
 	sys/stat.h \
 	unistd.h
 ])
 
 AC_CHECK_FUNCS([ \
 	assert \
+	personality \
 	secure_getenv \
 	strcmp \
 	strdup

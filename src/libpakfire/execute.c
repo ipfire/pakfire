@@ -21,10 +21,12 @@
 #include <errno.h>
 #include <sched.h>
 #include <stdlib.h>
+#include <sys/personality.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <pakfire/arch.h>
 #include <pakfire/execute.h>
 #include <pakfire/logging.h>
 #include <pakfire/private.h>
@@ -41,6 +43,9 @@ struct pakfire_execute_env {
 static int pakfire_execute_fork(Pakfire pakfire, struct pakfire_execute_env* env) {
     pid_t pid = getpid();
 
+	// Get architecture
+	const char* arch = pakfire_get_arch(pakfire);
+
     DEBUG(env->pakfire, "Execution environment has been forked as PID %d\n", pid);
     DEBUG(env->pakfire, " command = %s, root = %s\n", env->command, env->root);
 
@@ -51,6 +56,15 @@ static int pakfire_execute_fork(Pakfire pakfire, struct pakfire_execute_env* env
             env->root, strerror(errno));
         return errno;
     }
+
+	// Set personality
+	unsigned long persona = pakfire_arch_personality(arch);
+	r = personality(persona);
+	if (r < 0) {
+		ERROR(env->pakfire, "Could not set personality (%x)\n", persona);
+
+		return errno;
+	}
 
     // exec() command
     r = execve(env->command, (char**)env->argv, (char**)env->envp);

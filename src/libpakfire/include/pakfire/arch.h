@@ -23,6 +23,7 @@
 
 int pakfire_arch_supported(const char* name);
 const char* pakfire_arch_platform(const char* name);
+unsigned long pakfire_arch_personality(const char* name);
 char* pakfire_arch_machine(const char* arch, const char* vendor);
 const char* pakfire_arch_native();
 int pakfire_arch_is_compatible(const char* name, const char* compatible_arch);

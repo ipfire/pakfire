@@ -25,14 +25,12 @@ import select
 import subprocess
 import time
 
-from ._pakfire import PERSONALITY_LINUX, PERSONALITY_LINUX32
-
 from pakfire.i18n import _
 import pakfire.util as util
 from .errors import *
 
 class ShellExecuteEnvironment(object):
-	def __init__(self, command, cwd=None, chroot_path=None, personality=None, shell=False, timeout=0, env=None,
+	def __init__(self, command, cwd=None, chroot_path=None, shell=False, timeout=0, env=None,
 			cgroup=None, logger=None, log_output=True, log_errors=True, record_output=False, record_stdout=True, record_stderr=True):
 		# The given command that should be executed.
 		self.command = command
@@ -48,9 +46,6 @@ class ShellExecuteEnvironment(object):
 
 		# Set timeout.
 		self.timeout = timeout
-
-		# Personality.
-		self.personality = personality
 
 		# Shell.
 		self.shell = shell
@@ -135,7 +130,7 @@ class ShellExecuteEnvironment(object):
 
 	def create_subprocess(self):
 		# Create preexecution thingy for command
-		preexec_fn = ChildPreExec(self.personality, self.chroot_path, self.cwd)
+		preexec_fn = ChildPreExec(self.chroot_path, self.cwd)
 
 		kwargs = {
 			"bufsize"    : 0,
@@ -249,34 +244,13 @@ class ShellExecuteEnvironment(object):
 
 
 class ChildPreExec(object):
-	def __init__(self, personality, chroot_path, cwd):
-		self._personality = personality
+	def __init__(self, chroot_path, cwd):
 		self.chroot_path  = chroot_path
 		self.cwd = cwd
-
-	@property
-	def personality(self):
-		"""
-			Return personality value if supported.
-			Otherwise return None.
-		"""
-		personality_defs = {
-			"linux64": PERSONALITY_LINUX,
-			"linux32": PERSONALITY_LINUX32,
-		}
-
-		try:
-			return personality_defs[self._personality]
-		except KeyError:
-			pass
 
 	def __call__(self, *args, **kargs):
 		# Set a new process group
 		os.setpgrp()
-
-		# Set new personality if we got one.
-		if self.personality:
-			util.personality(self.personality)
 
 		# Change into new root.
 		if self.chroot_path:

@@ -35,7 +35,7 @@ from .constants import *
 from .i18n import _
 
 # Import binary version of capability functions
-from ._pakfire import get_capabilities, personality
+from ._pakfire import get_capabilities
 
 def cli_is_interactive():
 	"""

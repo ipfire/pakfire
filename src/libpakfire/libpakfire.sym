@@ -46,6 +46,7 @@ global:
 	pakfire_arch_is_compatible;
 	pakfire_arch_machine;
 	pakfire_arch_native;
+	pakfire_arch_personality;
 	pakfire_arch_platform;
 	pakfire_arch_supported;
 	pakfire_arch_supported_by_host;

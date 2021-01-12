@@ -23,7 +23,6 @@
 #include <libintl.h>
 #include <locale.h>
 #include <sched.h>
-#include <sys/personality.h>
 
 #include <solv/solver.h>
 
@@ -72,7 +71,6 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"performance_index", (PyCFunction)performance_index, METH_VARARGS, NULL},
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
 	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
-	{"personality", (PyCFunction)_personality, METH_VARARGS, NULL},
 	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
 	{"unshare", (PyCFunction)_unshare, METH_VARARGS, NULL},
 	{"native_arch", (PyCFunction)_pakfire_native_arch, METH_NOARGS, NULL },
@@ -209,10 +207,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	// Add constants
 	PyObject* d = PyModule_GetDict(module);
-
-	// Personalities
-	PyDict_SetItemString(d, "PERSONALITY_LINUX",   Py_BuildValue("i", PER_LINUX));
-	PyDict_SetItemString(d, "PERSONALITY_LINUX32", Py_BuildValue("i", PER_LINUX32));
 
 	// Namespace stuff
 	PyDict_SetItemString(d, "SCHED_CLONE_NEWIPC", Py_BuildValue("i", CLONE_NEWIPC));

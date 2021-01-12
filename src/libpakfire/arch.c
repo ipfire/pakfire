@@ -22,6 +22,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/personality.h>
 #include <sys/utsname.h>
 
 #include <pakfire/arch.h>
@@ -33,6 +34,7 @@ struct pakfire_arch {
 	const char* name;
 	const char* platform;
 	const char* compatible[5];
+	unsigned long personality;
 };
 
 static const struct pakfire_arch PAKFIRE_ARCHES[] = {
@@ -41,40 +43,48 @@ static const struct pakfire_arch PAKFIRE_ARCHES[] = {
 		.name = "x86_64",
 		.platform = "x86",
 		.compatible = { "i686", NULL },
+		.personality = PER_LINUX,
 	},
 	{
 		.name = "i686",
 		.platform = "x86",
+		.personality = PER_LINUX32,
 	},
 
 	// ARM
 	{
 		.name = "aarch64",
 		.platform = "arm",
+		.personality = PER_LINUX,
 	},
 	{
 		.name = "armv7hl",
 		.platform = "arm",
 		.compatible = { "armv7l", "armv6l", "armv5tejl", "armv5tel", NULL },
+		.personality = PER_LINUX32,
 	},
 	{
 		.name = "armv7l",
 		.platform = "arm",
 		.compatible = { "armv6l", "armv5tejl", "armv5tel", NULL },
+		.personality = PER_LINUX32,
 	},
 	{
 		.name = "armv6l",
 		.platform = "arm",
 		.compatible = { "armv5tejl", "armv5tel", NULL },
+		.personality = PER_LINUX32,
 	},
 	{
 		.name = "armv5tejl",
 		.platform = "arm",
 		.compatible = { "armv5tel", NULL },
+		.personality = PER_LINUX32,
 	},
 	{
 		.name = "armv5tel",
 		.platform = "arm",
+		.personality = PER_LINUX32,
 	},
 };
 
@@ -107,6 +117,15 @@ PAKFIRE_EXPORT const char* pakfire_arch_platform(const char* name) {
 		return arch->platform;
 
 	return NULL;
+}
+
+PAKFIRE_EXPORT unsigned long pakfire_arch_personality(const char* name) {
+	const struct pakfire_arch* arch = pakfire_arch_find(name);
+
+	if (arch)
+		return arch->personality;
+
+	return 0;
 }
 
 PAKFIRE_EXPORT char* pakfire_arch_machine(const char* arch, const char* vendor) {

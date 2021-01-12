@@ -517,10 +517,6 @@ class BuilderContext(object):
 
 		command = "/usr/sbin/chroot %s %s %s" % (self.chrootPath(), SHELL_SCRIPT)
 
-		# Add personality if we require one
-		if self.pakfire.distro.personality:
-			command = "%s %s" % (self.pakfire.distro.personality, command)
-
 		for key, val in list(self.environ.items()):
 			command = "%s=\"%s\" " % (key, val) + command
 
