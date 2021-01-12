@@ -433,15 +433,14 @@ class BuilderContext(object):
 
 	@property
 	def environ(self):
-		env = MINIMAL_ENVIRONMENT.copy()
-		env.update({
-			# Add HOME manually, because it is occasionally not set
-			# and some builds get in trouble then.
+		# Build a minimal environment for executing, but try to inherit TERM and LANG
+		env = {
+			"HOME" : "/root",
+			"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
+			"PS1"  : "\\u:\w\$ ",
 			"TERM" : os.environ.get("TERM", "vt100"),
-
-			# Sanitize language.
-			"LANG" : os.environ.setdefault("LANG", "en_US.UTF-8"),
-		})
+			"LANG" : os.environ.get("LANG", "en_US.UTF-8"),
+		}
 
 		# Inherit environment from distro
 		env.update(self.pakfire.distro.environ)

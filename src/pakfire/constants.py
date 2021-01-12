@@ -85,14 +85,6 @@ SHELL_SCRIPT = "/usr/lib/pakfire/chroot-shell"
 SHELL_PACKAGES = ["elinks", "less", "vim", SHELL_SCRIPT,]
 BUILD_ROOT = "/var/lib/pakfire/build"
 
-MINIMAL_ENVIRONMENT = {
-	"HOME" : "/root",
-	"LANG" : "C",
-	"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
-	"PS1"  : "\\u:\w\$ ",
-	"TERM" : "vt100",
-}
-
 SOURCE_CACHE_DIR = os.path.join(CACHE_DIR, "sources")
 
 TIME_10M = 10
