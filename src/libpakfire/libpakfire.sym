@@ -26,6 +26,7 @@ global:
 	pakfire_count_packages;
 	pakfire_create;
 	pakfire_execute;
+	pakfire_execute_command;
 	pakfire_get_arch;
 	pakfire_get_cache_path;
 	pakfire_get_installed_repo;

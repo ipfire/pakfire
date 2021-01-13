@@ -24,5 +24,6 @@
 #include <pakfire/types.h>
 
 int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags);
+int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags);
 
 #endif /* PAKFIRE_EXECUTE_H */

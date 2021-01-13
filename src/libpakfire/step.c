@@ -39,9 +39,7 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
-static const char* LDCONFIG[2] = {
-	"/sbin/ldconfig", NULL,
-};
+#define LDCONFIG "/sbin/ldconfig"
 
 struct _PakfireStep {
 	Pakfire pakfire;
@@ -366,12 +364,8 @@ static int pakfire_step_run_shell_script(PakfireStep step, const char* data, con
 	if (root)
 		command = pakfire_path_relpath(root, path);
 
-	const char* argv[2];
-	argv[0] = command;
-	argv[1] = NULL;
-
 	// Run the script
-	r = pakfire_execute(step->pakfire, argv, NULL, 0);
+	r = pakfire_execute_command(step->pakfire, command, NULL, 0);
 	if (r) {
 		DEBUG(step->pakfire, "Script return code: %d\n", r);
 	}
@@ -427,8 +421,8 @@ static int pakfire_run_ldconfig(PakfireStep step) {
 
 	const char* path = pakfire_get_path(step->pakfire);
 
-	if (pakfire_access(step->pakfire, path, LDCONFIG[0], X_OK) == 0) {
-		r = pakfire_execute(step->pakfire, LDCONFIG, NULL, 0);
+	if (pakfire_access(step->pakfire, path, LDCONFIG, X_OK) == 0) {
+		r = pakfire_execute_command(step->pakfire, LDCONFIG, NULL, 0);
 
 		DEBUG(step->pakfire, "ldconfig returned %d\n", r);
 	}

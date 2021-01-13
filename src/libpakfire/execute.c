@@ -119,3 +119,11 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	return 0;
 }
+
+PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags) {
+	const char* argv[2] = {
+		command, NULL,
+	};
+
+	return pakfire_execute(pakfire, argv, envp, flags);
+}
