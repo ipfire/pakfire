@@ -25,6 +25,8 @@
 
 const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
 
+testsuite_t ts;
+
 static int test_run(test_t* t) {
 	LOG("running %s\n", t->name);
 
@@ -53,40 +55,25 @@ static int test_run(test_t* t) {
 	return r;
 }
 
-testsuite_t* testsuite_create(size_t n) {
-	testsuite_t* ts = calloc(1, sizeof(*ts));
-	if (!ts)
+int __testsuite_add_test(const char* name, test_function_t func) {
+	// Check if any space is left
+	if (ts.num >= MAX_TESTS) {
+		LOG("ERROR: We are out of space for tests\n");
 		exit(EXIT_FAILURE);
-
-	// Make space for n tests
-	ts->tests = calloc(n + 1, sizeof(*ts->tests));
-	ts->left = n;
-
-	return ts;
-};
-
-int __testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func) {
-	if (ts->left == 0)
-		exit(EXIT_FAILURE);
-
-	test_t** last = ts->tests;
-	while (*last)
-		last++;
-
-	test_t* test = *last = calloc(1, sizeof(**last));
-	if (test) {
-		test->name = name;
-		test->func = func;
 	}
 
-	ts->left--;
+	struct test* test = &ts.tests[ts.num++];
+
+	// Set parameters
+	test->name = name;
+	test->func = func;
 
 	return 0;
 }
 
-int testsuite_run(testsuite_t* ts) {
-	for (test_t** t = ts->tests; *t; t++) {
-		int r = test_run(*t);
+int testsuite_run() {
+	for (unsigned int i = 0; i < ts.num; i++) {
+		int r = test_run(&ts.tests[i]);
 		if (r)
 			exit(r);
 	}

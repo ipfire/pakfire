@@ -35,9 +35,7 @@ int test_does_not_exist(const test_t* t) {
 }
 
 int main(int argc, char** argv) {
-	testsuite_t* ts = testsuite_create(1);
+	testsuite_add_test(test_does_not_exist);
 
-	testsuite_add_test(ts, test_does_not_exist);
-
-	return testsuite_run(ts);
+	return testsuite_run();
 }

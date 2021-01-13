@@ -27,6 +27,8 @@
 
 #include <pakfire/pakfire.h>
 
+#define MAX_TESTS 128
+
 extern const char* TEST_SRC_PATH;
 
 // Forward declaration
@@ -41,20 +43,21 @@ typedef struct test {
 } test_t;
 
 typedef struct testsuite {
-	test_t** tests;
-	size_t left;
+	test_t tests[MAX_TESTS];
+	size_t num;
 } testsuite_t;
 
-testsuite_t* testsuite_create(size_t n);
-int __testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func);
-int testsuite_run(testsuite_t* ts);
+extern testsuite_t ts;
+
+int __testsuite_add_test(const char* name, test_function_t func);
+int testsuite_run();
 
 #define _LOG(prefix, fmt, ...) fprintf(stderr, "TESTS: " prefix fmt, ## __VA_ARGS__);
 #define LOG(fmt, ...) _LOG("", fmt, ## __VA_ARGS__);
 #define LOG_WARN(fmt, ...) _LOG("WARN: ", fmt, ## __VA_ARGS__);
 #define LOG_ERROR(fmt, ...) _LOG("ERROR: ", fmt, ## __VA_ARGS__);
 
-#define testsuite_add_test(ts, func) __testsuite_add_test(ts, #func, func)
+#define testsuite_add_test(func) __testsuite_add_test(#func, func)
 
 #define assert_return(expr, r) \
 	do { \
