@@ -39,8 +39,8 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 
 	const char* root = pakfire_get_path(pakfire);
 
-    DEBUG(pakfire, "Execution environment has been forked as PID %d\n", pid);
-    DEBUG(pakfire, "	root	: %s\n", root);
+	DEBUG(pakfire, "Execution environment has been forked as PID %d\n", pid);
+	DEBUG(pakfire, "	root	: %s\n", root);
 
 	for (unsigned int i = 0; argv[i]; i++)
 		DEBUG(pakfire, "	argv[%u]	: %s\n", i, argv[i]);
@@ -48,12 +48,12 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 	for (unsigned int i = 0; envp[i]; i++)
 		DEBUG(pakfire, "	env	: %s\n", envp[i]);
 
-    // Move /
-    int r = chroot(root);
-    if (r) {
-        ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
-        return errno;
-    }
+	// Move /
+	int r = chroot(root);
+	if (r) {
+		ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
+		return errno;
+	}
 
 	// Get architecture
 	const char* arch = pakfire_get_arch(pakfire);
@@ -67,11 +67,11 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 		return errno;
 	}
 
-    // exec() command
-    r = execve(argv[0], (char**)argv, envp);
+	// exec() command
+	r = execve(argv[0], (char**)argv, envp);
 
-    // We should not get here
-    return errno;
+	// We should not get here
+	return errno;
 }
 
 PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
@@ -82,40 +82,40 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 	if (!envp)
 		envp = envp_empty;
 
-    // Fork this process
-    pid_t pid = fork();
+	// Fork this process
+	pid_t pid = fork();
 
-    if (pid < 0) {
-        ERROR(pakfire, "Could not fork: %s\n", strerror(errno));
-        return errno;
+	if (pid < 0) {
+		ERROR(pakfire, "Could not fork: %s\n", strerror(errno));
+		return errno;
 
-    // Child process
-    } else if (pid == 0) {
-        int r = pakfire_execute_fork(pakfire, argv, envp);
+	// Child process
+	} else if (pid == 0) {
+		int r = pakfire_execute_fork(pakfire, argv, envp);
 
-        ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
-            strerror(r));
+		ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
+			strerror(r));
 
-        // Exit immediately
-        exit(r);
+		// Exit immediately
+		exit(r);
 
-    // Parent process
-    } else {
-        DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
+	// Parent process
+	} else {
+		DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
 
-        int status;
-        waitpid(pid, &status, 0);
+		int status;
+		waitpid(pid, &status, 0);
 
-        if (WIFEXITED(status)) {
-            int r = WEXITSTATUS(status);
+		if (WIFEXITED(status)) {
+			int r = WEXITSTATUS(status);
 
-            DEBUG(pakfire, "Child process has exited with code: %d\n", r);
-            return r;
-        }
+			DEBUG(pakfire, "Child process has exited with code: %d\n", r);
+			return r;
+		}
 
-        ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
-        return -1;
-    }
+		ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
