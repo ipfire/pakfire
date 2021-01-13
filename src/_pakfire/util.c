@@ -21,7 +21,6 @@
 #include <Python.h>
 
 #include <errno.h>
-#include <sched.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -38,21 +37,6 @@ PyObject *_sync(PyObject *self, PyObject *args) {
 	sync();
 
 	Py_RETURN_NONE;
-}
-
-PyObject *_unshare(PyObject *self, PyObject *args) {
-	int flags = 0;
-
-	if (!PyArg_ParseTuple(args, "i", &flags)) {
-		return NULL;
-	}
-
-	int ret = unshare(flags);
-	if (ret < 0) {
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
-	}
-
-	return Py_BuildValue("i", ret);
 }
 
 PyObject *version_compare(PyObject *self, PyObject *args) {

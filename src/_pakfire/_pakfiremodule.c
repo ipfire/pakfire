@@ -22,7 +22,6 @@
 
 #include <libintl.h>
 #include <locale.h>
-#include <sched.h>
 
 #include <solv/solver.h>
 
@@ -72,7 +71,6 @@ static PyMethodDef pakfireModuleMethods[] = {
 	{"version_compare", (PyCFunction)version_compare, METH_VARARGS, NULL},
 	{"get_capabilities", (PyCFunction)get_capabilities, METH_VARARGS, NULL},
 	{"sync", (PyCFunction)_sync, METH_NOARGS, NULL},
-	{"unshare", (PyCFunction)_unshare, METH_VARARGS, NULL},
 	{"native_arch", (PyCFunction)_pakfire_native_arch, METH_NOARGS, NULL },
 	{"arch_supported_by_host", (PyCFunction)_pakfire_arch_supported_by_host, METH_VARARGS, NULL },
 	{ NULL, NULL, 0, NULL }
@@ -207,13 +205,6 @@ PyMODINIT_FUNC PyInit__pakfire(void) {
 
 	// Add constants
 	PyObject* d = PyModule_GetDict(module);
-
-	// Namespace stuff
-	PyDict_SetItemString(d, "SCHED_CLONE_NEWIPC", Py_BuildValue("i", CLONE_NEWIPC));
-	PyDict_SetItemString(d, "SCHED_CLONE_NEWPID", Py_BuildValue("i", CLONE_NEWPID));
-	PyDict_SetItemString(d, "SCHED_CLONE_NEWNET", Py_BuildValue("i", CLONE_NEWNET));
-	PyDict_SetItemString(d, "SCHED_CLONE_NEWNS",  Py_BuildValue("i", CLONE_NEWNS));
-	PyDict_SetItemString(d, "SCHED_CLONE_NEWUTS", Py_BuildValue("i", CLONE_NEWUTS));
 
 	// Add constants for relations
 	PyDict_SetItemString(d, "REL_EQ", Py_BuildValue("i", REL_EQ));

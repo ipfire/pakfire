@@ -108,18 +108,6 @@ class Builder(object):
 		# Initialize cgroups
 		self.cgroup = self._make_cgroup()
 
-		# Unshare namepsace.
-		# If this fails because the kernel has no support for CLONE_NEWIPC or CLONE_NEWUTS,
-		# we try to fall back to just set CLONE_NEWNS.
-		try:
-			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS|_pakfire.SCHED_CLONE_NEWIPC|_pakfire.SCHED_CLONE_NEWUTS)
-		except RuntimeError as e:
-			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNS)
-
-		# Optionally enable private networking.
-		if self.settings.get("private_network", None):
-			_pakfire.unshare(_pakfire.SCHED_CLONE_NEWNET)
-
 	def __enter__(self):
 		self.log.debug("Entering %s" % self.path)
 
