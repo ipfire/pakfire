@@ -76,7 +76,6 @@ class Builder(object):
 			"enable_loop_devices" : self.config.get_bool("builder", "use_loop_devices", True),
 			"enable_ccache"       : self.config.get_bool("builder", "use_ccache", True),
 			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
-			"private_network"     : self.config.get_bool("builder", "private_network", False),
 		}
 
 		# Get ccache settings.
@@ -473,7 +472,7 @@ class BuilderContext(object):
 			# Run the transaction
 			transaction.run()
 
-	def build(self, package, private_network=True, shell=True):
+	def build(self, package, shell=True):
 		# Install build environment
 		packages = [
 			"@Build",
