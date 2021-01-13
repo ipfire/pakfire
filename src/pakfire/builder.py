@@ -506,13 +506,22 @@ class BuilderContext(object):
 
 		# XXX perform build
 
-	def shell(self, install=[]):
+	def shell(self, install=None):
 		if not util.cli_is_interactive():
 			self.log.warning("Cannot run shell on non-interactive console.")
 			return
 
+		# Collect packages to install
+		packages = []
+
 		# Install our standard shell packages
-		self._install(SHELL_PACKAGES + install)
+		packages += SHELL_PACKAGES
+
+		# Install any packages the user requested
+		if install:
+			packages += install
+
+		self._install(packages)
 
 		command = "/usr/sbin/chroot %s %s %s" % (self.chrootPath(), SHELL_SCRIPT)
 

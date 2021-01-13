@@ -470,6 +470,8 @@ class CliBuilder(Cli):
 		# shell
 		shell = subparsers.add_parser("shell", help=_("Go into a build shell"))
 		shell.add_argument("package", nargs="?", help=_("Give name of a package"))
+		shell.add_argument("--install", nargs="*",
+			help=_("Packages that should be installed in the shell"))
 		shell.set_defaults(func=self.handle_shell)
 
 		shell.add_argument("-m", "--mode", nargs="?", default="development",
@@ -495,7 +497,7 @@ class CliBuilder(Cli):
 
 	def handle_shell(self, ns):
 		with self.builder(ns) as b:
-			b.shell()
+			b.shell(install=ns.install)
 
 	def handle_dist(self, ns):
 		# Get the packages from the command line options
