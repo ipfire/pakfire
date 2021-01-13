@@ -81,60 +81,60 @@ static int log_priority(const char* priority) {
 	return 0;
 }
 
-PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
+PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char* arch) {
 	// Default to the native architecture
 	if (!arch)
 		arch = pakfire_arch_native();
 
 	// Check if the architecture is supported
 	if (!pakfire_arch_supported(arch)) {
-		errno = -EINVAL;
-		return NULL;
+		return -EINVAL;
 	}
 
 	// Path must be absolute
 	if (!pakfire_string_startswith(path, "/")) {
-		errno = -EINVAL;
-		return NULL;
+		return -EINVAL;
 	}
 
 	// Check if path exists
 	if (!pakfire_path_isdir(path)) {
-		errno = -ENOENT;
-		return NULL;
+		return -ENOENT;
 	}
 
-	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
-	if (pakfire) {
-		pakfire->nrefs = 1;
+	Pakfire p = pakfire_calloc(1, sizeof(*p) * 2);
+	if (!p)
+		return -ENOMEM;
 
-		pakfire->path = pakfire_strdup(path);
+	p->nrefs = 1;
 
-		// Set architecture
-		pakfire->arch = pakfire_strdup(arch);
+	p->path = pakfire_strdup(path);
 
-		// Setup logging
-		pakfire->log_function = pakfire_log_syslog;
+	// Set architecture
+	p->arch = pakfire_strdup(arch);
 
-		const char* env = secure_getenv("PAKFIRE_LOG");
-		if (env)
-			pakfire_log_set_priority(pakfire, log_priority(env));
+	// Setup logging
+	p->log_function = pakfire_log_syslog;
 
-		DEBUG(pakfire, "Pakfire initialized at %p\n", pakfire);
-		DEBUG(pakfire, "  arch = %s\n", pakfire_get_arch(pakfire));
-		DEBUG(pakfire, "  path = %s\n", pakfire_get_path(pakfire));
+	const char* env = secure_getenv("PAKFIRE_LOG");
+	if (env)
+		pakfire_log_set_priority(p, log_priority(env));
 
-		// Initialize the pool
-		pakfire->pool = pool_create();
+	DEBUG(p, "Pakfire initialized at %p\n", p);
+	DEBUG(p, "  arch = %s\n", pakfire_get_arch(p));
+	DEBUG(p, "  path = %s\n", pakfire_get_path(p));
 
-		// Set architecture of the pool
-		pool_setarch(pakfire->pool, pakfire->arch);
+	// Initialize the pool
+	p->pool = pool_create();
 
-		// Initialise cache
-		pakfire_set_cache_path(pakfire, CACHE_PATH);
-	}
+	// Set architecture of the pool
+	pool_setarch(p->pool, p->arch);
 
-	return pakfire;
+	// Initialise cache
+	pakfire_set_cache_path(p, CACHE_PATH);
+
+	*pakfire = p;
+
+	return 0;
 }
 
 PAKFIRE_EXPORT Pakfire pakfire_ref(Pakfire pakfire) {

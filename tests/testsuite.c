@@ -18,6 +18,9 @@
 #                                                                             #
 #############################################################################*/
 
+#include <linux/limits.h>
+#include <stdlib.h>
+
 #include "testsuite.h"
 
 #include <pakfire/logging.h>
@@ -28,9 +31,23 @@ const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
 struct testsuite ts;
 
 static int test_run(struct test* t) {
-	LOG("running %s\n", t->name);
+	char root[PATH_MAX];
+	int r;
 
-	t->pakfire = pakfire_create(TEST_ROOTFS, NULL);
+	// Create test root directory
+	snprintf(root, PATH_MAX - 1, "%s/pakfire-test-XXXXXX", TEST_ROOTFS);
+	char* tmp = mkdtemp(root);
+	ASSERT(root == tmp);
+
+	LOG("running %s (%s)\n", t->name, root);
+
+	// Create a pakfire instance
+	r = pakfire_create(&t->pakfire, root, NULL);
+	if (r) {
+		LOG("ERROR: Could not initialize Pakfire: %s\n", strerror(-r));
+		exit(1);
+	}
+
 	ASSERT(t->pakfire);
 
 	// Log to stderr
@@ -39,18 +56,21 @@ static int test_run(struct test* t) {
 	// Enable debug logging
 	pakfire_log_set_priority(t->pakfire, LOG_DEBUG);
 
-	int r = t->func(t);
+	r = t->func(t);
 	if (r)
 		LOG("Test failed with error code: %d\n", r);
 
 	// Release pakfire
-	t->pakfire = pakfire_unref(t->pakfire);
+	Pakfire p = pakfire_unref(t->pakfire);
 
 	// Check if Pakfire was actually released
-	if (t->pakfire) {
+	if (p) {
 		LOG("Error: Pakfire instance was not released\n");
 		return 1;
 	}
+
+	// Cleanup root
+	// TODO
 
 	return r;
 }

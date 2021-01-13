@@ -72,4 +72,13 @@ int testsuite_run();
 		} \
 	} while (0)
 
+#define ASSERT_STRING_STARTSWITH(string, start) \
+	do { \
+		if (strncmp(string, start, strlen(start)) != 0) { \
+			LOG_ERROR("Failed assertion: " #string " does not start with " #start " %s:%d %s\n", \
+				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
+			return EXIT_FAILURE; \
+		} \
+	} while (0)
+
 #endif /* PAKFIRE_TESTSUITE_H */

@@ -45,7 +45,7 @@ static int test_init(const struct test* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_import(const struct test* t) {
+static int test_import_export(const struct test* t) {
 	// Try to delete the key just in case it
 	// has been imported before
 	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
@@ -69,21 +69,13 @@ static int test_import(const struct test* t) {
 	const char* fingerprint = pakfire_key_get_fingerprint(key);
 	ASSERT(strcmp(fingerprint, TEST_KEY_FINGERPRINT) == 0);
 
-	pakfire_key_unref(key);
-
-	return EXIT_SUCCESS;
-}
-
-static int test_export(const struct test* t) {
-	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
-	ASSERT(key);
-
 	// Dump key description
 	char* dump = pakfire_key_dump(key);
 	ASSERT(dump);
 	LOG("%s\n", dump);
 	pakfire_free(dump);
 
+	// Export the key
 	char* data = pakfire_key_export(key, 0);
 	ASSERT(data);
 
@@ -97,8 +89,7 @@ static int test_export(const struct test* t) {
 
 int main(int argc, char** argv) {
 	testsuite_add_test(test_init);
-	testsuite_add_test(test_import);
-	testsuite_add_test(test_export);
+	testsuite_add_test(test_import_export);
 
 	return testsuite_run();
 }

@@ -28,7 +28,7 @@
 
 #include <pakfire/types.h>
 
-Pakfire pakfire_create(const char* path, const char* arch);
+int pakfire_create(Pakfire* pakfire, const char* path, const char* arch);
 
 Pakfire pakfire_ref(Pakfire pakfire);
 Pakfire pakfire_unref(Pakfire pakfire);

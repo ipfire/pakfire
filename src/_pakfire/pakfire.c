@@ -53,9 +53,9 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 		return -1;
 
 	// Create a new Pakfire instance
-	self->pakfire = pakfire_create(path, arch);
-	if (!self->pakfire) {
-		switch (errno) {
+	int r = pakfire_create(&self->pakfire, path, arch);
+	if (r) {
+		switch (r) {
 			// Invalid architecture
 			case -EINVAL:
 				PyErr_SetString(PyExc_ValueError, "Invalid architecture or path");

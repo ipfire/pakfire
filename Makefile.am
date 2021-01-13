@@ -617,4 +617,4 @@ EXTRA_DIST += \
 
 .PHONY: clean-local-check
 clean-local-check:
-	-rm -rf $(TEST_ROOTFS)
+	-rm -rf $(TEST_ROOTFS)/*
