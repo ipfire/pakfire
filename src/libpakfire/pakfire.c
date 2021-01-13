@@ -127,6 +127,10 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 	p->pool = pool_create();
 	pool_setdisttype(p->pool, DISTTYPE_RPM);
 
+#ifdef SOLVER_DEBUG
+	pool_setdebuglevel(p->pool, 1);
+#endif
+
 	// Set architecture of the pool
 	pool_setarch(p->pool, p->arch);
 
