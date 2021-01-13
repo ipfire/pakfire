@@ -442,7 +442,7 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 	envp[environ_length] = NULL;
 
 	// Execute command
-	int r = pakfire_execute(self->pakfire, argv[0], argv, (const char**)envp, 0);
+	int r = pakfire_execute(self->pakfire, argv, envp, 0);
 
 	// Cleanup
 	for (unsigned int i = 0; envp[i]; i++)

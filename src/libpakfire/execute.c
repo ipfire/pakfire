@@ -32,58 +32,55 @@
 #include <pakfire/private.h>
 #include <pakfire/types.h>
 
-struct pakfire_execute_env {
-    Pakfire pakfire;
-    const char* root;
-    const char* command;
-    const char** argv;
-    const char** envp;
-};
+static char* envp_empty[1] = { NULL };
 
-static int pakfire_execute_fork(Pakfire pakfire, struct pakfire_execute_env* env) {
-    pid_t pid = getpid();
+static int pakfire_execute_fork(Pakfire pakfire, char* argv[], char* envp[]) {
+	pid_t pid = getpid();
+
+	const char* root = pakfire_get_path(pakfire);
+
+    DEBUG(pakfire, "Execution environment has been forked as PID %d\n", pid);
+    DEBUG(pakfire, "	root	: %s\n", root);
+
+	for (unsigned int i = 0; argv[i]; i++)
+		DEBUG(pakfire, "	argv[%u]	: %s\n", i, argv[i]);
+
+	for (unsigned int i = 0; envp[i]; i++)
+		DEBUG(pakfire, "	env	: %s\n", envp[i]);
+
+    // Move /
+    int r = chroot(root);
+    if (r) {
+        ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
+        return errno;
+    }
 
 	// Get architecture
 	const char* arch = pakfire_get_arch(pakfire);
-
-    DEBUG(env->pakfire, "Execution environment has been forked as PID %d\n", pid);
-    DEBUG(env->pakfire, " command = %s, root = %s\n", env->command, env->root);
-
-    // Move /
-    int r = chroot(env->root);
-    if (r) {
-        ERROR(env->pakfire, "chroot() to %s failed: %s\n",
-            env->root, strerror(errno));
-        return errno;
-    }
 
 	// Set personality
 	unsigned long persona = pakfire_arch_personality(arch);
 	r = personality(persona);
 	if (r < 0) {
-		ERROR(env->pakfire, "Could not set personality (%x)\n", persona);
+		ERROR(pakfire, "Could not set personality (%x)\n", persona);
 
 		return errno;
 	}
 
     // exec() command
-    r = execve(env->command, (char**)env->argv, (char**)env->envp);
+    r = execve(argv[0], argv, envp);
 
     // We should not get here
     return errno;
 }
 
-PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* command, const char** argv,
-		const char** envp, int flags) {
-    struct pakfire_execute_env env;
+PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
+	// argv is invalid
+	if (!argv || !argv[0])
+		return -EINVAL;
 
-    // Setup environment
-    env.pakfire = pakfire;
-    env.root = pakfire_get_path(pakfire);
-
-    env.command = command;
-    env.argv = argv;
-    env.envp = envp;
+	if (!envp)
+		envp = envp_empty;
 
     // Fork this process
     pid_t pid = fork();
@@ -94,7 +91,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* command, const c
 
     // Child process
     } else if (pid == 0) {
-        int r = pakfire_execute_fork(pakfire, &env);
+        int r = pakfire_execute_fork(pakfire, (char**)argv, envp);
 
         ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
             strerror(r));
