@@ -34,7 +34,7 @@
 
 static char* envp_empty[1] = { NULL };
 
-static int pakfire_execute_fork(Pakfire pakfire, char* argv[], char* envp[]) {
+static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[]) {
 	pid_t pid = getpid();
 
 	const char* root = pakfire_get_path(pakfire);
@@ -68,7 +68,7 @@ static int pakfire_execute_fork(Pakfire pakfire, char* argv[], char* envp[]) {
 	}
 
     // exec() command
-    r = execve(argv[0], argv, envp);
+    r = execve(argv[0], (char**)argv, envp);
 
     // We should not get here
     return errno;
@@ -91,7 +91,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
     // Child process
     } else if (pid == 0) {
-        int r = pakfire_execute_fork(pakfire, (char**)argv, envp);
+        int r = pakfire_execute_fork(pakfire, argv, envp);
 
         ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
             strerror(r));
