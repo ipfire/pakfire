@@ -207,7 +207,7 @@ class PakfireContext(object):
 		pkgs = []
 
 		for pattern in patterns:
-			for pkg in self.pakfire.whatprovides(self, pattern):
+			for pkg in self.pakfire.whatprovides(pattern):
 				if pkg in pkgs:
 					continue
 

@@ -520,9 +520,6 @@ class CliBuilder(Cli):
 		for pkg in pkgs:
 			p.dist(pkg, resultdir=resultdir)
 
-	def handle_provides(self):
-		Cli.handle_provides(self, int=True)
-
 
 class CliClient(Cli):
 	def __init__(self):
