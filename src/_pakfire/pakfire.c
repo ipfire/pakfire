@@ -19,6 +19,7 @@
 #############################################################################*/
 
 #include <Python.h>
+#include <errno.h>
 
 #include <pakfire/constants.h>
 #include <pakfire/execute.h>
@@ -52,12 +53,23 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 		return -1;
 
 	// Create a new Pakfire instance
-    self->pakfire = pakfire_create(path, arch);
+	self->pakfire = pakfire_create(path, arch);
+	if (!self->pakfire) {
+		switch (errno) {
+			// Invalid architecture
+			case -EINVAL:
+				PyErr_SetString(PyExc_ValueError, "Invalid architecture");
+				break;
 
-	if (self->pakfire)
-		return 0;
-	else
+			// Anything else
+			default:
+				PyErr_SetNone(PyExc_OSError);
+		}
+
 		return -1;
+    }
+
+	return 0;
 }
 
 static void Pakfire_dealloc(PakfireObject* self) {

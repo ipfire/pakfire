@@ -87,8 +87,10 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 		arch = pakfire_arch_native();
 
 	// Check if the architecture is supported
-	if (!pakfire_arch_supported(arch))
+	if (!pakfire_arch_supported(arch)) {
+		errno = -EINVAL;
 		return NULL;
+	}
 
 	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
 	if (pakfire) {
