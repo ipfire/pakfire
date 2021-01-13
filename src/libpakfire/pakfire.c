@@ -92,6 +92,12 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 		return NULL;
 	}
 
+	// Path must be absolute
+	if (pakfire_string_startswith(path, "/")) {
+		errno = -EINVAL;
+		return NULL;
+	}
+
 	// Check if path exists
 	if (!pakfire_path_isdir(path)) {
 		errno = -ENOENT;

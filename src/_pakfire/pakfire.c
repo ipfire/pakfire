@@ -58,7 +58,7 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 		switch (errno) {
 			// Invalid architecture
 			case -EINVAL:
-				PyErr_SetString(PyExc_ValueError, "Invalid architecture");
+				PyErr_SetString(PyExc_ValueError, "Invalid architecture or path");
 				break;
 
 			// path does not exist
