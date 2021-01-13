@@ -40,7 +40,7 @@ static int test_init(const struct test* t) {
 	keys = pakfire_key_list(t->pakfire);
 
 	// Must be empty now
-	assert_return(keys == NULL, EXIT_FAILURE);
+	ASSERT(keys == NULL);
 
 	return EXIT_SUCCESS;
 }
@@ -58,16 +58,16 @@ static int test_import(const struct test* t) {
 	PakfireKey* keys = pakfire_key_import(t->pakfire, TEST_KEY_DATA);
 
 	// We should have a list with precisely one key object
-	assert_return(keys, EXIT_FAILURE);
-	assert_return(keys[0] != NULL, EXIT_FAILURE);
-	assert_return(keys[1] == NULL, EXIT_FAILURE);
+	ASSERT(keys);
+	ASSERT(keys[0] != NULL);
+	ASSERT(keys[1] == NULL);
 
 	// Get the imported key
 	key = *keys;
 
 	// Check the fingerprint
 	const char* fingerprint = pakfire_key_get_fingerprint(key);
-	assert_return(strcmp(fingerprint, TEST_KEY_FINGERPRINT) == 0, EXIT_FAILURE);
+	ASSERT(strcmp(fingerprint, TEST_KEY_FINGERPRINT) == 0);
 
 	pakfire_key_unref(key);
 
@@ -76,16 +76,16 @@ static int test_import(const struct test* t) {
 
 static int test_export(const struct test* t) {
 	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
-	assert_return(key, EXIT_FAILURE);
+	ASSERT(key);
 
 	// Dump key description
 	char* dump = pakfire_key_dump(key);
-	assert_return(dump, EXIT_FAILURE);
+	ASSERT(dump);
 	LOG("%s\n", dump);
 	pakfire_free(dump);
 
 	char* data = pakfire_key_export(key, 0);
-	assert_return(data, EXIT_FAILURE);
+	ASSERT(data);
 
 	LOG("Exported key:\n%s\n", data);
 	pakfire_free(data);

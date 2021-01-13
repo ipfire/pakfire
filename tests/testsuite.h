@@ -54,21 +54,21 @@ int testsuite_run();
 
 #define testsuite_add_test(func) __testsuite_add_test(#func, func)
 
-#define assert_return(expr, r) \
+#define ASSERT(expr) \
 	do { \
 		if ((!(expr))) { \
 			LOG_ERROR("Failed assertion: " #expr " %s:%d %s\n", \
 				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
-			return r; \
+			return EXIT_FAILURE; \
 		} \
 	} while (0)
 
-#define assert_compare(string, value, r) \
+#define ASSERT_STRING_EQUALS(string, value) \
 	do { \
 		if (strcmp(string, value) != 0) { \
 			LOG_ERROR("Failed assertion: " #string " != " #value " %s:%d %s\n", \
 				__FILE__, __LINE__, __PRETTY_FUNCTION__); \
-			return r; \
+			return EXIT_FAILURE; \
 		} \
 	} while (0)
 

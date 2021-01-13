@@ -33,62 +33,62 @@ static int test_parser(const struct test* t) {
 
 	// Retrieve a value that does not exist
 	value = pakfire_parser_get(parser, "null");
-	assert_return(!value, EXIT_FAILURE);
+	ASSERT(!value);
 
 	// Set a value
 	int r = pakfire_parser_set(parser, "a", "a");
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Retrieve the value again
 	value = pakfire_parser_get(parser, "a");
-	assert_compare(value, "a", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a");
 
 	// Append something to the value
 	r = pakfire_parser_append(parser, "a", "b");
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Retrieve the value again
 	value = pakfire_parser_get(parser, "a");
-	assert_compare(value, "a b", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a b");
 
 	// Make a child parser
 	PakfireParser subparser = pakfire_parser_create_child(parser, "child");
-	assert_return(subparser, EXIT_FAILURE);
+	ASSERT(subparser);
 
 	// Try to get a again
 	value = pakfire_parser_get(subparser, "a");
-	assert_compare(value, "a b", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a b");
 
 	// Append something to the subparser
 	r = pakfire_parser_append(subparser, "a", "c");
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// The subparser should return "a b c"
 	value = pakfire_parser_get(subparser, "a");
-	assert_compare(value, "a b c", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a b c");
 
 	// The original parser should remain unchanged
 	value = pakfire_parser_get(parser, "a");
-	assert_compare(value, "a b", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a b");
 
 	// Set another value
 	r = pakfire_parser_append(subparser, "b", "1");
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Merge the two parsers
 	pakfire_parser_merge(parser, subparser);
 
 	// Now a should have changed to "a b c"
 	value = pakfire_parser_get(parser, "a");
-	assert_compare(value, "a b c", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "a b c");
 
 	// Set a variable
 	r = pakfire_parser_set(parser, "c", "%{b}");
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Get the value of c
 	value = pakfire_parser_get(parser, "c");
-	assert_compare(value, "1", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(value, "1");
 
 	// Dump the parser
 	char* s = pakfire_parser_dump(parser);

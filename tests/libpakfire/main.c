@@ -18,8 +18,6 @@
 #                                                                             #
 #############################################################################*/
 
-#include <string.h>
-
 #include <pakfire/pakfire.h>
 
 #include "../testsuite.h"
@@ -32,7 +30,7 @@ static int test_init(const struct test* t) {
 
 static int test_path(const struct test* t) {
 	const char* path = pakfire_get_path(t->pakfire);
-	assert_return(strcmp(path, TEST_ROOTFS) == 0, EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(path, TEST_ROOTFS);
 
 	return EXIT_SUCCESS;
 }

@@ -29,7 +29,7 @@ static int test_basename(const struct test* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_basename(dir);
-	assert_compare(output, "c", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(output, "c");
 	pakfire_free(output);
 
 	return EXIT_SUCCESS;
@@ -39,7 +39,7 @@ static int test_dirname(const struct test* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_dirname(dir);
-	assert_compare(output, "/a/b", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(output, "/a/b");
 	pakfire_free(output);
 
 	return EXIT_SUCCESS;
@@ -49,10 +49,10 @@ static int test_string_startswith(const struct test* t) {
 	int r;
 
 	r = pakfire_string_startswith("ABC", "A");
-	assert_return(r, EXIT_FAILURE);
+	ASSERT(r);
 
 	r = pakfire_string_startswith("ABC", "B");
-	assert_return(!r, EXIT_FAILURE);
+	ASSERT(!r);
 
 	return EXIT_SUCCESS;
 }

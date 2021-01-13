@@ -31,7 +31,7 @@ static int test_run(struct test* t) {
 	LOG("running %s\n", t->name);
 
 	t->pakfire = pakfire_create(TEST_ROOTFS, NULL);
-	assert_return(t->pakfire, EXIT_FAILURE);
+	ASSERT(t->pakfire);
 
 	// Log to stderr
 	pakfire_log_set_function(t->pakfire, pakfire_log_stderr);

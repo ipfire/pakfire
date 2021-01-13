@@ -29,7 +29,7 @@ static int test_does_not_exist(const struct test* t) {
 	const char* cmd = "/usr/bin/does-not-exist";
 
 	int r = pakfire_execute(t->pakfire, cmd, NULL, NULL, 0);
-	assert_return(r != 0, EXIT_FAILURE);
+	ASSERT(r != 0);
 
 	return EXIT_SUCCESS;
 }

@@ -36,11 +36,11 @@ static int test_open(const struct test* t) {
 
 	// Open the archive
 	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
-	assert_return(archive, EXIT_FAILURE);
+	ASSERT(archive);
 
 	// Verify the archive
 	pakfire_archive_verify_status_t verify = pakfire_archive_verify(archive);
-	assert_return(verify == PAKFIRE_ARCHIVE_VERIFY_OK, EXIT_FAILURE);
+	ASSERT(verify == PAKFIRE_ARCHIVE_VERIFY_OK);
 
 	pakfire_archive_unref(archive);
 	pakfire_free(path);
@@ -56,11 +56,11 @@ static int test_extract(const struct test* t) {
 
 	// Extract the archive payload
 	int r = pakfire_archive_extract(archive, NULL, PAKFIRE_ARCHIVE_USE_PAYLOAD);
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Check if test file from the archive exists
-	assert_return(pakfire_access(t->pakfire, pakfire_get_path(t->pakfire),
-		TEST_PKG1_FILE, F_OK) == 0, EXIT_FAILURE);
+	ASSERT(pakfire_access(t->pakfire, pakfire_get_path(t->pakfire),
+		TEST_PKG1_FILE, F_OK) == 0);
 
 	pakfire_archive_unref(archive);
 
@@ -74,10 +74,10 @@ static int test_import(const struct test* t) {
 	pakfire_free(path);
 
 	PakfireRepo repo = pakfire_repo_create(t->pakfire, "tmp");
-	assert_return(repo, EXIT_FAILURE);
+	ASSERT(repo);
 
 	PakfirePackage pkg = pakfire_repo_add_archive(repo, archive);
-	assert_return(pkg, EXIT_FAILURE);
+	ASSERT(pkg);
 
 	pakfire_repo_unref(repo);
 	pakfire_package_unref(pkg);

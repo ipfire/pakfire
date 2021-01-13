@@ -28,14 +28,14 @@
 static int test_native(const struct test* t) {
 	// First call
 	const char* arch1 = pakfire_arch_native();
-	assert_return(arch1, EXIT_FAILURE);
+	ASSERT(arch1);
 
 	// Second call
 	const char* arch2 = pakfire_arch_native();
-	assert_return(arch2, EXIT_FAILURE);
+	ASSERT(arch2);
 
 	// Must be the same pointer
-	assert_return(arch1 == arch2, EXIT_FAILURE);
+	ASSERT(arch1 == arch2);
 
 	return EXIT_SUCCESS;
 }
@@ -44,14 +44,14 @@ static int test_supported(const struct test* t) {
 	int r;
 
 	r = pakfire_arch_supported("x86_64");
-	assert_return(r, EXIT_FAILURE);
+	ASSERT(r);
 
 	r = pakfire_arch_supported("i686");
-	assert_return(r, EXIT_FAILURE);
+	ASSERT(r);
 
 	// Check non-existant architecture
 	r = pakfire_arch_supported("ABC");
-	assert_return(!r, EXIT_FAILURE);
+	ASSERT(!r);
 
 	return EXIT_SUCCESS;
 }
@@ -61,23 +61,23 @@ static int test_compatible(const struct test* t) {
 
 	// x86_64 can build i686
 	r = pakfire_arch_is_compatible("x86_64", "i686");
-	assert_return(r, EXIT_FAILURE);	
+	ASSERT(r);
 
 	// i686 can NOT build i686
 	r = pakfire_arch_is_compatible("i686", "x86_64");
-	assert_return(!r, EXIT_FAILURE);	
+	ASSERT(!r);
 
 	// x86_64 can build itself
 	r = pakfire_arch_is_compatible("x86_64", "x86_64");
-	assert_return(r, EXIT_FAILURE);
+	ASSERT(r);
 
 	// x86_64 can NOT build a non-existant architecture
 	r = pakfire_arch_is_compatible("x86_64", "ABC");
-	assert_return(!r, EXIT_FAILURE);
+	ASSERT(!r);
 
 	// A non-existant architecture cannot build anything
 	r = pakfire_arch_is_compatible("ABC", "x86_64");
-	assert_return(!r, EXIT_FAILURE);
+	ASSERT(!r);
 
 	return EXIT_SUCCESS;
 }
@@ -86,10 +86,10 @@ static int test_machine(const struct test* t) {
 	char* machine;
 
 	machine = pakfire_arch_machine("x86_64", "ipfire");
-	assert_compare(machine, "x86_64-ipfire-linux-gnu", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(machine, "x86_64-ipfire-linux-gnu");
 
 	machine = pakfire_arch_machine("x86_64", "IPFIRE");
-	assert_compare(machine, "x86_64-ipfire-linux-gnu", EXIT_FAILURE);
+	ASSERT_STRING_EQUALS(machine, "x86_64-ipfire-linux-gnu");
 
 	return EXIT_SUCCESS;
 }

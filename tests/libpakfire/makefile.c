@@ -30,16 +30,16 @@ static int test_parse(const struct test* t) {
 
 	// Open file
 	FILE* f = fopen(path, "r");
-	assert_return(f, EXIT_FAILURE);
+	ASSERT(f);
 
 	PakfireParser parser = pakfire_parser_create(t->pakfire, NULL, NULL);
 
 	int r = pakfire_parser_read(parser, f);
-	assert_return(r == 0, EXIT_FAILURE);
+	ASSERT(r == 0);
 
 	// Try to retrieve some value
 	char* value = pakfire_parser_get(parser, "sources");
-	assert_return(value, EXIT_FAILURE);
+	ASSERT(value);
 
 	printf("VALUE: sources = %s\n", value);
 	pakfire_free(value);
