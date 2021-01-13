@@ -378,6 +378,7 @@ global:
 	pakfire_path_relpath;
 	pakfire_read_file_into_buffer;
 	pakfire_split_string;
+	pakfire_string_startswith;
 	pakfire_string_to_size;
 
 local:

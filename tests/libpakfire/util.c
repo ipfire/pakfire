@@ -45,11 +45,24 @@ int test_dirname(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
+static int test_string_startswith(const test_t* t) {
+	int r;
+
+	r = pakfire_string_startswith("ABC", "A");
+	assert_return(r, EXIT_FAILURE);
+
+	r = pakfire_string_startswith("ABC", "B");
+	assert_return(!r, EXIT_FAILURE);
+
+	return EXIT_SUCCESS;
+}
+
 int main(int argc, char** argv) {
-	testsuite_t* ts = testsuite_create(2);
+	testsuite_t* ts = testsuite_create(3);
 
 	testsuite_add_test(ts, "test_basename", test_basename);
 	testsuite_add_test(ts, "test_dirname", test_dirname);
+	testsuite_add_test(ts, "test_string_startswith", test_string_startswith);
 
 	return testsuite_run(ts);
 }
