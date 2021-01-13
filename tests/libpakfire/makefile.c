@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-static int test_parse(const test_t* t) {
+static int test_parse(const struct test* t) {
 	char* path = pakfire_path_join(TEST_SRC_PATH, "data/kernel.nm");
 
 	// Open file

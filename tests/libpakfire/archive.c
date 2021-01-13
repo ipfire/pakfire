@@ -30,7 +30,7 @@
 static const char* TEST_PKG1_PATH = "data/beep-1.3-2.ip3.x86_64.pfm";
 static const char* TEST_PKG1_FILE = "usr/bin/beep";
 
-static int test_open(const test_t* t) {
+static int test_open(const struct test* t) {
 	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
 	LOG("Trying to open %s\n", path);
 
@@ -48,7 +48,7 @@ static int test_open(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_extract(const test_t* t) {
+static int test_extract(const struct test* t) {
 	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
 
 	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
@@ -67,7 +67,7 @@ static int test_extract(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_import(const test_t* t) {
+static int test_import(const struct test* t) {
 	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
 
 	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);

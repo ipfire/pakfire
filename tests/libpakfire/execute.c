@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-static int test_does_not_exist(const test_t* t) {
+static int test_does_not_exist(const struct test* t) {
 	const char* cmd = "/usr/bin/does-not-exist";
 
 	int r = pakfire_execute(t->pakfire, cmd, NULL, NULL, 0);

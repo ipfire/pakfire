@@ -24,13 +24,13 @@
 
 #include "../testsuite.h"
 
-static int test_init(const test_t* t) {
+static int test_init(const struct test* t) {
 	LOG("Allocated at %p\n", t->pakfire);
 
 	return EXIT_SUCCESS;
 }
 
-static int test_path(const test_t* t) {
+static int test_path(const struct test* t) {
 	const char* path = pakfire_get_path(t->pakfire);
 	assert_return(strcmp(path, TEST_ROOTFS) == 0, EXIT_FAILURE);
 

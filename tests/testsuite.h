@@ -31,25 +31,20 @@
 
 extern const char* TEST_SRC_PATH;
 
-// Forward declaration
-struct test;
-
-typedef int (*test_function_t)(const struct test* t);
-
-typedef struct test {
+struct test {
 	const char* name;
-	test_function_t func;
+	int (*func)(const struct test* t);
 	Pakfire pakfire;
-} test_t;
+};
 
-typedef struct testsuite {
-	test_t tests[MAX_TESTS];
+struct testsuite {
+	struct test tests[MAX_TESTS];
 	size_t num;
 } testsuite_t;
 
-extern testsuite_t ts;
+extern struct testsuite ts;
 
-int __testsuite_add_test(const char* name, test_function_t func);
+int __testsuite_add_test(const char* name, int (*func)(const struct test* t));
 int testsuite_run();
 
 #define _LOG(prefix, fmt, ...) fprintf(stderr, "TESTS: " prefix fmt, ## __VA_ARGS__);

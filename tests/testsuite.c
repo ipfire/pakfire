@@ -25,9 +25,9 @@
 
 const char* TEST_SRC_PATH = ABS_TOP_SRCDIR "/tests";
 
-testsuite_t ts;
+struct testsuite ts;
 
-static int test_run(test_t* t) {
+static int test_run(struct test* t) {
 	LOG("running %s\n", t->name);
 
 	t->pakfire = pakfire_create(TEST_ROOTFS, NULL);
@@ -55,7 +55,7 @@ static int test_run(test_t* t) {
 	return r;
 }
 
-int __testsuite_add_test(const char* name, test_function_t func) {
+int __testsuite_add_test(const char* name, int (*func)(const struct test* t)) {
 	// Check if any space is left
 	if (ts.num >= MAX_TESTS) {
 		LOG("ERROR: We are out of space for tests\n");

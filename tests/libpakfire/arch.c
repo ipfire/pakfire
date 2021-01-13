@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-static int test_native(const test_t* t) {
+static int test_native(const struct test* t) {
 	// First call
 	const char* arch1 = pakfire_arch_native();
 	assert_return(arch1, EXIT_FAILURE);
@@ -40,7 +40,7 @@ static int test_native(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_supported(const test_t* t) {
+static int test_supported(const struct test* t) {
 	int r;
 
 	r = pakfire_arch_supported("x86_64");
@@ -56,7 +56,7 @@ static int test_supported(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_compatible(const test_t* t) {
+static int test_compatible(const struct test* t) {
 	int r;
 
 	// x86_64 can build i686
@@ -82,7 +82,7 @@ static int test_compatible(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_machine(const test_t* t) {
+static int test_machine(const struct test* t) {
 	char* machine;
 
 	machine = pakfire_arch_machine("x86_64", "ipfire");

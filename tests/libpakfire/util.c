@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-static int test_basename(const test_t* t) {
+static int test_basename(const struct test* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_basename(dir);
@@ -35,7 +35,7 @@ static int test_basename(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_dirname(const test_t* t) {
+static int test_dirname(const struct test* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_dirname(dir);
@@ -45,7 +45,7 @@ static int test_dirname(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-static int test_string_startswith(const test_t* t) {
+static int test_string_startswith(const struct test* t) {
 	int r;
 
 	r = pakfire_string_startswith("ABC", "A");
