@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-int test_parser(const test_t* t) {
+static int test_parser(const test_t* t) {
 	char* value = NULL;
 
 	// Create a new parser

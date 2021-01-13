@@ -26,7 +26,7 @@
 #include "../testsuite.h"
 #include "key.h"
 
-int test_init(const test_t* t) {
+static int test_init(const test_t* t) {
 	// Try loading any keys & delete them all
 	PakfireKey* keys = pakfire_key_list(t->pakfire);
 	while (keys && *keys) {
@@ -45,7 +45,7 @@ int test_init(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-int test_import(const test_t* t) {
+static int test_import(const test_t* t) {
 	// Try to delete the key just in case it
 	// has been imported before
 	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
@@ -74,7 +74,7 @@ int test_import(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-int test_export(const test_t* t) {
+static int test_export(const test_t* t) {
 	PakfireKey key = pakfire_key_get(t->pakfire, TEST_KEY_FINGERPRINT);
 	assert_return(key, EXIT_FAILURE);
 

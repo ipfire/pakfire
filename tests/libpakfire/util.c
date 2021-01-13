@@ -25,7 +25,7 @@
 
 #include "../testsuite.h"
 
-int test_basename(const test_t* t) {
+static int test_basename(const test_t* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_basename(dir);
@@ -35,7 +35,7 @@ int test_basename(const test_t* t) {
 	return EXIT_SUCCESS;
 }
 
-int test_dirname(const test_t* t) {
+static int test_dirname(const test_t* t) {
 	const char* dir = "/a/b/c";
 
 	char* output = pakfire_dirname(dir);
