@@ -62,7 +62,7 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 	unsigned long persona = pakfire_arch_personality(arch);
 	r = personality(persona);
 	if (r < 0) {
-		ERROR(pakfire, "Could not set personality (%x)\n", persona);
+		ERROR(pakfire, "Could not set personality (%x)\n", (unsigned int)persona);
 
 		return errno;
 	}
