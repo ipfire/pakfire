@@ -525,4 +525,5 @@ class BuilderContext(object):
 		self._install(packages)
 
 		# Enter the shell
-		self.pakfire.execute(["/usr/bin/bash", "--login"], environ=self.environ)
+		self.pakfire.execute(["/usr/bin/bash", "--login"],
+			environ=self.environ, enable_network=True)

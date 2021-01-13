@@ -122,6 +122,7 @@ AC_CHECK_HEADERS([ \
 	ctypes.h \
 	math.h \
 	regex.h \
+	sched.h \
 	stdarg.h \
 	stdlib.h \
 	string.h \
@@ -136,7 +137,8 @@ AC_CHECK_FUNCS([ \
 	personality \
 	secure_getenv \
 	strcmp \
-	strdup
+	strdup \
+	unshare
 ])
 
 save_LIBS="$LIBS"

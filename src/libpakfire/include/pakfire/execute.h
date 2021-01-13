@@ -26,4 +26,9 @@
 int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags);
 int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags);
 
+enum {
+	PAKFIRE_EXECUTE_NONE			= 0,
+	PAKFIRE_EXECUTE_ENABLE_NETWORK	= 1,
+};
+
 #endif /* PAKFIRE_EXECUTE_H */

@@ -34,7 +34,9 @@
 
 static char* envp_empty[1] = { NULL };
 
-static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[]) {
+static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
+	int r;
+
 	pid_t pid = getpid();
 
 	const char* root = pakfire_get_path(pakfire);
@@ -49,7 +51,7 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 		DEBUG(pakfire, "	env	: %s\n", envp[i]);
 
 	// Move /
-	int r = chroot(root);
+	r = chroot(root);
 	if (r) {
 		ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
 		return errno;
@@ -64,6 +66,19 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 	if (r < 0) {
 		ERROR(pakfire, "Could not set personality (%x)\n", (unsigned int)persona);
 
+		return errno;
+	}
+
+	// Unshare namespaces
+	int uflags = CLONE_NEWIPC | CLONE_NEWNS | CLONE_NEWUTS;
+
+	// Enable network?
+	if (!(flags & PAKFIRE_EXECUTE_ENABLE_NETWORK))
+		uflags |= CLONE_NEWNET;
+
+	r = unshare(uflags);
+	if (r) {
+		ERROR(pakfire, "Could not run unshare(%d): %s\n", uflags, strerror(errno));
 		return errno;
 	}
 
@@ -91,7 +106,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	// Child process
 	} else if (pid == 0) {
-		int r = pakfire_execute_fork(pakfire, argv, envp);
+		int r = pakfire_execute_fork(pakfire, argv, envp, flags);
 
 		ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
 			strerror(r));

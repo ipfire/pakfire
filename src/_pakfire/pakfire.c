@@ -351,12 +351,13 @@ static Py_ssize_t Pakfire_len(PakfireObject* self) {
 }
 
 static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* kwds) {
-	char* kwlist[] = {"command", "environ", NULL};
+	char* kwlist[] = {"command", "environ", "enable_network", NULL};
 
 	PyObject* command = NULL;
 	PyObject* environ = NULL;
+	int enable_network = 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|O", kwlist, &command, &environ))
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Op", kwlist, &command, &environ, &enable_network))
 		return NULL;
 
 	// Check if command is a list
@@ -410,6 +411,7 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 
 	const char* argv[command_length + 1];
 	char* envp[environ_length + 1];
+	int flags = 0;
 
 	// Parse arguments
 	for (unsigned int i = 0; i < command_length; i++) {
@@ -441,8 +443,12 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 	argv[command_length] = NULL;
 	envp[environ_length] = NULL;
 
+	// Enable network?
+	if (enable_network)
+		flags |= PAKFIRE_EXECUTE_ENABLE_NETWORK;
+
 	// Execute command
-	int r = pakfire_execute(self->pakfire, argv, envp, 0);
+	int r = pakfire_execute(self->pakfire, argv, envp, flags);
 
 	// Cleanup
 	for (unsigned int i = 0; envp[i]; i++)
