@@ -89,9 +89,9 @@ int test_import(const test_t* t) {
 int main(int argc, char** argv) {
 	testsuite_t* ts = testsuite_create(3);
 
-	testsuite_add_test(ts, "test_open", test_open);
-	testsuite_add_test(ts, "test_extract", test_extract);
-	testsuite_add_test(ts, "test_import", test_import);
+	testsuite_add_test(ts, test_open);
+	testsuite_add_test(ts, test_extract);
+	testsuite_add_test(ts, test_import);
 
 	return testsuite_run(ts);
 }

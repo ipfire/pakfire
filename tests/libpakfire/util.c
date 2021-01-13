@@ -60,9 +60,9 @@ static int test_string_startswith(const test_t* t) {
 int main(int argc, char** argv) {
 	testsuite_t* ts = testsuite_create(3);
 
-	testsuite_add_test(ts, "test_basename", test_basename);
-	testsuite_add_test(ts, "test_dirname", test_dirname);
-	testsuite_add_test(ts, "test_string_startswith", test_string_startswith);
+	testsuite_add_test(ts, test_basename);
+	testsuite_add_test(ts, test_dirname);
+	testsuite_add_test(ts, test_string_startswith);
 
 	return testsuite_run(ts);
 }

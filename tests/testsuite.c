@@ -65,7 +65,7 @@ testsuite_t* testsuite_create(size_t n) {
 	return ts;
 };
 
-int testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func) {
+int __testsuite_add_test(testsuite_t* ts, const char* name, test_function_t func) {
 	if (ts->left == 0)
 		exit(EXIT_FAILURE);
 

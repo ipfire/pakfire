@@ -97,10 +97,10 @@ int test_machine(const test_t* t) {
 int main(int argc, char** argv) {
 	testsuite_t* ts = testsuite_create(4);
 
-	testsuite_add_test(ts, "test_native", test_native);
-	testsuite_add_test(ts, "test_supported", test_supported);
-	testsuite_add_test(ts, "test_compatible", test_compatible);
-	testsuite_add_test(ts, "test_machine", test_machine);
+	testsuite_add_test(ts, test_native);
+	testsuite_add_test(ts, test_supported);
+	testsuite_add_test(ts, test_compatible);
+	testsuite_add_test(ts, test_machine);
 
 	return testsuite_run(ts);
 }
