@@ -155,6 +155,20 @@ PAKFIRE_EXPORT const char* pakfire_path_relpath(const char* root, const char* pa
 	return NULL;
 }
 
+PAKFIRE_EXPORT int pakfire_path_isdir(const char* path) {
+	struct stat s;
+
+	if (stat(path, &s) != 0) {
+		// Does not seem to exist
+		return 0;
+	}
+
+	if (S_ISDIR(s.st_mode))
+		return 1;
+
+	return 0;
+}
+
 PAKFIRE_EXPORT char* pakfire_basename(const char* path) {
 	char* name = pakfire_strdup(path);
 

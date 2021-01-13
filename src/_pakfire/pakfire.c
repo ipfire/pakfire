@@ -61,6 +61,12 @@ static int Pakfire_init(PakfireObject* self, PyObject* args, PyObject* kwds) {
 				PyErr_SetString(PyExc_ValueError, "Invalid architecture");
 				break;
 
+			// path does not exist
+			case -ENOENT:
+				PyErr_Format(PyExc_FileNotFoundError,
+					"%s does not exist or is not a directory", path);
+				break;
+
 			// Anything else
 			default:
 				PyErr_SetNone(PyExc_OSError);

@@ -44,6 +44,7 @@ char* pakfire_format_date(time_t t);
 
 char* pakfire_path_join(const char* first, const char* second);
 const char* pakfire_path_relpath(const char* root, const char* path);
+int pakfire_path_isdir(const char* path);
 
 char* pakfire_basename(const char* path);
 char* pakfire_dirname(const char* path);

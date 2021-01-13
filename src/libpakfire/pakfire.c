@@ -92,6 +92,12 @@ PAKFIRE_EXPORT Pakfire pakfire_create(const char* path, const char* arch) {
 		return NULL;
 	}
 
+	// Check if path exists
+	if (!pakfire_path_isdir(path)) {
+		errno = -ENOENT;
+		return NULL;
+	}
+
 	Pakfire pakfire = pakfire_calloc(1, sizeof(*pakfire));
 	if (pakfire) {
 		pakfire->nrefs = 1;

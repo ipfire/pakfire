@@ -373,6 +373,7 @@ global:
 	pakfire_free;
 	pakfire_get_errno;
 	pakfire_partition_string;
+	pakfire_path_isdir;
 	pakfire_path_join;
 	pakfire_path_relpath;
 	pakfire_read_file_into_buffer;
