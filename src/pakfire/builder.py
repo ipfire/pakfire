@@ -437,7 +437,7 @@ class BuilderContext(object):
 		env = {
 			"HOME" : "/root",
 			"PATH" : "/usr/bin:/bin:/usr/sbin:/sbin",
-			"PS1"  : "\\u:\w\$ ",
+			"PS1"  : "pakfire-chroot \w> ",
 			"TERM" : os.environ.get("TERM", "vt100"),
 			"LANG" : os.environ.get("LANG", "en_US.UTF-8"),
 		}
@@ -521,17 +521,8 @@ class BuilderContext(object):
 		if install:
 			packages += install
 
+		# Install all required packages
 		self._install(packages)
 
-		command = "/usr/sbin/chroot %s %s %s" % (self.chrootPath(), SHELL_SCRIPT)
-
-		for key, val in list(self.environ.items()):
-			command = "%s=\"%s\" " % (key, val) + command
-
-		# Empty the environment
-		command = "env -i - %s" % command
-
-		self.log.debug("Shell command: %s" % command)
-
-		shell = os.system(command)
-		return os.WEXITSTATUS(shell)
+		# Enter the shell
+		self.pakfire.execute(["/usr/bin/bash", "--login"], environ=self.environ)
