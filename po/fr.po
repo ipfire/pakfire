@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2015-07-13 20:23+0000\n"
 "Last-Translator: Yoann Jonard <yoann.jonard@epita.fr>\n"
 "Language-Team: French (http://www.transifex.com/mstremer/ipfire/language/"
@@ -303,98 +303,11 @@ msgid "Freed Size"
 msgstr "Espace libéré: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s n'a pas de signature"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s n'a pas de signature valide"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
-
-msgid "Executing scriptlet..."
-msgstr "Exécution du scriplet..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Impossible de lancer le script, aucun interpréteur disponible: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Impossible de lancer le script, l'interpréteur n'est pas exécutable: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr "Le script a retourné une erreur:⏎ %s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Le script s'est exécuté pendant plus de %s secondes et a été stoppé."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"Le scriplet a retourné  une erreur non géré:\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Exécution du scriptlet python..."
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "Une exception c'est produit: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Test de transaction de %s en cours."
-
-msgid "Reinstalling"
-msgstr "Réinstallation"
-
-msgid "Updating"
-msgstr "Mise à jour"
-
-msgid "Downgrading"
-msgstr "Rétrogradation"
-
-msgid "Installing"
-msgstr "Installation"
-
-msgid "Cleanup"
-msgstr "Nettoyage"
-
-msgid "Removing"
-msgstr "Enlever"
-
-msgid "Build command has failed."
-msgstr "La commande de compilation a échoué"
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" ce paquet de semble pas installé"
 
 msgid "Nothing to do"
 msgstr "Rien à faire"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr ""
-"Vous n'avez pas sélectionné la distribution pour laquelle vous voulez "
-"compiler."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "S'il vous plait le faire dans builder.conf ou en ligne de commande."
-
-msgid "Distribution configuration is missing."
-msgstr "Configuration de la distribution manquante."
 
 msgid "New repository"
 msgstr "Nouveau dépôt"
@@ -403,78 +316,9 @@ msgstr "Nouveau dépôt"
 msgid "Cannot build for %s on this host"
 msgstr "Ne peut pas compiler %s sur cet hôte."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Installation des paquets nécessaires à la compilation ..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Information du paquet:"
-
-msgid "Extracting"
-msgstr "Extraction"
-
-msgid "You cannot run a build when no package was given."
-msgstr "Vous ne pouvez pas compiler quand aucun paquet n'a été fourni."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Aucun makefile n'a pu être trouvé à la racine du dossier: %s"
-
-msgid "Build failed"
-msgstr "échec de la compilation"
-
-msgid "Build interrupted"
-msgstr "Compilation interrompu."
-
-msgid "Build failed."
-msgstr "échec de la compilation."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr ""
-"La commande de compilation a échouée. Voir les journaux pour les détails."
-
-msgid "Running installation test..."
-msgstr "Test d'installation en cours..."
-
-msgid "Installation test succeeded."
-msgstr "Succès du test d'installation"
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Signature des paquets..."
-
-msgid "Dumping package information:"
-msgstr "Détails des informations du paquet:"
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Création des paquets:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Étape en cours %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Les bibliothèques statiques n'ont pas pu être supprimées : %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr ""
-"La compression des pages de manuels ne s'est pas terminée correctement."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr ""
-"L'extraction des informations de débogue ne s'est pas terminée correctement. "
-"Compilation annulée."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -666,10 +510,6 @@ msgid "Everything okay"
 msgstr "Tout est correct."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Vous ne pouvez pas exécuter pakfire-builder dans un chroot pakfire."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Interface en ligne de commande du compilateur pakfire."
 
@@ -739,27 +579,6 @@ msgstr ""
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Mettez les index du paquet à jour."
-
-msgid "Pakfire builder command line interface."
-msgstr "Interface en ligne de commande du compilateur pakfire."
-
-msgid "Build one or more packages."
-msgstr "Compiler un ou plusieurs paquets."
-
-msgid "Give name of at least one package to build."
-msgstr "Donnez le nom d'au moins un paquet à installer."
-
-msgid "Build the package for the given architecture."
-msgstr "Compiler le paquet pour l'architecture donnée."
-
-msgid "Path were the output files should be copied to."
-msgstr "Chemin où les fichiers de sortie doivent être copié."
-
-msgid "Do not verify build dependencies."
-msgstr "Ne pas vérifier les dépendances de compilation."
-
-msgid "Only run the prepare stage."
-msgstr "Lancer uniquement l'étape de préparation."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1181,17 +1000,169 @@ msgstr "Heure"
 msgid "%s [y/N]"
 msgstr "%s [o/N]"
 
-msgid "Killing orphans..."
-msgstr "Destruction des orphelins..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s n'a pas de signature"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
-"Le processus ID %s est toujours en cours d’exécution dans le chroot. "
-"Fermeture..."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s n'a pas de signature valide"
 
-msgid "Waiting for processes to terminate..."
-msgstr "En attente de la fin du processus..."
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Exécution du scriplet..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr "Impossible de lancer le script, aucun interpréteur disponible: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr ""
+#~ "Impossible de lancer le script, l'interpréteur n'est pas exécutable: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr "Le script a retourné une erreur:⏎ %s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr ""
+#~ "Le script s'est exécuté pendant plus de %s secondes et a été stoppé."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Le scriplet a retourné  une erreur non géré:\n"
+#~ "%s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Exécution du scriptlet python..."
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "Une exception c'est produit: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Test de transaction de %s en cours."
+
+#~ msgid "Reinstalling"
+#~ msgstr "Réinstallation"
+
+#~ msgid "Updating"
+#~ msgstr "Mise à jour"
+
+#~ msgid "Downgrading"
+#~ msgstr "Rétrogradation"
+
+#~ msgid "Installing"
+#~ msgstr "Installation"
+
+#~ msgid "Cleanup"
+#~ msgstr "Nettoyage"
+
+#~ msgid "Removing"
+#~ msgstr "Enlever"
+
+#~ msgid "Build command has failed."
+#~ msgstr "La commande de compilation a échoué"
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr ""
+#~ "Vous n'avez pas sélectionné la distribution pour laquelle vous voulez "
+#~ "compiler."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "S'il vous plait le faire dans builder.conf ou en ligne de commande."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Configuration de la distribution manquante."
+
+#~ msgid "Package information:"
+#~ msgstr "Information du paquet:"
+
+#~ msgid "Extracting"
+#~ msgstr "Extraction"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "Vous ne pouvez pas compiler quand aucun paquet n'a été fourni."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Aucun makefile n'a pu être trouvé à la racine du dossier: %s"
+
+#~ msgid "Build failed"
+#~ msgstr "échec de la compilation"
+
+#~ msgid "Build interrupted"
+#~ msgstr "Compilation interrompu."
+
+#~ msgid "Build failed."
+#~ msgstr "échec de la compilation."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr ""
+#~ "La commande de compilation a échouée. Voir les journaux pour les détails."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Test d'installation en cours..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Succès du test d'installation"
+
+#~ msgid "Signing packages..."
+#~ msgstr "Signature des paquets..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Détails des informations du paquet:"
+
+#~ msgid "Creating packages:"
+#~ msgstr "Création des paquets:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Étape en cours %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Les bibliothèques statiques n'ont pas pu être supprimées : %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr ""
+#~ "La compression des pages de manuels ne s'est pas terminée correctement."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr ""
+#~ "L'extraction des informations de débogue ne s'est pas terminée "
+#~ "correctement. Compilation annulée."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Vous ne pouvez pas exécuter pakfire-builder dans un chroot pakfire."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Interface en ligne de commande du compilateur pakfire."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Compiler un ou plusieurs paquets."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Donnez le nom d'au moins un paquet à installer."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Compiler le paquet pour l'architecture donnée."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Chemin où les fichiers de sortie doivent être copié."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Ne pas vérifier les dépendances de compilation."
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Lancer uniquement l'étape de préparation."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Destruction des orphelins..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr ""
+#~ "Le processus ID %s est toujours en cours d’exécution dans le chroot. "
+#~ "Fermeture..."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "En attente de la fin du processus..."
 
 #~ msgid "You must provide an install directory with --target=..."
 #~ msgstr "Vous devez fournir un repertoire d'installation avec --target=..."

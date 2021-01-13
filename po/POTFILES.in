@@ -13,6 +13,7 @@ src/_pakfire/solution.c
 src/_pakfire/step.c
 src/_pakfire/transaction.c
 src/_pakfire/util.c
+src/libpakfire/arch.c
 src/libpakfire/archive.c
 src/libpakfire/errno.c
 src/libpakfire/execute.c
@@ -35,7 +36,6 @@ src/libpakfire/request.c
 src/libpakfire/selector.c
 src/libpakfire/solution.c
 src/libpakfire/step.c
-src/libpakfire/system.c
 src/libpakfire/transaction.c
 src/libpakfire/util.c
 src/libpakfire_preload/uname.c
@@ -45,7 +45,7 @@ src/pakfire/__version__.py.in
 src/pakfire/arch.py
 src/pakfire/base.py
 src/pakfire/builder.py
-src/pakfire/cgroup.py
+src/pakfire/cgroups.py
 src/pakfire/cli.py
 src/pakfire/client.py
 src/pakfire/compress.py

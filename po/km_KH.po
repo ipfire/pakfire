@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
 "Language-Team: Khmer (Cambodia) (http://www.transifex.com/mstremer/ipfire/"
@@ -289,92 +289,10 @@ msgid "Freed Size"
 msgstr ""
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr ""
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr ""
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
-
-msgid "Executing scriptlet..."
-msgstr ""
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr ""
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr ""
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr ""
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr ""
-
-msgid "Reinstalling"
-msgstr ""
-
-msgid "Updating"
-msgstr ""
-
-msgid "Downgrading"
-msgstr ""
-
-msgid "Installing"
-msgstr ""
-
-msgid "Cleanup"
-msgstr ""
-
-msgid "Removing"
-msgstr "កំពុងលុប"
-
-msgid "Build command has failed."
-msgstr ""
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr ""
 
 msgid "Nothing to do"
-msgstr ""
-
-msgid "You have not set the distribution for which you want to build."
-msgstr ""
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr ""
-
-msgid "Distribution configuration is missing."
 msgstr ""
 
 msgid "New repository"
@@ -384,73 +302,7 @@ msgstr ""
 msgid "Cannot build for %s on this host"
 msgstr ""
 
-#. Install all packages.
-msgid "Install packages needed for build..."
-msgstr ""
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr ""
-
-msgid "Extracting"
-msgstr ""
-
-msgid "You cannot run a build when no package was given."
-msgstr ""
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr ""
-
-msgid "Build failed"
-msgstr ""
-
-msgid "Build interrupted"
-msgstr ""
-
-msgid "Build failed."
-msgstr ""
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr ""
-
-msgid "Running installation test..."
-msgstr ""
-
-msgid "Installation test succeeded."
-msgstr ""
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr ""
-
-msgid "Dumping package information:"
-msgstr ""
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr ""
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr ""
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr ""
-
-msgid "Compressing man pages did not complete successfully."
-msgstr ""
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
+msgid "Installing packages in build environment:"
 msgstr ""
 
 #, fuzzy
@@ -623,9 +475,6 @@ msgstr ""
 msgid "Everything okay"
 msgstr ""
 
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr ""
-
 #, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "ពាក្យបញ្ជា Pakfire "
@@ -686,27 +535,6 @@ msgstr ""
 
 #. update
 msgid "Update the package indexes"
-msgstr ""
-
-msgid "Pakfire builder command line interface."
-msgstr ""
-
-msgid "Build one or more packages."
-msgstr ""
-
-msgid "Give name of at least one package to build."
-msgstr ""
-
-msgid "Build the package for the given architecture."
-msgstr ""
-
-msgid "Path were the output files should be copied to."
-msgstr ""
-
-msgid "Do not verify build dependencies."
-msgstr ""
-
-msgid "Only run the prepare stage."
 msgstr ""
 
 #, fuzzy
@@ -1102,15 +930,8 @@ msgstr ""
 msgid "%s [y/N]"
 msgstr "%s [បាទ/ទេ]"
 
-msgid "Killing orphans..."
-msgstr ""
-
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
-
-msgid "Waiting for processes to terminate..."
-msgstr ""
+#~ msgid "Removing"
+#~ msgstr "កំពុងលុប"
 
 #~ msgid "Total download size: %s"
 #~ msgstr "ទំហំទាញយកសរុប​ %s"

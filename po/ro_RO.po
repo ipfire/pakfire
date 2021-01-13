@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: robert lasic <robertlasic@gmail.com>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/mstremer/ipfire/"
@@ -300,100 +300,11 @@ msgid "Freed Size"
 msgstr "Dimensiunea eliberata: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s nu au semnături"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s nu au semnături valide"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr "Nu s-a putut folosi scriptlet de tip necunoscut. Se sare peste."
-
-msgid "Executing scriptlet..."
-msgstr "Execuție scriptlet python..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Nu se poate executa scriptul deoarece nici un interpret nu este disponibil: "
-"%s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Nu se poate executa scriptul deoarece interpretul  nu este executabil : %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"Scriptul a returnat o eroare:⏎\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Scriptul a rulat mai mult de %s secunde si a fost  terminat "
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"Scriptul a descopo  o eroare netratată: ⏎\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Execuție scriptlet python..."
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "A avut loc o excepție: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Executarea tranzactiei in test %s"
-
-msgid "Reinstalling"
-msgstr "Se reinstalează"
-
-msgid "Updating"
-msgstr "Actualizează"
-
-msgid "Downgrading"
-msgstr "Downgrading"
-
-msgid "Installing"
-msgstr "Se instalează"
-
-msgid "Cleanup"
-msgstr "Curăţare"
-
-msgid "Removing"
-msgstr "Eliminarea"
-
-msgid "Build command has failed."
-msgstr "Constructia comenzi a esuat."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" pachetul nu pare sa fie instalat."
 
 msgid "Nothing to do"
 msgstr "Nimic de facut "
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "Nu ai setat distributia pentru ceia ce  vrei sa faci ."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Te rog fa asa in builder.conf sau in terminal "
-
-msgid "Distribution configuration is missing."
-msgstr "Configuratia distributiei lipseste."
 
 msgid "New repository"
 msgstr "Depozit nou"
@@ -402,76 +313,9 @@ msgstr "Depozit nou"
 msgid "Cannot build for %s on this host"
 msgstr "Nu pot construi pentru %s pe acest host."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Instalarea pachetelor necesare constructiei..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Informatia despre pachet :"
-
-msgid "Extracting"
-msgstr "Extragerea"
-
-msgid "You cannot run a build when no package was given."
-msgstr ""
-"Imposibil de executat o  constructie  atunci când nu a fost dat nici un "
-"pachet."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Nu pot gasi fisierul make in root'ul construit : %s"
-
-msgid "Build failed"
-msgstr "Construire esuata."
-
-msgid "Build interrupted"
-msgstr "Creere întreruptă"
-
-msgid "Build failed."
-msgstr "Construire esuata."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr "Constructia comenzi a esuat . Vezi fisierul log pentru detalii."
-
-msgid "Running installation test..."
-msgstr "Testul de instalare rulează..."
-
-msgid "Installation test succeeded."
-msgstr "Testul de instalarea s-a făcut cu succes."
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Se semnează pachetele..."
-
-msgid "Dumping package information:"
-msgstr "Informatii  despre cosul de gunoi al pachetelor: "
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Crearea pachetelor:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Execută etapa %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Nu pot sterge librariile statice : %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Compresarea paginilor manual nu sa incheiat cu succes."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Extragerea debuginfo a esuat . Parasire constructie ."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -659,10 +503,6 @@ msgid "Everything okay"
 msgstr "Totul e bine ."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Nu poti rula pakfire-builder in pakfire chroot."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Interfață pakfire constructor linie de comandă."
 
@@ -730,27 +570,6 @@ msgstr "Mod de funcționare. este ori  'lansare' ori 'dezvoltare' (default)."
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Actualizează index pachete. "
-
-msgid "Pakfire builder command line interface."
-msgstr "Interfață pakfire constructor linie de comandă."
-
-msgid "Build one or more packages."
-msgstr "Crează unul sau mai multe pachete."
-
-msgid "Give name of at least one package to build."
-msgstr "Numește cel puțin un pachet pentru creare."
-
-msgid "Build the package for the given architecture."
-msgstr "Crează pachetul pentru arhitectura dată."
-
-msgid "Path were the output files should be copied to."
-msgstr "Calea unde fișierul va fi copiat."
-
-msgid "Do not verify build dependencies."
-msgstr "Nu verifica dependintele construite "
-
-msgid "Only run the prepare stage."
-msgstr "Rulează doar testul pregătit."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1166,15 +985,169 @@ msgstr "Timp"
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-msgid "Killing orphans..."
-msgstr "Curatarea  pachetelor incomplete..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s nu au semnături"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr "ID de proces %s ruleaza in chroot. Terminare....."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s nu au semnături valide"
 
-msgid "Waiting for processes to terminate..."
-msgstr "Asteptand sa se termine procesul "
+#~ msgid "Could not handle scriptlet of unknown type. Skipping."
+#~ msgstr "Nu s-a putut folosi scriptlet de tip necunoscut. Se sare peste."
+
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Execuție scriptlet python..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr ""
+#~ "Nu se poate executa scriptul deoarece nici un interpret nu este "
+#~ "disponibil: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr ""
+#~ "Nu se poate executa scriptul deoarece interpretul  nu este executabil : %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Scriptul a returnat o eroare:⏎\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "Scriptul a rulat mai mult de %s secunde si a fost  terminat "
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Scriptul a descopo  o eroare netratată: ⏎\n"
+#~ "%s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Execuție scriptlet python..."
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "A avut loc o excepție: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Executarea tranzactiei in test %s"
+
+#~ msgid "Reinstalling"
+#~ msgstr "Se reinstalează"
+
+#~ msgid "Updating"
+#~ msgstr "Actualizează"
+
+#~ msgid "Downgrading"
+#~ msgstr "Downgrading"
+
+#~ msgid "Installing"
+#~ msgstr "Se instalează"
+
+#~ msgid "Cleanup"
+#~ msgstr "Curăţare"
+
+#~ msgid "Removing"
+#~ msgstr "Eliminarea"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Constructia comenzi a esuat."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "Nu ai setat distributia pentru ceia ce  vrei sa faci ."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Te rog fa asa in builder.conf sau in terminal "
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Configuratia distributiei lipseste."
+
+#~ msgid "Package information:"
+#~ msgstr "Informatia despre pachet :"
+
+#~ msgid "Extracting"
+#~ msgstr "Extragerea"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr ""
+#~ "Imposibil de executat o  constructie  atunci când nu a fost dat nici un "
+#~ "pachet."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Nu pot gasi fisierul make in root'ul construit : %s"
+
+#~ msgid "Build failed"
+#~ msgstr "Construire esuata."
+
+#~ msgid "Build interrupted"
+#~ msgstr "Creere întreruptă"
+
+#~ msgid "Build failed."
+#~ msgstr "Construire esuata."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr "Constructia comenzi a esuat . Vezi fisierul log pentru detalii."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Testul de instalare rulează..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Testul de instalarea s-a făcut cu succes."
+
+#~ msgid "Signing packages..."
+#~ msgstr "Se semnează pachetele..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Informatii  despre cosul de gunoi al pachetelor: "
+
+#~ msgid "Creating packages:"
+#~ msgstr "Crearea pachetelor:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Execută etapa %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Nu pot sterge librariile statice : %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Compresarea paginilor manual nu sa incheiat cu succes."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr "Extragerea debuginfo a esuat . Parasire constructie ."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Nu poti rula pakfire-builder in pakfire chroot."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Interfață pakfire constructor linie de comandă."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Crează unul sau mai multe pachete."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Numește cel puțin un pachet pentru creare."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Crează pachetul pentru arhitectura dată."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Calea unde fișierul va fi copiat."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Nu verifica dependintele construite "
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Rulează doar testul pregătit."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Curatarea  pachetelor incomplete..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr "ID de proces %s ruleaza in chroot. Terminare....."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "Asteptand sa se termine procesul "
 
 #~ msgid "Cannot extract mixed package types"
 #~ msgstr "Nu se pot extrage tipuri de pachete mixte"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2014-01-16 17:36+0000\n"
 "Last-Translator: Ersan YILDIRIM <ersan73@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/mstremer/ipfire/language/"
@@ -296,97 +296,11 @@ msgid "Freed Size"
 msgstr "Boşaltılan boyut: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s imzaları yok"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s için geçerli imzalar yok"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr "Bilinmeyen türdeki kodlar işlenemedi. Atlanıyor."
-
-msgid "Executing scriptlet..."
-msgstr "Kodlar işletiliyor..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Kodlar çalıştırılamıyor çünkü hiçbir yorumlayıcı yok: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr "Kodlar çalıştırılamıyor çünkü yorumlayıcı çalılştırılabilir değil: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"Kodlar bir hata oluşturdu:\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Kodlar %s saniyeden daha fazla çalıştı ve sonlandırıldı."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"Komutlar işlenmeyen bir hata döndürdü:\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Python kodları işletiliyor..."
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "Özel durum oluştu: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "%s için işlem testi çalışması"
-
-msgid "Reinstalling"
-msgstr "Yeniden kuruluyor"
-
-msgid "Updating"
-msgstr "Güncelleniyor"
-
-msgid "Downgrading"
-msgstr "Derecesini düşür"
-
-msgid "Installing"
-msgstr "Yükleniyor"
-
-msgid "Cleanup"
-msgstr "Temizle"
-
-msgid "Removing"
-msgstr "Kaldırılıyor"
-
-msgid "Build command has failed."
-msgstr "Derleme komutu başarısız oldu."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" paketi yüklü olarak görünmüyor."
 
 msgid "Nothing to do"
 msgstr "Yapacak bir şey yok"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "Derlemek istediğiniz dağıtım için ayarlanmamış."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Lütfen builder.conf veya CLI dosyasındakileri yapın."
-
-msgid "Distribution configuration is missing."
-msgstr "Eksik dağıtım yapılandırması."
 
 msgid "New repository"
 msgstr "Yeni depo"
@@ -395,74 +309,9 @@ msgstr "Yeni depo"
 msgid "Cannot build for %s on this host"
 msgstr "Bu ana makinede %s için derleme yapılamaz."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Derleme için gerekli paketler kuruluyor..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Paket bilgileri:"
-
-msgid "Extracting"
-msgstr "Açılıyor"
-
-msgid "You cannot run a build when no package was given."
-msgstr "Hiçbir paket olmadığında derlemeyi çalıştıramazsınız."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Root derleyicisi içerisindeki makefile dosyası bulunamadı: %s"
-
-msgid "Build failed"
-msgstr "Derleme başarısız oldu"
-
-msgid "Build interrupted"
-msgstr "Tamamlanamayan derleme"
-
-msgid "Build failed."
-msgstr "Derleme başarısız oldu."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr "Derleme komutu başarısız oldu. Ayrıntılar için günlük dosyasına bakın."
-
-msgid "Running installation test..."
-msgstr "Yükleme testi çalıştırılıyor..."
-
-msgid "Installation test succeeded."
-msgstr "Yükleme testi başarılı."
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Paketler imzalanıyor..."
-
-msgid "Dumping package information:"
-msgstr "Boş paket bilgileri:"
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Oluşturulan paketler:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "%s - Çalışma aşaması:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Durağan kitaplıklar kaldırılamadı: %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Man sayfalarının sıkıştırılması tamamlanamadı."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Hata ayıklama bilgisi başarıyla tamamlanamadı. Derleme durduruluyor."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -651,10 +500,6 @@ msgid "Everything okay"
 msgstr "Her şey yolunda."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Pakfire chroot içerisinde pakfire-derleyiciyi çalıştıramazsınız."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Pakfire derleyici komut satırı arayüzü."
 
@@ -722,27 +567,6 @@ msgstr "Çalıştırma biçimi. 'Serbest' veya 'geliştirme' (varsayılan) olur.
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Paket dizinlerini güncelleyin."
-
-msgid "Pakfire builder command line interface."
-msgstr "Pakfire derleyici komut satırı arayüzü."
-
-msgid "Build one or more packages."
-msgstr "Bir veya daha fazla paketi derleyin."
-
-msgid "Give name of at least one package to build."
-msgstr "Derlemek için en azından bir paket adını girin."
-
-msgid "Build the package for the given architecture."
-msgstr "Verilen mimari için paket derleyin."
-
-msgid "Path were the output files should be copied to."
-msgstr "Çıktı dosyalarının kopyalanması gereken yolu."
-
-msgid "Do not verify build dependencies."
-msgstr "Derleme bağımlılıkları doğrulanamıyor."
-
-msgid "Only run the prepare stage."
-msgstr "Yalnızca hazırlık aşamasını çalıştırın."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1158,16 +982,168 @@ msgstr "Zaman"
 msgid "%s [y/N]"
 msgstr "%s [e/H]"
 
-msgid "Killing orphans..."
-msgstr "Artık satırlar yok ediliyor..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s imzaları yok"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr ""
-"Chroot içerisindeki %s işlem kimliği hala çalışıyor. Sonlandırılıyor..."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s için geçerli imzalar yok"
 
-msgid "Waiting for processes to terminate..."
-msgstr "İşlemler sonlandırılmak için bekleniyor..."
+#~ msgid "Could not handle scriptlet of unknown type. Skipping."
+#~ msgstr "Bilinmeyen türdeki kodlar işlenemedi. Atlanıyor."
+
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Kodlar işletiliyor..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr "Kodlar çalıştırılamıyor çünkü hiçbir yorumlayıcı yok: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr ""
+#~ "Kodlar çalıştırılamıyor çünkü yorumlayıcı çalılştırılabilir değil: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Kodlar bir hata oluşturdu:\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "Kodlar %s saniyeden daha fazla çalıştı ve sonlandırıldı."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Komutlar işlenmeyen bir hata döndürdü:\n"
+#~ "%s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Python kodları işletiliyor..."
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "Özel durum oluştu: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "%s için işlem testi çalışması"
+
+#~ msgid "Reinstalling"
+#~ msgstr "Yeniden kuruluyor"
+
+#~ msgid "Updating"
+#~ msgstr "Güncelleniyor"
+
+#~ msgid "Downgrading"
+#~ msgstr "Derecesini düşür"
+
+#~ msgid "Installing"
+#~ msgstr "Yükleniyor"
+
+#~ msgid "Cleanup"
+#~ msgstr "Temizle"
+
+#~ msgid "Removing"
+#~ msgstr "Kaldırılıyor"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Derleme komutu başarısız oldu."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "Derlemek istediğiniz dağıtım için ayarlanmamış."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Lütfen builder.conf veya CLI dosyasındakileri yapın."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Eksik dağıtım yapılandırması."
+
+#~ msgid "Package information:"
+#~ msgstr "Paket bilgileri:"
+
+#~ msgid "Extracting"
+#~ msgstr "Açılıyor"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "Hiçbir paket olmadığında derlemeyi çalıştıramazsınız."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Root derleyicisi içerisindeki makefile dosyası bulunamadı: %s"
+
+#~ msgid "Build failed"
+#~ msgstr "Derleme başarısız oldu"
+
+#~ msgid "Build interrupted"
+#~ msgstr "Tamamlanamayan derleme"
+
+#~ msgid "Build failed."
+#~ msgstr "Derleme başarısız oldu."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr ""
+#~ "Derleme komutu başarısız oldu. Ayrıntılar için günlük dosyasına bakın."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Yükleme testi çalıştırılıyor..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Yükleme testi başarılı."
+
+#~ msgid "Signing packages..."
+#~ msgstr "Paketler imzalanıyor..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Boş paket bilgileri:"
+
+#~ msgid "Creating packages:"
+#~ msgstr "Oluşturulan paketler:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "%s - Çalışma aşaması:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Durağan kitaplıklar kaldırılamadı: %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Man sayfalarının sıkıştırılması tamamlanamadı."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr ""
+#~ "Hata ayıklama bilgisi başarıyla tamamlanamadı. Derleme durduruluyor."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Pakfire chroot içerisinde pakfire-derleyiciyi çalıştıramazsınız."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Pakfire derleyici komut satırı arayüzü."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Bir veya daha fazla paketi derleyin."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Derlemek için en azından bir paket adını girin."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Verilen mimari için paket derleyin."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Çıktı dosyalarının kopyalanması gereken yolu."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Derleme bağımlılıkları doğrulanamıyor."
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Yalnızca hazırlık aşamasını çalıştırın."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Artık satırlar yok ediliyor..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr ""
+#~ "Chroot içerisindeki %s işlem kimliği hala çalışıyor. Sonlandırılıyor..."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "İşlemler sonlandırılmak için bekleniyor..."
 
 #~ msgid "Cannot extract mixed package types"
 #~ msgstr "Karışık paket türleri çıkarılamaz"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2013-11-20 09:12+0000\n"
 "Last-Translator: Michael Tremer <michael.tremer@ipfire.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/mstremer/ipfire/language/"
@@ -299,97 +299,11 @@ msgid "Freed Size"
 msgstr "Звільнено: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s не підписаний"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s має невірний підпис"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr ""
-
-msgid "Executing scriptlet..."
-msgstr ""
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Не можу виконати скрипт. Інтерпретатор не доступний: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr "Не можу виконати скрипт. Інтерпретатор не для виконання: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"Скрипт вернув помилку:\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Скрипт виконувався більше ніж %s секунд та був вбитий."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"Скрипт повернутий з невідомою помилкою:\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr ""
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr ""
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Виконується тест транзакції %s"
-
-msgid "Reinstalling"
-msgstr ""
-
-msgid "Updating"
-msgstr "Оновлення"
-
-msgid "Downgrading"
-msgstr "Відновлення"
-
-msgid "Installing"
-msgstr "Інсталяція"
-
-msgid "Cleanup"
-msgstr "Очистка"
-
-msgid "Removing"
-msgstr "Видалення"
-
-msgid "Build command has failed."
-msgstr "Команда Build зазнала невдачі."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "Здається пакунок \"%s\" не встановлений."
 
 msgid "Nothing to do"
 msgstr "Виконано геть усе"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "Ви не вказали дистрибуцію, яку ви хочете побудувати."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Будь ласка, зробіть це в builder.conf або CLI."
-
-msgid "Distribution configuration is missing."
-msgstr "Відсутня конфігурація дистрибуції."
 
 msgid "New repository"
 msgstr "Нове сховище"
@@ -398,75 +312,9 @@ msgstr "Нове сховище"
 msgid "Cannot build for %s on this host"
 msgstr "Не можу побудувати для %s на цьому хості."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Встановлення пакунків необхідних для побудови..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Інформація про пакет:"
-
-msgid "Extracting"
-msgstr "Розпаковка"
-
-msgid "You cannot run a build when no package was given."
-msgstr "Ви не можете виконати побудову без надання жодного пакету."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "не можу знайти makefile в корені build: %s"
-
-msgid "Build failed"
-msgstr ""
-
-msgid "Build interrupted"
-msgstr ""
-
-msgid "Build failed."
-msgstr "Зборка зазнала невдачі."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr ""
-"Команда build зазнала невдачі. Див. лог-файл для додаткофої інформації."
-
-msgid "Running installation test..."
-msgstr ""
-
-msgid "Installation test succeeded."
-msgstr ""
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr ""
-
-msgid "Dumping package information:"
-msgstr "Дамп інформації про пакунок."
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Створення пакунків:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Поточна стадія %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Не можу видалити статичні бібліотеки: %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Стискання man сторінок не виконано."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Видобування debuginfo завершилося невдачею. Переривання побудови."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -654,10 +502,6 @@ msgid "Everything okay"
 msgstr "Все гаразд."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Ви не можете виконати pakfire-builder в pakfire chroot."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Інтерфейс командного рядка Pakfire builder"
 
@@ -724,27 +568,6 @@ msgstr "Режим запуску: \"Реліз\" або \"Розробка\"(п
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Оновити індекси пакунків."
-
-msgid "Pakfire builder command line interface."
-msgstr "Інтерфейс командного рядка Pakfire builder"
-
-msgid "Build one or more packages."
-msgstr "Побудова одного або декількох пакунків"
-
-msgid "Give name of at least one package to build."
-msgstr "Вкажіть ім'я хоча-б одного пакунку для побудови. "
-
-msgid "Build the package for the given architecture."
-msgstr "Побудувати пакунок для заданої архітектури"
-
-msgid "Path were the output files should be copied to."
-msgstr "Шлях за яким будуть скопійовані вихідні файли"
-
-msgid "Do not verify build dependencies."
-msgstr "Не перевіряти залежності побудови."
-
-msgid "Only run the prepare stage."
-msgstr ""
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1158,15 +981,132 @@ msgstr ""
 msgid "%s [y/N]"
 msgstr "%s [так/Ні] "
 
-msgid "Killing orphans..."
-msgstr "Знищення сиріт..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s не підписаний"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr "Process ID %s досі виконується в chroot. Переривання."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s має невірний підпис"
 
-msgid "Waiting for processes to terminate..."
-msgstr "Жду на завершення процесу."
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr "Не можу виконати скрипт. Інтерпретатор не доступний: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr "Не можу виконати скрипт. Інтерпретатор не для виконання: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Скрипт вернув помилку:\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "Скрипт виконувався більше ніж %s секунд та був вбитий."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Скрипт повернутий з невідомою помилкою:\n"
+#~ "%s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Виконується тест транзакції %s"
+
+#~ msgid "Updating"
+#~ msgstr "Оновлення"
+
+#~ msgid "Downgrading"
+#~ msgstr "Відновлення"
+
+#~ msgid "Installing"
+#~ msgstr "Інсталяція"
+
+#~ msgid "Cleanup"
+#~ msgstr "Очистка"
+
+#~ msgid "Removing"
+#~ msgstr "Видалення"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Команда Build зазнала невдачі."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "Ви не вказали дистрибуцію, яку ви хочете побудувати."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Будь ласка, зробіть це в builder.conf або CLI."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Відсутня конфігурація дистрибуції."
+
+#~ msgid "Package information:"
+#~ msgstr "Інформація про пакет:"
+
+#~ msgid "Extracting"
+#~ msgstr "Розпаковка"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "Ви не можете виконати побудову без надання жодного пакету."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "не можу знайти makefile в корені build: %s"
+
+#~ msgid "Build failed."
+#~ msgstr "Зборка зазнала невдачі."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr ""
+#~ "Команда build зазнала невдачі. Див. лог-файл для додаткофої інформації."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Дамп інформації про пакунок."
+
+#~ msgid "Creating packages:"
+#~ msgstr "Створення пакунків:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Поточна стадія %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Не можу видалити статичні бібліотеки: %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Стискання man сторінок не виконано."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr "Видобування debuginfo завершилося невдачею. Переривання побудови."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Ви не можете виконати pakfire-builder в pakfire chroot."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Інтерфейс командного рядка Pakfire builder"
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Побудова одного або декількох пакунків"
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Вкажіть ім'я хоча-б одного пакунку для побудови. "
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Побудувати пакунок для заданої архітектури"
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Шлях за яким будуть скопійовані вихідні файли"
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Не перевіряти залежності побудови."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Знищення сиріт..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr "Process ID %s досі виконується в chroot. Переривання."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "Жду на завершення процесу."
 
 #~ msgid "Cannot download this file in offline mode: %s"
 #~ msgstr "Не мажу завантажити вказаний файл в автономному режимі: %s"

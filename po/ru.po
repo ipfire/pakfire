@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2015-02-17 19:25+0000\n"
 "Last-Translator: ellviss <kpe1501@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/mstremer/ipfire/language/"
@@ -306,97 +306,11 @@ msgid "Freed Size"
 msgstr "Освобождено: %s."
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s пока нет подписей"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s пока нет достоверных подписей"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr "Не поддерживается скриптлет неизвестного типа. Пропущено."
-
-msgid "Executing scriptlet..."
-msgstr "Выполняется скриптлет..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Невозможно запустить скрипт, потому что интерпретатор не доступен: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Невозможно запустить скрипт, потому что интерпретатор не является "
-"исполняемым: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"Скрипт завершился с ошибкой:\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Скрипт выполнялся более %s секунд и был прерван."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr "Скрипт завершился с не обработанной ошибкой: %s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Выполняется скриптлет python"
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "Возникло исключение: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Выполняется тест транзакции для %s"
-
-msgid "Reinstalling"
-msgstr "Переустановка"
-
-msgid "Updating"
-msgstr "Производится обновление"
-
-msgid "Downgrading"
-msgstr "Производится откат"
-
-msgid "Installing"
-msgstr "Производится установка"
-
-msgid "Cleanup"
-msgstr "Чистка"
-
-msgid "Removing"
-msgstr "Удаление"
-
-msgid "Build command has failed."
-msgstr "Команда Build потерпела неудачу."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "Пакет \"%s\" не установлен."
 
 msgid "Nothing to do"
 msgstr "Нет заданий"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "Вы не задали архитектуру для которой требуется провести сборку."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Пожалуйста, сделайте это в builder.conf или из командной строки."
-
-msgid "Distribution configuration is missing."
-msgstr "Конфигурация дистрибутива отсутствует."
 
 msgid "New repository"
 msgstr "Новый репозитарий"
@@ -405,76 +319,9 @@ msgstr "Новый репозитарий"
 msgid "Cannot build for %s on this host"
 msgstr "Не могу собрать %s на данном хосте."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Установить пакеты, необходимые для создания ..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Информация о пакете:"
-
-msgid "Extracting"
-msgstr "Извлечение"
-
-msgid "You cannot run a build when no package was given."
-msgstr "Невозможно запустить сборку без указания пакета."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Не удалось найти makefile в каталоге сборки: %s"
-
-msgid "Build failed"
-msgstr "Не удалось собрать"
-
-msgid "Build interrupted"
-msgstr "Сборка прервана"
-
-msgid "Build failed."
-msgstr "Не удалось собрать"
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr ""
-"Команда Build потерпела неудачу. Смотрите лог-файл для дополнительной "
-"информации."
-
-msgid "Running installation test..."
-msgstr "Выполняется тест установки..."
-
-msgid "Installation test succeeded."
-msgstr "Тест установки успешен."
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Подписываются пакеты..."
-
-msgid "Dumping package information:"
-msgstr "Информация о пакете:"
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Создание пакетов:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Текущая стадия %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Невозможно удалить статические библиотеки: %s  "
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Сжатие страниц руководства закончилось неудачно."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Обработка отладочной информации закончилась неудачно. Отказ сборки."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -664,10 +511,6 @@ msgid "Everything okay"
 msgstr "Все в порядке."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Вы не можете выполнить pakfire-builder в pakfire chroot."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Интерфейс командной строки Pakfire builder."
 
@@ -735,27 +578,6 @@ msgstr "Режим запуска: \"релиз\" или \"разработка\
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Обновить индексы пакетов."
-
-msgid "Pakfire builder command line interface."
-msgstr "Интерфейс командной строки Pakfire builder."
-
-msgid "Build one or more packages."
-msgstr "Сборка одного или нескольких пакетов."
-
-msgid "Give name of at least one package to build."
-msgstr "Укажите имя хотя бы одного пакета для сборки."
-
-msgid "Build the package for the given architecture."
-msgstr "Собрать пакет для данной архитектуры."
-
-msgid "Path were the output files should be copied to."
-msgstr "Путь для копирования входящих файлов."
-
-msgid "Do not verify build dependencies."
-msgstr "Не проверять зависимости сборки"
-
-msgid "Only run the prepare stage."
-msgstr "Выполнить только подготовительную фазу."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1170,15 +992,167 @@ msgstr "Время"
 msgid "%s [y/N]"
 msgstr "%s [Да/Нет]"
 
-msgid "Killing orphans..."
-msgstr "Уничтожение сирот..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s пока нет подписей"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr "Процесс с ID %s все еще работает в chroot. Останавливаю..."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s пока нет достоверных подписей"
 
-msgid "Waiting for processes to terminate..."
-msgstr "Ожидание завершения процесса..."
+#~ msgid "Could not handle scriptlet of unknown type. Skipping."
+#~ msgstr "Не поддерживается скриптлет неизвестного типа. Пропущено."
+
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Выполняется скриптлет..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr ""
+#~ "Невозможно запустить скрипт, потому что интерпретатор не доступен: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr ""
+#~ "Невозможно запустить скрипт, потому что интерпретатор не является "
+#~ "исполняемым: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Скрипт завершился с ошибкой:\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "Скрипт выполнялся более %s секунд и был прерван."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr "Скрипт завершился с не обработанной ошибкой: %s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Выполняется скриптлет python"
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "Возникло исключение: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Выполняется тест транзакции для %s"
+
+#~ msgid "Reinstalling"
+#~ msgstr "Переустановка"
+
+#~ msgid "Updating"
+#~ msgstr "Производится обновление"
+
+#~ msgid "Downgrading"
+#~ msgstr "Производится откат"
+
+#~ msgid "Installing"
+#~ msgstr "Производится установка"
+
+#~ msgid "Cleanup"
+#~ msgstr "Чистка"
+
+#~ msgid "Removing"
+#~ msgstr "Удаление"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Команда Build потерпела неудачу."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "Вы не задали архитектуру для которой требуется провести сборку."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Пожалуйста, сделайте это в builder.conf или из командной строки."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Конфигурация дистрибутива отсутствует."
+
+#~ msgid "Package information:"
+#~ msgstr "Информация о пакете:"
+
+#~ msgid "Extracting"
+#~ msgstr "Извлечение"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "Невозможно запустить сборку без указания пакета."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Не удалось найти makefile в каталоге сборки: %s"
+
+#~ msgid "Build failed"
+#~ msgstr "Не удалось собрать"
+
+#~ msgid "Build interrupted"
+#~ msgstr "Сборка прервана"
+
+#~ msgid "Build failed."
+#~ msgstr "Не удалось собрать"
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr ""
+#~ "Команда Build потерпела неудачу. Смотрите лог-файл для дополнительной "
+#~ "информации."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Выполняется тест установки..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Тест установки успешен."
+
+#~ msgid "Signing packages..."
+#~ msgstr "Подписываются пакеты..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Информация о пакете:"
+
+#~ msgid "Creating packages:"
+#~ msgstr "Создание пакетов:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Текущая стадия %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Невозможно удалить статические библиотеки: %s  "
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Сжатие страниц руководства закончилось неудачно."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr "Обработка отладочной информации закончилась неудачно. Отказ сборки."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Вы не можете выполнить pakfire-builder в pakfire chroot."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Интерфейс командной строки Pakfire builder."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Сборка одного или нескольких пакетов."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Укажите имя хотя бы одного пакета для сборки."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Собрать пакет для данной архитектуры."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Путь для копирования входящих файлов."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Не проверять зависимости сборки"
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Выполнить только подготовительную фазу."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Уничтожение сирот..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr "Процесс с ID %s все еще работает в chroot. Останавливаю..."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "Ожидание завершения процесса..."
 
 #~ msgid "Cannot extract mixed package types"
 #~ msgstr "Невозможно извлечь пакеты различающихся типов"

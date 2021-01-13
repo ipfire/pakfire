@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2014-07-05 12:42+0000\n"
 "Last-Translator: Hans <dutchtux@gmail.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/mstremer/ipfire/language/"
@@ -298,99 +298,11 @@ msgid "Freed Size"
 msgstr "Vrijgemaakte grootte: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s heeft geen ondertekeningen"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s heeft geen geldige ondertekeningen"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr "Kan scriptlet niet afhandelen of onbekend type. Overgeslagen."
-
-msgid "Executing scriptlet..."
-msgstr "Uitvoeren script..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr ""
-"Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr ""
-"Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"De scriptlet gaf een fout:\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"De scriptlet geeft een niet-afgehandelde fout:\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Uitvoeren van python scriptlet..."
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "Er heeft zich een uitzondering voorgedaan: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Draait transactietest voor %s"
-
-msgid "Reinstalling"
-msgstr "Herinstalleren"
-
-msgid "Updating"
-msgstr "Bijwerken"
-
-msgid "Downgrading"
-msgstr "Downgrading"
-
-msgid "Installing"
-msgstr "Installeren"
-
-msgid "Cleanup"
-msgstr "Opschonen"
-
-msgid "Removing"
-msgstr "Verwijderen"
-
-msgid "Build command has failed."
-msgstr "Build-commando is mislukt."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "Pakket \"%s\" lijkt niet geïnstalleerd."
 
 msgid "Nothing to do"
 msgstr "Niets meer te doen"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "U heeft niet aangegeven welke distributie u wilt opbouwen."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Dat doet u in de builder.conf in de CLI."
-
-msgid "Distribution configuration is missing."
-msgstr "Distributie configuratie ontbreekt."
 
 msgid "New repository"
 msgstr "Nieuwe repository"
@@ -399,74 +311,9 @@ msgstr "Nieuwe repository"
 msgid "Cannot build for %s on this host"
 msgstr "Kan niet builden voor %s op deze host."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Installeer pakketten noodzakelijk voor build..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Pakketinformatie:"
-
-msgid "Extracting"
-msgstr "Uitpakken"
-
-msgid "You cannot run a build when no package was given."
-msgstr "U kunt geen build draaien zonder dat een pakket is gegeven."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Kan makefile niet vinden in build root: %s"
-
-msgid "Build failed"
-msgstr "Build mislukt"
-
-msgid "Build interrupted"
-msgstr "Build onderbroken"
-
-msgid "Build failed."
-msgstr "Build mislukt."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr "Het build-commando is mislukt. Kijk in het logbestand voor details."
-
-msgid "Running installation test..."
-msgstr "Draait installatie-test..."
-
-msgid "Installation test succeeded."
-msgstr "Installatietest succesvol."
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Ondertekenen van pakketten..."
-
-msgid "Dumping package information:"
-msgstr "Dumpt pakketinformatie:"
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Aanmaken van pakketten:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Actieve stadium %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Kan statische libraries niet verwijderen: %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Comprimeren van man pagina's is niet succesvol afgerond."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Extraheren van debuginfo was niet succesvol. Build wordt afgebroken."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -660,10 +507,6 @@ msgid "Everything okay"
 msgstr "Alles is goed."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "U kunt pakfire-builder niet in een pakfire chroot draaien."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Pakfire builder commando regel interface."
 
@@ -731,27 +574,6 @@ msgstr "De modus. Dit is of 'release' of 'development' (standaard)."
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Werk de pakketindex bij."
-
-msgid "Pakfire builder command line interface."
-msgstr "Pakfire builder commando regel interface."
-
-msgid "Build one or more packages."
-msgstr "Build een of meer pakketten."
-
-msgid "Give name of at least one package to build."
-msgstr "Geef tenminste de naam van een pakket."
-
-msgid "Build the package for the given architecture."
-msgstr "Build het pakket voor de gegeven architectuur."
-
-msgid "Path were the output files should be copied to."
-msgstr "Pad waar de output bestanden naartoe gekopieerd moeten worden."
-
-msgid "Do not verify build dependencies."
-msgstr "Controleer niet op build-afhankelijkheden."
-
-msgid "Only run the prepare stage."
-msgstr "Draai alleen de voorbereidings-fase."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1170,15 +992,168 @@ msgstr "Tijd"
 msgid "%s [y/N]"
 msgstr "%s [y/N]"
 
-msgid "Killing orphans..."
-msgstr "Stoppen van orphans..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s heeft geen ondertekeningen"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr "Proces ID %s draait nog steeds in chroot. Stoppen..."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s heeft geen geldige ondertekeningen"
 
-msgid "Waiting for processes to terminate..."
-msgstr "Wachten op het afsluiten van de processen..."
+#~ msgid "Could not handle scriptlet of unknown type. Skipping."
+#~ msgstr "Kan scriptlet niet afhandelen of onbekend type. Overgeslagen."
+
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Uitvoeren script..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr ""
+#~ "Kan het scriptlet niet draaien omdat er geen interpreter beschikbaar is: "
+#~ "%s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr ""
+#~ "Kan scriptlet niet draaien omdat de interpreter niet uitvoerbaar is: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "De scriptlet gaf een fout:\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "De scriptlet heeft meer dan %s seconden gedraaid en was gestopt."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "De scriptlet geeft een niet-afgehandelde fout:\n"
+#~ "%s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Uitvoeren van python scriptlet..."
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "Er heeft zich een uitzondering voorgedaan: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Draait transactietest voor %s"
+
+#~ msgid "Reinstalling"
+#~ msgstr "Herinstalleren"
+
+#~ msgid "Updating"
+#~ msgstr "Bijwerken"
+
+#~ msgid "Downgrading"
+#~ msgstr "Downgrading"
+
+#~ msgid "Installing"
+#~ msgstr "Installeren"
+
+#~ msgid "Cleanup"
+#~ msgstr "Opschonen"
+
+#~ msgid "Removing"
+#~ msgstr "Verwijderen"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Build-commando is mislukt."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "U heeft niet aangegeven welke distributie u wilt opbouwen."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Dat doet u in de builder.conf in de CLI."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Distributie configuratie ontbreekt."
+
+#~ msgid "Package information:"
+#~ msgstr "Pakketinformatie:"
+
+#~ msgid "Extracting"
+#~ msgstr "Uitpakken"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "U kunt geen build draaien zonder dat een pakket is gegeven."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Kan makefile niet vinden in build root: %s"
+
+#~ msgid "Build failed"
+#~ msgstr "Build mislukt"
+
+#~ msgid "Build interrupted"
+#~ msgstr "Build onderbroken"
+
+#~ msgid "Build failed."
+#~ msgstr "Build mislukt."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr "Het build-commando is mislukt. Kijk in het logbestand voor details."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Draait installatie-test..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Installatietest succesvol."
+
+#~ msgid "Signing packages..."
+#~ msgstr "Ondertekenen van pakketten..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Dumpt pakketinformatie:"
+
+#~ msgid "Creating packages:"
+#~ msgstr "Aanmaken van pakketten:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Actieve stadium %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Kan statische libraries niet verwijderen: %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Comprimeren van man pagina's is niet succesvol afgerond."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr ""
+#~ "Extraheren van debuginfo was niet succesvol. Build wordt afgebroken."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "U kunt pakfire-builder niet in een pakfire chroot draaien."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Pakfire builder commando regel interface."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Build een of meer pakketten."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Geef tenminste de naam van een pakket."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Build het pakket voor de gegeven architectuur."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Pad waar de output bestanden naartoe gekopieerd moeten worden."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Controleer niet op build-afhankelijkheden."
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Draai alleen de voorbereidings-fase."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Stoppen van orphans..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr "Proces ID %s draait nog steeds in chroot. Stoppen..."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "Wachten op het afsluiten van de processen..."
 
 #~ msgid "Cannot extract mixed package types"
 #~ msgstr "Kan gemengde pakket-types niet uitpakken"

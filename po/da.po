@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: IPFire Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-25 11:18+0000\n"
+"POT-Creation-Date: 2021-01-13 13:00+0000\n"
 "PO-Revision-Date: 2014-01-03 22:37+0000\n"
 "Last-Translator: Henrik Simonsen <cybermaze@gmail.com>\n"
 "Language-Team: Danish (http://www.transifex.com/mstremer/ipfire/language/"
@@ -297,97 +297,11 @@ msgid "Freed Size"
 msgstr "Frigjort størrelse: %s"
 
 #, python-format
-msgid "%s has got no signatures"
-msgstr "%s har ingen signaturer"
-
-#, python-format
-msgid "%s has got no valid signatures"
-msgstr "%s har ingen gyldige signaturer"
-
-msgid "Could not handle scriptlet of unknown type. Skipping."
-msgstr "Kunne ikke håndtere scriptlet af ukendt type. Springer over."
-
-msgid "Executing scriptlet..."
-msgstr "Eksekverer scriptlet..."
-
-#, python-format
-msgid "Cannot run scriptlet because no interpreter is available: %s"
-msgstr "Kan ikke køre scriptlet fordi ingen oversætter er tilgængelig: %s"
-
-#, python-format
-msgid "Cannot run scriptlet because the interpreter is not executable: %s"
-msgstr "Kan ikke køre scriptlet fordi oversætteren ikke er eksekverbar: %s"
-
-#, python-format
-msgid ""
-"The scriptlet returned an error:\n"
-"%s"
-msgstr ""
-"Scriptlet returnerede en fejl:\n"
-"%s"
-
-#, python-format
-msgid "The scriptlet ran more than %s seconds and was killed."
-msgstr "Scriptlet kørte i mere end %s sekunder og blev lukket."
-
-#, python-format
-msgid ""
-"The scriptlet returned with an unhandled error:\n"
-"%s"
-msgstr ""
-"Scriptlet returnerede med en ubehandlet fejl:\n"
-"%s"
-
-#. This functions creates a fork with then chroots into the
-#. pakfire root if necessary and then compiles the given scriptlet
-#. code and runs it.
-msgid "Executing python scriptlet..."
-msgstr "Eksekverer python scriptlet..."
-
-#, python-format
-msgid "Exception occured: %s"
-msgstr "Undtagelse opstod: %s"
-
-#, python-format
-msgid "Running transaction test for %s"
-msgstr "Kører transaktionstest for %s"
-
-msgid "Reinstalling"
-msgstr "Geninstallerer"
-
-msgid "Updating"
-msgstr "Opdaterer"
-
-msgid "Downgrading"
-msgstr "Nedgraderer"
-
-msgid "Installing"
-msgstr "Installerer"
-
-msgid "Cleanup"
-msgstr "Oprydning"
-
-msgid "Removing"
-msgstr "Fjerner"
-
-msgid "Build command has failed."
-msgstr "Bygge kommandoen fejlede."
-
-#, python-format
 msgid "\"%s\" package does not seem to be installed."
 msgstr "\"%s\" pakken ser ikke ud til at være installeret."
 
 msgid "Nothing to do"
 msgstr "Intet at gøre"
-
-msgid "You have not set the distribution for which you want to build."
-msgstr "Du har ikke angivet den distribution du ønsker at bygge."
-
-msgid "Please do so in builder.conf or on the CLI."
-msgstr "Gør venligst dette i builder.conf eller i CLI."
-
-msgid "Distribution configuration is missing."
-msgstr "Distribution konfiguration mangler."
 
 msgid "New repository"
 msgstr "Nyt projektarkiv"
@@ -396,74 +310,9 @@ msgstr "Nyt projektarkiv"
 msgid "Cannot build for %s on this host"
 msgstr "Kan ikke bygge til %s på denne vært."
 
-#. Install all packages.
-msgid "Install packages needed for build..."
+#, fuzzy
+msgid "Installing packages in build environment:"
 msgstr "Installeringspakker nødvendige for at bygge..."
-
-#. Logging
-#, python-format
-msgid "Installing build requirements: %s"
-msgstr ""
-
-#. Log the package information.
-msgid "Package information:"
-msgstr "Pakke information:"
-
-msgid "Extracting"
-msgstr "Udpakker"
-
-msgid "You cannot run a build when no package was given."
-msgstr "Du kan ikke køre en bygning når ingen pakker er angivet."
-
-#, python-format
-msgid "Could not find makefile in build root: %s"
-msgstr "Kunne ikke finde makefile i bygge roden: %s"
-
-msgid "Build failed"
-msgstr "Bygning fejlede"
-
-msgid "Build interrupted"
-msgstr "Bygning forstyrret"
-
-msgid "Build failed."
-msgstr "Bygning fejlede."
-
-#. End here in case of an error.
-msgid "The build command failed. See logfile for details."
-msgstr "Bygge kommandoen fejlede. Se logfilen for detaljer."
-
-msgid "Running installation test..."
-msgstr "Kører installationstest..."
-
-msgid "Installation test succeeded."
-msgstr "Installationstest succesfuld."
-
-#. Create a progressbar.
-msgid "Signing packages..."
-msgstr "Signerer pakker..."
-
-msgid "Dumping package information:"
-msgstr "Viser pakke information:"
-
-#. Package the result.
-#. Make all these little package from the build environment.
-msgid "Creating packages:"
-msgstr "Opretter pakker:"
-
-#. Execute the buildscript of this stage.
-#, python-format
-msgid "Running stage %s:"
-msgstr "Kører %s:"
-
-#, python-format
-msgid "Could not remove static libraries: %s"
-msgstr "Kunne ikke fjerne statiske biblioteker: %s"
-
-msgid "Compressing man pages did not complete successfully."
-msgstr "Komprimering af man sider lykkedes ikke."
-
-msgid "Extracting debuginfo did not complete with success. Aborting build."
-msgstr "Udpakning af debuginfo mislykkedes. Annullerer bygning."
 
 #, fuzzy
 msgid "Pakfire command line interface"
@@ -652,10 +501,6 @@ msgid "Everything okay"
 msgstr "Alt er fint."
 
 #, fuzzy
-msgid "You cannot run pakfire-builder in a pakfire chroot"
-msgstr "Du kan ikke køre pakfire-bygger i en pakfire chroot."
-
-#, fuzzy
 msgid "Pakfire builder command line interface"
 msgstr "Pakfire builder kommandolinje."
 
@@ -723,27 +568,6 @@ msgstr "Tilstand at køre i. Enten 'release' eller 'udvikling' (standard)."
 #, fuzzy
 msgid "Update the package indexes"
 msgstr "Opdatér pakke indekser."
-
-msgid "Pakfire builder command line interface."
-msgstr "Pakfire builder kommandolinje."
-
-msgid "Build one or more packages."
-msgstr "Byg én eller flere pakker."
-
-msgid "Give name of at least one package to build."
-msgstr "Angiv navnet på mindst én pakke der skal bygges."
-
-msgid "Build the package for the given architecture."
-msgstr "Byg pakken for den angivne arkitektur."
-
-msgid "Path were the output files should be copied to."
-msgstr "Sti hvor output filerne skal kopieres til."
-
-msgid "Do not verify build dependencies."
-msgstr "Bekræft ikke bygge afhængigheder."
-
-msgid "Only run the prepare stage."
-msgstr "Kør kun forberedelse."
 
 #, fuzzy
 msgid "Pakfire client command line interface"
@@ -1159,15 +983,164 @@ msgstr "Tid"
 msgid "%s [y/N]"
 msgstr "%s [j/N]"
 
-msgid "Killing orphans..."
-msgstr "Lukker forældreløse..."
+#~ msgid "%s has got no signatures"
+#~ msgstr "%s har ingen signaturer"
 
-#, python-format
-msgid "Process ID %s is still running in chroot. Killing..."
-msgstr "Proces ID %s kører stadig i chroot. Lukker..."
+#~ msgid "%s has got no valid signatures"
+#~ msgstr "%s har ingen gyldige signaturer"
 
-msgid "Waiting for processes to terminate..."
-msgstr "Venter på at processer lukkes..."
+#~ msgid "Could not handle scriptlet of unknown type. Skipping."
+#~ msgstr "Kunne ikke håndtere scriptlet af ukendt type. Springer over."
+
+#~ msgid "Executing scriptlet..."
+#~ msgstr "Eksekverer scriptlet..."
+
+#~ msgid "Cannot run scriptlet because no interpreter is available: %s"
+#~ msgstr "Kan ikke køre scriptlet fordi ingen oversætter er tilgængelig: %s"
+
+#~ msgid "Cannot run scriptlet because the interpreter is not executable: %s"
+#~ msgstr "Kan ikke køre scriptlet fordi oversætteren ikke er eksekverbar: %s"
+
+#~ msgid ""
+#~ "The scriptlet returned an error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Scriptlet returnerede en fejl:\n"
+#~ "%s"
+
+#~ msgid "The scriptlet ran more than %s seconds and was killed."
+#~ msgstr "Scriptlet kørte i mere end %s sekunder og blev lukket."
+
+#~ msgid ""
+#~ "The scriptlet returned with an unhandled error:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Scriptlet returnerede med en ubehandlet fejl:\n"
+#~ "%s"
+
+#~ msgid "Executing python scriptlet..."
+#~ msgstr "Eksekverer python scriptlet..."
+
+#~ msgid "Exception occured: %s"
+#~ msgstr "Undtagelse opstod: %s"
+
+#~ msgid "Running transaction test for %s"
+#~ msgstr "Kører transaktionstest for %s"
+
+#~ msgid "Reinstalling"
+#~ msgstr "Geninstallerer"
+
+#~ msgid "Updating"
+#~ msgstr "Opdaterer"
+
+#~ msgid "Downgrading"
+#~ msgstr "Nedgraderer"
+
+#~ msgid "Installing"
+#~ msgstr "Installerer"
+
+#~ msgid "Cleanup"
+#~ msgstr "Oprydning"
+
+#~ msgid "Removing"
+#~ msgstr "Fjerner"
+
+#~ msgid "Build command has failed."
+#~ msgstr "Bygge kommandoen fejlede."
+
+#~ msgid "You have not set the distribution for which you want to build."
+#~ msgstr "Du har ikke angivet den distribution du ønsker at bygge."
+
+#~ msgid "Please do so in builder.conf or on the CLI."
+#~ msgstr "Gør venligst dette i builder.conf eller i CLI."
+
+#~ msgid "Distribution configuration is missing."
+#~ msgstr "Distribution konfiguration mangler."
+
+#~ msgid "Package information:"
+#~ msgstr "Pakke information:"
+
+#~ msgid "Extracting"
+#~ msgstr "Udpakker"
+
+#~ msgid "You cannot run a build when no package was given."
+#~ msgstr "Du kan ikke køre en bygning når ingen pakker er angivet."
+
+#~ msgid "Could not find makefile in build root: %s"
+#~ msgstr "Kunne ikke finde makefile i bygge roden: %s"
+
+#~ msgid "Build failed"
+#~ msgstr "Bygning fejlede"
+
+#~ msgid "Build interrupted"
+#~ msgstr "Bygning forstyrret"
+
+#~ msgid "Build failed."
+#~ msgstr "Bygning fejlede."
+
+#~ msgid "The build command failed. See logfile for details."
+#~ msgstr "Bygge kommandoen fejlede. Se logfilen for detaljer."
+
+#~ msgid "Running installation test..."
+#~ msgstr "Kører installationstest..."
+
+#~ msgid "Installation test succeeded."
+#~ msgstr "Installationstest succesfuld."
+
+#~ msgid "Signing packages..."
+#~ msgstr "Signerer pakker..."
+
+#~ msgid "Dumping package information:"
+#~ msgstr "Viser pakke information:"
+
+#~ msgid "Creating packages:"
+#~ msgstr "Opretter pakker:"
+
+#~ msgid "Running stage %s:"
+#~ msgstr "Kører %s:"
+
+#~ msgid "Could not remove static libraries: %s"
+#~ msgstr "Kunne ikke fjerne statiske biblioteker: %s"
+
+#~ msgid "Compressing man pages did not complete successfully."
+#~ msgstr "Komprimering af man sider lykkedes ikke."
+
+#~ msgid "Extracting debuginfo did not complete with success. Aborting build."
+#~ msgstr "Udpakning af debuginfo mislykkedes. Annullerer bygning."
+
+#, fuzzy
+#~ msgid "You cannot run pakfire-builder in a pakfire chroot"
+#~ msgstr "Du kan ikke køre pakfire-bygger i en pakfire chroot."
+
+#~ msgid "Pakfire builder command line interface."
+#~ msgstr "Pakfire builder kommandolinje."
+
+#~ msgid "Build one or more packages."
+#~ msgstr "Byg én eller flere pakker."
+
+#~ msgid "Give name of at least one package to build."
+#~ msgstr "Angiv navnet på mindst én pakke der skal bygges."
+
+#~ msgid "Build the package for the given architecture."
+#~ msgstr "Byg pakken for den angivne arkitektur."
+
+#~ msgid "Path were the output files should be copied to."
+#~ msgstr "Sti hvor output filerne skal kopieres til."
+
+#~ msgid "Do not verify build dependencies."
+#~ msgstr "Bekræft ikke bygge afhængigheder."
+
+#~ msgid "Only run the prepare stage."
+#~ msgstr "Kør kun forberedelse."
+
+#~ msgid "Killing orphans..."
+#~ msgstr "Lukker forældreløse..."
+
+#~ msgid "Process ID %s is still running in chroot. Killing..."
+#~ msgstr "Proces ID %s kører stadig i chroot. Lukker..."
+
+#~ msgid "Waiting for processes to terminate..."
+#~ msgstr "Venter på at processer lukkes..."
 
 #~ msgid "Cannot extract mixed package types"
 #~ msgstr "Kan ikke udpakke blandede pakke typer"
