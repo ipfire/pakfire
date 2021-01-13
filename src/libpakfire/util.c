@@ -95,8 +95,8 @@ char* pakfire_strdup(const char* s) {
 	return r;
 }
 
-int pakfire_string_startswith(const char* s, const char* prefix) {
-	return strncmp(s, prefix, strlen(prefix));
+PAKFIRE_EXPORT int pakfire_string_startswith(const char* s, const char* prefix) {
+	return !strncmp(s, prefix, strlen(prefix));
 }
 
 char* pakfire_format_size(double size) {
@@ -148,9 +148,8 @@ PAKFIRE_EXPORT char* pakfire_path_join(const char* first, const char* second) {
 }
 
 PAKFIRE_EXPORT const char* pakfire_path_relpath(const char* root, const char* path) {
-	if (pakfire_string_startswith(path, root) == 0) {
+	if (pakfire_string_startswith(path, root))
 		return path + strlen(root);
-	}
 
 	return NULL;
 }
