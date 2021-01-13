@@ -423,12 +423,11 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 		p = 0;
 
 		while (PyDict_Next(environ, &p, &key, &value)) {
-			int r = asprintf(&envp[i], "%s=%s", PyUnicode_AsUTF8(key), PyUnicode_AsUTF8(value));
+			int r = asprintf(&envp[i++], "%s=%s",
+				PyUnicode_AsUTF8(key), PyUnicode_AsUTF8(value));
 
 			// Handle errors
 			if (r < 0) {
-				envp[i] = NULL;
-
 				// Cleanup
 				for (unsigned int i = 0; envp[i]; i++)
 					free(envp[i]);
