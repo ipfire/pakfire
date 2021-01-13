@@ -125,6 +125,7 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 
 	// Initialize the pool
 	p->pool = pool_create();
+	pool_setdisttype(p->pool, DISTTYPE_RPM);
 
 	// Set architecture of the pool
 	pool_setarch(p->pool, p->arch);
