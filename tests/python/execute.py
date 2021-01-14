@@ -42,6 +42,15 @@ class Test(unittest.TestCase):
 		with self.assertRaises(TypeError):
 			self.pakfire.execute(["/usr/bin/sleep", "--help"], environ="VAR1=VAL1")
 
+	def test_return_value(self):
+		with self.assertRaises(pakfire.CommandExecutionError) as e:
+			self.pakfire.execute(["/bin/sh", "-c", "exit 123"])
+
+		# Extract return code
+		code, = e.exception.args
+
+		self.assertTrue(code == 123)
+
 	def test_execute_non_existant_command(self):
 		"""
 			Executing non-existant commands should raise an error
