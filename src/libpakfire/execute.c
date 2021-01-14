@@ -40,7 +40,9 @@ struct pakfire_execute {
 	char** envp;
 };
 
-static int pakfire_execute_fork(struct pakfire_execute* env) {
+static int pakfire_execute_fork(void* data) {
+	struct pakfire_execute* env = (struct pakfire_execute*)data;
+
 	Pakfire pakfire = env->pakfire;
 	int r;
 
@@ -90,6 +92,9 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 		.envp = envp,
 	};
 
+	// Allocate stack
+	char stack[4096];
+
 	// argv is invalid
 	if (!argv || !argv[0])
 		return -EINVAL;
@@ -97,42 +102,35 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 	if (!env.envp)
 		env.envp = envp_empty;
 
+	// Configure the new namespace
+	int cflags = CLONE_VFORK | SIGCHLD | CLONE_NEWIPC | CLONE_NEWNS | CLONE_NEWUTS;
+
+	// Enable network?
+	if (!(flags & PAKFIRE_EXECUTE_ENABLE_NETWORK))
+		cflags |= CLONE_NEWNET;
+
 	// Fork this process
-	pid_t pid = fork();
+	pid_t pid = clone(pakfire_execute_fork, stack + sizeof(stack), cflags, &env);
 
 	if (pid < 0) {
 		ERROR(pakfire, "Could not fork: %s\n", strerror(errno));
 		return errno;
-
-	// Child process
-	} else if (pid == 0) {
-		int r = pakfire_execute_fork(&env);
-
-		ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
-			strerror(r));
-
-		// Exit immediately
-		exit(r);
-
-	// Parent process
-	} else {
-		DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
-
-		int status;
-		waitpid(pid, &status, 0);
-
-		if (WIFEXITED(status)) {
-			int r = WEXITSTATUS(status);
-
-			DEBUG(pakfire, "Child process has exited with code: %d\n", r);
-			return r;
-		}
-
-		ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
-		return -1;
 	}
 
-	return 0;
+	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
+
+	int status;
+	waitpid(pid, &status, 0);
+
+	if (WIFEXITED(status)) {
+		int r = WEXITSTATUS(status);
+
+		DEBUG(pakfire, "Child process has exited with code: %d\n", r);
+		return r;
+	}
+
+	ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
+	return -1;
 }
 
 PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags) {
