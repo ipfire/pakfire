@@ -34,7 +34,14 @@
 
 static char* envp_empty[1] = { NULL };
 
-static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
+struct pakfire_execute {
+	Pakfire pakfire;
+	const char** argv;
+	char** envp;
+};
+
+static int pakfire_execute_fork(struct pakfire_execute* env) {
+	Pakfire pakfire = env->pakfire;
 	int r;
 
 	pid_t pid = getpid();
@@ -44,11 +51,11 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 	DEBUG(pakfire, "Execution environment has been forked as PID %d\n", pid);
 	DEBUG(pakfire, "	root	: %s\n", root);
 
-	for (unsigned int i = 0; argv[i]; i++)
-		DEBUG(pakfire, "	argv[%u]	: %s\n", i, argv[i]);
+	for (unsigned int i = 0; env->argv[i]; i++)
+		DEBUG(pakfire, "	argv[%u]	: %s\n", i, env->argv[i]);
 
-	for (unsigned int i = 0; envp[i]; i++)
-		DEBUG(pakfire, "	env	: %s\n", envp[i]);
+	for (unsigned int i = 0; env->envp[i]; i++)
+		DEBUG(pakfire, "	env	: %s\n", env->envp[i]);
 
 	// Move /
 	r = chroot(root);
@@ -69,33 +76,26 @@ static int pakfire_execute_fork(Pakfire pakfire, const char* argv[], char* envp[
 		return errno;
 	}
 
-	// Unshare namespaces
-	int uflags = CLONE_NEWIPC | CLONE_NEWNS | CLONE_NEWUTS;
-
-	// Enable network?
-	if (!(flags & PAKFIRE_EXECUTE_ENABLE_NETWORK))
-		uflags |= CLONE_NEWNET;
-
-	r = unshare(uflags);
-	if (r) {
-		ERROR(pakfire, "Could not run unshare(%d): %s\n", uflags, strerror(errno));
-		return errno;
-	}
-
 	// exec() command
-	r = execve(argv[0], (char**)argv, envp);
+	r = execve(env->argv[0], (char**)env->argv, env->envp);
 
 	// We should not get here
 	return errno;
 }
 
 PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
+	struct pakfire_execute env = {
+		.pakfire = pakfire,
+		.argv = argv,
+		.envp = envp,
+	};
+
 	// argv is invalid
 	if (!argv || !argv[0])
 		return -EINVAL;
 
-	if (!envp)
-		envp = envp_empty;
+	if (!env.envp)
+		env.envp = envp_empty;
 
 	// Fork this process
 	pid_t pid = fork();
@@ -106,7 +106,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	// Child process
 	} else if (pid == 0) {
-		int r = pakfire_execute_fork(pakfire, argv, envp, flags);
+		int r = pakfire_execute_fork(&env);
 
 		ERROR(pakfire, "Forked process returned unexpectedly: %s\n",
 			strerror(r));
