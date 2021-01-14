@@ -44,13 +44,11 @@ static int pakfire_execute_fork(void* data) {
 	struct pakfire_execute* env = (struct pakfire_execute*)data;
 
 	Pakfire pakfire = env->pakfire;
-	int r;
-
-	pid_t pid = getpid();
 
 	const char* root = pakfire_get_path(pakfire);
+	const char* arch = pakfire_get_arch(pakfire);
 
-	DEBUG(pakfire, "Execution environment has been forked as PID %d\n", pid);
+	DEBUG(pakfire, "Execution environment has been forked as PID %d\n", getpid());
 	DEBUG(pakfire, "	root	: %s\n", root);
 
 	for (unsigned int i = 0; env->argv[i]; i++)
@@ -60,14 +58,12 @@ static int pakfire_execute_fork(void* data) {
 		DEBUG(pakfire, "	env	: %s\n", env->envp[i]);
 
 	// Move /
-	r = chroot(root);
+	int r = chroot(root);
 	if (r) {
 		ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
-		return errno;
-	}
 
-	// Get architecture
-	const char* arch = pakfire_get_arch(pakfire);
+		return 1;
+	}
 
 	// Set personality
 	unsigned long persona = pakfire_arch_personality(arch);
@@ -75,14 +71,17 @@ static int pakfire_execute_fork(void* data) {
 	if (r < 0) {
 		ERROR(pakfire, "Could not set personality (%x)\n", (unsigned int)persona);
 
-		return errno;
+		return 1;
 	}
 
 	// exec() command
 	r = execve(env->argv[0], (char**)env->argv, env->envp);
+	if (r < 0) {
+		ERROR(pakfire, "Could not execve(): %s\n", strerror(errno));
+	}
 
 	// We should not get here
-	return errno;
+	return 1;
 }
 
 PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
@@ -111,10 +110,10 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	// Fork this process
 	pid_t pid = clone(pakfire_execute_fork, stack + sizeof(stack), cflags, &env);
-
 	if (pid < 0) {
 		ERROR(pakfire, "Could not fork: %s\n", strerror(errno));
-		return errno;
+
+		return -errno;
 	}
 
 	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
@@ -125,12 +124,13 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 	if (WIFEXITED(status)) {
 		int r = WEXITSTATUS(status);
 
-		DEBUG(pakfire, "Child process has exited with code: %d\n", r);
+		DEBUG(pakfire, "Child process exited with code: %d\n", r);
 		return r;
 	}
 
 	ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
-	return -1;
+
+	return -ESRCH;
 }
 
 PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags) {
