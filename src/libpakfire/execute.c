@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <sched.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/personality.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -57,25 +58,29 @@ static int pakfire_execute_fork(void* data) {
 	for (unsigned int i = 0; env->envp[i]; i++)
 		DEBUG(pakfire, "	env	: %s\n", env->envp[i]);
 
-	// Move /
-	int r = chroot(root);
-	if (r) {
-		ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
+	// Change root (unless root is /)
+	if (strcmp(root, "/") != 0) {
+		int r = chroot(root);
+		if (r) {
+			ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
 
-		return 1;
+			return 1;
+		}
 	}
 
 	// Set personality
 	unsigned long persona = pakfire_arch_personality(arch);
-	r = personality(persona);
-	if (r < 0) {
-		ERROR(pakfire, "Could not set personality (%x)\n", (unsigned int)persona);
+	if (persona) {
+		int r = personality(persona);
+		if (r < 0) {
+			ERROR(pakfire, "Could not set personality (%x)\n", (unsigned int)persona);
 
-		return 1;
+			return 1;
+		}
 	}
 
 	// exec() command
-	r = execve(env->argv[0], (char**)env->argv, env->envp);
+	int r = execve(env->argv[0], (char**)env->argv, env->envp);
 	if (r < 0) {
 		ERROR(pakfire, "Could not execve(): %s\n", strerror(errno));
 	}
