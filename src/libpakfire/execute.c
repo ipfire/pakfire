@@ -19,11 +19,14 @@
 #############################################################################*/
 
 #include <errno.h>
+#include <fcntl.h>
 #include <sched.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/epoll.h>
 #include <sys/personality.h>
 #include <sys/types.h>
+#include <sys/user.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -32,6 +35,8 @@
 #include <pakfire/logging.h>
 #include <pakfire/private.h>
 #include <pakfire/types.h>
+
+#define EPOLL_MAX_EVENTS 2
 
 static char* envp_empty[1] = { NULL };
 
@@ -44,6 +49,103 @@ struct pakfire_execute {
 	int stdout[2];
 	int stderr[2];
 };
+
+struct pakfire_execute_line_buffer {
+	char data[PAGE_SIZE];
+	size_t used;
+};
+
+static int pakfire_execute_logger(Pakfire pakfire, pid_t pid, int stdout, int stderr, int* status) {
+	struct epoll_event ev;
+	struct epoll_event events[EPOLL_MAX_EVENTS];
+	int r = 0;
+
+	int fds[2] = {
+		stdout, stderr,
+	};
+
+	struct buffers {
+		struct pakfire_execute_line_buffer stdout;
+		struct pakfire_execute_line_buffer stderr;
+	} buffers;
+
+	// Setup epoll
+	int epollfd = epoll_create1(0);
+	if (epollfd < 0) {
+		ERROR(pakfire, "Could not initialize epoll(): %s\n", strerror(errno));
+		r = -errno;
+		goto OUT;
+	}
+
+	ev.events = EPOLLIN;
+
+	// Turn file descriptors into non-blocking mode and add them to epoll()
+	for (unsigned int i = 0; i < 2; i++) {
+		int fd = fds[i];
+
+		// Read flags
+		int flags = fcntl(fd, F_GETFL, 0);
+
+		// Set modified flags
+		if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
+			ERROR(pakfire, "Could not set file descriptor %d into non-blocking mode: %s\n",
+				fd, strerror(errno));
+			r = -errno;
+			goto OUT;
+		}
+
+		ev.data.fd = fd;
+
+		if (epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev) < 0) {
+			ERROR(pakfire, "Could not add file descriptor %d to epoll(): %s\n",
+				fd, strerror(errno));
+			r = -errno;
+			goto OUT;
+		}
+	}
+
+	// Loop for as long as the process is alive
+	while (waitpid(pid, status, WNOHANG) == 0) {
+		int fds = epoll_wait(epollfd, events, EPOLL_MAX_EVENTS, -1);
+		if (fds < 1) {
+			ERROR(pakfire, "epoll_wait() failed: %s\n", strerror(errno));
+			r = -errno;
+
+			goto OUT;
+		}
+
+		struct pakfire_execute_line_buffer* buffer;
+
+		for (int i = 0; i < fds; i++) {
+			int fd = events[i].data.fd;
+
+			if (fd == stdout)
+				buffer = &buffers.stdout;
+
+			else if (fd == stderr)
+				buffer = &buffers.stderr;
+
+			else {
+				DEBUG(pakfire, "Received invalid file descriptor %d\n", fd);
+				continue;
+			}
+
+			// Simply read everything into the buffer and send it to the logger
+			size_t bytes_read = read(fd, buffer->data, PAGE_SIZE);
+			if (bytes_read) {
+				// Terminate the buffer
+				buffer->data[bytes_read] = '\0';
+
+				INFO(pakfire, "%s\n", buffer->data);
+			}
+		}
+	}
+
+OUT:
+	close(epollfd);
+
+	return r;
+}
 
 static int pakfire_execute_fork(void* data) {
 	struct pakfire_execute* env = (struct pakfire_execute*)data;
@@ -166,19 +268,26 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 		return -errno;
 	}
 
-	// Close any unused file descriptors
-	if (env.stdout[1])
-		close(env.stdout[1]);
-	if (env.stderr[1])
-		close(env.stderr[1]);
+	// Set some useful error code
+	int r = -ESRCH;
+	int status;
 
 	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
 
-	int status;
-	waitpid(pid, &status, 0);
+	if (flags & PAKFIRE_EXECUTE_LOG_OUTPUT) {
+		// Close any unused file descriptors
+		if (env.stdout[1])
+			close(env.stdout[1]);
+		if (env.stderr[1])
+			close(env.stderr[1]);
 
-	// Set some useful error code
-	int r = -ESRCH;
+		if (pakfire_execute_logger(pakfire, pid, env.stdout[0], env.stderr[0], &status) < 0) {
+			ERROR(pakfire, "Log reading aborted\n");
+		}
+	}
+
+	if (!status)
+		waitpid(pid, &status, 0);
 
 	if (WIFEXITED(status)) {
 		r = WEXITSTATUS(status);

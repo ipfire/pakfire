@@ -351,13 +351,15 @@ static Py_ssize_t Pakfire_len(PakfireObject* self) {
 }
 
 static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* kwds) {
-	char* kwlist[] = {"command", "environ", "enable_network", NULL};
+	char* kwlist[] = {"command", "environ", "enable_network", "log_output", NULL};
 
 	PyObject* command = NULL;
 	PyObject* environ = NULL;
 	int enable_network = 0;
+	int log_output = 1;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Op", kwlist, &command, &environ, &enable_network))
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Opp", kwlist, &command, &environ,
+			&enable_network, &log_output))
 		return NULL;
 
 	// Check if command is a list
@@ -446,6 +448,10 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 	// Enable network?
 	if (enable_network)
 		flags |= PAKFIRE_EXECUTE_ENABLE_NETWORK;
+
+	// Log output?
+	if (log_output)
+		flags |= PAKFIRE_EXECUTE_LOG_OUTPUT;
 
 	// Execute command
 	int r = pakfire_execute(self->pakfire, argv, envp, flags);

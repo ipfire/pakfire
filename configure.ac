@@ -120,6 +120,7 @@ AC_CHECK_LIB([m], [round])
 AC_CHECK_HEADERS([ \
 	assert.h \
 	ctypes.h \
+	fcntl.h \
 	math.h \
 	regex.h \
 	sched.h \
@@ -127,6 +128,7 @@ AC_CHECK_HEADERS([ \
 	stdlib.h \
 	string.h \
 	syslog.h \
+	sys/epoll.h \
 	sys/personality.h \
 	sys/stat.h \
 	unistd.h
@@ -134,6 +136,10 @@ AC_CHECK_HEADERS([ \
 
 AC_CHECK_FUNCS([ \
 	assert \
+	epoll_ctl \
+	epoll_create1 \
+	epoll_wait \
+	fnctl \
 	personality \
 	secure_getenv \
 	strcmp \
