@@ -39,6 +39,10 @@ struct pakfire_execute {
 	Pakfire pakfire;
 	const char** argv;
 	char** envp;
+
+	// File descriptors
+	int stdout[2];
+	int stderr[2];
 };
 
 static int pakfire_execute_fork(void* data) {
@@ -79,6 +83,30 @@ static int pakfire_execute_fork(void* data) {
 		}
 	}
 
+	// Connect standard output and error
+	if (env->stdout[1] && env->stderr[1]) {
+		if (dup2(env->stdout[1], STDOUT_FILENO) < 0) {
+			ERROR(pakfire, "Could not connect fd %d to stdout: %s\n",
+				env->stdout[1], strerror(errno));
+
+			return 1;
+		}
+
+		if (dup2(env->stderr[1], STDERR_FILENO) < 0) {
+			ERROR(pakfire, "Could not connect fd %d to stderr: %s\n",
+				env->stderr[1], strerror(errno));
+
+			return 1;
+		}
+
+		// Close the reading sides of the pipe
+		close(env->stdout[0]);
+		close(env->stderr[0]);
+
+		// Close standard input
+		close(STDIN_FILENO);
+	}
+
 	// exec() command
 	int r = execve(env->argv[0], (char**)env->argv, env->envp);
 	if (r < 0) {
@@ -113,6 +141,23 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 	if (!(flags & PAKFIRE_EXECUTE_ENABLE_NETWORK))
 		cflags |= CLONE_NEWNET;
 
+	// Make some file descriptors for stdout & stderr
+	if (flags & PAKFIRE_EXECUTE_LOG_OUTPUT) {
+		if (pipe(env.stdout) < 0) {
+			ERROR(pakfire, "Could not create file descriptors for stdout: %s\n",
+				strerror(errno));
+
+			return -errno;
+		}
+
+		if (pipe(env.stderr) < 0) {
+			ERROR(pakfire, "Could not create file descriptors for stderr: %s\n",
+				strerror(errno));
+
+			return -errno;
+		}
+	}
+
 	// Fork this process
 	pid_t pid = clone(pakfire_execute_fork, stack + sizeof(stack), cflags, &env);
 	if (pid < 0) {
@@ -121,21 +166,35 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 		return -errno;
 	}
 
+	// Close any unused file descriptors
+	if (env.stdout[1])
+		close(env.stdout[1]);
+	if (env.stderr[1])
+		close(env.stderr[1]);
+
 	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
 
 	int status;
 	waitpid(pid, &status, 0);
 
+	// Set some useful error code
+	int r = -ESRCH;
+
 	if (WIFEXITED(status)) {
-		int r = WEXITSTATUS(status);
+		r = WEXITSTATUS(status);
 
 		DEBUG(pakfire, "Child process exited with code: %d\n", r);
-		return r;
+	} else {
+		ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
 	}
 
-	ERROR(pakfire, "Could not determine the exit status of process %d\n", pid);
+	// Close any file descriptors
+	if (env.stdout[0])
+		close(env.stdout[0]);
+	if (env.stderr[0])
+		close(env.stderr[0]);
 
-	return -ESRCH;
+	return r;
 }
 
 PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags) {

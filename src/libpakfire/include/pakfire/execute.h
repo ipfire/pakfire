@@ -28,7 +28,8 @@ int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], 
 
 enum {
 	PAKFIRE_EXECUTE_NONE			= 0,
-	PAKFIRE_EXECUTE_ENABLE_NETWORK	= 1,
+	PAKFIRE_EXECUTE_ENABLE_NETWORK	= (1 << 0),
+	PAKFIRE_EXECUTE_LOG_OUTPUT      = (1 << 1),
 };
 
 #endif /* PAKFIRE_EXECUTE_H */
