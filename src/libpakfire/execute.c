@@ -98,7 +98,8 @@ static int pakfire_execute_buffer_is_full(const struct pakfire_execute_buffer* b
 	If it finds a whole line in it, it will send it to the logger and repeat the process.
 	If not newline character is found, it will try to read more data until it finds one.
 */
-static int pakfire_execute_logger_proxy(Pakfire pakfire, int fd, struct pakfire_execute_buffer* buffer) {
+static int pakfire_execute_logger_proxy(Pakfire pakfire,
+		int(*log_func)(Pakfire pakfire, const char* data), int fd, struct pakfire_execute_buffer* buffer) {
 	// Fill up buffer from fd
 	while (buffer->used < buffer->size) {
 		ssize_t bytes_read = read(fd, buffer->data + buffer->used,
@@ -133,7 +134,7 @@ static int pakfire_execute_logger_proxy(Pakfire pakfire, int fd, struct pakfire_
 				if (r)
 					return -1;
 
-				return pakfire_execute_logger_proxy(pakfire, fd, buffer);
+				return pakfire_execute_logger_proxy(pakfire, log_func, fd, buffer);
 			}
 
 			// Otherwise we might have only read parts of the output
@@ -155,7 +156,9 @@ static int pakfire_execute_logger_proxy(Pakfire pakfire, int fd, struct pakfire_
 		line[length] = '\0';
 
 		// Log the line
-		INFO(pakfire, "%s", line);
+		int r = log_func(pakfire, line);
+		if (r)
+			return r;
 
 		// Remove line from buffer
 		memmove(buffer->data, buffer->data + length, buffer->used - length);
@@ -165,7 +168,8 @@ static int pakfire_execute_logger_proxy(Pakfire pakfire, int fd, struct pakfire_
 	return 0;
 }
 
-static int pakfire_execute_logger(Pakfire pakfire, pid_t pid, int stdout, int stderr, int* status) {
+static int pakfire_execute_logger(Pakfire pakfire, struct pakfire_execute_logger* logger,
+		pid_t pid, int stdout, int stderr, int* status) {
 	int epollfd = -1;
 	struct epoll_event ev;
 	struct epoll_event events[EPOLL_MAX_EVENTS];
@@ -239,23 +243,26 @@ static int pakfire_execute_logger(Pakfire pakfire, pid_t pid, int stdout, int st
 		}
 
 		struct pakfire_execute_buffer* buffer;
+		int (*log_func)(Pakfire pakfire, const char* data);
 
 		for (int i = 0; i < fds; i++) {
 			int fd = events[i].data.fd;
 
-			if (fd == stdout)
+			if (fd == stdout) {
 				buffer = &buffers.stdout;
+				log_func = logger->log_stdout;
 
-			else if (fd == stderr)
+			} else if (fd == stderr) {
 				buffer = &buffers.stderr;
+				log_func = logger->log_stderr;
 
-			else {
+			} else {
 				DEBUG(pakfire, "Received invalid file descriptor %d\n", fd);
 				continue;
 			}
 
 			// Send everything to the logger
-			r = pakfire_execute_logger_proxy(pakfire, fd, buffer);
+			r = pakfire_execute_logger_proxy(pakfire, log_func, fd, buffer);
 			if (r)
 				goto OUT;
 		}
@@ -271,6 +278,23 @@ OUT:
 
 	return r;
 }
+
+static int default_log_stdout(Pakfire pakfire, const char* line) {
+	INFO(pakfire, "%s", line);
+
+	return 0;
+}
+
+static int default_log_stderr(Pakfire pakfire, const char* line) {
+	ERROR(pakfire, "%s", line);
+
+	return 0;
+}
+
+static struct pakfire_execute_logger default_logger = {
+	.log_stdout = default_log_stdout,
+	.log_stderr = default_log_stderr,
+};
 
 static int pakfire_execute_fork(void* data) {
 	struct pakfire_execute* env = (struct pakfire_execute*)data;
@@ -344,7 +368,8 @@ static int pakfire_execute_fork(void* data) {
 	return 1;
 }
 
-PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[], int flags) {
+PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[],
+		int flags, struct pakfire_execute_logger* logger) {
 	struct pakfire_execute env = {
 		.pakfire = pakfire,
 		.argv = argv,
@@ -360,6 +385,9 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	if (!env.envp)
 		env.envp = envp_empty;
+
+	if (!logger)
+		logger = &default_logger;
 
 	// Configure the new namespace
 	int cflags = CLONE_VFORK | SIGCHLD | CLONE_NEWIPC | CLONE_NEWNS | CLONE_NEWUTS;
@@ -406,7 +434,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 		if (env.stderr[1])
 			close(env.stderr[1]);
 
-		if (pakfire_execute_logger(pakfire, pid, env.stdout[0], env.stderr[0], &status)) {
+		if (pakfire_execute_logger(pakfire, logger, pid, env.stdout[0], env.stderr[0], &status)) {
 			ERROR(pakfire, "Log reading aborted: %s\n", strerror(errno));
 		}
 	}
@@ -431,10 +459,11 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 	return r;
 }
 
-PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[], int flags) {
+PAKFIRE_EXPORT int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[],
+		int flags, struct pakfire_execute_logger* logger) {
 	const char* argv[2] = {
 		command, NULL,
 	};
 
-	return pakfire_execute(pakfire, argv, envp, flags);
+	return pakfire_execute(pakfire, argv, envp, flags, logger);
 }

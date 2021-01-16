@@ -30,7 +30,7 @@ static const char* cmd[2] = {
 };
 
 static int test_does_not_exist(const struct test* t) {
-	int r = pakfire_execute(t->pakfire, cmd, NULL, 0);
+	int r = pakfire_execute(t->pakfire, cmd, NULL, 0, NULL);
 	ASSERT(r != 0);
 
 	return EXIT_SUCCESS;
