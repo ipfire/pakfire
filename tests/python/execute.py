@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
 			self.pakfire.execute(["/usr/bin/does-not-exist"])
 
 	def test_execute_output(self):
-		self.pakfire.execute(["/bin/bash", "--help"], log_output=True)
+		self.pakfire.execute(["/bin/bash", "--help"])
 
 	# This is an interactive test which cannot be performed automatically
 	#def test_shell(self):

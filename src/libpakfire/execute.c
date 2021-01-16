@@ -244,7 +244,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 		cflags |= CLONE_NEWNET;
 
 	// Make some file descriptors for stdout & stderr
-	if (flags & PAKFIRE_EXECUTE_LOG_OUTPUT) {
+	if (!(flags & PAKFIRE_EXECUTE_INTERACTIVE)) {
 		if (pipe(env.stdout) < 0) {
 			ERROR(pakfire, "Could not create file descriptors for stdout: %s\n",
 				strerror(errno));
@@ -274,7 +274,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
 
-	if (flags & PAKFIRE_EXECUTE_LOG_OUTPUT) {
+	if (!(flags & PAKFIRE_EXECUTE_INTERACTIVE)) {
 		// Close any unused file descriptors
 		if (env.stdout[1])
 			close(env.stdout[1]);

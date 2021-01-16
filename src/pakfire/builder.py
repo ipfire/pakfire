@@ -513,4 +513,4 @@ class BuilderContext(object):
 
 		# Enter the shell
 		self.pakfire.execute(["/usr/bin/bash", "--login"],
-			environ=self.environ, enable_network=True, log_output=False)
+			environ=self.environ, enable_network=True, interactive=True)
