@@ -61,6 +61,12 @@ class Test(unittest.TestCase):
 	def test_execute_output(self):
 		self.pakfire.execute(["/bin/bash", "--help"])
 
+		# Run a command with a lot of output which will increase the buffer sizes
+		self.pakfire.execute(["/usr/bin/openssl", "rand", "-hex", "4096"])
+
+		# Run a command that generates lots of lines
+		self.pakfire.execute(["/usr/bin/openssl", "rand", "-base64", "4096"])
+
 	# This is an interactive test which cannot be performed automatically
 	#def test_shell(self):
 	#	self.pakfire.execute(["/bin/bash", "-i"])
