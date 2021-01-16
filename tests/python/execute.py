@@ -67,6 +67,9 @@ class Test(unittest.TestCase):
 		# Run a command that generates lots of lines
 		self.pakfire.execute(["/usr/bin/openssl", "rand", "-base64", "4096"])
 
+		# Multiple newlines in one read
+		self.pakfire.execute(["/usr/bin/printf", "1\n2\n3\n"])
+
 	# This is an interactive test which cannot be performed automatically
 	#def test_shell(self):
 	#	self.pakfire.execute(["/bin/bash", "-i"])
