@@ -36,6 +36,7 @@
 #include <pakfire/private.h>
 #include <pakfire/types.h>
 
+#define BUFFER_SIZE      1024 * 64
 #define EPOLL_MAX_EVENTS 2
 
 static char* envp_empty[1] = { NULL };
@@ -51,46 +52,12 @@ struct pakfire_execute {
 };
 
 struct pakfire_execute_buffer {
-	char* data;
-	size_t size;
+	char data[BUFFER_SIZE];
 	size_t used;
 };
 
-static int pakfire_execute_buffer_realloc(Pakfire pakfire, struct pakfire_execute_buffer* buffer, size_t size) {
-	// We cannot decrease the buffer size
-	if (size <= buffer->size)
-		return -EINVAL;
-
-	// Allocate the new buffer
-	buffer->data = realloc(buffer->data, size);
-	if (!buffer->data)
-		return -errno;
-
-	buffer->size = size;
-
-	DEBUG(pakfire, "Buffer %p is now %zu byte(s) long\n", buffer, buffer->size);
-
-	return 0;
-}
-
-static int pakfire_execute_buffer_init(Pakfire pakfire, struct pakfire_execute_buffer* buffer) {
-	// Initialize all values with nothing
-	buffer->data = NULL;
-	buffer->size = buffer->used = 0;
-
-	// Allocate one page
-	return pakfire_execute_buffer_realloc(pakfire, buffer, PAGE_SIZE);
-}
-
-static void pakfire_execute_buffer_free(struct pakfire_execute_buffer* buffer) {
-	if (buffer->data)
-		free(buffer->data);
-
-	buffer->size = buffer->used = 0;
-}
-
 static int pakfire_execute_buffer_is_full(const struct pakfire_execute_buffer* buffer) {
-	return (buffer->size == buffer->used);
+	return (sizeof(buffer->data) == buffer->used);
 }
 
 /*
@@ -100,10 +67,12 @@ static int pakfire_execute_buffer_is_full(const struct pakfire_execute_buffer* b
 */
 static int pakfire_execute_logger_proxy(Pakfire pakfire,
 		int(*log_func)(Pakfire pakfire, const char* data), int fd, struct pakfire_execute_buffer* buffer) {
+	char line[BUFFER_SIZE + 1];
+
 	// Fill up buffer from fd
-	while (buffer->used < buffer->size) {
+	while (buffer->used < sizeof(buffer->data)) {
 		ssize_t bytes_read = read(fd, buffer->data + buffer->used,
-				buffer->size - buffer->used);
+				sizeof(buffer->data) - buffer->used);
 
 		// Handle errors
 		if (bytes_read < 0) {
@@ -128,26 +97,19 @@ static int pakfire_execute_logger_proxy(Pakfire pakfire,
 
 		// No newline found
 		if (!eol) {
-			// If the buffer is full, we double its size and try to read more
+			// If the buffer is full, we send the content to the logger and try again
+			// This should not happen in practise
 			if (pakfire_execute_buffer_is_full(buffer)) {
-				int r = pakfire_execute_buffer_realloc(pakfire, buffer, buffer->size * 2);
-				if (r)
-					return -1;
-
-				return pakfire_execute_logger_proxy(pakfire, log_func, fd, buffer);
-			}
+				ERROR(pakfire, "Logging buffer is full. Sending all content\n");
+				eol = buffer->data + sizeof(buffer->data) - 1;
 
 			// Otherwise we might have only read parts of the output
-			return 0;
+			} else
+				break;
 		}
 
 		// Find the length of the string
 		size_t length = eol - buffer->data + 1;
-
-		DEBUG(pakfire, "Found a line of %zu byte(s) length\n", length);
-
-		// Allocate a new buffer that is large enough to hold the line
-		char* line = alloca(length + 1);
 
 		// Copy the line into the buffer
 		memcpy(line, buffer->data, length);
@@ -184,18 +146,7 @@ static int pakfire_execute_logger(Pakfire pakfire, struct pakfire_execute_logger
 		struct pakfire_execute_buffer stdout;
 		struct pakfire_execute_buffer stderr;
 	} buffers;
-
-	r = pakfire_execute_buffer_init(pakfire, &buffers.stdout);
-	if (r) {
-		ERROR(pakfire, "Could not initialize buffer for stdout: %s\n", strerror(errno));
-		goto OUT;
-	}
-
-	r = pakfire_execute_buffer_init(pakfire, &buffers.stderr);
-	if (r) {
-		ERROR(pakfire, "Could not initialize buffer for stderr: %s\n", strerror(errno));
-		goto OUT;
-	}
+	buffers.stdout.used = buffers.stderr.used = 0;
 
 	// Setup epoll
 	epollfd = epoll_create1(0);
@@ -271,10 +222,6 @@ static int pakfire_execute_logger(Pakfire pakfire, struct pakfire_execute_logger
 OUT:
 	if (epollfd > 0)
 		close(epollfd);
-
-	// Free buffers
-	pakfire_execute_buffer_free(&buffers.stdout);
-	pakfire_execute_buffer_free(&buffers.stderr);
 
 	return r;
 }
