@@ -350,16 +350,43 @@ static Py_ssize_t Pakfire_len(PakfireObject* self) {
 	return pakfire_count_packages(self->pakfire);
 }
 
+static PyObject* Pakfire_execute_logging_callback = NULL;
+
+static int __Pakfire_execute_logging_callback(Pakfire pakfire, int priority, const char* data) {
+	int r = 0;
+
+	// Do nothing if callback isn't set
+	if (!Pakfire_execute_logging_callback)
+		return 0;
+
+	// Create tuple with arguments for the callback function
+	PyObject* args = Py_BuildValue("(is)", priority, data);
+	if (!args)
+		return 1;
+
+	PyObject* result = PyEval_CallObject(Pakfire_execute_logging_callback, args);
+    if (result && PyLong_Check(result)) {
+        r = PyLong_AsLong(result);
+    }
+
+	Py_XDECREF(args);
+	Py_DECREF(result);
+
+	return r;
+}
+
 static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* kwds) {
-	char* kwlist[] = {"command", "environ", "enable_network", "interactive", NULL};
+	char* kwlist[] = {"command", "environ", "enable_network", "interactive",
+		"logging_callback", NULL};
 
 	PyObject* command = NULL;
 	PyObject* environ = NULL;
 	int enable_network = 0;
 	int interactive = 0;
+	PyObject* logging_callback = NULL;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Opp", kwlist, &command, &environ,
-			&enable_network, &interactive))
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|OppO", kwlist, &command, &environ,
+			&enable_network, &interactive, &logging_callback))
 		return NULL;
 
 	// Check if command is a list
@@ -384,6 +411,12 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 			PyErr_Format(PyExc_TypeError, "Item %u in command is not a string", i);
 			return NULL;
 		}
+	}
+
+	// Check if logging_callback is
+	if (logging_callback && !PyCallable_Check(logging_callback)) {
+		PyErr_SetString(PyExc_TypeError, "logging_callback must be callable\n");
+		return NULL;
 	}
 
 	ssize_t environ_length = 0;
@@ -453,8 +486,12 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 	if (interactive)
 		flags |= PAKFIRE_EXECUTE_INTERACTIVE;
 
+	// Set logging callback
+	Pakfire_execute_logging_callback = logging_callback;
+
 	// Execute command
-	int r = pakfire_execute(self->pakfire, argv, envp, flags, NULL);
+	int r = pakfire_execute(self->pakfire, argv, envp, flags,
+		(logging_callback) ? __Pakfire_execute_logging_callback : NULL);
 
 	// Cleanup
 	for (unsigned int i = 0; envp[i]; i++)

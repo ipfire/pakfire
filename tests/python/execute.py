@@ -70,6 +70,12 @@ class Test(unittest.TestCase):
 		# Multiple newlines in one read
 		self.pakfire.execute(["/usr/bin/printf", "1\n2\n3\n"])
 
+	def test_execute_logger(self):
+		def log(priority, message):
+			print("LOG (%s): %s" % (priority, message.rstrip()))
+
+		self.pakfire.execute(["/bin/bash", "--help"], logging_callback=log)
+
 	# This is an interactive test which cannot be performed automatically
 	#def test_shell(self):
 	#	self.pakfire.execute(["/bin/bash", "-i"])
