@@ -29,6 +29,8 @@
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
+#define DATABASE_PATH PAKFIRE_PRIVATE_DIR "/packages.db"
+
 struct pakfire_db {
 	Pakfire pakfire;
 	int nrefs;
@@ -49,14 +51,11 @@ int pakfire_db_env_init(Pakfire pakfire, MDB_env** env) {
 		return r;
 	}
 
-	const char* root = pakfire_get_path(pakfire);
-	char* path = pakfire_path_join(root, "var/lib/pakfire/database.db");
-
-	// Ensure the directory exists
-	pakfire_mkdir(pakfire, path, 0);
+	// The database path
+	char* path = pakfire_make_path(pakfire, DATABASE_PATH);
 
 	// Open the database environment
-	r = mdb_env_open(*env, path, 0, 0660);
+	r = mdb_env_open(*env, path, MDB_NOSUBDIR, 0660);
 	if (r) {
 		switch (r) {
 			case MDB_VERSION_MISMATCH:
