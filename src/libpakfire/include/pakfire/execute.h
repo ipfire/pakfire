@@ -23,15 +23,12 @@
 
 #include <pakfire/types.h>
 
-struct pakfire_execute_logger {
-	int (*log_stdout)(Pakfire pakfire, const char* data);
-	int (*log_stderr)(Pakfire pakfire, const char* data);
-};
+typedef int (*pakfire_execute_logging_callback)(Pakfire pakfire, int priority, const char* data);
 
 int pakfire_execute(Pakfire pakfire, const char* argv[], char* envp[],
-	int flags, struct pakfire_execute_logger* logger);
+	int flags, pakfire_execute_logging_callback logging_callback);
 int pakfire_execute_command(Pakfire pakfire, const char* command, char* envp[],
-	int flags, struct pakfire_execute_logger* logger);
+	int flags, pakfire_execute_logging_callback logging_callback);
 
 enum {
 	PAKFIRE_EXECUTE_NONE			= 0,
