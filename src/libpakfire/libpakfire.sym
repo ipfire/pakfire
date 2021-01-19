@@ -34,6 +34,7 @@ global:
 	pakfire_get_path;
 	pakfire_get_pool;
 	pakfire_get_repo;
+	pakfire_make_path;
 	pakfire_ref;
 	pakfire_search;
 	pakfire_set_cache_path;

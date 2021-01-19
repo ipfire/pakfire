@@ -34,6 +34,7 @@ Pakfire pakfire_ref(Pakfire pakfire);
 Pakfire pakfire_unref(Pakfire pakfire);
 
 const char* pakfire_get_path(Pakfire pakfire);
+char* pakfire_make_path(Pakfire pakfire, const char* path);
 const char* pakfire_get_arch(Pakfire pakfire);
 
 const char** pakfire_get_installonly(Pakfire pakfire);

@@ -114,6 +114,8 @@ static void _pakfire_free(Pakfire pakfire) {
 }
 
 PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char* arch) {
+	int r;
+
 	// Default to the native architecture
 	if (!arch)
 		arch = pakfire_arch_native();
@@ -155,8 +157,20 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 	DEBUG(p, "  arch = %s\n", pakfire_get_arch(p));
 	DEBUG(p, "  path = %s\n", pakfire_get_path(p));
 
+	// Make sure that our private directory exists
+	char* private_dir = pakfire_make_path(p, PAKFIRE_PRIVATE_DIR);
+	r = pakfire_mkdir(p, private_dir, 0);
+	if (r) {
+		ERROR(p, "Could not create private directory %s: %s\n",
+			private_dir, strerror(errno));
+		free(private_dir);
+
+		_pakfire_free(p);
+		return r;
+	}
+
 	// Initialise the database environment
-	int r = pakfire_db_env_init(p, &p->mdb_env);
+	r = pakfire_db_env_init(p, &p->mdb_env);
 	if (r) {
 		_pakfire_free(p);
 
@@ -199,6 +213,14 @@ PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
 
 PAKFIRE_EXPORT const char* pakfire_get_path(Pakfire pakfire) {
 	return pakfire->path;
+}
+
+PAKFIRE_EXPORT char* pakfire_make_path(Pakfire pakfire, const char* path) {
+	// Make sure that path never starts with /
+	if (path && path[0] == '/')
+		path++;
+
+	return pakfire_path_join(pakfire->path, path);
 }
 
 PAKFIRE_EXPORT const char* pakfire_get_arch(Pakfire pakfire) {

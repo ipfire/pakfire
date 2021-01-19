@@ -186,6 +186,9 @@ AC_ARG_WITH([systemdsystemunitdir],
 AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])
 AM_CONDITIONAL(HAVE_SYSTEMD, [test -n "$with_systemdsystemunitdir"])
 
+AC_DEFINE_UNQUOTED([PAKFIRE_PRIVATE_DIR], ["/var/lib/${PACKAGE_NAME}"],
+	[The path where Pakfire stores its private data])
+
 AC_CONFIG_FILES([
 	Makefile
 	po/Makefile.in
