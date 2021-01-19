@@ -174,6 +174,7 @@ LIBS="$save_LIBS"
 
 PKG_CHECK_MODULES([ARCHIVE], [libarchive >= 3.3.3])
 PKG_CHECK_MODULES([PYTHON_DEVEL], [python-${PYTHON_VERSION}])
+PKG_CHECK_MODULES([LMDB], [lmdb])
 PKG_CHECK_MODULES([LZMA], [liblzma])
 
 AM_PATH_LIBGCRYPT([1.8.0], [], [AC_MSG_ERROR([*** libgcrypt not found])])

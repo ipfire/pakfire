@@ -339,6 +339,7 @@ libpakfire_la_LIBADD = \
 	$(ARCHIVE_LIBS) \
 	$(GPGME_LIBS) \
 	$(LIBGCRYPT_LIBS) \
+	$(LMDB_LIBS) \
 	$(LZMA_LIBS) \
 	$(SOLV_LIBS)
 
