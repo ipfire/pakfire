@@ -101,7 +101,7 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 		return -ENOENT;
 	}
 
-	Pakfire p = pakfire_calloc(1, sizeof(*p) * 2);
+	Pakfire p = pakfire_calloc(1, sizeof(*p));
 	if (!p)
 		return -ENOMEM;
 
