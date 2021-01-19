@@ -79,6 +79,8 @@ static void free_repo_appdata(struct pakfire_repo_appdata* appdata) {
 
 void pakfire_repo_free_all(Pakfire pakfire) {
 	Pool* pool = pakfire_get_solv_pool(pakfire);
+	if (!pool)
+		return;
 
 	Repo* repo;
 	int i;
