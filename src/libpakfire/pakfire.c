@@ -29,6 +29,8 @@
 #include <syslog.h>
 #include <unistd.h>
 
+#include <lmdb.h>
+
 #include <solv/evr.h>
 #include <solv/pool.h>
 #include <solv/poolarch.h>
@@ -36,6 +38,7 @@
 
 #include <pakfire/arch.h>
 #include <pakfire/constants.h>
+#include <pakfire/db.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/packagelist.h>
@@ -49,6 +52,9 @@ struct _Pakfire {
 	char* path;
 	char* cache_path;
 	char* arch;
+
+	// Database Environment
+	MDB_env* mdb_env;
 
 	// Pool stuff
 	Pool* pool;
@@ -79,6 +85,32 @@ static int log_priority(const char* priority) {
 		return LOG_DEBUG;
 
 	return 0;
+}
+
+// A utility function is already called pakfire_free
+static void _pakfire_free(Pakfire pakfire) {
+	DEBUG(pakfire, "Releasing Pakfire at %p\n", pakfire);
+
+	pakfire_repo_free_all(pakfire);
+
+	if (pakfire->mdb_env)
+		pakfire_db_env_free(pakfire, pakfire->mdb_env);
+
+	if (pakfire->pool)
+		pool_free(pakfire->pool);
+
+	queue_free(&pakfire->installonly);
+
+	if (pakfire->arch)
+		pakfire_free(pakfire->arch);
+
+	if (pakfire->path)
+		pakfire_free(pakfire->path);
+
+	if (pakfire->cache_path)
+		pakfire_free(pakfire->cache_path);
+
+	pakfire_free(pakfire);
 }
 
 PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char* arch) {
@@ -123,6 +155,14 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 	DEBUG(p, "  arch = %s\n", pakfire_get_arch(p));
 	DEBUG(p, "  path = %s\n", pakfire_get_path(p));
 
+	// Initialise the database environment
+	int r = pakfire_db_env_init(p, &p->mdb_env);
+	if (r) {
+		_pakfire_free(p);
+
+		return r;
+	}
+
 	// Initialize the pool
 	p->pool = pool_create();
 	pool_setdisttype(p->pool, DISTTYPE_RPM);
@@ -149,23 +189,10 @@ PAKFIRE_EXPORT Pakfire pakfire_ref(Pakfire pakfire) {
 }
 
 PAKFIRE_EXPORT Pakfire pakfire_unref(Pakfire pakfire) {
-	if (!pakfire)
-		return NULL;
-
 	if (--pakfire->nrefs > 0)
 		return pakfire;
 
-	DEBUG(pakfire, "Releasing Pakfire at %p\n", pakfire);
-
-	pakfire_repo_free_all(pakfire);
-	pool_free(pakfire->pool);
-	queue_free(&pakfire->installonly);
-
-	pakfire_free(pakfire->path);
-	pakfire_free(pakfire->cache_path);
-	pakfire_free(pakfire->arch);
-
-	pakfire_free(pakfire);
+	_pakfire_free(pakfire);
 
 	return NULL;
 }
