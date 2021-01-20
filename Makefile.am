@@ -323,7 +323,8 @@ pkginclude_HEADERS += \
 libpakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-fvisibility=hidden \
-	$(LIBGCRYPT_CFLAGS)
+	$(LIBGCRYPT_CFLAGS) \
+	$(SQLITE3_CFLAGS)
 
 libpakfire_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
@@ -342,7 +343,8 @@ libpakfire_la_LIBADD = \
 	$(GPGME_LIBS) \
 	$(LIBGCRYPT_LIBS) \
 	$(LZMA_LIBS) \
-	$(SOLV_LIBS)
+	$(SOLV_LIBS) \
+	$(SQLITE3_LIBS)
 
 libpakfire_la_DEPENDENCIES = \
 	src/libpakfire/libpakfire.sym \

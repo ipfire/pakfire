@@ -82,6 +82,23 @@ static int log_priority(const char* priority) {
 	return 0;
 }
 
+static int pakfire_populate_pool(Pakfire pakfire) {
+	struct pakfire_db* db;
+	int r;
+
+	// Open database in read-only mode and try to load all installed packages
+	r = pakfire_db_open(&db, pakfire, PAKFIRE_DB_READWRITE);
+	if (r)
+		return r;
+
+	// TODO
+
+	// Free database
+	pakfire_db_unref(db);
+
+	return 0;
+}
+
 // A utility function is already called pakfire_free
 static void _pakfire_free(Pakfire pakfire) {
 	DEBUG(pakfire, "Releasing Pakfire at %p\n", pakfire);
@@ -171,6 +188,14 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 
 	// Set architecture of the pool
 	pool_setarch(p->pool, p->arch);
+
+	// Populate pool
+	r = pakfire_populate_pool(p);
+	if (r) {
+		_pakfire_free(p);
+
+		return r;
+	}
 
 	// Initialise cache
 	pakfire_set_cache_path(p, CACHE_PATH);

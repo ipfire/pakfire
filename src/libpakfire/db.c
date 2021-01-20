@@ -21,6 +21,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <sqlite3.h>
+
 #include <pakfire/db.h>
 #include <pakfire/logging.h>
 #include <pakfire/pakfire.h>
@@ -35,9 +37,30 @@ struct pakfire_db {
 	int nrefs;
 
 	int mode;
+
+	sqlite3* handle;
 };
 
+static void pakfire_db_free(struct pakfire_db* db) {
+	DEBUG(db->pakfire, "Releasing database at %p\n", db);
+
+	// Close database handle
+	if (db->handle) {
+		int r = sqlite3_close(db->handle);
+		if (r != SQLITE_OK) {
+			ERROR(db->pakfire, "Could not close database handle: %s\n",
+				sqlite3_errmsg(db->handle));
+		}
+	}
+
+	pakfire_unref(db->pakfire);
+
+	pakfire_free(db);
+}
+
 PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int flags) {
+	int r = 1;
+
 	struct pakfire_db* o = pakfire_calloc(1, sizeof(*o));
 	if (!o)
 		return -ENOMEM;
@@ -47,29 +70,49 @@ PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int 
 	o->pakfire = pakfire_ref(pakfire);
 	o->nrefs = 1;
 
-	// Store mode
-	if (flags & PAKFIRE_DB_READWRITE)
+	int sqlite3_flags = 0;
+
+	// Store mode & forward it to sqlite3
+	if (flags & PAKFIRE_DB_READWRITE) {
 		o->mode = PAKFIRE_DB_READWRITE;
-	else
+		sqlite3_flags |= SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+	} else {
 		o->mode = PAKFIRE_DB_READONLY;
+		sqlite3_flags |= SQLITE_OPEN_READONLY;
+	}
+
+	// Make the filename
+	char* path = pakfire_make_path(o->pakfire, DATABASE_PATH);
+	if (!path)
+		goto END;
+
+	// Try to open the sqlite3 database file
+	r = sqlite3_open_v2(path, &o->handle, sqlite3_flags, NULL);
+	if (r != SQLITE_OK) {
+		ERROR(pakfire, "Could not open database %s: %s\n",
+			path, sqlite3_errmsg(o->handle));
+
+		r = 1;
+		goto END;
+	}
 
 	*db = o;
+	r = 0;
 
-	return 0;
+END:
+	if (r)
+		pakfire_db_free(o);
+
+	if (path)
+		free(path);
+
+	return r;
 }
 
 PAKFIRE_EXPORT struct pakfire_db* pakfire_db_ref(struct pakfire_db* db) {
 	db->nrefs++;
 
 	return db;
-}
-
-static void pakfire_db_free(struct pakfire_db* db) {
-	DEBUG(db->pakfire, "Releasing database at %p\n", db);
-
-	pakfire_unref(db->pakfire);
-
-	pakfire_free(db);
 }
 
 PAKFIRE_EXPORT struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
