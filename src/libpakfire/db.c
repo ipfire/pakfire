@@ -41,6 +41,13 @@ struct pakfire_db {
 	sqlite3* handle;
 };
 
+static void logging_callback(void* data, int r, const char* msg) {
+	Pakfire pakfire = (Pakfire)data;
+
+	ERROR(pakfire, "Database Error: %s: %s\n",
+		sqlite3_errstr(r), msg);
+}
+
 static void pakfire_db_free(struct pakfire_db* db) {
 	DEBUG(db->pakfire, "Releasing database at %p\n", db);
 
@@ -56,6 +63,19 @@ static void pakfire_db_free(struct pakfire_db* db) {
 	pakfire_unref(db->pakfire);
 
 	pakfire_free(db);
+}
+
+static int pakfire_db_setup(struct pakfire_db* db) {
+	// Setup logging
+	sqlite3_config(SQLITE_CONFIG_LOG, logging_callback, db->pakfire);
+
+	// Done when not in read-write mode
+	if (db->mode != PAKFIRE_DB_READWRITE)
+		return 0;
+
+	// XXX Create schema
+
+	return 0;
 }
 
 PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int flags) {
@@ -95,6 +115,11 @@ PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int 
 		r = 1;
 		goto END;
 	}
+
+	// Setup the database
+	r = pakfire_db_setup(o);
+	if (r)
+		goto END;
 
 	*db = o;
 	r = 0;
