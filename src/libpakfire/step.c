@@ -530,6 +530,10 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
+					r = pakfire_db_add_package(db, step->package);
+					if (r)
+						break;
+
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTIN);
 					break;
 
@@ -543,6 +547,10 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
+					r = pakfire_db_add_package(db, step->package);
+					if (r)
+						break;
+
 					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUP);
 					break;
 
@@ -553,6 +561,10 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 						break;
 
 					r = pakfire_step_erase(step);
+					if (r)
+						break;
+
+					r = pakfire_db_remove_package(db, step->package);
 					if (r)
 						break;
 
