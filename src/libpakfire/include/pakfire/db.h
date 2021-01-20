@@ -23,14 +23,9 @@
 
 #ifdef PAKFIRE_PRIVATE
 
-#include <lmdb.h>
-
 #include <pakfire/types.h>
 
 struct pakfire_db;
-
-int pakfire_db_env_init(Pakfire pakfire, MDB_env** env);
-void pakfire_db_env_free(Pakfire pakfire, MDB_env* env);
 
 int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire);
 

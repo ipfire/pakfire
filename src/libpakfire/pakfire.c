@@ -29,8 +29,6 @@
 #include <syslog.h>
 #include <unistd.h>
 
-#include <lmdb.h>
-
 #include <solv/evr.h>
 #include <solv/pool.h>
 #include <solv/poolarch.h>
@@ -52,9 +50,6 @@ struct _Pakfire {
 	char* path;
 	char* cache_path;
 	char* arch;
-
-	// Database Environment
-	MDB_env* mdb_env;
 
 	// Pool stuff
 	Pool* pool;
@@ -92,9 +87,6 @@ static void _pakfire_free(Pakfire pakfire) {
 	DEBUG(pakfire, "Releasing Pakfire at %p\n", pakfire);
 
 	pakfire_repo_free_all(pakfire);
-
-	if (pakfire->mdb_env)
-		pakfire_db_env_free(pakfire, pakfire->mdb_env);
 
 	if (pakfire->pool)
 		pool_free(pakfire->pool);
@@ -166,14 +158,6 @@ PAKFIRE_EXPORT int pakfire_create(Pakfire* pakfire, const char* path, const char
 		free(private_dir);
 
 		_pakfire_free(p);
-		return r;
-	}
-
-	// Initialise the database environment
-	r = pakfire_db_env_init(p, &p->mdb_env);
-	if (r) {
-		_pakfire_free(p);
-
 		return r;
 	}
 
