@@ -340,7 +340,7 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	DEBUG(transaction->pakfire, "Running Transaction %p\n", transaction);
 
 	// Open the database
-	r = pakfire_db_open(&db, transaction->pakfire);
+	r = pakfire_db_open(&db, transaction->pakfire, PAKFIRE_DB_READWRITE);
 	if (r) {
 		ERROR(transaction->pakfire, "Could not open the database\n");
 		return r;

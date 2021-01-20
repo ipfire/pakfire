@@ -33,9 +33,11 @@
 struct pakfire_db {
 	Pakfire pakfire;
 	int nrefs;
+
+	int mode;
 };
 
-PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire) {
+PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int flags) {
 	struct pakfire_db* o = pakfire_calloc(1, sizeof(*o));
 	if (!o)
 		return -ENOMEM;
@@ -44,6 +46,12 @@ PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire) {
 
 	o->pakfire = pakfire_ref(pakfire);
 	o->nrefs = 1;
+
+	// Store mode
+	if (flags & PAKFIRE_DB_READWRITE)
+		o->mode = PAKFIRE_DB_READWRITE;
+	else
+		o->mode = PAKFIRE_DB_READONLY;
 
 	*db = o;
 

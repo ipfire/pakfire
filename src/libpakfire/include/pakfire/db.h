@@ -25,7 +25,12 @@
 
 struct pakfire_db;
 
-int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire);
+enum {
+	PAKFIRE_DB_READONLY  = 0,
+	PAKFIRE_DB_READWRITE = (1 << 0),
+};
+
+int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int flags);
 
 struct pakfire_db* pakfire_db_ref(struct pakfire_db* db);
 struct pakfire_db* pakfire_db_unref(struct pakfire_db* db);
