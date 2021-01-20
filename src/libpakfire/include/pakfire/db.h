@@ -21,8 +21,6 @@
 #ifndef PAKFIRE_DB_H
 #define PAKFIRE_DB_H
 
-#ifdef PAKFIRE_PRIVATE
-
 #include <pakfire/types.h>
 
 struct pakfire_db;
@@ -34,7 +32,5 @@ struct pakfire_db* pakfire_db_unref(struct pakfire_db* db);
 
 int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg);
 int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg);
-
-#endif
 
 #endif /* PAKFIRE_DB_H */

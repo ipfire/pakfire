@@ -22,8 +22,9 @@
 #include <stdlib.h>
 
 #include <pakfire/db.h>
-#include <pakfire/pakfire.h>
 #include <pakfire/logging.h>
+#include <pakfire/pakfire.h>
+#include <pakfire/private.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
@@ -34,7 +35,7 @@ struct pakfire_db {
 	int nrefs;
 };
 
-int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire) {
+PAKFIRE_EXPORT int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire) {
 	struct pakfire_db* o = pakfire_calloc(1, sizeof(*o));
 	if (!o)
 		return -ENOMEM;
@@ -49,7 +50,7 @@ int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire) {
 	return 0;
 }
 
-struct pakfire_db* pakfire_db_ref(struct pakfire_db* db) {
+PAKFIRE_EXPORT struct pakfire_db* pakfire_db_ref(struct pakfire_db* db) {
 	db->nrefs++;
 
 	return db;
@@ -63,7 +64,7 @@ static void pakfire_db_free(struct pakfire_db* db) {
 	pakfire_free(db);
 }
 
-struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
+PAKFIRE_EXPORT struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
 	if (--db->nrefs > 0)
 		return db;
 
@@ -72,10 +73,10 @@ struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
 	return NULL;
 }
 
-int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg) {
 	return 0; // TODO
 }
 
-int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg) {
+PAKFIRE_EXPORT int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg) {
 	return 0; // TODO
 }

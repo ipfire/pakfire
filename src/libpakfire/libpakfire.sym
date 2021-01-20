@@ -78,6 +78,13 @@ global:
 	pakfire_archive_signature_ref;
 	pakfire_archive_signature_unref;
 
+	# db
+	pakfire_db_add_package;
+	pakfire_db_open;
+	pakfire_db_ref;
+	pakfire_db_remove_package;
+	pakfire_db_unref;
+
 	# file
 	pakfire_file_append;
 	pakfire_file_cmp;
