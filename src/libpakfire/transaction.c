@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <solv/transaction.h>
 
+#include <pakfire/db.h>
 #include <pakfire/i18n.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
@@ -332,13 +333,22 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 }
 
 PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
+	struct pakfire_db* db;
+	int r;
+
 	DEBUG(transaction->pakfire, "Running Transaction %p\n", transaction);
-	int r = 0;
+
+	// Open the database
+	r = pakfire_db_open(&db, transaction->pakfire);
+	if (r) {
+		ERROR(transaction->pakfire, "Could not open the database\n");
+		return r;
+	}
 
 	// Verify steps
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_VERIFY);
 	if (r)
-		return r;
+		goto ERROR;
 
 	// Execute all pre transaction actions
 	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_PRETRANS);
@@ -354,12 +364,11 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	if (r)
 		goto ERROR;
 
-	INFO(transaction->pakfire, "The transaction has finished successfully\n");
-
-	return 0;
+	DEBUG(transaction->pakfire, "The transaction has finished successfully\n");
 
 ERROR:
-	ERROR(transaction->pakfire, "The transaction was not executed successfully\n");
+	// Free the database
+	pakfire_db_unref(db);
 
 	return r;
 }
