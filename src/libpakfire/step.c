@@ -28,6 +28,7 @@
 
 #include <pakfire/archive.h>
 #include <pakfire/constants.h>
+#include <pakfire/db.h>
 #include <pakfire/execute.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
@@ -457,7 +458,8 @@ static int pakfire_step_erase(PakfireStep step) {
 	return 0; // TODO
 }
 
-PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step, const pakfire_action_type_t action) {
+PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
+		struct pakfire_db* db, const pakfire_action_type_t action) {
 	DEBUG(step->pakfire, "Running Step %p (%s)\n", step, pakfire_action_type_string(action));
 
 	pakfire_step_type_t type = pakfire_step_get_type(step);

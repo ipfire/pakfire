@@ -311,7 +311,8 @@ PAKFIRE_EXPORT char* pakfire_transaction_dump(PakfireTransaction transaction, si
 	return string;
 }
 
-static int pakfire_transaction_run_steps(PakfireTransaction transaction, const pakfire_action_type_t action) {
+static int pakfire_transaction_run_steps(PakfireTransaction transaction,
+		struct pakfire_db* db, const pakfire_action_type_t action) {
 	int r = 0;
 
 	// Walk through all steps
@@ -320,7 +321,7 @@ static int pakfire_transaction_run_steps(PakfireTransaction transaction, const p
 		PakfireStep step = *steps++;
 
 		// Verify the step
-		r = pakfire_step_run(step, action);
+		r = pakfire_step_run(step, db, action);
 
 		// End loop if action was unsuccessful
 		if (r) {
@@ -346,21 +347,21 @@ PAKFIRE_EXPORT int pakfire_transaction_run(PakfireTransaction transaction) {
 	}
 
 	// Verify steps
-	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_VERIFY);
+	r = pakfire_transaction_run_steps(transaction, db, PAKFIRE_ACTION_VERIFY);
 	if (r)
 		goto ERROR;
 
 	// Execute all pre transaction actions
-	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_PRETRANS);
+	r = pakfire_transaction_run_steps(transaction, db, PAKFIRE_ACTION_PRETRANS);
 	if (r)
 		goto ERROR;
 
-	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_EXECUTE);
+	r = pakfire_transaction_run_steps(transaction, db, PAKFIRE_ACTION_EXECUTE);
 	if (r)
 		goto ERROR;
 
 	// Execute all post transaction actions
-	r = pakfire_transaction_run_steps(transaction, PAKFIRE_ACTION_POSTTRANS);
+	r = pakfire_transaction_run_steps(transaction, db, PAKFIRE_ACTION_POSTTRANS);
 	if (r)
 		goto ERROR;
 
