@@ -224,6 +224,41 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 	if (r)
 		return 1;
 
+	// Create packages table
+	r = pakfire_db_execute(db,
+		"CREATE TABLE IF NOT EXISTS packages("
+			"id             INTEGER PRIMARY KEY, "
+			"name           TEXT, "
+			"epoch          INTEGER, "
+			"version        TEXT, "
+			"release        TEXT, "
+			"arch           TEXT, "
+			"groups         TEXT, "
+			"filename       TEXT, "
+			"size           INTEGER, "
+			"inst_size      INTEGER, "
+			"hash1          TEXT, "
+			"license        TEXT, "
+			"summary        TEXT, "
+			"description    TEXT, "
+			"uuid           TEXT, "
+			"vendor         TEXT, "
+			"build_id       TEXT, "
+			"build_host     TEXT, "
+			"build_date     TEXT, "
+			"build_time     INTEGER, "
+			"installed      INTEGER, "
+			"reason         TEXT, "
+			"repository     TEXT"
+		")");
+	if (r)
+		return 1;
+
+	// packages: Create index to find package by name
+	r = pakfire_db_execute(db, "CREATE INDEX IF NOT EXISTS packages_name ON packages(name)");
+	if (r)
+		return 1;
+
 	return 0;
 }
 
