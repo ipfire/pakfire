@@ -367,7 +367,7 @@ PAKFIRE_EXPORT int pakfire_execute(Pakfire pakfire, const char* argv[], char* en
 
 	// Set some useful error code
 	int r = -ESRCH;
-	int status;
+	int status = 0;
 
 	DEBUG(pakfire, "Waiting for PID %d to finish its work\n", pid);
 
