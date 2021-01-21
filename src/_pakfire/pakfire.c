@@ -497,8 +497,15 @@ static PyObject* Pakfire_execute(PakfireObject* self, PyObject* args, PyObject* 
 	for (unsigned int i = 0; envp[i]; i++)
 		free(envp[i]);
 
+	// Raise an OS error if r < 0
+	if (r < 0) {
+		errno = -r;
+
+		PyErr_SetFromErrno(PyExc_OSError);
+		return NULL;
+
 	// Raise exception when the command failed
-	if (r) {
+	} else if (r > 0) {
 		PyObject* code = PyLong_FromLong(r);
 
 		PyErr_SetObject(PyExc_CommandExecutionError, code);
