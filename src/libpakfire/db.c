@@ -32,6 +32,9 @@
 
 #define DATABASE_PATH PAKFIRE_PRIVATE_DIR "/packages.db"
 
+#define CURRENT_SCHEMA 7
+#define SCHEMA_MIN_SUP 7
+
 struct pakfire_db {
 	Pakfire pakfire;
 	int nrefs;
@@ -39,6 +42,7 @@ struct pakfire_db {
 	int mode;
 
 	sqlite3* handle;
+	int schema;
 };
 
 static void logging_callback(void* data, int r, const char* msg) {
@@ -50,13 +54,31 @@ static void logging_callback(void* data, int r, const char* msg) {
 
 static int pakfire_db_execute(struct pakfire_db* db, const char* stmt) {
 	int r;
-	char* error = NULL;
+
+	DEBUG(db->pakfire, "Executing database query: %s\n", stmt);
 
 	do {
-		r = sqlite3_exec(db->handle, stmt, NULL, NULL, &error);
+		r = sqlite3_exec(db->handle, stmt, NULL, NULL, NULL);
 	} while (r == SQLITE_BUSY);
 
+	// Log any errors
+	if (r) {
+		ERROR(db->pakfire, "Database query failed: %s\n", sqlite3_errmsg(db->handle));
+	}
+
 	return r;
+}
+
+static int pakfire_db_begin_transaction(struct pakfire_db* db) {
+	return pakfire_db_execute(db, "BEGIN TRANSACTION");
+}
+
+static int pakfire_db_commit(struct pakfire_db* db) {
+	return pakfire_db_execute(db, "COMMIT");
+}
+
+static int pakfire_db_rollback(struct pakfire_db* db) {
+	return pakfire_db_execute(db, "ROLLBACK");
 }
 
 /*
@@ -88,6 +110,166 @@ static void pakfire_db_free(struct pakfire_db* db) {
 	pakfire_free(db);
 }
 
+static sqlite3_value* pakfire_db_get(struct pakfire_db* db, const char* key) {
+	sqlite3_stmt* stmt = NULL;
+	sqlite3_value* val = NULL;
+	int r;
+
+	const char* sql = "SELECT val FROM settings WHERE key = ?";
+
+	// Prepare the statement
+	r = sqlite3_prepare_v2(db->handle, sql, strlen(sql), &stmt, NULL);
+	if (r != SQLITE_OK) {
+		//ERROR(db->pakfire, "Could not prepare SQL statement: %s: %s\n",
+		//	sql, sqlite3_errmsg(db->handle));
+		return NULL;
+	}
+
+	// Bind key
+	r = sqlite3_bind_text(stmt, 1, key, strlen(key), NULL);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not bind key: %s\n", sqlite3_errmsg(db->handle));
+		goto ERROR;
+	}
+
+	// Execute the statement
+	do {
+		r = sqlite3_step(stmt);
+	} while (r == SQLITE_BUSY);
+
+	// Read value
+	val = sqlite3_column_value(stmt, 1);
+	if (!val) {
+		ERROR(db->pakfire, "Could not read value\n");
+		goto ERROR;
+	}
+
+	// Copy value onto the heap
+	val = sqlite3_value_dup(val);
+
+ERROR:
+	if (stmt)
+		sqlite3_finalize(stmt);
+
+	return val;
+}
+
+static int pakfire_db_set_int(struct pakfire_db* db, const char* key, int val) {
+	sqlite3_stmt* stmt = NULL;
+	int r;
+
+	const char* sql = "INSERT INTO settings(key, val) VALUES(?, ?) \
+		ON CONFLICT (key) DO UPDATE SET val = excluded.val";
+
+	// Prepare statement
+	r = sqlite3_prepare_v2(db->handle, sql, strlen(sql), &stmt, NULL);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not prepare SQL statement: %s: %s\n",
+			sql, sqlite3_errmsg(db->handle));
+		return 1;
+	}
+
+	// Bind key
+	r = sqlite3_bind_text(stmt, 1, key, strlen(key), NULL);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not bind key: %s\n", sqlite3_errmsg(db->handle));
+		goto ERROR;
+	}
+
+	// Bind val
+	r = sqlite3_bind_int64(stmt, 2, val);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not bind val: %s\n", sqlite3_errmsg(db->handle));
+		goto ERROR;
+	}
+
+	// Execute the statement
+	do {
+		r = sqlite3_step(stmt);
+	} while (r == SQLITE_BUSY);
+
+	// Set return code
+	r = (r == SQLITE_OK);
+
+ERROR:
+	if (stmt)
+		sqlite3_finalize(stmt);
+
+	return r;
+}
+
+static int pakfire_db_get_schema(struct pakfire_db* db) {
+	sqlite3_value* value = pakfire_db_get(db, "schema");
+	if (!value)
+		return 0;
+
+	int schema = sqlite3_value_int64(value);
+	sqlite3_value_free(value);
+
+	DEBUG(db->pakfire, "Database has schema version %d\n", schema);
+
+	return schema;
+}
+
+static int pakfire_db_create_schema(struct pakfire_db* db) {
+	int r;
+
+	// Create settings table
+	r = pakfire_db_execute(db, "CREATE TABLE IF NOT EXISTS settings(key TEXT, val TEXT)");
+	if (r)
+		return 1;
+
+	// settings: Add a unique index on key
+	r = pakfire_db_execute(db, "CREATE UNIQUE INDEX IF NOT EXISTS settings_key ON settings(key)");
+	if (r)
+		return 1;
+
+	return 0;
+}
+
+static int pakfire_db_migrate_schema(struct pakfire_db* db) {
+	int r;
+
+	while (db->schema < CURRENT_SCHEMA) {
+		// Begin a new transaction
+		r = pakfire_db_begin_transaction(db);
+		if (r)
+			goto ROLLBACK;
+
+		switch (db->schema) {
+			// No schema exists
+			case 0:
+				r = pakfire_db_create_schema(db);
+				if (r)
+					goto ROLLBACK;
+
+				db->schema = CURRENT_SCHEMA;
+				break;
+
+			default:
+				ERROR(db->pakfire, "Cannot migrate database from schema %d\n", db->schema);
+				goto ROLLBACK;
+		}
+
+		// Update the schema version
+		r = pakfire_db_set_int(db, "schema", CURRENT_SCHEMA);
+		if (r)
+			goto ROLLBACK;
+
+		// All done, commit!
+		r = pakfire_db_commit(db);
+		if (r)
+			goto ROLLBACK;
+	}
+
+	return 0;
+
+ROLLBACK:
+	pakfire_db_rollback(db);
+
+	return 1;
+}
+
 static int pakfire_db_setup(struct pakfire_db* db) {
 	int r;
 
@@ -96,6 +278,16 @@ static int pakfire_db_setup(struct pakfire_db* db) {
 
 	// Make LIKE case-sensitive
 	pakfire_db_execute(db, "PRAGMA case_sensitive_like = ON");
+
+	// Fetch the current schema
+	db->schema = pakfire_db_get_schema(db);
+
+	// Check if the schema is recent enough
+	if (db->schema > 0 && db->schema < SCHEMA_MIN_SUP) {
+		ERROR(db->pakfire, "Database schema %d is not supported by this version of Pakfire\n",
+			db->schema);
+		return 1;
+	}
 
 	// Done when not in read-write mode
 	if (db->mode != PAKFIRE_DB_READWRITE)
@@ -120,7 +312,10 @@ static int pakfire_db_setup(struct pakfire_db* db) {
 		return 1;
 	}
 
-	// XXX Create schema
+	// Create or migrate schema
+	r = pakfire_db_migrate_schema(db);
+	if (r)
+		return r;
 
 	return 0;
 }
