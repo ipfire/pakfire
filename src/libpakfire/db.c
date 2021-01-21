@@ -56,14 +56,26 @@ static int pakfire_db_execute(struct pakfire_db* db, const char* stmt) {
 		r = sqlite3_exec(db->handle, stmt, NULL, NULL, &error);
 	} while (r == SQLITE_BUSY);
 
-	return (r == SQLITE_OK);
+	return r;
+}
+
+/*
+	This function performs any fast optimization and tries to truncate the WAL log file
+	to keep the database as compact as possible on disk.
+*/
+static void pakfire_db_optimize(struct pakfire_db* db) {
+	pakfire_db_execute(db, "PRAGMA optmize");
+	pakfire_db_execute(db, "PRAGMA wal_checkpoint = TRUNCATE");
 }
 
 static void pakfire_db_free(struct pakfire_db* db) {
 	DEBUG(db->pakfire, "Releasing database at %p\n", db);
 
-	// Close database handle
 	if (db->handle) {
+		// Optimize the database before it is being closed
+		pakfire_db_optimize(db);
+
+		// Close database handle
 		int r = sqlite3_close(db->handle);
 		if (r != SQLITE_OK) {
 			ERROR(db->pakfire, "Could not close database handle: %s\n",
@@ -77,6 +89,8 @@ static void pakfire_db_free(struct pakfire_db* db) {
 }
 
 static int pakfire_db_setup(struct pakfire_db* db) {
+	int r;
+
 	// Setup logging
 	sqlite3_config(SQLITE_CONFIG_LOG, logging_callback, db->pakfire);
 
@@ -89,6 +103,22 @@ static int pakfire_db_setup(struct pakfire_db* db) {
 
 	// Disable secure delete
 	pakfire_db_execute(db, "PRAGMA secure_delete = OFF");
+
+	// Set database journal to WAL
+	r = pakfire_db_execute(db, "PRAGMA journal_mode = WAL");
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not set journal mode to WAL: %s\n",
+			sqlite3_errmsg(db->handle));
+		return 1;
+	}
+
+	// Disable autocheckpoint
+	r = sqlite3_wal_autocheckpoint(db->handle, 0);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not disable autocheckpoint: %s\n",
+			sqlite3_errmsg(db->handle));
+		return 1;
+	}
 
 	// XXX Create schema
 
