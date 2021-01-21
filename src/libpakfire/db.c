@@ -48,6 +48,17 @@ static void logging_callback(void* data, int r, const char* msg) {
 		sqlite3_errstr(r), msg);
 }
 
+static int pakfire_db_execute(struct pakfire_db* db, const char* stmt) {
+	int r;
+	char* error = NULL;
+
+	do {
+		r = sqlite3_exec(db->handle, stmt, NULL, NULL, &error);
+	} while (r == SQLITE_BUSY);
+
+	return (r == SQLITE_OK);
+}
+
 static void pakfire_db_free(struct pakfire_db* db) {
 	DEBUG(db->pakfire, "Releasing database at %p\n", db);
 
@@ -69,9 +80,15 @@ static int pakfire_db_setup(struct pakfire_db* db) {
 	// Setup logging
 	sqlite3_config(SQLITE_CONFIG_LOG, logging_callback, db->pakfire);
 
+	// Make LIKE case-sensitive
+	pakfire_db_execute(db, "PRAGMA case_sensitive_like = ON");
+
 	// Done when not in read-write mode
 	if (db->mode != PAKFIRE_DB_READWRITE)
 		return 0;
+
+	// Disable secure delete
+	pakfire_db_execute(db, "PRAGMA secure_delete = OFF");
 
 	// XXX Create schema
 
