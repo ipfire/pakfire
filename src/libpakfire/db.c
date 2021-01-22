@@ -25,8 +25,10 @@
 
 #include <pakfire/db.h>
 #include <pakfire/logging.h>
+#include <pakfire/package.h>
 #include <pakfire/pakfire.h>
 #include <pakfire/private.h>
+#include <pakfire/repo.h>
 #include <pakfire/types.h>
 #include <pakfire/util.h>
 
@@ -505,7 +507,242 @@ PAKFIRE_EXPORT struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
 }
 
 PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg) {
-	return 0; // TODO
+	sqlite3_stmt* stmt = NULL;
+	int r;
+
+	// Begin a new transaction
+	r = pakfire_db_begin_transaction(db);
+	if (r)
+		goto ROLLBACK;
+
+	const char* sql = "INSERT INTO packages(name, epoch, version, release, arch, groups, "
+		"filename, size, inst_size, hash1, license, summary, description, uuid, vendor, "
+		"build_id, build_host, build_time, installed, repository, reason) VALUES(?, ?, "
+		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
+
+	// Prepare the statement
+	r = sqlite3_prepare_v2(db->handle, sql, strlen(sql), &stmt, NULL);
+	if (r != SQLITE_OK) {
+		ERROR(db->pakfire, "Could not prepare SQL statement: %s: %s\n",
+			sql, sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind name
+	const char* name = pakfire_package_get_name(pkg);
+
+	r = sqlite3_bind_text(stmt, 1, name, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind name: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind epoch
+	unsigned long epoch = pakfire_package_get_epoch(pkg);
+
+	r = sqlite3_bind_int64(stmt, 2, epoch);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind epoch: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind version
+	const char* version = pakfire_package_get_version(pkg);
+
+	r = sqlite3_bind_text(stmt, 3, version, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind version: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind release
+	const char* release = pakfire_package_get_release(pkg);
+
+	r = sqlite3_bind_text(stmt, 4, release, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind release: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind arch
+	const char* arch = pakfire_package_get_arch(pkg);
+
+	r = sqlite3_bind_text(stmt, 5, arch, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind arch: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind groups
+	const char* groups = pakfire_package_get_groups(pkg);
+
+	r = sqlite3_bind_text(stmt, 6, groups, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind groups: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind filename
+	const char* filename = pakfire_package_get_filename(pkg);
+
+	r = sqlite3_bind_text(stmt, 7, filename, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind filename: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind size
+	unsigned long long size = pakfire_package_get_downloadsize(pkg);
+
+	r = sqlite3_bind_int64(stmt, 8, size);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind size: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind installed size
+	unsigned long long inst_size = pakfire_package_get_installsize(pkg);
+
+	r = sqlite3_bind_int64(stmt, 9, inst_size);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind inst_size: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind hash1
+	const char* hash1 = pakfire_package_get_checksum(pkg);
+
+	r = sqlite3_bind_text(stmt, 10, hash1, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind hash1: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind license
+	const char* license = pakfire_package_get_license(pkg);
+
+	r = sqlite3_bind_text(stmt, 11, license, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind license: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind summary
+	const char* summary = pakfire_package_get_summary(pkg);
+
+	r = sqlite3_bind_text(stmt, 12, summary, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind summary: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind description
+	const char* description = pakfire_package_get_description(pkg);
+
+	r = sqlite3_bind_text(stmt, 13, description, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind description: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind uuid
+	const char* uuid = pakfire_package_get_uuid(pkg);
+
+	r = sqlite3_bind_text(stmt, 14, uuid, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind uuid: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind vendor
+	const char* vendor = pakfire_package_get_vendor(pkg);
+
+	r = sqlite3_bind_text(stmt, 14, vendor, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind vendor: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind build_id
+#if 0
+	const char* build_id = pakfire_package_get_buildid(pkg);
+#else
+	const char* build_id = NULL; // To be done
+#endif
+
+	r = sqlite3_bind_text(stmt, 15, build_id, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind build_id: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind build_host
+	const char* buildhost = pakfire_package_get_buildhost(pkg);
+
+	r = sqlite3_bind_text(stmt, 16, buildhost, -1, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind build_host: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind build_time
+	unsigned long long build_time = pakfire_package_get_buildtime(pkg);
+
+	r = sqlite3_bind_int64(stmt, 17, build_time);
+	if (r) {
+		ERROR(db->pakfire, "Could not bind build_time: %s\n", sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// Bind repository name
+	PakfireRepo repo = pakfire_package_get_repo(pkg);
+	if (repo) {
+		const char* repo_name = pakfire_repo_get_name(repo);
+		pakfire_repo_unref(repo);
+
+		r = sqlite3_bind_text(stmt, 18, repo_name, -1, NULL);
+		if (r)
+			goto ROLLBACK;
+
+	// No repository?
+	} else {
+		r = sqlite3_bind_null(stmt, 18);
+		if (r)
+			goto ROLLBACK;
+	}
+
+	// XXX TODO Bind reason
+	r = sqlite3_bind_null(stmt, 19);
+	if (r)
+		goto ROLLBACK;
+
+	// Run query
+	do {
+		r = sqlite3_step(stmt);
+	} while (r == SQLITE_BUSY);
+
+	if (r != SQLITE_DONE) {
+		ERROR(db->pakfire, "Could not add package to database: %s\n",
+			sqlite3_errmsg(db->handle));
+		goto ROLLBACK;
+	}
+
+	// This is done
+	sqlite3_finalize(stmt);
+
+	// All done, commit!
+	r = pakfire_db_commit(db);
+	if (r)
+		goto ROLLBACK;
+
+	return 0;
+
+ROLLBACK:
+	sqlite3_finalize(stmt);
+
+	pakfire_db_rollback(db);
+
+	return 1;
 }
 
 PAKFIRE_EXPORT int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg) {
