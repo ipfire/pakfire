@@ -88,7 +88,7 @@ static int pakfire_db_rollback(struct pakfire_db* db) {
 	to keep the database as compact as possible on disk.
 */
 static void pakfire_db_optimize(struct pakfire_db* db) {
-	pakfire_db_execute(db, "PRAGMA optmize");
+	pakfire_db_execute(db, "PRAGMA optimize");
 	pakfire_db_execute(db, "PRAGMA wal_checkpoint = TRUNCATE");
 }
 
