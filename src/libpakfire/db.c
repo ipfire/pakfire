@@ -34,7 +34,7 @@
 
 #define DATABASE_PATH PAKFIRE_PRIVATE_DIR "/packages.db"
 
-#define CURRENT_SCHEMA 7
+#define CURRENT_SCHEMA 8
 #define SCHEMA_MIN_SUP 7
 
 struct pakfire_db {
@@ -245,7 +245,6 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 			"description    TEXT, "
 			"uuid           TEXT, "
 			"vendor         TEXT, "
-			"build_id       TEXT, "
 			"build_host     TEXT, "
 			"build_date     TEXT, "
 			"build_time     INTEGER, "
@@ -324,6 +323,8 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 }
 
 static int pakfire_db_migrate_to_schema_8(struct pakfire_db* db) {
+	// packages: Drop build_id column
+
 	// Add foreign keys
 	// TODO sqlite doesn't support adding foreign keys to existing tables and so we would
 	// need to recreate the whole table and rename it afterwards. Annoying.
@@ -660,19 +661,6 @@ PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage 
 	r = sqlite3_bind_text(stmt, 14, vendor, -1, NULL);
 	if (r) {
 		ERROR(db->pakfire, "Could not bind vendor: %s\n", sqlite3_errmsg(db->handle));
-		goto ROLLBACK;
-	}
-
-	// Bind build_id
-#if 0
-	const char* build_id = pakfire_package_get_buildid(pkg);
-#else
-	const char* build_id = NULL; // To be done
-#endif
-
-	r = sqlite3_bind_text(stmt, 15, build_id, -1, NULL);
-	if (r) {
-		ERROR(db->pakfire, "Could not bind build_id: %s\n", sqlite3_errmsg(db->handle));
 		goto ROLLBACK;
 	}
 
