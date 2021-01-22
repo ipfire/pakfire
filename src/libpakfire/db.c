@@ -264,7 +264,8 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 		"CREATE TABLE IF NOT EXISTS dependencies("
 			"pkg            INTEGER, "
 			"type           TEXT, "
-			"dependency     TEXT"
+			"dependency     TEXT, "
+			"FOREIGN KEY (pkg) REFERENCES packages(id)"
 		")");
 	if (r)
 		return r;
@@ -289,7 +290,8 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 			"'group'        TEXT, "
 			"hash1          TEXT, "
 			"mtime          INTEGER, "
-			"capabilities   TEXT"
+			"capabilities   TEXT, "
+			"FOREIGN KEY (pkg) REFERENCES packages(id)"
 		")");
 	if (r)
 		return 1;
@@ -305,7 +307,8 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 			"id             INTEGER PRIMARY KEY, "
 			"pkg            INTEGER, "
 			"action         TEXT, "
-			"scriptlet      TEXT"
+			"scriptlet      TEXT, "
+			"FOREIGN KEY (pkg) REFERENCES packages(id)"
 		")");
 	if (r)
 		return 1;
@@ -314,6 +317,14 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 	r = pakfire_db_execute(db, "CREATE INDEX IF NOT EXISTS scriptlets_pkg_index ON scriptlets(pkg)");
 	if (r)
 		return 1;
+
+	return 0;
+}
+
+static int pakfire_db_migrate_to_schema_8(struct pakfire_db* db) {
+	// Add foreign keys
+	// TODO sqlite doesn't support adding foreign keys to existing tables and so we would
+	// need to recreate the whole table and rename it afterwards. Annoying.
 
 	return 0;
 }
@@ -335,6 +346,14 @@ static int pakfire_db_migrate_schema(struct pakfire_db* db) {
 					goto ROLLBACK;
 
 				db->schema = CURRENT_SCHEMA;
+				break;
+
+			case 7:
+				r = pakfire_db_migrate_to_schema_8(db);
+				if (r)
+					goto ROLLBACK;
+
+				db->schema++;
 				break;
 
 			default:
@@ -366,6 +385,9 @@ static int pakfire_db_setup(struct pakfire_db* db) {
 
 	// Setup logging
 	sqlite3_config(SQLITE_CONFIG_LOG, logging_callback, db->pakfire);
+
+	// Enable foreign keys
+	pakfire_db_execute(db, "PRAGMA foreign_keys = ON");
 
 	// Make LIKE case-sensitive
 	pakfire_db_execute(db, "PRAGMA case_sensitive_like = ON");
