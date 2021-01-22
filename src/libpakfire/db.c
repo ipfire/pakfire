@@ -259,6 +259,21 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 	if (r)
 		return 1;
 
+	// Create dependencies table
+	r = pakfire_db_execute(db,
+		"CREATE TABLE IF NOT EXISTS dependencies("
+			"pkg            INTEGER, "
+			"type           TEXT, "
+			"dependency     TEXT"
+		")");
+	if (r)
+		return r;
+
+	// dependencies: Add index over packages
+	r = pakfire_db_execute(db, "CREATE INDEX IF NOT EXISTS dependencies_pkg_index ON dependencies(pkg)");
+	if (r)
+		return r;
+
 	return 0;
 }
 
