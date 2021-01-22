@@ -139,8 +139,12 @@ static sqlite3_value* pakfire_db_get(struct pakfire_db* db, const char* key) {
 		r = sqlite3_step(stmt);
 	} while (r == SQLITE_BUSY);
 
+	// We should have read a row
+	if (r != SQLITE_ROW)
+		goto ERROR;
+
 	// Read value
-	val = sqlite3_column_value(stmt, 1);
+	val = sqlite3_column_value(stmt, 0);
 	if (!val) {
 		ERROR(db->pakfire, "Could not read value\n");
 		goto ERROR;
@@ -203,7 +207,7 @@ ERROR:
 static int pakfire_db_get_schema(struct pakfire_db* db) {
 	sqlite3_value* value = pakfire_db_get(db, "schema");
 	if (!value)
-		return 0;
+		return -1;
 
 	int schema = sqlite3_value_int64(value);
 	sqlite3_value_free(value);
@@ -343,7 +347,7 @@ static int pakfire_db_migrate_schema(struct pakfire_db* db) {
 
 		switch (db->schema) {
 			// No schema exists
-			case 0:
+			case -1:
 				r = pakfire_db_create_schema(db);
 				if (r)
 					goto ROLLBACK;
