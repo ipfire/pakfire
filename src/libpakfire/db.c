@@ -299,6 +299,22 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 	if (r)
 		return 1;
 
+	// Create scriptlets table
+	r = pakfire_db_execute(db,
+		"CREATE TABLE IF NOT EXISTS scriptlets("
+			"id             INTEGER PRIMARY KEY, "
+			"pkg            INTEGER, "
+			"action         TEXT, "
+			"scriptlet      TEXT"
+		")");
+	if (r)
+		return 1;
+
+	// scriptlets: Add index over packages
+	r = pakfire_db_execute(db, "CREATE INDEX IF NOT EXISTS scriptlets_pkg_index ON scriptlets(pkg)");
+	if (r)
+		return 1;
+
 	return 0;
 }
 
