@@ -357,6 +357,7 @@ check_PROGRAMS += \
 	tests/libpakfire/main \
 	tests/libpakfire/arch \
 	tests/libpakfire/archive \
+	tests/libpakfire/db \
 	tests/libpakfire/execute \
 	tests/libpakfire/key \
 	tests/libpakfire/makefile \
@@ -391,6 +392,16 @@ tests_libpakfire_archive_CPPFLAGS = \
 	$(TESTSUITE_CPPFLAGS)
 
 tests_libpakfire_archive_LDADD = \
+	$(TESTSUITE_LDADD) \
+	$(PAKFIRE_LIBS)
+
+tests_libpakfire_db_SOURCES = \
+	tests/libpakfire/db.c
+
+tests_libpakfire_db_CPPFLAGS = \
+	$(TESTSUITE_CPPFLAGS)
+
+tests_libpakfire_db_LDADD = \
 	$(TESTSUITE_LDADD) \
 	$(PAKFIRE_LIBS)
 

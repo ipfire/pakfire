@@ -12,6 +12,7 @@
 /tests/.root
 /tests/libpakfire/arch
 /tests/libpakfire/archive
+/tests/libpakfire/db
 /tests/libpakfire/execute
 /tests/libpakfire/key
 /tests/libpakfire/main
