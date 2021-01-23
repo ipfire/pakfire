@@ -35,6 +35,8 @@ int pakfire_db_open(struct pakfire_db** db, Pakfire pakfire, int flags);
 struct pakfire_db* pakfire_db_ref(struct pakfire_db* db);
 struct pakfire_db* pakfire_db_unref(struct pakfire_db* db);
 
+int pakfire_db_check(struct pakfire_db* db);
+
 int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg);
 int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg);
 

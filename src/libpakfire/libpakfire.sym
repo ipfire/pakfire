@@ -80,6 +80,7 @@ global:
 
 	# db
 	pakfire_db_add_package;
+	pakfire_db_check;
 	pakfire_db_open;
 	pakfire_db_ref;
 	pakfire_db_remove_package;

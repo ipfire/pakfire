@@ -45,9 +45,24 @@ static int test_open_rw(const struct test* t) {
 	return 0;
 }
 
+static int test_check(const struct test* t) {
+	struct pakfire_db* db;
+
+	int r = pakfire_db_open(&db, t->pakfire, PAKFIRE_DB_READWRITE);
+	ASSERT(!r);
+
+	// Perform check
+	ASSERT(!pakfire_db_check(db));
+
+	pakfire_db_unref(db);
+
+	return 0;
+}
+
 int main(int argc, char** argv) {
 	testsuite_add_test(test_open_ro);
 	testsuite_add_test(test_open_rw);
+	testsuite_add_test(test_check);
 
 	return testsuite_run();
 }

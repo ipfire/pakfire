@@ -511,6 +511,119 @@ PAKFIRE_EXPORT struct pakfire_db* pakfire_db_unref(struct pakfire_db* db) {
 	return NULL;
 }
 
+static unsigned long pakfire_db_integrity_check(struct pakfire_db* db) {
+	sqlite3_stmt* stmt = NULL;
+	int r;
+
+	r = sqlite3_prepare_v2(db->handle, "PRAGMA integrity_check", -1, &stmt, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not prepare integrity check: %s\n",
+			sqlite3_errmsg(db->handle));
+		return 1;
+	}
+
+	// Count any errors
+	unsigned long errors = 0;
+
+	while (1) {
+		do {
+			r = sqlite3_step(stmt);
+		} while (r == SQLITE_BUSY);
+
+		if (r == SQLITE_ROW) {
+			const char* error = (const char*)sqlite3_column_text(stmt, 0);
+
+			// If the message is "ok", the database has passed the check
+			if (strcmp(error, "ok") == 0)
+				continue;
+
+			// Increment error counter
+			errors++;
+
+			// Log the message
+			ERROR(db->pakfire, "%s\n", error);
+
+		// Break on anything else
+		} else
+			break;
+	}
+
+	sqlite3_finalize(stmt);
+
+	if (errors)
+		ERROR(db->pakfire, "Database integrity check failed\n");
+	else
+		INFO(db->pakfire, "Database integrity check passed\n");
+
+	return errors;
+}
+
+static unsigned long pakfire_db_foreign_key_check(struct pakfire_db* db) {
+	sqlite3_stmt* stmt = NULL;
+	int r;
+
+	r = sqlite3_prepare_v2(db->handle, "PRAGMA foreign_key_check", -1, &stmt, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not prepare foreign key check: %s\n",
+			sqlite3_errmsg(db->handle));
+		return 1;
+	}
+
+	// Count any errors
+	unsigned long errors = 0;
+
+	while (1) {
+		do {
+			r = sqlite3_step(stmt);
+		} while (r == SQLITE_BUSY);
+
+		if (r == SQLITE_ROW) {
+			const unsigned char* table = sqlite3_column_text(stmt, 0);
+			unsigned long rowid = sqlite3_column_int64(stmt, 1);
+			const unsigned char* foreign_table = sqlite3_column_text(stmt, 2);
+			unsigned long foreign_rowid = sqlite3_column_int64(stmt, 3);
+
+			// Increment error counter
+			errors++;
+
+			// Log the message
+			ERROR(db->pakfire, "Foreign key violation found in %s, row %lu: "
+				"%lu does not exist in table %s\n", table, rowid, foreign_rowid, foreign_table);
+
+		// Break on anything else
+		} else
+			break;
+	}
+
+	sqlite3_finalize(stmt);
+
+	if (errors)
+		ERROR(db->pakfire, "Foreign key check failed\n");
+	else
+		INFO(db->pakfire, "Foreign key check passed\n");
+
+	return errors;
+}
+
+/*
+	This function performs an integrity check of the database
+*/
+PAKFIRE_EXPORT int pakfire_db_check(struct pakfire_db* db) {
+	int r;
+
+	// Perform integrity check
+	r = pakfire_db_integrity_check(db);
+	if (r)
+		return 1;
+
+	// Perform foreign key check
+	r = pakfire_db_foreign_key_check(db);
+	if (r)
+		return 1;
+
+	return 0;
+}
+
 PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg) {
 	sqlite3_stmt* stmt = NULL;
 	int r;
