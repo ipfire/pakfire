@@ -635,8 +635,8 @@ PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage 
 
 	const char* sql = "INSERT INTO packages(name, epoch, version, release, arch, groups, "
 		"filename, size, inst_size, hash1, license, summary, description, uuid, vendor, "
-		"build_id, build_host, build_time, installed, repository, reason) VALUES(?, ?, "
-		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
+		"build_host, build_time, installed, repository, reason) VALUES(?, ?, "
+		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
 
 	// Prepare the statement
 	r = sqlite3_prepare_v2(db->handle, sql, strlen(sql), &stmt, NULL);
