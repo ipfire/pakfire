@@ -23,9 +23,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <solv/pooltypes.h>
-#include <solv/transaction.h>
-
 #include <pakfire/archive.h>
 #include <pakfire/constants.h>
 #include <pakfire/db.h>
@@ -49,41 +46,6 @@ struct _PakfireStep {
 	pakfire_step_type_t type;
 	int nrefs;
 };
-
-static pakfire_step_type_t get_type(Transaction* transaction, Id id) {
-	int type = transaction_type(transaction, id,
-		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
-
-	// Translate solver types into our own types
-	switch (type) {
-		case SOLVER_TRANSACTION_INSTALL:
-		case SOLVER_TRANSACTION_MULTIINSTALL:
-			return PAKFIRE_STEP_INSTALL;
-
-		case SOLVER_TRANSACTION_REINSTALL:
-		case SOLVER_TRANSACTION_MULTIREINSTALL:
-			return PAKFIRE_STEP_REINSTALL;
-
-		case SOLVER_TRANSACTION_ERASE:
-			return PAKFIRE_STEP_ERASE;
-
-		case SOLVER_TRANSACTION_DOWNGRADE:
-			return PAKFIRE_STEP_DOWNGRADE;
-
-		case SOLVER_TRANSACTION_UPGRADE:
-			return PAKFIRE_STEP_UPGRADE;
-
-		case SOLVER_TRANSACTION_OBSOLETES:
-			return PAKFIRE_STEP_OBSOLETE;
-
-		// Anything we don't care about
-		case SOLVER_TRANSACTION_IGNORE:
-		case SOLVER_TRANSACTION_REINSTALLED:
-		case SOLVER_TRANSACTION_DOWNGRADED:
-		default:
-				return PAKFIRE_STEP_IGNORE;
-	}
-}
 
 static const char* pakfire_step_script_filename(pakfire_script_type script) {
 	switch (script) {
@@ -127,9 +89,9 @@ static const char* pakfire_step_script_filename(pakfire_script_type script) {
 	return NULL;
 }
 
-PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id) {
+PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction,
+		pakfire_step_type_t type, PakfirePackage pkg) {
 	Pakfire pakfire = pakfire_transaction_get_pakfire(transaction);
-	Transaction* t = pakfire_transaction_get_transaction(transaction);
 
 	PakfireStep step = pakfire_calloc(1, sizeof(*step));
 	if (step) {
@@ -137,10 +99,9 @@ PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction, I
 		step->pakfire = pakfire_ref(pakfire);
 		step->nrefs = 1;
 
-		step->type = get_type(t, id);
-
-		// Get the package
-		step->package = pakfire_package_create(step->pakfire, id);
+		// Save everything
+		step->type = type;
+		step->package = pakfire_package_ref(pkg);
 	}
 
 	pakfire_unref(pakfire);

@@ -21,11 +21,10 @@
 #ifndef PAKFIRE_STEP_H
 #define PAKFIRE_STEP_H
 
-#include <solv/pooltypes.h>
-
 #include <pakfire/types.h>
 
-PakfireStep pakfire_step_create(PakfireTransaction transaction, Id id);
+PakfireStep pakfire_step_create(PakfireTransaction transaction,
+	pakfire_step_type_t type, PakfirePackage pkg);
 PakfireStep pakfire_step_ref(PakfireStep step);
 PakfireStep pakfire_step_unref(PakfireStep step);
 

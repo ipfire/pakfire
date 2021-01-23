@@ -42,6 +42,41 @@ struct _PakfireTransaction {
 	int nrefs;
 };
 
+static pakfire_step_type_t transaction_get_step_type(Transaction* transaction, Id id) {
+	int type = transaction_type(transaction, id,
+		SOLVER_TRANSACTION_SHOW_ACTIVE|SOLVER_TRANSACTION_CHANGE_IS_REINSTALL);
+
+	// Translate solver types into our own types
+	switch (type) {
+		case SOLVER_TRANSACTION_INSTALL:
+		case SOLVER_TRANSACTION_MULTIINSTALL:
+			return PAKFIRE_STEP_INSTALL;
+
+		case SOLVER_TRANSACTION_REINSTALL:
+		case SOLVER_TRANSACTION_MULTIREINSTALL:
+			return PAKFIRE_STEP_REINSTALL;
+
+		case SOLVER_TRANSACTION_ERASE:
+			return PAKFIRE_STEP_ERASE;
+
+		case SOLVER_TRANSACTION_DOWNGRADE:
+			return PAKFIRE_STEP_DOWNGRADE;
+
+		case SOLVER_TRANSACTION_UPGRADE:
+			return PAKFIRE_STEP_UPGRADE;
+
+		case SOLVER_TRANSACTION_OBSOLETES:
+			return PAKFIRE_STEP_OBSOLETE;
+
+		// Anything we don't care about
+		case SOLVER_TRANSACTION_IGNORE:
+		case SOLVER_TRANSACTION_REINSTALLED:
+		case SOLVER_TRANSACTION_DOWNGRADED:
+		default:
+				return PAKFIRE_STEP_IGNORE;
+	}
+}
+
 PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Transaction* trans) {
 	PakfireTransaction transaction = pakfire_calloc(1, sizeof(*transaction));
 	if (transaction) {
@@ -63,8 +98,20 @@ PAKFIRE_EXPORT PakfireTransaction pakfire_transaction_create(Pakfire pakfire, Tr
 
 		// Import all steps
 		PakfireStep* steps = transaction->steps = pakfire_calloc(transaction->num_steps + 1, sizeof(*steps));
-		for (unsigned int i = 0; i < transaction->num_steps; i++)
-			*steps++ = pakfire_step_create(transaction, transaction->transaction->steps.elements[i]);
+		for (unsigned int i = 0; i < transaction->num_steps; i++) {
+			Id id = transaction->transaction->steps.elements[i];
+
+			// Get the type
+			pakfire_step_type_t type = transaction_get_step_type(transaction->transaction, id);
+
+			// Fetch the package
+			PakfirePackage pkg = pakfire_package_create(pakfire, id);
+
+			// Append a new step
+			*steps++ = pakfire_step_create(transaction, type, pkg);
+
+			pakfire_package_unref(pkg);
+		}
 	}
 
 	return transaction;
