@@ -120,8 +120,19 @@ PAKFIRE_EXPORT int pakfire_filelist_append(PakfireFilelist list, PakfireFile fil
 	return 0;
 }
 
+static int __sort(const void* ptr1, const void* ptr2) {
+	PakfireFile file1 = (PakfireFile)ptr1;
+	PakfireFile file2 = (PakfireFile)ptr2;
+
+	return pakfire_file_cmp(file1, file2);
+}
+
 PAKFIRE_EXPORT void pakfire_filelist_sort(PakfireFilelist list) {
-	// XXX TODO
+	// Nothing to do on empty list
+	if (pakfire_filelist_is_empty(list))
+		return;
+
+	qsort(list->elements, list->size, sizeof(*list->elements), __sort);
 }
 
 static int pakfire_filelist_parse_line(PakfireFile* file, char* line, unsigned int format) {

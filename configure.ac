@@ -144,6 +144,7 @@ AC_CHECK_FUNCS([ \
 	secure_getenv \
 	strcmp \
 	strdup \
+	qsort \
 	unshare
 ])
 
