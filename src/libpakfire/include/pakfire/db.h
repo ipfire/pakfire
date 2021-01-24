@@ -37,7 +37,7 @@ struct pakfire_db* pakfire_db_unref(struct pakfire_db* db);
 
 int pakfire_db_check(struct pakfire_db* db);
 
-int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg);
+int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg, PakfireArchive archive);
 int pakfire_db_remove_package(struct pakfire_db* db, PakfirePackage pkg);
 
 #endif /* PAKFIRE_DB_H */

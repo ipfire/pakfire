@@ -491,7 +491,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
-					r = pakfire_db_add_package(db, step->package);
+					r = pakfire_db_add_package(db, step->package, step->archive);
 					if (r)
 						break;
 
@@ -508,7 +508,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
-					r = pakfire_db_add_package(db, step->package);
+					r = pakfire_db_add_package(db, step->package, step->archive);
 					if (r)
 						break;
 

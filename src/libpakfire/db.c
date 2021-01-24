@@ -23,7 +23,9 @@
 
 #include <sqlite3.h>
 
+#include <pakfire/archive.h>
 #include <pakfire/db.h>
+#include <pakfire/file.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
 #include <pakfire/pakfire.h>
@@ -624,7 +626,153 @@ PAKFIRE_EXPORT int pakfire_db_check(struct pakfire_db* db) {
 	return 0;
 }
 
-PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage pkg) {
+static int pakfire_db_add_files(struct pakfire_db* db, unsigned long id, PakfireArchive archive) {
+	sqlite3_stmt* stmt = NULL;
+	int r;
+
+	// Get the filelist from the archive
+	PakfireFile file = pakfire_archive_get_filelist(archive);
+	if (!file) {
+		ERROR(db->pakfire, "Could not fetch filelist from archive\n");
+		return 1;
+	}
+
+	const char* sql = "INSERT INTO files(pkg, name, size, type, config, datafile, mode, "
+		"user, 'group', hash1, mtime, capabilities) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	// Prepare the statement
+	r = sqlite3_prepare_v2(db->handle, sql, -1, &stmt, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not prepare SQL statement: %s: %s\n",
+			sql, sqlite3_errmsg(db->handle));
+		goto END;
+	}
+
+	while (file) {
+		// Bind package ID
+		r = sqlite3_bind_int64(stmt, 1, id);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind id: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind name
+		const char* name = pakfire_file_get_name(file);
+
+		r = sqlite3_bind_text(stmt, 2, name, -1, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind name: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind size
+		size_t size = pakfire_file_get_size(file);
+
+		r = sqlite3_bind_int64(stmt, 3, size);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind size: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind type - XXX this is char which isn't very helpful
+		//char type = pakfire_file_get_type(file);
+
+		r = sqlite3_bind_null(stmt, 4);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind type: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind config - XXX TODO
+		r = sqlite3_bind_null(stmt, 5);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind config: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind datafile - XXX TODO
+		r = sqlite3_bind_null(stmt, 6);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind datafile: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind mode
+		mode_t mode = pakfire_file_get_mode(file);
+
+		r = sqlite3_bind_int64(stmt, 7, mode);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind mode: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind user
+		const char* user = pakfire_file_get_user(file);
+
+		r = sqlite3_bind_text(stmt, 8, user, -1, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind user: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind group
+		const char* group = pakfire_file_get_group(file);
+
+		r = sqlite3_bind_text(stmt, 9, group, -1, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind group: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind hash1
+		const char* chksum = pakfire_file_get_chksum(file);
+
+		r = sqlite3_bind_text(stmt, 10, chksum, -1, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind hash1: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind mtime
+		time_t mtime = pakfire_file_get_time(file);
+
+		r = sqlite3_bind_int64(stmt, 11, mtime);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind mtime: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind capabilities - XXX TODO
+		r = sqlite3_bind_null(stmt, 12);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind capabilities: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Execute query
+		do {
+			r = sqlite3_step(stmt);
+		} while (r == SQLITE_BUSY);
+
+		// Move on to next file
+		file = pakfire_file_get_next(file);
+
+		// Reset bound values
+		sqlite3_reset(stmt);
+	}
+
+	// All okay
+	r = 0;
+
+END:
+	if (stmt)
+		sqlite3_finalize(stmt);
+
+	return r;
+}
+
+PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db,
+		PakfirePackage pkg, PakfireArchive archive) {
 	sqlite3_stmt* stmt = NULL;
 	int r;
 
@@ -832,8 +980,18 @@ PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage 
 		goto ROLLBACK;
 	}
 
+	// Save package ID
+	unsigned long packages_id = sqlite3_last_insert_rowid(db->handle);
+
 	// This is done
-	sqlite3_finalize(stmt);
+	r = sqlite3_finalize(stmt);
+	if (r == SQLITE_OK)
+		stmt = NULL;
+
+	// Add files
+	r = pakfire_db_add_files(db, packages_id, archive);
+	if (r)
+		goto ROLLBACK;
 
 	// All done, commit!
 	r = pakfire_db_commit(db);
@@ -843,7 +1001,8 @@ PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db, PakfirePackage 
 	return 0;
 
 ROLLBACK:
-	sqlite3_finalize(stmt);
+	if (stmt)
+		sqlite3_finalize(stmt);
 
 	pakfire_db_rollback(db);
 
