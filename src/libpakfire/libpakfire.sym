@@ -89,13 +89,9 @@ global:
 	# file
 	pakfire_file_cmp;
 	pakfire_file_create;
-	pakfire_file_get_first;
 	pakfire_file_get_group;
-	pakfire_file_get_last;
 	pakfire_file_get_mode;
 	pakfire_file_get_name;
-	pakfire_file_get_next;
-	pakfire_file_get_prev;
 	pakfire_file_get_time;
 	pakfire_file_get_user;
 	pakfire_file_is_file;
