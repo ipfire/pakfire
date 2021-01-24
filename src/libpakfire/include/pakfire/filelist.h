@@ -23,7 +23,15 @@
 
 #include <pakfire/types.h>
 
-PakfireFilelist pakfire_filelist_create(PakfirePackage pkg);
-void pakfire_filelist_free(PakfireFilelist list);
+int pakfire_filelist_create(PakfireFilelist* list);
+
+PakfireFilelist pakfire_filelist_ref(PakfireFilelist list);
+PakfireFilelist pakfire_filelist_unref(PakfireFilelist list);
+
+size_t pakfire_filelist_size(PakfireFilelist list);
+void pakfire_filelist_clear(PakfireFilelist list);
+
+PakfireFile pakfire_filelist_get(PakfireFilelist list, size_t index);
+int pakfire_filelist_append(PakfireFilelist list, PakfireFile file);
 
 #endif /* PAKFIRE_FILELIST_H */

@@ -28,6 +28,10 @@
 #include <pakfire/types.h>
 
 PakfireFile pakfire_file_create();
+
+PakfireFile pakfire_file_ref(PakfireFile file);
+PakfireFile pakfire_file_unref(PakfireFile file);
+
 void pakfire_file_free(PakfireFile file);
 void pakfire_file_free_all(PakfireFile file);
 

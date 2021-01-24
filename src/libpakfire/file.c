@@ -44,6 +44,14 @@ PAKFIRE_EXPORT PakfireFile pakfire_file_create() {
 	return file;
 }
 
+PAKFIRE_EXPORT PakfireFile pakfire_file_ref(PakfireFile file) {
+	return file;	
+}
+
+PAKFIRE_EXPORT PakfireFile pakfire_file_unref(PakfireFile file) {
+	return file;
+}
+
 PAKFIRE_EXPORT void pakfire_file_free(PakfireFile file) {
 	if (file->name)
 		pakfire_free(file->name);

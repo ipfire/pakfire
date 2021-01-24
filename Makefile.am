@@ -273,6 +273,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/errno.c \
 	src/libpakfire/execute.c \
 	src/libpakfire/file.c \
+	src/libpakfire/filelist.c \
 	src/libpakfire/filter.c \
 	src/libpakfire/key.c \
 	src/libpakfire/logging.c \
@@ -299,6 +300,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/errno.h \
 	src/libpakfire/include/pakfire/execute.h \
 	src/libpakfire/include/pakfire/file.h \
+	src/libpakfire/include/pakfire/filelist.h \
 	src/libpakfire/include/pakfire/filter.h \
 	src/libpakfire/include/pakfire/i18n.h \
 	src/libpakfire/include/pakfire/key.h \

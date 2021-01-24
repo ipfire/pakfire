@@ -18,59 +18,99 @@
 #                                                                             #
 #############################################################################*/
 
+#include <errno.h>
+#include <stdlib.h>
+
 #include <pakfire/file.h>
 #include <pakfire/filelist.h>
 #include <pakfire/private.h>
 #include <pakfire/util.h>
 
 struct _PakfireFilelist {
-	PakfirePackage pkg;
+	int nrefs;
 
-	PakfireFile first;
-	PakfireFile last;
+	PakfireFile* elements;
+	size_t elements_size;
+
+	size_t size;
 };
 
-PAKFIRE_EXPORT PakfireFilelist pakfire_filelist_create(PakfirePackage pkg) {
-	PakfireFilelist list = pakfire_calloc(1, sizeof(*list));
-	if (list) {
-		list->pkg = pkg;
+static int pakfire_filelist_grow(PakfireFilelist list, size_t size) {
+	PakfireFile* elements = reallocarray(list->elements,
+		list->elements_size + size, sizeof(*list->elements));
+	if (!elements)
+		return -errno;
 
-		list->first = NULL;
-		list->last  = NULL;
-	}
+	list->elements = elements;
+	list->elements_size += size;
+
+	return 0;
+}
+
+PAKFIRE_EXPORT int pakfire_filelist_create(PakfireFilelist* list) {
+	PakfireFilelist l = pakfire_calloc(1, sizeof(*l));
+	if (!l)
+		return -ENOMEM;
+
+	l->nrefs = 1;
+
+	*list = l;
+	return 0;
+}
+
+static void pakfire_filelist_free(PakfireFilelist list) {
+	pakfire_filelist_clear(list);
+	pakfire_free(list);
+}
+
+PAKFIRE_EXPORT PakfireFilelist pakfire_filelist_ref(PakfireFilelist list) {
+	list->nrefs++;
 
 	return list;
 }
 
-PAKFIRE_EXPORT void pakfire_filelist_free(PakfireFilelist list) {
-	pakfire_filelist_remove_all();
-	pakfire_free(list);
+PAKFIRE_EXPORT PakfireFilelist pakfire_filelist_unref(PakfireFilelist list) {
+	if (--list->nrefs > 0)
+		return list;
+
+	pakfire_filelist_free(list);
+	return NULL;
 }
 
-static void pakfire_filelist_remove_first(PakfireFilelist list) {
-	if (!list->first)
+PAKFIRE_EXPORT size_t pakfire_filelist_size(PakfireFilelist list) {
+	return list->size;
+}
+
+PAKFIRE_EXPORT void pakfire_filelist_clear(PakfireFilelist list) {
+	if (!list->elements)
 		return;
 
-	PakfireFile file = list->first;
+	for (unsigned int i = 0; i < list->size; i++)
+		pakfire_file_unref(list->elements[i]);
 
-	list->first = file->next;
-	list->first->prev = NULL;
+	free(list->elements);
+	list->elements = NULL;
+	list->elements_size = 0;
 
-	pakfire_file_free(file);
+	list->size = 0;
 }
 
-PAKFIRE_EXPORT void pakfire_filelist_remove_all(PakfireFilelist list) {
-	while (list->first) {
-		pakfire_filelist_remove_first(list);
-	}
+PAKFIRE_EXPORT PakfireFile pakfire_filelist_get(PakfireFilelist list, size_t index) {
+	if (index >= list->size)
+		return NULL;
+
+	return list->elements[index];
 }
 
-PAKFIRE_EXPORT void pakfire_filelist_append(PakfireFilelist list, PakfireFile file) {
-	if (list->first && list->last) {
-		list->last->next = file;
-		list->last = file;
-	} else {
-		list->first = file;
-		list->last  = file;
+PAKFIRE_EXPORT int pakfire_filelist_append(PakfireFilelist list, PakfireFile file) {
+	// Check if we have any space left
+	if (list->size >= list->elements_size) {
+		int r = pakfire_filelist_grow(list, 64);
+		if (r)
+			return r;
 	}
+
+	list->elements[list->size++] = pakfire_file_ref(file);
+
+	return 0;
 }
