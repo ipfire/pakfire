@@ -21,6 +21,7 @@
 #include <Python.h>
 
 #include <pakfire/file.h>
+#include <pakfire/filelist.h>
 #include <pakfire/package.h>
 #include <pakfire/relationlist.h>
 #include <pakfire/repo.h>
@@ -722,26 +723,28 @@ static PyObject* Package_get_filelist(PackageObject* self, PyObject* args) {
 	if (list == NULL)
 		return NULL;
 
-	PakfireFile file = pakfire_package_get_filelist(self->package);
-	while (file) {
+	PakfireFilelist filelist = pakfire_package_get_filelist(self->package);
+	for (unsigned int i = 0; i < pakfire_filelist_size(filelist); i++) {
+		PakfireFile file = pakfire_filelist_get(filelist, i);
 		const char* name = pakfire_file_get_name(file);
+		pakfire_file_unref(file);
 
 		PyObject* obj = PyUnicode_FromString(name);
 
 		int ret = PyList_Append(list, obj);
 		Py_DECREF(obj);
 
-		if (ret == -1)
-			goto fail;
+		if (ret) {
+			pakfire_filelist_unref(filelist);
+			Py_DECREF(list);
 
-		file = pakfire_file_get_next(file);
+			return NULL;
+		}
 	}
 
-	return list;
+	pakfire_filelist_unref(filelist);
 
-fail:
-	Py_DECREF(list);
-	return NULL;
+	return list;
 }
 
 static int Package_set_filelist(PackageObject* self, PyObject* value) {
@@ -750,8 +753,16 @@ static int Package_set_filelist(PackageObject* self, PyObject* value) {
 		return -1;
 	}
 
-	PakfirePackage pkg = self->package;
-	pakfire_package_filelist_remove(pkg);
+	// Create a new filelist
+	PakfireFilelist filelist;
+
+	int r = pakfire_filelist_create(&filelist);
+	if (r) {
+		errno = -r;
+		PyErr_SetFromErrno(PyExc_OSError);
+
+		return -1;
+	}
 
 	const int length = PySequence_Length(value);
 	for (int i = 0; i < length; i++) {
@@ -759,21 +770,43 @@ static int Package_set_filelist(PackageObject* self, PyObject* value) {
 
 		if (!PyUnicode_Check(item)) {
 			Py_DECREF(item);
+			pakfire_filelist_unref(filelist);
 
 			PyErr_SetString(PyExc_AttributeError, "Expected a string");
 			return -1;
 		}
 
 		const char* name = PyUnicode_AsUTF8(item);
-
-		PakfireFile file = pakfire_package_filelist_append(pkg, name);
-
-# if 0
-		PakfireFile file = pakfire_package_filelist_append(pkg);
-		pakfire_file_set_name(file, name);
-#endif
-
 		Py_DECREF(item);
+
+		// Create a new file
+		PakfireFile file;
+
+		r = pakfire_file_create(&file);
+		if (r) {
+			errno = -r;
+			PyErr_SetFromErrno(PyExc_OSError);
+			pakfire_filelist_unref(filelist);
+			return -1;
+		}
+
+		// Set the name
+		pakfire_file_set_name(file, name);
+
+		// Append the file to the filelist
+		pakfire_filelist_append(filelist, file);
+		pakfire_file_unref(file);
+	}
+
+	// Set filelist
+	r = pakfire_package_set_filelist(self->package, filelist);
+	pakfire_filelist_unref(filelist);
+
+	if (r) {
+		errno = -r;
+		PyErr_SetFromErrno(PyExc_OSError);
+
+		return -1;
 	}
 
 	return 0;

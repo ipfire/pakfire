@@ -87,12 +87,8 @@ global:
 	pakfire_db_unref;
 
 	# file
-	pakfire_file_append;
 	pakfire_file_cmp;
-	pakfire_file_count;
 	pakfire_file_create;
-	pakfire_file_free;
-	pakfire_file_free_all;
 	pakfire_file_get_first;
 	pakfire_file_get_group;
 	pakfire_file_get_last;
@@ -114,8 +110,19 @@ global:
 	pakfire_file_set_time;
 	pakfire_file_set_user;
 	pakfire_file_sprintf;
-	pakfire_file_sort;
-	pakfire_file_swap;
+	pakfire_file_ref;
+	pakfire_file_unref;
+
+	# filelist
+	pakfire_filelist_append;
+	pakfire_filelist_clear;
+	pakfire_filelist_create;
+	pakfire_filelist_get;
+	pakfire_filelist_is_empty;
+	pakfire_filelist_ref;
+	pakfire_filelist_size;
+	pakfire_filelist_sort;
+	pakfire_filelist_unref;
 
 	# key
 	pakfire_key_create;
@@ -156,8 +163,6 @@ global:
 	pakfire_package_create;
 	pakfire_package_create2;
 	pakfire_package_dump;
-	pakfire_package_filelist_append;
-	pakfire_package_filelist_remove;
 	pakfire_package_get_arch;
 	pakfire_package_get_buildhost;
 	pakfire_package_get_buildtime;
@@ -205,6 +210,7 @@ global:
 	pakfire_package_set_description;
 	pakfire_package_set_downloadsize;
 	pakfire_package_set_evr;
+	pakfire_package_set_filelist;
 	pakfire_package_set_filename;
 	pakfire_package_set_groups;
 	pakfire_package_set_installsize;

@@ -29,9 +29,18 @@ PakfireFilelist pakfire_filelist_ref(PakfireFilelist list);
 PakfireFilelist pakfire_filelist_unref(PakfireFilelist list);
 
 size_t pakfire_filelist_size(PakfireFilelist list);
+int pakfire_filelist_is_empty(PakfireFilelist list);
 void pakfire_filelist_clear(PakfireFilelist list);
 
 PakfireFile pakfire_filelist_get(PakfireFilelist list, size_t index);
 int pakfire_filelist_append(PakfireFilelist list, PakfireFile file);
+
+void pakfire_filelist_sort(PakfireFilelist list);
+
+#ifdef PAKFIRE_PRIVATE
+
+int pakfire_filelist_create_from_file(PakfireFilelist* list, const char* data, unsigned int format);
+
+#endif
 
 #endif /* PAKFIRE_FILELIST_H */

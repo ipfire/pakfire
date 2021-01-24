@@ -23,6 +23,7 @@
 
 #include <solv/pooltypes.h>
 
+#include <pakfire/filelist.h>
 #include <pakfire/relation.h>
 #include <pakfire/relationlist.h>
 #include <pakfire/types.h>
@@ -118,12 +119,8 @@ int pakfire_package_is_cached(PakfirePackage pkg);
 char* pakfire_package_get_cache_path(PakfirePackage pkg);
 char* pakfire_package_get_cache_full_path(PakfirePackage pkg);
 
-PakfireFile pakfire_package_get_filelist(PakfirePackage pkg);
-PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, const char* filename);
-#if 0
-PakfireFile pakfire_package_filelist_append(PakfirePackage pkg);
-#endif
-void pakfire_package_filelist_remove(PakfirePackage pkg);
+PakfireFilelist pakfire_package_get_filelist(PakfirePackage pkg);
+int pakfire_package_set_filelist(PakfirePackage pkg, PakfireFilelist filelist);
 
 enum pakfire_package_keynames {
     PAKFIRE_PKG,

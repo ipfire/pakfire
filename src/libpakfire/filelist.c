@@ -20,6 +20,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <pakfire/file.h>
 #include <pakfire/filelist.h>
@@ -81,6 +82,10 @@ PAKFIRE_EXPORT size_t pakfire_filelist_size(PakfireFilelist list) {
 	return list->size;
 }
 
+PAKFIRE_EXPORT int pakfire_filelist_is_empty(PakfireFilelist list) {
+	return list->size == 0;
+}
+
 PAKFIRE_EXPORT void pakfire_filelist_clear(PakfireFilelist list) {
 	if (!list->elements)
 		return;
@@ -99,7 +104,7 @@ PAKFIRE_EXPORT PakfireFile pakfire_filelist_get(PakfireFilelist list, size_t ind
 	if (index >= list->size)
 		return NULL;
 
-	return list->elements[index];
+	return pakfire_file_ref(list->elements[index]);
 }
 
 PAKFIRE_EXPORT int pakfire_filelist_append(PakfireFilelist list, PakfireFile file) {
@@ -113,4 +118,170 @@ PAKFIRE_EXPORT int pakfire_filelist_append(PakfireFilelist list, PakfireFile fil
 	list->elements[list->size++] = pakfire_file_ref(file);
 
 	return 0;
+}
+
+PAKFIRE_EXPORT void pakfire_filelist_sort(PakfireFilelist list) {
+	// XXX TODO
+}
+
+static int pakfire_filelist_parse_line(PakfireFile* file, char* line, unsigned int format) {
+	unsigned int i = 0;
+
+	// Allocate file
+	int r = pakfire_file_create(file);
+	if (r)
+		return r;
+
+	ssize_t size;
+	mode_t mode;
+	time_t time;
+
+	unsigned int bytes_read = 0;
+
+	char* word = strtok(line, " ");
+	while (word) {
+		if (format >= 4) {
+			switch (i) {
+				// type
+				case 0:
+					pakfire_file_set_type(*file, *word);
+					break;
+
+				// size
+				case 1:
+					size = atoi(word);
+					pakfire_file_set_size(*file, size);
+					break;
+
+				// user
+				case 2:
+					pakfire_file_set_user(*file, word);
+					break;
+
+				// group
+				case 3:
+					pakfire_file_set_group(*file, word);
+					break;
+
+				// mode
+				case 4:
+					mode = atoi(word);
+					pakfire_file_set_mode(*file, mode);
+					break;
+
+				// time
+				case 5:
+					time = atoi(word);
+					pakfire_file_set_time(*file, time);
+					break;
+
+				// checksum
+				case 6:
+					pakfire_file_set_chksum(*file, word);
+					break;
+
+				// name
+				#warning handle filenames with spaces
+				case 8:
+					pakfire_file_set_name(*file, line + bytes_read);
+					break;
+			}
+
+		} else if (format >= 3) {
+			switch (i) {
+				// name
+				case 0:
+					pakfire_file_set_name(*file, word);
+					break;
+
+				// type
+				case 1:
+					pakfire_file_set_type(*file, *word);
+					break;
+
+				// size
+				case 2:
+					size = atoi(word);
+					pakfire_file_set_size(*file, size);
+					break;
+
+				// user
+				case 3:
+					pakfire_file_set_user(*file, word);
+					break;
+
+				// group
+				case 4:
+					pakfire_file_set_group(*file, word);
+					break;
+
+				// mode
+				case 5:
+					mode = atoi(word);
+					pakfire_file_set_mode(*file, mode);
+					break;
+
+				// time
+				case 6:
+					time = atoi(word);
+					pakfire_file_set_time(*file, time);
+					break;
+
+				// checksum
+				case 7:
+					pakfire_file_set_chksum(*file, word);
+					break;
+			}
+		}
+
+		// Count the bytes of the line that have been processed so far
+		// (Skip all padding spaces)
+		bytes_read += strlen(word) + 1;
+		while (*(line + bytes_read) == ' ')
+			bytes_read += 1;
+
+		word = strtok(NULL, " ");
+		++i;
+	}
+
+	return 0;
+}
+
+int pakfire_filelist_create_from_file(PakfireFilelist* list, const char* data, unsigned int format) {
+	int r = pakfire_filelist_create(list);
+	if (r)
+		return r;
+
+	PakfireFile file = NULL;
+
+	char* p = (char *)data;
+	char line[32 * 1024];
+
+	for (;;) {
+		line[0] = '\0';
+
+		pakfire_sgets(line, sizeof(line), &p);
+		pakfire_remove_trailing_newline(line);
+
+		if (*line == '\0')
+			break;
+
+		int r = pakfire_filelist_parse_line(&file, line, format);
+		if (r)
+			goto ERROR;
+
+		// Append file
+		r = pakfire_filelist_append(*list, file);
+		if (r)
+			goto ERROR;
+
+		pakfire_file_unref(file);
+	}
+
+	return 0;
+
+ERROR:
+	pakfire_filelist_unref(*list);
+
+	return 1;
 }

@@ -58,7 +58,7 @@ const char* pakfire_archive_get_path(PakfireArchive archive);
 
 unsigned int pakfire_archive_get_format(PakfireArchive archive);
 
-PakfireFile pakfire_archive_get_filelist(PakfireArchive archive);
+PakfireFilelist pakfire_archive_get_filelist(PakfireArchive archive);
 
 pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArchive archive);
 const char* pakfire_archive_verify_strerror(pakfire_archive_verify_status_t status);

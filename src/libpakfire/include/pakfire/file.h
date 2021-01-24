@@ -27,31 +27,18 @@
 
 #include <pakfire/types.h>
 
-PakfireFile pakfire_file_create();
+int pakfire_file_create(PakfireFile* file);
 
 PakfireFile pakfire_file_ref(PakfireFile file);
 PakfireFile pakfire_file_unref(PakfireFile file);
 
-void pakfire_file_free(PakfireFile file);
-void pakfire_file_free_all(PakfireFile file);
-
 int pakfire_file_cmp(PakfireFile file1, PakfireFile file2);
-void pakfire_file_swap(PakfireFile file1, PakfireFile file2);
-PakfireFile pakfire_file_sort(PakfireFile head);
-
-PakfireFile pakfire_file_get_prev(PakfireFile file);
-PakfireFile pakfire_file_get_next(PakfireFile file);
-PakfireFile pakfire_file_get_first(PakfireFile file);
-PakfireFile pakfire_file_get_last(PakfireFile file);
-
-PakfireFile pakfire_file_append(PakfireFile file);
-
-unsigned int pakfire_file_count(PakfireFile file);
-
 void pakfire_file_sprintf(PakfireFile file, char* str, size_t len);
 
 const char* pakfire_file_get_name(PakfireFile file);
 void pakfire_file_set_name(PakfireFile file, const char* name);
+char* pakfire_file_get_dirname(PakfireFile file);
+char* pakfire_file_get_basename(PakfireFile file);
 
 char pakfire_file_get_type(PakfireFile file);
 void pakfire_file_set_type(PakfireFile file, char type);
@@ -82,31 +69,5 @@ const char* pakfire_file_get_chksum(PakfireFile file);
 void pakfire_file_set_chksum(PakfireFile file, const char* chksum);
 
 PakfireFile pakfire_file_parse_from_file(const char* list, unsigned int format);
-
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfireFile {
-	char* name;
-	char type;
-	ssize_t size;
-
-	char* user;
-	char* group;
-
-	mode_t mode;
-	time_t time;
-
-	char* chksum;
-
-	#warning TODO capabilities, config, data
-	// capabilities
-	//int is_configfile;
-	//int is_datafile;
-
-	PakfireFile prev;
-	PakfireFile next;
-};
-
-#endif
 
 #endif /* PAKFIRE_FILE_H */

@@ -38,6 +38,7 @@
 #include <pakfire/archive.h>
 #include <pakfire/errno.h>
 #include <pakfire/file.h>
+#include <pakfire/filelist.h>
 #include <pakfire/i18n.h>
 #include <pakfire/key.h>
 #include <pakfire/logging.h>
@@ -66,7 +67,7 @@ struct _PakfireArchive {
 	int format;
 	PakfireParser parser;
 
-	PakfireFile filelist;
+	PakfireFilelist filelist;
 	archive_checksum_t** checksums;
 
 	// Signatures
@@ -397,12 +398,12 @@ static int pakfire_archive_parse_entry_filelist(PakfireArchive archive,
 	data[data_size] = '\0';
 
 	if (data_size > 0) {
-		archive->filelist = pakfire_file_parse_from_file(data, archive->format);
+		r = pakfire_filelist_create_from_file(&archive->filelist, data, archive->format);
 	}
 
 	pakfire_free(data);
 
-	return 0;
+	return r;
 }
 
 static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
@@ -849,7 +850,7 @@ PAKFIRE_EXPORT unsigned int pakfire_archive_get_format(PakfireArchive archive) {
 	return archive->format;
 }
 
-PAKFIRE_EXPORT PakfireFile pakfire_archive_get_filelist(PakfireArchive archive) {
+PAKFIRE_EXPORT PakfireFilelist pakfire_archive_get_filelist(PakfireArchive archive) {
 	return archive->filelist;
 }
 
@@ -1361,11 +1362,7 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 	}
 
 	// Import filelist
-	PakfireFile file = pakfire_archive_get_filelist(archive);
-	while (file) {
-		pakfire_package_filelist_append(pkg, pakfire_file_get_name(file));
-		file = pakfire_file_get_next(file);
-	}
+	pakfire_package_set_filelist(pkg, archive->filelist);
 
 	return pkg;
 }

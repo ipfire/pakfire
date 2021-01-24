@@ -19,6 +19,7 @@
 #############################################################################*/
 
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,53 +33,63 @@
 #include <pakfire/private.h>
 #include <pakfire/util.h>
 
-PAKFIRE_EXPORT PakfireFile pakfire_file_create() {
-	PakfireFile file = pakfire_calloc(1, sizeof(*file));
-	if (file) {
-		file->name = NULL;
+struct _PakfireFile {
+	int nrefs;
 
-		file->prev = NULL;
-		file->next = NULL;
-	}
+	char* name;
+	char type;
+	ssize_t size;
 
-	return file;
+	char* user;
+	char* group;
+
+	mode_t mode;
+	time_t time;
+
+	char* chksum;
+
+	#warning TODO capabilities, config, data
+	// capabilities
+	//int is_configfile;
+	//int is_datafile;
+};
+
+PAKFIRE_EXPORT int pakfire_file_create(PakfireFile* file) {
+	PakfireFile f = pakfire_calloc(1, sizeof(*f));
+	if (!f)
+		return -ENOMEM;
+
+	f->nrefs = 1;
+
+	*file = f;
+	return 0;
 }
 
-PAKFIRE_EXPORT PakfireFile pakfire_file_ref(PakfireFile file) {
-	return file;	
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_unref(PakfireFile file) {
-	return file;
-}
-
-PAKFIRE_EXPORT void pakfire_file_free(PakfireFile file) {
+static void pakfire_file_free(PakfireFile file) {
 	if (file->name)
 		pakfire_free(file->name);
-
 	if (file->user)
 		pakfire_free(file->user);
 	if (file->group)
 		pakfire_free(file->group);
-
-	// Update pointers in the previous and next element in the list.
-	if (file->next)
-		file->next->prev = NULL;
-	if (file->prev)
-		file->prev->next = NULL;
+	if (file->chksum)
+		pakfire_free(file->chksum);
 
 	pakfire_free(file);
 }
 
-PAKFIRE_EXPORT void pakfire_file_free_all(PakfireFile file) {
-	file = pakfire_file_get_first(file);
+PAKFIRE_EXPORT PakfireFile pakfire_file_ref(PakfireFile file) {
+	file->nrefs++;
 
-	while (file) {
-		PakfireFile next = file->next;
-		pakfire_file_free(file);
+	return file;
+}
 
-		file = next;
-	}
+PAKFIRE_EXPORT PakfireFile pakfire_file_unref(PakfireFile file) {
+	if (--file->nrefs > 0)
+		return file;
+
+	pakfire_file_free(file);
+	return NULL;
 }
 
 PAKFIRE_EXPORT int pakfire_file_cmp(PakfireFile file1, PakfireFile file2) {
@@ -86,96 +97,6 @@ PAKFIRE_EXPORT int pakfire_file_cmp(PakfireFile file1, PakfireFile file2) {
 	const char* name2 = pakfire_file_get_name(file2);
 
 	return strcmp(name1, name2);
-}
-
-PAKFIRE_EXPORT void pakfire_file_swap(PakfireFile file1, PakfireFile file2) {
-	PakfireFile file_prev = file1->prev;
-	PakfireFile file_next = file2->next;
-
-	if (file_prev)
-		file_prev->next = file2;
-	file2->prev = file_prev;
-
-	if (file_next)
-		file_next->prev = file1;
-	file1->next = file_next;
-
-	file2->next = file1;
-	file1->prev = file2;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_sort(PakfireFile head) {
-	unsigned int count = pakfire_file_count(head);
-
-	for (unsigned int i = 0; i < count; i++) {
-		PakfireFile file = head;
-		PakfireFile next = pakfire_file_get_next(file);
-
-		while (next) {
-			if (pakfire_file_cmp(file, next) > 0) {
-				if (head == file)
-					head = next;
-
-				pakfire_file_swap(file, next);
-			}
-
-			file = next;
-			next = pakfire_file_get_next(file);
-		}
-	}
-
-	return head;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_get_prev(PakfireFile file) {
-	return file->prev;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_get_next(PakfireFile file) {
-	return file->next;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_get_first(PakfireFile file) {
-	if (file->prev)
-		return pakfire_file_get_first(file->prev);
-
-	return file;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_get_last(PakfireFile file) {
-	if (file->next)
-		return pakfire_file_get_last(file->next);
-
-	return file;
-}
-
-static PakfireFile __pakfire_file_append(PakfireFile file, PakfireFile appended_file) {
-	// Get the last file in the queue.
-	file = pakfire_file_get_last(file);
-
-	// Set the links.
-	file->next = appended_file;
-	appended_file->prev = file;
-
-	return appended_file;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_append(PakfireFile file) {
-	// Create a new file object.
-	PakfireFile appended_file = pakfire_file_create();
-
-	return __pakfire_file_append(file, appended_file);
-}
-
-PAKFIRE_EXPORT unsigned int pakfire_file_count(PakfireFile file) {
-	unsigned int counter = 0;
-
-	while (file) {
-		file = pakfire_file_get_next(file);
-		++counter;
-	}
-
-	return counter;
 }
 
 static char pakfire_file_sprintf_type(PakfireFile file) {
@@ -252,6 +173,14 @@ PAKFIRE_EXPORT void pakfire_file_set_name(PakfireFile file, const char* name) {
 	} else {
 		asprintf(&file->name, "/%s", name);
 	}
+}
+
+PAKFIRE_EXPORT char* pakfire_file_get_dirname(PakfireFile file) {
+	return pakfire_dirname(file->name);
+}
+
+PAKFIRE_EXPORT char* pakfire_file_get_basename(PakfireFile file) {
+	return pakfire_basename(file->name);
 }
 
 PAKFIRE_EXPORT char pakfire_file_get_type(PakfireFile file) {
@@ -332,152 +261,4 @@ PAKFIRE_EXPORT const char* pakfire_file_get_chksum(PakfireFile file) {
 
 PAKFIRE_EXPORT void pakfire_file_set_chksum(PakfireFile file, const char* chksum) {
 	file->chksum = pakfire_strdup(chksum);
-}
-
-static PakfireFile pakfire_file_parse_line(char* line, unsigned int format) {
-	unsigned int i = 0;
-
-	PakfireFile file = pakfire_file_create();
-	ssize_t size;
-	mode_t mode;
-	time_t time;
-
-	unsigned int bytes_read = 0;
-
-	char* word = strtok(line, " ");
-	while (word) {
-		if (format >= 4) {
-			switch (i) {
-				// type
-				case 0:
-					pakfire_file_set_type(file, *word);
-					break;
-
-				// size
-				case 1:
-					size = atoi(word);
-					pakfire_file_set_size(file, size);
-					break;
-
-				// user
-				case 2:
-					pakfire_file_set_user(file, word);
-					break;
-
-				// group
-				case 3:
-					pakfire_file_set_group(file, word);
-					break;
-
-				// mode
-				case 4:
-					mode = atoi(word);
-					pakfire_file_set_mode(file, mode);
-					break;
-
-				// time
-				case 5:
-					time = atoi(word);
-					pakfire_file_set_time(file, time);
-					break;
-
-				// checksum
-				case 6:
-					pakfire_file_set_chksum(file, word);
-					break;
-
-				// name
-				#warning handle filenames with spaces
-				case 8:
-					pakfire_file_set_name(file, line + bytes_read);
-					break;
-			}
-
-		} else if (format >= 3) {
-			switch (i) {
-				// name
-				case 0:
-					pakfire_file_set_name(file, word);
-					break;
-
-				// type
-				case 1:
-					pakfire_file_set_type(file, *word);
-					break;
-
-				// size
-				case 2:
-					size = atoi(word);
-					pakfire_file_set_size(file, size);
-					break;
-
-				// user
-				case 3:
-					pakfire_file_set_user(file, word);
-					break;
-
-				// group
-				case 4:
-					pakfire_file_set_group(file, word);
-					break;
-
-				// mode
-				case 5:
-					mode = atoi(word);
-					pakfire_file_set_mode(file, mode);
-					break;
-
-				// time
-				case 6:
-					time = atoi(word);
-					pakfire_file_set_time(file, time);
-					break;
-
-				// checksum
-				case 7:
-					pakfire_file_set_chksum(file, word);
-					break;
-			}
-		}
-
-		// Count the bytes of the line that have been processed so far
-		// (Skip all padding spaces)
-		bytes_read += strlen(word) + 1;
-		while (*(line + bytes_read) == ' ')
-			bytes_read += 1;
-
-		word = strtok(NULL, " ");
-		++i;
-	}
-
-	return file;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_file_parse_from_file(const char* list, unsigned int format) {
-	PakfireFile head = NULL;
-
-	char* plist = (char *)list;
-	char line[32 * 1024];
-
-	for (;;) {
-		line[0] = '\0';
-
-		pakfire_sgets(line, sizeof(line), &plist);
-		pakfire_remove_trailing_newline(line);
-
-		if (*line == '\0')
-			break;
-
-		PakfireFile file = pakfire_file_parse_line(line, format);
-
-		if (!file)
-			continue;
-
-		if (head)
-			file = __pakfire_file_append(head, file);
-		else
-			head = file;
-	}
-
-	return head;
 }

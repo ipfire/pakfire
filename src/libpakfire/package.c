@@ -32,6 +32,7 @@
 #include <pakfire/archive.h>
 #include <pakfire/constants.h>
 #include <pakfire/file.h>
+#include <pakfire/filelist.h>
 #include <pakfire/i18n.h>
 #include <pakfire/logging.h>
 #include <pakfire/package.h>
@@ -45,7 +46,7 @@
 struct _PakfirePackage {
 	Pakfire pakfire;
 	Id id;
-	PakfireFile filelist;
+	PakfireFilelist filelist;
 	int nrefs;
 };
 
@@ -69,6 +70,12 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_create(Pakfire pakfire, Id id) {
 
 		// Initialize reference counter
 		pkg->nrefs = 1;
+
+		// Initialize filelist
+		int r = pakfire_filelist_create(&pkg->filelist);
+		if (r) {
+			// XXX what do we do here?
+		}
 	}
 
 	return pkg;
@@ -88,9 +95,9 @@ PAKFIRE_EXPORT PakfirePackage pakfire_package_create2(Pakfire pakfire, PakfireRe
 
 static void pakfire_package_free(PakfirePackage pkg) {
 	DEBUG(pkg->pakfire, "Releasing Package at %p\n", pkg);
-	pakfire_unref(pkg->pakfire);
 
-	pakfire_package_filelist_remove(pkg);
+	pakfire_filelist_unref(pkg->filelist);
+	pakfire_unref(pkg->pakfire);
 	pakfire_free(pkg);
 }
 
@@ -847,18 +854,23 @@ PAKFIRE_EXPORT char* pakfire_package_dump(PakfirePackage pkg, int flags) {
 	}
 
 	if (flags & PAKFIRE_PKG_DUMP_FILELIST) {
-		PakfireFile file = pakfire_package_get_filelist(pkg);
+		PakfireFilelist filelist = pakfire_package_get_filelist(pkg);
 
-		char* prefix = _("Filelist");
-		while (file) {
+		const char* prefix = _("Filelist");
+
+		for (unsigned int i = 0; i < pakfire_filelist_size(filelist); i++) {
+			PakfireFile file = pakfire_filelist_get(filelist, i);
+
 			const char* name = pakfire_file_get_name(file);
 			pakfire_package_dump_add_line(&string, prefix, name);
 
-			file = pakfire_file_get_next(file);
+			pakfire_file_unref(file);
 
-			// Only prefix the first line.
+			// Only prefix the first line
 			prefix = NULL;
 		}
+
+		pakfire_filelist_unref(filelist);
 	}
 
 	return string;
@@ -902,14 +914,14 @@ PAKFIRE_EXPORT PakfireArchive pakfire_package_get_archive(PakfirePackage pkg) {
 	return archive;
 }
 
-static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
+static int pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 	pakfire_package_internalize_repo(pkg);
 
-	PakfireFile file = NULL;
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 	Solvable* s = get_solvable(pkg);
 	Pool* p = pakfire_package_get_solv_pool(pkg);
 	Repo* r = pakfire_repo_get_repo(repo);
+	pakfire_repo_unref(repo);
 
 	int found_marker = 0;
 
@@ -919,13 +931,20 @@ static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 		const char* filename = pool_dep2str(p, id);
 
 		if (found_marker) {
-			if (file) {
-				file = pakfire_file_append(file);
-			} else {
-				file = pakfire_file_create();
-			}
+			PakfireFile file;
 
+			int r = pakfire_file_create(&file);
+			if (r)
+				return r;
+
+			// Set name
 			pakfire_file_set_name(file, filename);
+
+			r = pakfire_filelist_append(pkg->filelist, file);
+			if (r)
+				return r;
+
+			pakfire_file_unref(file);
 			continue;
 		}
 
@@ -933,22 +952,14 @@ static PakfireFile pakfire_package_fetch_legacy_filelist(PakfirePackage pkg) {
 			++found_marker;
 	}
 
-	if (file) {
-		file = pakfire_file_get_first(file);
-
-		// Sort the output
-		file = pakfire_file_sort(file);
-	}
-
-	pakfire_repo_unref(repo);
-
-	return file;
+	return 0;
 }
 
-static PakfireFile pakfire_package_fetch_filelist(PakfirePackage pkg) {
+static int pakfire_package_fetch_filelist(PakfirePackage pkg) {
+	int r;
+
 	pakfire_package_internalize_repo(pkg);
 
-	PakfireFile file = NULL;
 	Pool* pool = pakfire_package_get_solv_pool(pkg);
 	Repo* repo = pakfire_package_solv_repo(pkg);
 	Id handle = pakfire_package_get_handle(pkg);
@@ -956,64 +967,80 @@ static PakfireFile pakfire_package_fetch_filelist(PakfirePackage pkg) {
 	Dataiterator di;
 	dataiterator_init(&di, pool, repo, handle,
 		SOLVABLE_FILELIST, NULL, SEARCH_FILES | SEARCH_COMPLETE_FILELIST);
+
 	while (dataiterator_step(&di)) {
-		if (file) {
-			file = pakfire_file_append(file);
-		} else {
-			file = pakfire_file_create();
-		}
+		PakfireFile file;
+
+		r = pakfire_file_create(&file);
+		if (r)
+			return r;
 
 		pakfire_file_set_name(file, di.kv.str);
+
+		// Append to filelist
+		pakfire_filelist_append(pkg->filelist, file);
+		pakfire_file_unref(file);
 	}
 	dataiterator_free(&di);
 
-	if (file) {
-		file = pakfire_file_get_first(file);
-
-		// Sort the result.
-		file = pakfire_file_sort(file);
-	}
-
 	// If the file list is empty, we fall back to read files
 	// in the older format.
-	if (!file)
-		file = pakfire_package_fetch_legacy_filelist(pkg);
-
-	return file;
-}
-
-PAKFIRE_EXPORT PakfireFile pakfire_package_get_filelist(PakfirePackage pkg) {
-	if (!pkg->filelist) {
-		pkg->filelist = pakfire_package_fetch_filelist(pkg);
+	if (pakfire_filelist_is_empty(pkg->filelist)) {
+		r = pakfire_package_fetch_legacy_filelist(pkg);
+		if (r)
+			return r;
 	}
 
-	return pkg->filelist;
+	// Sort the list
+	pakfire_filelist_sort(pkg->filelist);
+
+	return 0;
 }
 
-PAKFIRE_EXPORT PakfireFile pakfire_package_filelist_append(PakfirePackage pkg, const char* filename) {
+PAKFIRE_EXPORT PakfireFilelist pakfire_package_get_filelist(PakfirePackage pkg) {
+	if (!pkg->filelist) {
+		int r = pakfire_filelist_create(&pkg->filelist);
+		if (r)
+			return NULL;
+
+		r = pakfire_package_fetch_filelist(pkg);
+		if (r) {
+			pakfire_filelist_unref(pkg->filelist);
+
+			return NULL;
+		}
+	}
+
+	return pakfire_filelist_ref(pkg->filelist);
+}
+
+PAKFIRE_EXPORT int pakfire_package_set_filelist(PakfirePackage pkg, PakfireFilelist filelist) {
+	// Fetch repodata
 	PakfireRepo repo = pakfire_package_get_repo(pkg);
 	Repodata* repodata = pakfire_repo_get_repodata(repo);
+	pakfire_repo_unref(repo);
 
 	Id handle = pakfire_package_get_handle(pkg);
 
-	char* dirname  = pakfire_dirname(filename);
-	char* basename = pakfire_basename(filename);
+	for (unsigned int i = 0; i < pakfire_filelist_size(filelist); i++) {
+		PakfireFile file = pakfire_filelist_get(filelist, i);
 
-	Id did = repodata_str2dir(repodata, dirname, 1);
-	if (!did)
-		did = repodata_str2dir(repodata, "/", 1);
+		char* basename = pakfire_file_get_basename(file);
+		char* dirname  = pakfire_file_get_dirname(file);
 
-	repodata_add_dirstr(repodata, handle,
-		SOLVABLE_FILELIST, did, basename);
+		// Convert directory into ID
+		Id did = repodata_str2dir(repodata, dirname, 1);
+		if (!did)
+			did = repodata_str2dir(repodata, "/", 1);
 
-	pakfire_repo_unref(repo);
-	pakfire_free(dirname);
-	pakfire_free(basename);
+		// Add data to list
+		repodata_add_dirstr(repodata, handle,
+			SOLVABLE_FILELIST, did, basename);
 
-	return NULL;
-}
+		pakfire_file_unref(file);
+		free(basename);
+		free(dirname);
+	}
 
-PAKFIRE_EXPORT void pakfire_package_filelist_remove(PakfirePackage pkg) {
-	if (pkg->filelist)
-		pakfire_file_free_all(pkg->filelist);
+	return 0;
 }
