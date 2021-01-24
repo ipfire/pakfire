@@ -23,6 +23,13 @@
 #include <pakfire/private.h>
 #include <pakfire/util.h>
 
+struct _PakfireFilelist {
+	PakfirePackage pkg;
+
+	PakfireFile first;
+	PakfireFile last;
+};
+
 PAKFIRE_EXPORT PakfireFilelist pakfire_filelist_create(PakfirePackage pkg) {
 	PakfireFilelist list = pakfire_calloc(1, sizeof(*list));
 	if (list) {

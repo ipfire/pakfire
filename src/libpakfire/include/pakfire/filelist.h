@@ -26,16 +26,4 @@
 PakfireFilelist pakfire_filelist_create(PakfirePackage pkg);
 void pakfire_filelist_free(PakfireFilelist list);
 
-
-#ifdef PAKFIRE_PRIVATE
-
-struct _PakfireFilelist {
-	PakfirePackage pkg;
-
-	PakfireFile first;
-	PakfireFile last;
-};
-
-#endif
-
 #endif /* PAKFIRE_FILELIST_H */
