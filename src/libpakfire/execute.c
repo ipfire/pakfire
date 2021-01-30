@@ -262,7 +262,12 @@ static int pakfire_execute_fork(void* data) {
 		int r = chroot(root);
 		if (r) {
 			ERROR(pakfire, "chroot() to %s failed: %s\n", root, strerror(errno));
+			return 1;
+		}
 
+		r = chdir("/");
+		if (r) {
+			ERROR(pakfire, "chdir() after chroot() failed: %s\n", strerror(errno));
 			return 1;
 		}
 	}
