@@ -48,6 +48,28 @@ static int test_open(const struct test* t) {
 	return EXIT_SUCCESS;
 }
 
+static int test_filelist(const struct test* t) {
+	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
+
+	// Open the archive
+	PakfireArchive archive = pakfire_archive_open(t->pakfire, path);
+	ASSERT(archive);
+
+	// Free path
+	free(path);
+
+	// Fetch the filelist
+	PakfireFilelist list = pakfire_archive_get_filelist(archive);
+	ASSERT(list);
+
+	// This packages has 7 files
+	ASSERT(pakfire_filelist_size(list) == 7);
+
+	// Cleanup
+	pakfire_archive_unref(archive);
+	return EXIT_SUCCESS;
+}
+
 static int test_extract(const struct test* t) {
 	char* path = pakfire_path_join(TEST_SRC_PATH, TEST_PKG1_PATH);
 
@@ -88,6 +110,7 @@ static int test_import(const struct test* t) {
 
 int main(int argc, char** argv) {
 	testsuite_add_test(test_open);
+	testsuite_add_test(test_filelist);
 	testsuite_add_test(test_extract);
 	testsuite_add_test(test_import);
 
