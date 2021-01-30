@@ -25,6 +25,22 @@
 #include <pakfire/scriptlet.h>
 #include <pakfire/types.h>
 
+struct pakfire_scriptlet_type PAKFIRE_SCRIPTLET_TYPES[NUM_PAKFIRE_SCRIPTLET_TYPES + 1] = {
+	{ PAKFIRE_SCRIPTLET_PREIN,       "scriptlets/prein",       "prein" },
+	{ PAKFIRE_SCRIPTLET_PREUN,       "scriptlets/preun",       "preun" },
+	{ PAKFIRE_SCRIPTLET_PREUP,       "scriptlets/preup",       "preup" },
+	{ PAKFIRE_SCRIPTLET_POSTIN,      "scriptlets/postin",      "postin" },
+	{ PAKFIRE_SCRIPTLET_POSTUN,      "scriptlets/postun",      "postun" },
+	{ PAKFIRE_SCRIPTLET_POSTUP,      "scriptlets/postup",      "postup" },
+	{ PAKFIRE_SCRIPTLET_PRETRANSIN,  "scriptlets/pretransin",  "pretransin" },
+	{ PAKFIRE_SCRIPTLET_PRETRANSUN,  "scriptlets/pretransun",  "pretransun" },
+	{ PAKFIRE_SCRIPTLET_PRETRANSUP,  "scriptlets/pretransup",  "pretransup" },
+	{ PAKFIRE_SCRIPTLET_POSTTRANSIN, "scriptlets/posttransin", "posttransin" },
+	{ PAKFIRE_SCRIPTLET_POSTTRANSUN, "scriptlets/posttransun", "posttransun" },
+	{ PAKFIRE_SCRIPTLET_POSTTRANSUP, "scriptlets/posttransup", "posttransup" },
+	{ PAKFIRE_SCRIPTLET_UNDEFINED,   NULL,                     NULL },
+};
+
 struct pakfire_scriptlet* pakfire_scriptlet_create(Pakfire pakfire) {
 	struct pakfire_scriptlet* scriptlet = calloc(1, sizeof(*scriptlet));
 	if (!scriptlet)
@@ -43,82 +59,26 @@ void pakfire_scriptlet_free(struct pakfire_scriptlet* scriptlet) {
 }
 
 pakfire_scriptlet_type pakfire_scriptlet_type_from_filename(const char* filename) {
-	if (strcmp(filename, "scriptlets/prein") == 0)
-		return PAKFIRE_SCRIPTLET_PREIN;
+	struct pakfire_scriptlet_type* t = PAKFIRE_SCRIPTLET_TYPES;
 
-	else if (strcmp(filename, "scriptlets/preun") == 0)
-		return PAKFIRE_SCRIPTLET_PREUN;
+	while (t->type) {
+		if (strcmp(t->filename, filename) == 0)
+			return t->type;
 
-	else if (strcmp(filename, "scriptlets/preup") == 0)
-		return PAKFIRE_SCRIPTLET_PREUP;
-
-	else if (strcmp(filename, "scriptlets/postin") == 0)
-		return PAKFIRE_SCRIPTLET_POSTIN;
-
-	else if (strcmp(filename, "scriptlets/postun") == 0)
-		return PAKFIRE_SCRIPTLET_POSTUN;
-
-	else if (strcmp(filename, "scriptlets/postup") == 0)
-		return PAKFIRE_SCRIPTLET_POSTUP;
-
-	else if (strcmp(filename, "scriptlets/pretransin") == 0)
-		return PAKFIRE_SCRIPTLET_PRETRANSIN;
-
-	else if (strcmp(filename, "scriptlets/pretransun") == 0)
-		return PAKFIRE_SCRIPTLET_PRETRANSUN;
-
-	else if (strcmp(filename, "scriptlets/pretransup") == 0)
-		return PAKFIRE_SCRIPTLET_PRETRANSUP;
-
-	else if (strcmp(filename, "scriptlets/posttransin") == 0)
-		return PAKFIRE_SCRIPTLET_POSTTRANSIN;
-
-	else if (strcmp(filename, "scriptlets/posttransun") == 0)
-		return PAKFIRE_SCRIPTLET_POSTTRANSUN;
-
-	else if (strcmp(filename, "scriptlets/posttransup") == 0)
-		return PAKFIRE_SCRIPTLET_POSTTRANSUP;
+		t++;
+	}
 
 	return PAKFIRE_SCRIPTLET_UNDEFINED;
 }
 
-static const char* pakfire_step_script_filename(pakfire_scriptlet_type script) {
-	switch (script) {
-		case PAKFIRE_SCRIPTLET_PREIN:
-			return "scriptlets/prein";
+const char* pakfire_scriptlet_handle_from_type(pakfire_scriptlet_type type) {
+	struct pakfire_scriptlet_type* t = PAKFIRE_SCRIPTLET_TYPES;
 
-		case PAKFIRE_SCRIPTLET_PREUN:
-			return "scriptlets/preun";
+	while (t->type) {
+		if (t->type == type)
+			return t->handle;
 
-		case PAKFIRE_SCRIPTLET_PREUP:
-			return "scriptlets/preup";
-
-		case PAKFIRE_SCRIPTLET_PRETRANSIN:
-			return "scriptlets/pretansin";
-
-		case PAKFIRE_SCRIPTLET_PRETRANSUN:
-			return "scriptlets/pretransun";
-
-		case PAKFIRE_SCRIPTLET_PRETRANSUP:
-			return "scriptlets/pretransup";
-
-		case PAKFIRE_SCRIPTLET_POSTIN:
-			return "scriptlets/postin";
-
-		case PAKFIRE_SCRIPTLET_POSTUN:
-			return "scriptlets/postun";
-
-		case PAKFIRE_SCRIPTLET_POSTUP:
-			return "scriptlets/postup";
-
-		case PAKFIRE_SCRIPTLET_POSTTRANSIN:
-			return "scriptlets/posttransin";
-
-		case PAKFIRE_SCRIPTLET_POSTTRANSUN:
-			return "scriptlets/posttransun";
-
-		case PAKFIRE_SCRIPTLET_POSTTRANSUP:
-			return "scriptlets/posttransup";
+		t++;
 	}
 
 	return NULL;

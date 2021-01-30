@@ -312,7 +312,7 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 		"CREATE TABLE IF NOT EXISTS scriptlets("
 			"id             INTEGER PRIMARY KEY, "
 			"pkg            INTEGER, "
-			"action         TEXT, "
+			"type           TEXT, "
 			"scriptlet      TEXT, "
 			"FOREIGN KEY (pkg) REFERENCES packages(id)"
 		")");
@@ -790,6 +790,76 @@ END:
 	return r;
 }
 
+static int pakfire_db_add_scriptlets(struct pakfire_db* db, unsigned long id, PakfireArchive archive) {
+	sqlite3_stmt* stmt = NULL;
+	int r = 1;
+
+	struct pakfire_scriptlet_type* scriptlet_type = PAKFIRE_SCRIPTLET_TYPES;
+	struct pakfire_scriptlet* scriptlet;
+
+	const char* sql = "INSERT INTO scriptlets(pkg, type, scriptlet) VALUES(?, ?, ?)";
+
+	// Prepare the statement
+	r = sqlite3_prepare_v2(db->handle, sql, -1, &stmt, NULL);
+	if (r) {
+		ERROR(db->pakfire, "Could not prepare SQL statement: %s: %s\n",
+			sql, sqlite3_errmsg(db->handle));
+		goto END;
+	}
+
+	while (scriptlet_type->type) {
+		// Fetch the scriptlet
+		scriptlet = pakfire_archive_get_scriptlet(archive, scriptlet_type->type);
+
+		// Go to next one if the archive does not have a scriptlet of the given type
+		if (!scriptlet) {
+			scriptlet_type++;
+			continue;
+		}
+
+		// Bind package ID
+		r = sqlite3_bind_int64(stmt, 1, id);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind id: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind handle
+		r = sqlite3_bind_text(stmt, 2, scriptlet_type->handle, -1, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind type: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Bind scriptlet
+		r = sqlite3_bind_text(stmt, 3, scriptlet->data, scriptlet->size, NULL);
+		if (r) {
+			ERROR(db->pakfire, "Could not bind scriptlet: %s\n", sqlite3_errmsg(db->handle));
+			goto END;
+		}
+
+		// Execute query
+		do {
+			r = sqlite3_step(stmt);
+		} while (r == SQLITE_BUSY);
+
+		// Reset bound values
+		sqlite3_reset(stmt);
+
+		scriptlet_type++;
+	}
+
+	// All okay
+	r = 0;
+
+END:
+	if (stmt)
+		sqlite3_finalize(stmt);
+
+	return r;
+}
+
+
 PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db,
 		PakfirePackage pkg, PakfireArchive archive) {
 	sqlite3_stmt* stmt = NULL;
@@ -1009,6 +1079,11 @@ PAKFIRE_EXPORT int pakfire_db_add_package(struct pakfire_db* db,
 
 	// Add files
 	r = pakfire_db_add_files(db, packages_id, archive);
+	if (r)
+		goto ROLLBACK;
+
+	// Add scriptlets
+	r = pakfire_db_add_scriptlets(db, packages_id, archive);
 	if (r)
 		goto ROLLBACK;
 

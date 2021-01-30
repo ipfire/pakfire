@@ -32,16 +32,26 @@ typedef enum _pakfire_script_types {
 	PAKFIRE_SCRIPTLET_PREIN,
 	PAKFIRE_SCRIPTLET_PREUN,
 	PAKFIRE_SCRIPTLET_PREUP,
-	PAKFIRE_SCRIPTLET_PRETRANSIN,
-	PAKFIRE_SCRIPTLET_PRETRANSUN,
-	PAKFIRE_SCRIPTLET_PRETRANSUP,
 	PAKFIRE_SCRIPTLET_POSTIN,
 	PAKFIRE_SCRIPTLET_POSTUN,
 	PAKFIRE_SCRIPTLET_POSTUP,
+	PAKFIRE_SCRIPTLET_PRETRANSIN,
+	PAKFIRE_SCRIPTLET_PRETRANSUN,
+	PAKFIRE_SCRIPTLET_PRETRANSUP,
 	PAKFIRE_SCRIPTLET_POSTTRANSIN,
 	PAKFIRE_SCRIPTLET_POSTTRANSUN,
 	PAKFIRE_SCRIPTLET_POSTTRANSUP,
 } pakfire_scriptlet_type;
+
+#define NUM_PAKFIRE_SCRIPTLET_TYPES 13
+
+struct pakfire_scriptlet_type {
+	pakfire_scriptlet_type type;
+	const char* filename;
+	const char* handle;
+};
+
+struct pakfire_scriptlet_type PAKFIRE_SCRIPTLET_TYPES[NUM_PAKFIRE_SCRIPTLET_TYPES + 1];
 
 struct pakfire_scriptlet {
 	pakfire_scriptlet_type type;
@@ -53,6 +63,7 @@ struct pakfire_scriptlet* pakfire_scriptlet_create(Pakfire pakfire);
 void pakfire_scriptlet_free(struct pakfire_scriptlet* scriptlet);
 
 pakfire_scriptlet_type pakfire_scriptlet_type_from_filename(const char* filename);
+const char* pakfire_scriptlet_handle_from_type(pakfire_scriptlet_type type);
 
 #endif
 
