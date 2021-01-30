@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <pakfire/logging.h>
 #include <pakfire/scriptlet.h>
 #include <pakfire/types.h>
 
@@ -29,12 +30,16 @@ struct pakfire_scriptlet* pakfire_scriptlet_create(Pakfire pakfire) {
 	if (!scriptlet)
 		return NULL;
 
+	DEBUG(pakfire, "Allocated scriptlet at %p\n", scriptlet);
+
 	return scriptlet;
 };
 
 void pakfire_scriptlet_free(struct pakfire_scriptlet* scriptlet) {
 	if (scriptlet->data)
 		free(scriptlet->data);
+
+	free(scriptlet);
 }
 
 pakfire_scriptlet_type pakfire_scriptlet_type_from_filename(const char* filename) {
