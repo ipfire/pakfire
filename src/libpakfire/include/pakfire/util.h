@@ -56,8 +56,6 @@ char* pakfire_remove_trailing_newline(char* str);
 
 const char* pakfire_action_type_string(pakfire_action_type_t type);
 
-void init_libgcrypt();
-
 int pakfire_read_file_into_buffer(FILE* f, char** buffer, size_t* len);
 
 size_t pakfire_string_to_size(const char* s);

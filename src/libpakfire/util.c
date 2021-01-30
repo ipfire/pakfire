@@ -30,8 +30,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <gcrypt.h>
-
 #include <pakfire/constants.h>
 #include <pakfire/logging.h>
 #include <pakfire/private.h>
@@ -279,25 +277,6 @@ char* pakfire_remove_trailing_newline(char* str) {
 		str[pos] = '\0';
 
 	return str;
-}
-
-void init_libgcrypt() {
-	// Only execute this once
-	static int libgcrypt_initialized = 0;
-	if (libgcrypt_initialized++)
-		return;
-
-	const char* version = gcry_check_version(NULL);
-	if (!version) {
-		fprintf(stderr, "Could not initialize libgcrypt\n");
-		exit(1);
-	}
-
-	// Disable secure memory
-	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
-
-	// Tell libgcrypt that initialization has completed
-	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 }
 
 PAKFIRE_EXPORT const char* pakfire_action_type_string(pakfire_action_type_t type) {

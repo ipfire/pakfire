@@ -325,7 +325,6 @@ pkginclude_HEADERS += \
 libpakfire_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-fvisibility=hidden \
-	$(LIBGCRYPT_CFLAGS) \
 	$(OPENSSL_CFLAGS) \
 	$(SQLITE3_CFLAGS)
 
@@ -344,7 +343,6 @@ libpakfire_la_LIBADD = \
 	libpakfire-parser.la \
 	$(ARCHIVE_LIBS) \
 	$(GPGME_LIBS) \
-	$(LIBGCRYPT_LIBS) \
 	$(LZMA_LIBS) \
 	$(OPENSSL_LIBS) \
 	$(SOLV_LIBS) \
