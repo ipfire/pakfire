@@ -286,6 +286,7 @@ libpakfire_la_SOURCES = \
 	src/libpakfire/relationlist.c \
 	src/libpakfire/repo.c \
 	src/libpakfire/request.c \
+	src/libpakfire/scriptlet.c \
 	src/libpakfire/selector.c \
 	src/libpakfire/solution.c \
 	src/libpakfire/step.c \
@@ -315,6 +316,7 @@ pkginclude_HEADERS += \
 	src/libpakfire/include/pakfire/relationlist.h \
 	src/libpakfire/include/pakfire/repo.h \
 	src/libpakfire/include/pakfire/request.h \
+	src/libpakfire/include/pakfire/scriptlet.h \
 	src/libpakfire/include/pakfire/selector.h \
 	src/libpakfire/include/pakfire/solution.h \
 	src/libpakfire/include/pakfire/step.h \

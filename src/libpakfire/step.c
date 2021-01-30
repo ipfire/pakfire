@@ -32,6 +32,7 @@
 #include <pakfire/pakfire.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
+#include <pakfire/scriptlet.h>
 #include <pakfire/step.h>
 #include <pakfire/transaction.h>
 #include <pakfire/types.h>
@@ -46,48 +47,6 @@ struct _PakfireStep {
 	pakfire_step_type_t type;
 	int nrefs;
 };
-
-static const char* pakfire_step_script_filename(pakfire_script_type script) {
-	switch (script) {
-		case PAKFIRE_SCRIPT_PREIN:
-			return "scriptlets/prein";
-
-		case PAKFIRE_SCRIPT_PREUN:
-			return "scriptlets/preun";
-
-		case PAKFIRE_SCRIPT_PREUP:
-			return "scriptlets/preup";
-
-		case PAKFIRE_SCRIPT_PRETRANSIN:
-			return "scriptlets/pretansin";
-
-		case PAKFIRE_SCRIPT_PRETRANSUN:
-			return "scriptlets/pretransun";
-
-		case PAKFIRE_SCRIPT_PRETRANSUP:
-			return "scriptlets/pretransup";
-
-		case PAKFIRE_SCRIPT_POSTIN:
-			return "scriptlets/postin";
-
-		case PAKFIRE_SCRIPT_POSTUN:
-			return "scriptlets/postun";
-
-		case PAKFIRE_SCRIPT_POSTUP:
-			return "scriptlets/postup";
-
-		case PAKFIRE_SCRIPT_POSTTRANSIN:
-			return "scriptlets/posttransin";
-
-		case PAKFIRE_SCRIPT_POSTTRANSUN:
-			return "scriptlets/posttransun";
-
-		case PAKFIRE_SCRIPT_POSTTRANSUP:
-			return "scriptlets/posttransup";
-	}
-
-	return NULL;
-}
 
 PAKFIRE_EXPORT PakfireStep pakfire_step_create(PakfireTransaction transaction,
 		pakfire_step_type_t type, PakfirePackage pkg) {
@@ -260,21 +219,21 @@ static int pakfire_step_verify(PakfireStep step) {
 	return status;
 }
 
-static int pakfire_script_check_shell(const char* data, const size_t size) {
+static int pakfire_script_check_shell(struct pakfire_scriptlet* scriptlet) {
 	const char* interpreter = "#!/bin/sh";
 
 	// data must be long enough
-	if (size <= strlen(interpreter))
+	if (scriptlet->size <= strlen(interpreter))
 		return 0;
 
 	// If the string begins with the interpreter, this is a match
-	if (strncmp(data, interpreter, strlen(interpreter)) == 0)
+	if (strncmp(scriptlet->data, interpreter, strlen(interpreter)) == 0)
 		return 1;
 
 	return 0;
 }
 
-static int pakfire_step_run_shell_script(PakfireStep step, const char* data, const size_t size) {
+static int pakfire_step_run_shell_script(PakfireStep step, struct pakfire_scriptlet* scriptlet) {
 	const char* root = pakfire_get_path(step->pakfire);
 
 	// Write the scriptlet to disk
@@ -293,8 +252,8 @@ static int pakfire_step_run_shell_script(PakfireStep step, const char* data, con
 	}
 
 	// Write data
-	ssize_t bytes_written = write(fd, data, size);
-	if (bytes_written < (ssize_t)size) {
+	ssize_t bytes_written = write(fd, scriptlet->data, scriptlet->size);
+	if (bytes_written < (ssize_t)scriptlet->size) {
 		ERROR(step->pakfire, "Could not write script to file %s: %s\n",
 			path, strerror(errno));
 
@@ -342,36 +301,22 @@ out:
 	return r;
 }
 
-static int pakfire_step_run_script(PakfireStep step, pakfire_script_type script) {
-	const char* script_filename = pakfire_step_script_filename(script);
-
-	DEBUG(step->pakfire, "Looking for script %s\n", script_filename);
-
-	void* data;
-	size_t size;
-
-	// Read script from archive
-	int r = pakfire_archive_read(step->archive, script_filename, &data, &size, 0);
-	if (r == 1) {
-		DEBUG(step->pakfire, "Could not find script %s\n", script_filename);
+static int pakfire_step_run_script(PakfireStep step, pakfire_scriptlet_type type) {
+	// Fetch scriptlet from archive
+	struct pakfire_scriptlet* scriptlet = pakfire_archive_get_scriptlet(step->archive, type);
+	if (!scriptlet)
 		return 0;
-	}
 
 	// Found a script!
-	DEBUG(step->pakfire, "Found script %s (%zu):\n%.*s",
-		script_filename, size, (int)size, (const char*)data);
-
-	r = 0;
+	DEBUG(step->pakfire, "Found scriptlet:\n%.*s",
+		(int)scriptlet->size, (const char*)scriptlet->data);
 
 	// Detect what kind of script this is and run it
-	if (pakfire_script_check_shell(data, size)) {
-		r = pakfire_step_run_shell_script(step, data, size);
+	if (pakfire_script_check_shell(scriptlet)) {
+		pakfire_step_run_shell_script(step, scriptlet);
 	} else {
-		ERROR(step->pakfire, "Script is of an unknown kind\n");
+		ERROR(step->pakfire, "Scriptlet is of an unknown kind\n");
 	}
-
-	// Cleanup
-	pakfire_free(data);
 
 	return 0;
 }
@@ -437,17 +382,17 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 			switch (type) {
 				case PAKFIRE_STEP_INSTALL:
 				case PAKFIRE_STEP_REINSTALL:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSIN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PRETRANSIN);
 					break;
 
 				case PAKFIRE_STEP_UPGRADE:
 				case PAKFIRE_STEP_DOWNGRADE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSUP);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PRETRANSUP);
 					break;
 
 				case PAKFIRE_STEP_ERASE:
 				case PAKFIRE_STEP_OBSOLETE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PRETRANSUN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PRETRANSUN);
 					break;
 
 				case PAKFIRE_STEP_IGNORE:
@@ -460,17 +405,17 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 			switch (type) {
 				case PAKFIRE_STEP_INSTALL:
 				case PAKFIRE_STEP_REINSTALL:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSIN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTTRANSIN);
 					break;
 
 				case PAKFIRE_STEP_UPGRADE:
 				case PAKFIRE_STEP_DOWNGRADE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSUP);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTTRANSUP);
 					break;
 
 				case PAKFIRE_STEP_ERASE:
 				case PAKFIRE_STEP_OBSOLETE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTTRANSUN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTTRANSUN);
 					break;
 
 				case PAKFIRE_STEP_IGNORE:
@@ -483,7 +428,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 			switch (type) {
 				case PAKFIRE_STEP_INSTALL:
 				case PAKFIRE_STEP_REINSTALL:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREIN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PREIN);
 					if (r)
 						break;
 
@@ -495,12 +440,12 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTIN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTIN);
 					break;
 
 				case PAKFIRE_STEP_UPGRADE:
 				case PAKFIRE_STEP_DOWNGRADE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUP);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PREUP);
 					if (r)
 						break;
 
@@ -512,12 +457,12 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUP);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTUP);
 					break;
 
 				case PAKFIRE_STEP_ERASE:
 				case PAKFIRE_STEP_OBSOLETE:
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_PREUN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_PREUN);
 					if (r)
 						break;
 
@@ -529,7 +474,7 @@ PAKFIRE_EXPORT int pakfire_step_run(PakfireStep step,
 					if (r)
 						break;
 
-					r = pakfire_step_run_script(step, PAKFIRE_SCRIPT_POSTUN);
+					r = pakfire_step_run_script(step, PAKFIRE_SCRIPTLET_POSTUN);
 					break;
 
 				case PAKFIRE_STEP_IGNORE:

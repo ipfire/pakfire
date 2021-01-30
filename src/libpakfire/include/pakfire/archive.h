@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 
+#include <pakfire/scriptlet.h>
 #include <pakfire/types.h>
 
 typedef enum pakfire_archive_verify_status {
@@ -81,6 +82,9 @@ PakfirePackage pakfire_archive_make_package(PakfireArchive archive, PakfireRepo 
 #define PAKFIRE_ARCHIVE_FN_SIGNATURES		"signatures"
 
 #ifdef PAKFIRE_PRIVATE
+
+struct pakfire_scriptlet* pakfire_archive_get_scriptlet(
+	PakfireArchive archive, pakfire_scriptlet_type type);
 
 typedef enum archive_checksum_algo {
 	PAKFIRE_CHECKSUM_UNKNOWN = 0,

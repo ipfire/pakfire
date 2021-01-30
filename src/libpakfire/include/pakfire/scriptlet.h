@@ -1,7 +1,7 @@
 /*#############################################################################
 #                                                                             #
 # Pakfire - The IPFire package management system                              #
-# Copyright (C) 2013 Pakfire development team                                 #
+# Copyright (C) 2021 Pakfire development team                                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -18,31 +18,42 @@
 #                                                                             #
 #############################################################################*/
 
-#ifndef PAKFIRE_STEP_H
-#define PAKFIRE_STEP_H
+#ifndef PAKFIRE_SCRIPTLET_H
+#define PAKFIRE_SCRIPTLET_H
 
-#include <pakfire/types.h>
-
-PakfireStep pakfire_step_create(PakfireTransaction transaction,
-	pakfire_step_type_t type, PakfirePackage pkg);
-PakfireStep pakfire_step_ref(PakfireStep step);
-PakfireStep pakfire_step_unref(PakfireStep step);
-
-PakfirePackage pakfire_step_get_package(PakfireStep step);
-pakfire_step_type_t pakfire_step_get_type(PakfireStep step);
-const char* pakfire_step_get_type_string(PakfireStep step);
-
-size_t pakfire_step_get_downloadsize(PakfireStep step);
-ssize_t pakfire_step_get_installsizechange(PakfireStep step);
-
-int pakfire_step_needs_download(PakfireStep step);
+// This is an internal data structure
 
 #ifdef PAKFIRE_PRIVATE
 
-#include <pakfire/db.h>
+#include <pakfire/types.h>
 
-int pakfire_step_run(PakfireStep step, struct pakfire_db* db, pakfire_action_type_t action);
+typedef enum _pakfire_script_types {
+	PAKFIRE_SCRIPTLET_UNDEFINED = 0,
+	PAKFIRE_SCRIPTLET_PREIN,
+	PAKFIRE_SCRIPTLET_PREUN,
+	PAKFIRE_SCRIPTLET_PREUP,
+	PAKFIRE_SCRIPTLET_PRETRANSIN,
+	PAKFIRE_SCRIPTLET_PRETRANSUN,
+	PAKFIRE_SCRIPTLET_PRETRANSUP,
+	PAKFIRE_SCRIPTLET_POSTIN,
+	PAKFIRE_SCRIPTLET_POSTUN,
+	PAKFIRE_SCRIPTLET_POSTUP,
+	PAKFIRE_SCRIPTLET_POSTTRANSIN,
+	PAKFIRE_SCRIPTLET_POSTTRANSUN,
+	PAKFIRE_SCRIPTLET_POSTTRANSUP,
+} pakfire_scriptlet_type;
+
+struct pakfire_scriptlet {
+	pakfire_scriptlet_type type;
+	void* data;
+	size_t size;
+};
+
+struct pakfire_scriptlet* pakfire_scriptlet_create(Pakfire pakfire);
+void pakfire_scriptlet_free(struct pakfire_scriptlet* scriptlet);
+
+pakfire_scriptlet_type pakfire_scriptlet_type_from_filename(const char* filename);
 
 #endif
 
-#endif /* PAKFIRE_STEP_H */
+#endif /* PAKFIRE_SCRIPTLET_H */

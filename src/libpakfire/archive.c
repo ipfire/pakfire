@@ -49,6 +49,7 @@
 #include <pakfire/parser.h>
 #include <pakfire/private.h>
 #include <pakfire/repo.h>
+#include <pakfire/scriptlet.h>
 #include <pakfire/util.h>
 
 #define BLOCKSIZE	1024 * 1024 // 1MB
@@ -75,6 +76,10 @@ struct _PakfireArchive {
 	// Signatures
 	PakfireArchiveSignature* signatures;
 	int signatures_loaded;
+
+	// Scriptlets
+	struct pakfire_scriptlet** scriptlets;
+	size_t nscriptlets;
 
 	int nrefs;
 };
@@ -354,6 +359,13 @@ static void pakfire_archive_free(PakfireArchive archive) {
 		pakfire_free(archive->signatures);
 	}
 
+	// Free scriptlets
+	if (archive->scriptlets) {
+		for (unsigned int i = 0; i < archive->nscriptlets; i++)
+			pakfire_scriptlet_free(archive->scriptlets[i]);
+		free(archive->scriptlets);
+	}
+
 	pakfire_parser_unref(archive->parser);
 	pakfire_unref(archive->pakfire);
 	pakfire_free(archive);
@@ -493,6 +505,34 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 	return 0;
 }
 
+static int pakfire_archive_parse_entry_scriptlet(PakfireArchive archive,
+		struct archive* a, struct archive_entry* e, const char* filename) {
+	// Allocate a scriptlet
+	struct pakfire_scriptlet* scriptlet = pakfire_scriptlet_create(archive->pakfire);
+	if (!scriptlet)
+		return -ENOMEM;
+
+	// Set the type
+	scriptlet->type = pakfire_scriptlet_type_from_filename(filename);
+
+	int r = archive_read(a, &scriptlet->data, &scriptlet->size);
+	if (r)
+		return r;
+
+	// Make space for the new scriptlet
+	archive->scriptlets = realloc(archive->scriptlets,
+		sizeof(*archive->scriptlets) * (archive->nscriptlets + 1));
+	if (archive->scriptlets) {
+		pakfire_scriptlet_free(scriptlet);
+		return -ENOMEM;
+	}
+
+	// Append the new scriptlet
+	archive->scriptlets[archive->nscriptlets++] = scriptlet;
+
+	return 0;
+}
+
 static int pakfire_archive_walk(PakfireArchive archive,
 		int (*callback)(PakfireArchive archive, struct archive* a, struct archive_entry* e, const char* pathname)) {
 	struct archive_entry* e;
@@ -555,6 +595,12 @@ static int pakfire_archive_read_metadata_entry(PakfireArchive archive, struct ar
 		// Parse the checksums
 		} else if (strcmp(PAKFIRE_ARCHIVE_FN_CHECKSUMS, entry_name) == 0) {
 			ret = pakfire_archive_parse_entry_checksums(archive, a, e);
+			if (ret)
+				return PAKFIRE_E_PKG_INVALID;
+
+		// Parse the scriptlets
+		} else if (pakfire_string_startswith(entry_name, "scriptlet/")) {
+			ret = pakfire_archive_parse_entry_scriptlet(archive, a, e, entry_name);
 			if (ret)
 				return PAKFIRE_E_PKG_INVALID;
 		}
@@ -1382,4 +1428,18 @@ PAKFIRE_EXPORT PakfirePackage pakfire_archive_make_package(PakfireArchive archiv
 	pakfire_package_set_filelist(pkg, archive->filelist);
 
 	return pkg;
+}
+
+struct pakfire_scriptlet* pakfire_archive_get_scriptlet(
+		PakfireArchive archive, pakfire_scriptlet_type type) {
+	struct pakfire_scriptlet* scriptlet;
+
+	for (unsigned int i = 0; i < archive->nscriptlets; i++) {
+		scriptlet = archive->scriptlets[i];
+
+		if (scriptlet->type == type)
+			return scriptlet;
+	}
+
+	return NULL;
 }
