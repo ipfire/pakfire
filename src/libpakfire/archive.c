@@ -522,7 +522,7 @@ static int pakfire_archive_parse_entry_scriptlet(PakfireArchive archive,
 	// Make space for the new scriptlet
 	archive->scriptlets = realloc(archive->scriptlets,
 		sizeof(*archive->scriptlets) * (archive->nscriptlets + 1));
-	if (archive->scriptlets) {
+	if (!archive->scriptlets) {
 		pakfire_scriptlet_free(scriptlet);
 		return -ENOMEM;
 	}
