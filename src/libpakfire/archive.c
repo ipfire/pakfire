@@ -32,8 +32,10 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-// libgcrypt
-#include <gcrypt.h>
+// openssl
+#include <openssl/crypto.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
 
 #include <pakfire/archive.h>
 #include <pakfire/errno.h>
@@ -54,8 +56,8 @@
 typedef struct archive_checksum {
 	Pakfire pakfire;
 	char* filename;
-	char* checksum;
 	archive_checksum_algo_t algo;
+	unsigned char digest[EVP_MAX_MD_SIZE];
 } archive_checksum_t;
 
 struct _PakfireArchive {
@@ -201,19 +203,18 @@ static const char* checksum_algo_string(archive_checksum_algo_t algo) {
 	return NULL;
 }
 
-static archive_checksum_t* pakfire_archive_checksum_create(Pakfire pakfire, const char* filename, const char* checksum, archive_checksum_algo_t algo) {
-	archive_checksum_t* c = pakfire_calloc(1, sizeof(*c));
-	if (c) {
-		c->pakfire = pakfire_ref(pakfire);
-		c->filename = pakfire_strdup(filename);
-		c->checksum = pakfire_strdup(checksum);
-		c->algo = algo;
+static int read_hexdigest(unsigned char* dst, size_t l, const char* src) {
+	const char* p = src;
 
-		DEBUG(c->pakfire, "Allocated archive checksum for %s (%s:%s)\n",
-			c->filename, checksum_algo_string(c->algo), c->checksum);
+	for (unsigned int i = 0; i < l && *p; i++) {
+		int r = sscanf(p, "%02X", (unsigned int*)&dst[i]);
+		if (r != 1)
+			return 1;
+
+		p += 2;
 	}
 
-	return c;
+	return 0;
 }
 
 static void pakfire_archive_checksum_free(archive_checksum_t* c) {
@@ -221,8 +222,27 @@ static void pakfire_archive_checksum_free(archive_checksum_t* c) {
 
 	pakfire_unref(c->pakfire);
 	pakfire_free(c->filename);
-	pakfire_free(c->checksum);
 	pakfire_free(c);
+}
+
+static archive_checksum_t* pakfire_archive_checksum_create(Pakfire pakfire, const char* filename, archive_checksum_algo_t algo, const char* s) {
+	archive_checksum_t* c = pakfire_calloc(1, sizeof(*c));
+	if (c) {
+		c->pakfire = pakfire_ref(pakfire);
+		c->filename = pakfire_strdup(filename);
+		c->algo = algo;
+
+		int r = read_hexdigest(c->digest, sizeof(c->digest), s);
+		if (r) {
+			pakfire_archive_checksum_free(c);
+			return NULL;
+		}
+
+		DEBUG(c->pakfire, "Allocated archive checksum for %s (%s)\n",
+			c->filename, checksum_algo_string(c->algo));
+	}
+
+	return c;
 }
 
 static archive_checksum_t* pakfire_archive_checksum_find(PakfireArchive archive, const char* filename) {
@@ -457,7 +477,7 @@ static int pakfire_archive_parse_entry_checksums(PakfireArchive archive,
 
 		// Add new checksum object
 		if (filename && checksum) {
-			*checksums++ = pakfire_archive_checksum_create(archive->pakfire, filename, checksum, algo);
+			*checksums++ = pakfire_archive_checksum_create(archive->pakfire, filename, algo, checksum);
 		}
 
 		// Eat up any space before next thing starts
@@ -1029,83 +1049,78 @@ ABORT:
 	return status;
 }
 
-static char* digest_to_hexdigest(const unsigned char* digest, unsigned int len) {
-	char* hexdigest = pakfire_calloc(len * 2, sizeof(*hexdigest));
-
-	char* p = hexdigest;
-	for (unsigned int i = 0; i < len; i++) {
-		snprintf(p, 3, "%02x", digest[i]);
-		p += 2;
-	}
-
-	return hexdigest;
-}
-
 static pakfire_archive_verify_status_t pakfire_archive_verify_file(Pakfire pakfire, struct archive* a, const archive_checksum_t* checksum) {
-	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
+	pakfire_archive_verify_status_t status = PAKFIRE_ARCHIVE_VERIFY_ERROR;
 
-	// Make sure libgcrypt is initialized
-	init_libgcrypt();
+	int r;
+	const EVP_MD* md;
 
-	int algo = 0;
+	// Initialise context
+	EVP_MD_CTX* mdctx = EVP_MD_CTX_new();
+
+	// Select algorithm
 	switch (checksum->algo) {
 		case PAKFIRE_CHECKSUM_SHA512:
-			algo = GCRY_MD_SHA512;
+			md = EVP_sha512();
 			break;
 
-		case PAKFIRE_CHECKSUM_UNKNOWN:
-			break;
+		default:
+			ERROR(pakfire, "Unknown algorithm chosen\n");
+			goto ERROR;
 	}
-	assert(algo);
 
-	gcry_md_hd_t hd = NULL;
-	gcry_error_t error = gcry_md_open(&hd, algo, 0);
-	if (error != GPG_ERR_NO_ERROR)
-		return PAKFIRE_ARCHIVE_VERIFY_ERROR;
+	// Initialise the hash algorithm
+	r = EVP_DigestInit_ex(mdctx, md, NULL);
+	if (r != 1) {
+		ERROR(pakfire, "Could not initialize hash algorithm: %s\n",
+			ERR_error_string(ERR_get_error(), NULL));
+		goto ERROR;
+	}
 
-	const void* buff;
+	const void* buffer;
 	size_t size;
 	off_t offset;
 
 	for (;;) {
-		int r = archive_read_data_block(a, &buff, &size, &offset);
+		int r = archive_read_data_block(a, &buffer, &size, &offset);
 		if (r == ARCHIVE_EOF)
 			break;
 
 		if (r != ARCHIVE_OK) {
 			pakfire_errno = r;
 			status = PAKFIRE_ARCHIVE_VERIFY_ERROR;
-			goto FAIL;
+			goto ERROR;
 		}
 
 		// Update hash digest
-		gcry_md_write(hd, buff, size);
+		r = EVP_DigestUpdate(mdctx, buffer, size);
+		if (r != 1) {
+			ERROR(pakfire, "%s\n", ERR_error_string(ERR_get_error(), NULL));
+			goto ERROR;
+		}
 	}
 
-	// Finish computing the hash
-	gcry_md_final(hd);
+	unsigned char digest[EVP_MAX_MD_SIZE];
+	unsigned int digest_length = sizeof(digest);
 
-	// Get the hash digest
-	unsigned int l = gcry_md_get_algo_dlen(algo);
-	unsigned char* digest = gcry_md_read(hd, algo);
-
-	// Convert to hexdigest
-	char* hexdigest = digest_to_hexdigest(digest, l);
+	r = EVP_DigestFinal_ex(mdctx, digest, &digest_length);
+	if (r != 1) {
+		ERROR(pakfire, "%s\n", ERR_error_string(ERR_get_error(), NULL));
+		goto ERROR;
+	}
 
 	// Compare digests
-	if (strcmp(checksum->checksum, hexdigest) == 0) {
+	if (CRYPTO_memcmp(digest, checksum->digest, EVP_MD_CTX_size(mdctx)) == 0) {
 		DEBUG(pakfire, "Checksum of %s is OK\n", checksum->filename);
 		status = PAKFIRE_ARCHIVE_VERIFY_OK;
 	} else {
 		DEBUG(pakfire, "Checksum of %s did not match\n", checksum->filename);
-		DEBUG(pakfire, "Expected %s:%s, got %s\n",
-			checksum_algo_string(checksum->algo), checksum->checksum, hexdigest);
+		status = PAKFIRE_ARCHIVE_VERIFY_INVALID;
 	}
 
-	pakfire_free(hexdigest);
-
-FAIL:
-	gcry_md_close(hd);
+ERROR:
+	if (mdctx)
+		EVP_MD_CTX_free(mdctx);
 
 	return status;
 }
@@ -1134,8 +1149,10 @@ PAKFIRE_EXPORT pakfire_archive_verify_status_t pakfire_archive_verify(PakfireArc
 
 		// See if we have a checksum for this file
 		const archive_checksum_t* checksum = pakfire_archive_checksum_find(archive, entry_name);
-		if (!checksum)
+		if (!checksum) {
+			DEBUG(archive->pakfire, "Could not find checksum for %s\n", entry_name);
 			continue;
+		}
 
 		// Compare the checksums
 		status = pakfire_archive_verify_file(archive->pakfire, a, checksum);
