@@ -252,7 +252,6 @@ static int pakfire_db_create_schema(struct pakfire_db* db) {
 			"uuid           TEXT, "
 			"vendor         TEXT, "
 			"build_host     TEXT, "
-			"build_date     TEXT, "
 			"build_time     INTEGER, "
 			"installed      INTEGER, "
 			"reason         TEXT, "
