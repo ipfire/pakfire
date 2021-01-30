@@ -627,7 +627,7 @@ PAKFIRE_EXPORT int pakfire_db_check(struct pakfire_db* db) {
 
 static int pakfire_db_add_files(struct pakfire_db* db, unsigned long id, PakfireArchive archive) {
 	sqlite3_stmt* stmt = NULL;
-	int r;
+	int r = 1;
 
 	// Get the filelist from the archive
 	PakfireFilelist filelist = pakfire_archive_get_filelist(archive);
