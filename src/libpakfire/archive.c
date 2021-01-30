@@ -599,7 +599,7 @@ static int pakfire_archive_read_metadata_entry(PakfireArchive archive, struct ar
 				return PAKFIRE_E_PKG_INVALID;
 
 		// Parse the scriptlets
-		} else if (pakfire_string_startswith(entry_name, "scriptlet/")) {
+		} else if (pakfire_string_startswith(entry_name, "scriptlets/")) {
 			ret = pakfire_archive_parse_entry_scriptlet(archive, a, e, entry_name);
 			if (ret)
 				return PAKFIRE_E_PKG_INVALID;
